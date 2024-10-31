@@ -40,7 +40,9 @@ class SettingsView extends StatelessWidget {
               onPressed: () async {
                 await notionController.authenticate();
               },
-              child: const Text('Notion Sync'),
+              child: notionController.accessToken != null
+                  ? const Text('Re-authenticate')
+                  : const Text('Authenticate'),
             ),
             const Text('Theme Mode'),
             DropdownButton<ThemeMode>(

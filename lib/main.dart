@@ -8,6 +8,8 @@ import 'src/notion/notion_controller.dart';
 import 'src/env/env.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   // Set up the SettingsController, which will glue user settings to multiple
   // Flutter Widgets.
   final settingsController = SettingsController(SettingsService());

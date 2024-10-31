@@ -10,7 +10,6 @@ class NotionOAuthService {
   NotionOAuthService(this.notionAuthUrl, this.clientId, this.clientSecret);
 
   Future<String> getAccessToken() async {
-    // oAuth2
     final result = await FlutterWebAuth2.authenticate(
         url: notionAuthUrl, callbackUrlScheme: "notiontodo");
     final code = Uri.parse(result).queryParameters['code'];
@@ -31,8 +30,6 @@ class NotionOAuthService {
       );
       if (res.statusCode == 200) {
         final data = jsonDecode(res.body);
-        print(data);
-
         return data['access_token'];
       } else {
         throw Exception('Token request failed');
