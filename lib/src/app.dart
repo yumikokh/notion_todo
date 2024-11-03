@@ -1,32 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'sample_feature/sample_item_details_view.dart';
 import 'sample_feature/sample_item_list_view.dart';
-import 'settings/settings_controller.dart';
+import 'settings/settings_viewmodel.dart';
 import 'settings/settings_view.dart';
-import 'notion/notion_controller.dart';
+import 'notion/notion_viewmodel.dart';
 
 /// The Widget that configures your application.
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({
     super.key,
-    required this.settingsController,
-    required this.notionController,
+    // required this.settingsViewModel,
+    // required this.notionViewModel,
   });
 
-  final SettingsController settingsController;
-  final NotionController notionController;
+  // final SettingsViewModel settingsViewModel;
+  // final NotionViewModel notionViewModel;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ref) {
+    final settingsViewModel = ref.watch(settingsViewModelProvider);
+    final notionViewModel = ref.watch(notionViewModelProvider);
     // Glue the SettingsController to the MaterialApp.
     //
     // The AnimatedBuilder Widget listens to the SettingsController for changes.
     // Whenever the user updates their settings, the MaterialApp is rebuilt.
     return AnimatedBuilder(
-      animation: settingsController,
+      animation: settingsViewModel,
       builder: (BuildContext context, Widget? child) {
         return MaterialApp(
           // Providing a restorationScopeId allows the Navigator built by the
@@ -61,7 +64,7 @@ class MyApp extends StatelessWidget {
           // SettingsController to display the correct theme.
           theme: ThemeData(),
           darkTheme: ThemeData.dark(),
-          themeMode: settingsController.themeMode,
+          themeMode: settingsViewModel.themeMode,
 
           // Define a function to handle named routes in order to support
           // Flutter web url navigation and deep linking.
@@ -72,8 +75,8 @@ class MyApp extends StatelessWidget {
                 switch (routeSettings.name) {
                   case SettingsView.routeName:
                     return SettingsView(
-                        settingsController: settingsController,
-                        notionController: notionController);
+                        settingsViewModel: settingsViewModel,
+                        notionViewModel: notionViewModel);
                   case SampleItemDetailsView.routeName:
                     return const SampleItemDetailsView();
                   case SampleItemListView.routeName:

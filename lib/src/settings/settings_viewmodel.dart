@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'settings_service.dart';
 
 /// A class that many Widgets can interact with to read user settings, update
@@ -7,8 +7,11 @@ import 'settings_service.dart';
 ///
 /// Controllers glue Data Services to Flutter Widgets. The SettingsController
 /// uses the SettingsService to store and retrieve user settings.
-class SettingsController with ChangeNotifier {
-  SettingsController(this._settingsService);
+class SettingsViewModel with ChangeNotifier {
+  SettingsViewModel(this._settingsService) {
+    _themeMode = ThemeMode.system;
+    loadSettings();
+  }
 
   // Make SettingsService a private variable so it is not used directly.
   final SettingsService _settingsService;
@@ -48,3 +51,7 @@ class SettingsController with ChangeNotifier {
     await _settingsService.updateThemeMode(newThemeMode);
   }
 }
+
+final settingsViewModelProvider = ChangeNotifierProvider<SettingsViewModel>(
+  (ref) => SettingsViewModel(SettingsService()),
+);

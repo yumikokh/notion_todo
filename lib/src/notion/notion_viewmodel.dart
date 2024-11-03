@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'notion_oauth_service.dart';
+import '../env/env.dart';
 
-class NotionController with ChangeNotifier {
+class NotionViewModel with ChangeNotifier {
   final NotionOAuthService _notionOAuthService;
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
+  String? _accessToken;
 
-  NotionController(this._notionOAuthService) {
+  NotionViewModel(this._notionOAuthService) {
     _initialize();
   }
 
-  String? _accessToken;
   String? get accessToken => _accessToken;
 
   Future<void> authenticate() async {
@@ -48,3 +50,8 @@ class NotionController with ChangeNotifier {
     notifyListeners();
   }
 }
+
+final notionViewModelProvider = ChangeNotifierProvider<NotionViewModel>(
+  (ref) => NotionViewModel(NotionOAuthService(
+      Env.notionAuthUrl, Env.oAuthClientId, Env.oAuthClientSecret)),
+);

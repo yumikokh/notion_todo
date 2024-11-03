@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 
+class SettingsModel {
+  final ThemeMode themeMode;
+
+  SettingsModel({required this.themeMode});
+}
+
 /// A service that stores and retrieves user settings.
 ///
 /// By default, this class does not persist user settings. If you'd like to

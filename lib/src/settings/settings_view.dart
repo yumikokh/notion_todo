@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'settings_controller.dart';
-import '../notion/notion_controller.dart';
+import 'settings_viewmodel.dart';
+import '../notion/notion_viewmodel.dart';
 
 /// Displays the various settings that can be customized by the user.
 ///
@@ -10,13 +10,13 @@ import '../notion/notion_controller.dart';
 class SettingsView extends StatelessWidget {
   const SettingsView(
       {super.key,
-      required this.settingsController,
-      required this.notionController});
+      required this.settingsViewModel,
+      required this.notionViewModel});
 
   static const routeName = '/settings';
 
-  final SettingsController settingsController;
-  final NotionController notionController;
+  final SettingsViewModel settingsViewModel;
+  final NotionViewModel notionViewModel;
 
   @override
   Widget build(BuildContext context) {
@@ -33,23 +33,23 @@ class SettingsView extends StatelessWidget {
         child: ListView(
           children: [
             const Text('Notion Sync'),
-            notionController.accessToken != null
+            notionViewModel.accessToken != null
                 ? const Text('Authenticated ✅') // FIXME: 即時反映されない
                 : const Text('Not Authenticated'),
             ElevatedButton(
               onPressed: () async {
-                await notionController.authenticate();
+                await notionViewModel.authenticate();
               },
-              child: notionController.accessToken != null
+              child: notionViewModel.accessToken != null
                   ? const Text('Re-authenticate')
                   : const Text('Authenticate'),
             ),
             const Text('Theme Mode'),
             DropdownButton<ThemeMode>(
               // Read the selected themeMode from the controller
-              value: settingsController.themeMode,
+              value: settingsViewModel.themeMode,
               // Call the updateThemeMode method any time the user selects a theme.
-              onChanged: settingsController.updateThemeMode,
+              onChanged: settingsViewModel.updateThemeMode,
               items: const [
                 DropdownMenuItem(
                   value: ThemeMode.system,
