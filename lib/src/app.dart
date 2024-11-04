@@ -7,23 +7,17 @@ import 'sample_feature/sample_item_details_view.dart';
 import 'sample_feature/sample_item_list_view.dart';
 import 'settings/settings_viewmodel.dart';
 import 'settings/settings_view.dart';
-import 'notion/notion_viewmodel.dart';
 
 /// The Widget that configures your application.
 class MyApp extends ConsumerWidget {
   const MyApp({
     super.key,
-    // required this.settingsViewModel,
-    // required this.notionViewModel,
   });
-
-  // final SettingsViewModel settingsViewModel;
-  // final NotionViewModel notionViewModel;
 
   @override
   Widget build(BuildContext context, ref) {
-    final settingsViewModel = ref.watch(settingsViewModelProvider);
-    final notionViewModel = ref.watch(notionViewModelProvider);
+    final settings = ref.watch(settingsViewModelProvider);
+    final settingsViewModel = ref.read(settingsViewModelProvider.notifier);
     // Glue the SettingsController to the MaterialApp.
     //
     // The AnimatedBuilder Widget listens to the SettingsController for changes.
@@ -64,7 +58,7 @@ class MyApp extends ConsumerWidget {
           // SettingsController to display the correct theme.
           theme: ThemeData(),
           darkTheme: ThemeData.dark(),
-          themeMode: settingsViewModel.themeMode,
+          themeMode: settings.themeMode,
 
           // Define a function to handle named routes in order to support
           // Flutter web url navigation and deep linking.
@@ -75,8 +69,8 @@ class MyApp extends ConsumerWidget {
                 switch (routeSettings.name) {
                   case SettingsView.routeName:
                     return SettingsView(
-                        settingsViewModel: settingsViewModel,
-                        notionViewModel: notionViewModel);
+                      settingsViewModel: settingsViewModel,
+                    );
                   case SampleItemDetailsView.routeName:
                     return const SampleItemDetailsView();
                   case SampleItemListView.routeName:

@@ -12,4 +12,7 @@ abstract class Env {
 
   @EnviedField(varName: 'NOTION_AUTH_URL')
   static const String notionAuthUrl = _Env.notionAuthUrl;
+
+  @EnviedField(varName: 'REDIRECT_URI')
+  static const String redirectUri = _Env.redirectUri;
 }

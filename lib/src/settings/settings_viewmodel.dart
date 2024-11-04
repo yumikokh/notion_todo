@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'settings_service.dart';
 
 /// A class that many Widgets can interact with to read user settings, update
@@ -7,6 +8,7 @@ import 'settings_service.dart';
 ///
 /// Controllers glue Data Services to Flutter Widgets. The SettingsController
 /// uses the SettingsService to store and retrieve user settings.
+
 class SettingsViewModel with ChangeNotifier {
   SettingsViewModel(this._settingsService) {
     _themeMode = ThemeMode.system;
@@ -52,6 +54,10 @@ class SettingsViewModel with ChangeNotifier {
   }
 }
 
+// MEMO: code-generatorで生成されるProviderはデフォルトで自動破棄が有効なため、appでListenableに適用できない
+// keepAliveをtrueにしてもうまくいかなかったため、手動で作成している
+// see: https://stackoverflow.com/questions/69512241/how-to-get-a-listenable-from-a-riverpod-provider
+// see: https://riverpod.dev/ja/docs/concepts/about_code_generation#autodispose-%E3%81%AE%E6%9C%89%E5%8A%B9%E7%84%A1%E5%8A%B9%E5%8C%96
 final settingsViewModelProvider = ChangeNotifierProvider<SettingsViewModel>(
   (ref) => SettingsViewModel(SettingsService()),
 );

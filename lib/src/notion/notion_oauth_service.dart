@@ -1,41 +1,62 @@
-import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import './notion_oauth_repository.dart';
+
+class NotionOAuth {
+  final String? accessToken;
+
+  NotionOAuth({
+    required this.accessToken,
+  });
+
+  NotionOAuth.initialState() : accessToken = null;
+}
 
 class NotionOAuthService {
   final String notionAuthUrl;
   final String clientId;
   final String clientSecret;
+  final String redirectUri;
 
-  NotionOAuthService(this.notionAuthUrl, this.clientId, this.clientSecret);
+  static const _accessTokenKey = 'accessToken';
+  late final NotionOAuthRepository _notionOAuthRepository;
+  late final FlutterSecureStorage _secureStorage;
 
-  Future<String> getAccessToken() async {
-    final result = await FlutterWebAuth2.authenticate(
-        url: notionAuthUrl, callbackUrlScheme: "notiontodo");
-    final code = Uri.parse(result).queryParameters['code'];
+  NotionOAuthService(
+      this.notionAuthUrl, this.clientId, this.clientSecret, this.redirectUri) {
+    _notionOAuthRepository = NotionOAuthRepository(
+        notionAuthUrl, clientId, clientSecret, redirectUri);
+    _secureStorage = const FlutterSecureStorage();
+    _initialize();
+  }
 
-    if (code != null) {
-      final encoded = base64.encode(utf8.encode('$clientId:$clientSecret'));
-      final res = await http.post(
-        Uri.parse('https://api.notion.com/v1/oauth/token'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Basic $encoded',
-        },
-        body: jsonEncode({
-          'grant_type': 'authorization_code',
-          'code': code,
-          'redirect_uri': 'https://yumikokh.github.io/notion_todo/redirects/'
-        }),
-      );
-      if (res.statusCode == 200) {
-        final data = jsonDecode(res.body);
-        return data['access_token'];
-      } else {
-        throw Exception('Token request failed');
-      }
-    } else {
-      throw Exception('oAuth Code is null');
+  Future<void> _initialize() async {
+    final prefs = await SharedPreferences.getInstance();
+    final isFirstLaunch = prefs.getBool('isFirstLaunch') ?? true;
+
+    // 再インストール時に残っていたアクセストークンを削除
+    if (isFirstLaunch) {
+      await deleteAccessToken();
+      await prefs.setBool('isFirstLaunch', false);
     }
+
+    await loadAccessToken();
+  }
+
+  Future<String?> fetchAccessToken() async {
+    return _notionOAuthRepository.fetchAccessToken();
+  }
+
+  Future<String?> loadAccessToken() async {
+    return await _secureStorage.read(key: _accessTokenKey);
+  }
+
+  Future<void> saveAccessToken(String token) async {
+    await _secureStorage.write(key: _accessTokenKey, value: token);
+  }
+
+  Future<void> deleteAccessToken() async {
+    await _secureStorage.delete(key: _accessTokenKey);
   }
 }
