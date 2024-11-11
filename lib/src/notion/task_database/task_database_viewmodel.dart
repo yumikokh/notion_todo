@@ -10,11 +10,30 @@ part 'task_database_viewmodel.freezed.dart';
 part 'task_database_viewmodel.g.dart';
 
 @freezed
+class SelectedDatabase with _$SelectedDatabase {
+  const factory SelectedDatabase({
+    required String id,
+    required String name,
+    required List<Property> properties,
+    required Property? status,
+    required Property? date,
+  }) = _SelectedDatabase;
+
+  factory SelectedDatabase.initial() => const SelectedDatabase(
+        id: '',
+        name: '',
+        properties: [],
+        status: null,
+        date: null,
+      );
+}
+
+@freezed
 class TaskDatabaseState with _$TaskDatabaseState {
   factory TaskDatabaseState({
     required List<Database> databases,
     required TaskDatabase? taskDatabase,
-    required TaskDatabase? selectedTaskDatabase,
+    required SelectedDatabase? selectedTaskDatabase,
   }) = _TaskDatabaseState;
 
   factory TaskDatabaseState.initialState() => TaskDatabaseState(
@@ -57,12 +76,12 @@ class TaskDatabaseViewModel extends _$TaskDatabaseViewModel {
   void selectDatabase(String? databaseId) {
     final selected = state.databases.firstWhere((db) => db.id == databaseId);
     state = state.copyWith(
-      selectedTaskDatabase: TaskDatabase(
+      selectedTaskDatabase: SelectedDatabase(
         id: databaseId!,
         name: selected.name,
         properties: selected.properties,
-        statusId: null,
-        dateId: null,
+        status: null,
+        date: null,
       ),
     );
   }
@@ -76,16 +95,15 @@ class TaskDatabaseViewModel extends _$TaskDatabaseViewModel {
         [];
   }
 
-  void selectProperty(String? propertyId, SettingPropertyType type) {
+  void selectProperty(Property property, SettingPropertyType type) {
     if (type == SettingPropertyType.status) {
       state = state.copyWith(
-        selectedTaskDatabase:
-            state.selectedTaskDatabase?.copyWith(statusId: propertyId),
-      );
+          selectedTaskDatabase:
+              state.selectedTaskDatabase?.copyWith(status: property));
     } else {
       state = state.copyWith(
         selectedTaskDatabase:
-            state.selectedTaskDatabase?.copyWith(dateId: propertyId),
+            state.selectedTaskDatabase?.copyWith(date: property),
       );
     }
   }
@@ -94,9 +112,15 @@ class TaskDatabaseViewModel extends _$TaskDatabaseViewModel {
     if (_taskDatabaseService == null || state.selectedTaskDatabase == null) {
       return;
     }
-    _taskDatabaseService!.save(state.selectedTaskDatabase!);
-    state = state.copyWith(
-        taskDatabase: state.selectedTaskDatabase, selectedTaskDatabase: null);
+    final taskDatabase = TaskDatabase(
+      id: state.selectedTaskDatabase!.id,
+      name: state.selectedTaskDatabase!.name,
+      status: state.selectedTaskDatabase!.status,
+      date: state.selectedTaskDatabase!.date,
+    );
+    _taskDatabaseService!.save(taskDatabase);
+    state =
+        state.copyWith(taskDatabase: taskDatabase, selectedTaskDatabase: null);
   }
 
   void clear() {

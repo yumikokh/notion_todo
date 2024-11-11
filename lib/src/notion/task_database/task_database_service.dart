@@ -13,17 +13,15 @@ class TaskDatabase with _$TaskDatabase {
   const factory TaskDatabase({
     required String id,
     required String name,
-    required List<Property> properties,
-    required String? statusId,
-    required String? dateId,
+    required Property? status,
+    required Property? date,
   }) = _SelectedTaskDatabase;
 
   factory TaskDatabase.initial() => const TaskDatabase(
         id: '',
         name: '',
-        properties: [],
-        statusId: null,
-        dateId: null,
+        status: null,
+        date: null,
       );
 
   factory TaskDatabase.fromJson(Map<String, dynamic> json) =>

@@ -15,10 +15,283 @@ final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
+mixin _$SelectedDatabase {
+  String get id => throw _privateConstructorUsedError;
+  String get name => throw _privateConstructorUsedError;
+  List<Property> get properties => throw _privateConstructorUsedError;
+  Property? get status => throw _privateConstructorUsedError;
+  Property? get date => throw _privateConstructorUsedError;
+
+  /// Create a copy of SelectedDatabase
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $SelectedDatabaseCopyWith<SelectedDatabase> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $SelectedDatabaseCopyWith<$Res> {
+  factory $SelectedDatabaseCopyWith(
+          SelectedDatabase value, $Res Function(SelectedDatabase) then) =
+      _$SelectedDatabaseCopyWithImpl<$Res, SelectedDatabase>;
+  @useResult
+  $Res call(
+      {String id,
+      String name,
+      List<Property> properties,
+      Property? status,
+      Property? date});
+
+  $PropertyCopyWith<$Res>? get status;
+  $PropertyCopyWith<$Res>? get date;
+}
+
+/// @nodoc
+class _$SelectedDatabaseCopyWithImpl<$Res, $Val extends SelectedDatabase>
+    implements $SelectedDatabaseCopyWith<$Res> {
+  _$SelectedDatabaseCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of SelectedDatabase
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? name = null,
+    Object? properties = null,
+    Object? status = freezed,
+    Object? date = freezed,
+  }) {
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      properties: null == properties
+          ? _value.properties
+          : properties // ignore: cast_nullable_to_non_nullable
+              as List<Property>,
+      status: freezed == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
+              as Property?,
+      date: freezed == date
+          ? _value.date
+          : date // ignore: cast_nullable_to_non_nullable
+              as Property?,
+    ) as $Val);
+  }
+
+  /// Create a copy of SelectedDatabase
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $PropertyCopyWith<$Res>? get status {
+    if (_value.status == null) {
+      return null;
+    }
+
+    return $PropertyCopyWith<$Res>(_value.status!, (value) {
+      return _then(_value.copyWith(status: value) as $Val);
+    });
+  }
+
+  /// Create a copy of SelectedDatabase
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $PropertyCopyWith<$Res>? get date {
+    if (_value.date == null) {
+      return null;
+    }
+
+    return $PropertyCopyWith<$Res>(_value.date!, (value) {
+      return _then(_value.copyWith(date: value) as $Val);
+    });
+  }
+}
+
+/// @nodoc
+abstract class _$$SelectedDatabaseImplCopyWith<$Res>
+    implements $SelectedDatabaseCopyWith<$Res> {
+  factory _$$SelectedDatabaseImplCopyWith(_$SelectedDatabaseImpl value,
+          $Res Function(_$SelectedDatabaseImpl) then) =
+      __$$SelectedDatabaseImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {String id,
+      String name,
+      List<Property> properties,
+      Property? status,
+      Property? date});
+
+  @override
+  $PropertyCopyWith<$Res>? get status;
+  @override
+  $PropertyCopyWith<$Res>? get date;
+}
+
+/// @nodoc
+class __$$SelectedDatabaseImplCopyWithImpl<$Res>
+    extends _$SelectedDatabaseCopyWithImpl<$Res, _$SelectedDatabaseImpl>
+    implements _$$SelectedDatabaseImplCopyWith<$Res> {
+  __$$SelectedDatabaseImplCopyWithImpl(_$SelectedDatabaseImpl _value,
+      $Res Function(_$SelectedDatabaseImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of SelectedDatabase
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? name = null,
+    Object? properties = null,
+    Object? status = freezed,
+    Object? date = freezed,
+  }) {
+    return _then(_$SelectedDatabaseImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      properties: null == properties
+          ? _value._properties
+          : properties // ignore: cast_nullable_to_non_nullable
+              as List<Property>,
+      status: freezed == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
+              as Property?,
+      date: freezed == date
+          ? _value.date
+          : date // ignore: cast_nullable_to_non_nullable
+              as Property?,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$SelectedDatabaseImpl
+    with DiagnosticableTreeMixin
+    implements _SelectedDatabase {
+  const _$SelectedDatabaseImpl(
+      {required this.id,
+      required this.name,
+      required final List<Property> properties,
+      required this.status,
+      required this.date})
+      : _properties = properties;
+
+  @override
+  final String id;
+  @override
+  final String name;
+  final List<Property> _properties;
+  @override
+  List<Property> get properties {
+    if (_properties is EqualUnmodifiableListView) return _properties;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_properties);
+  }
+
+  @override
+  final Property? status;
+  @override
+  final Property? date;
+
+  @override
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+    return 'SelectedDatabase(id: $id, name: $name, properties: $properties, status: $status, date: $date)';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty('type', 'SelectedDatabase'))
+      ..add(DiagnosticsProperty('id', id))
+      ..add(DiagnosticsProperty('name', name))
+      ..add(DiagnosticsProperty('properties', properties))
+      ..add(DiagnosticsProperty('status', status))
+      ..add(DiagnosticsProperty('date', date));
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$SelectedDatabaseImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.name, name) || other.name == name) &&
+            const DeepCollectionEquality()
+                .equals(other._properties, _properties) &&
+            (identical(other.status, status) || other.status == status) &&
+            (identical(other.date, date) || other.date == date));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, id, name,
+      const DeepCollectionEquality().hash(_properties), status, date);
+
+  /// Create a copy of SelectedDatabase
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$SelectedDatabaseImplCopyWith<_$SelectedDatabaseImpl> get copyWith =>
+      __$$SelectedDatabaseImplCopyWithImpl<_$SelectedDatabaseImpl>(
+          this, _$identity);
+}
+
+abstract class _SelectedDatabase implements SelectedDatabase {
+  const factory _SelectedDatabase(
+      {required final String id,
+      required final String name,
+      required final List<Property> properties,
+      required final Property? status,
+      required final Property? date}) = _$SelectedDatabaseImpl;
+
+  @override
+  String get id;
+  @override
+  String get name;
+  @override
+  List<Property> get properties;
+  @override
+  Property? get status;
+  @override
+  Property? get date;
+
+  /// Create a copy of SelectedDatabase
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$SelectedDatabaseImplCopyWith<_$SelectedDatabaseImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
 mixin _$TaskDatabaseState {
   List<Database> get databases => throw _privateConstructorUsedError;
   TaskDatabase? get taskDatabase => throw _privateConstructorUsedError;
-  TaskDatabase? get selectedTaskDatabase => throw _privateConstructorUsedError;
+  SelectedDatabase? get selectedTaskDatabase =>
+      throw _privateConstructorUsedError;
 
   /// Create a copy of TaskDatabaseState
   /// with the given fields replaced by the non-null parameter values.
@@ -36,10 +309,10 @@ abstract class $TaskDatabaseStateCopyWith<$Res> {
   $Res call(
       {List<Database> databases,
       TaskDatabase? taskDatabase,
-      TaskDatabase? selectedTaskDatabase});
+      SelectedDatabase? selectedTaskDatabase});
 
   $TaskDatabaseCopyWith<$Res>? get taskDatabase;
-  $TaskDatabaseCopyWith<$Res>? get selectedTaskDatabase;
+  $SelectedDatabaseCopyWith<$Res>? get selectedTaskDatabase;
 }
 
 /// @nodoc
@@ -73,7 +346,7 @@ class _$TaskDatabaseStateCopyWithImpl<$Res, $Val extends TaskDatabaseState>
       selectedTaskDatabase: freezed == selectedTaskDatabase
           ? _value.selectedTaskDatabase
           : selectedTaskDatabase // ignore: cast_nullable_to_non_nullable
-              as TaskDatabase?,
+              as SelectedDatabase?,
     ) as $Val);
   }
 
@@ -95,12 +368,13 @@ class _$TaskDatabaseStateCopyWithImpl<$Res, $Val extends TaskDatabaseState>
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
-  $TaskDatabaseCopyWith<$Res>? get selectedTaskDatabase {
+  $SelectedDatabaseCopyWith<$Res>? get selectedTaskDatabase {
     if (_value.selectedTaskDatabase == null) {
       return null;
     }
 
-    return $TaskDatabaseCopyWith<$Res>(_value.selectedTaskDatabase!, (value) {
+    return $SelectedDatabaseCopyWith<$Res>(_value.selectedTaskDatabase!,
+        (value) {
       return _then(_value.copyWith(selectedTaskDatabase: value) as $Val);
     });
   }
@@ -117,12 +391,12 @@ abstract class _$$TaskDatabaseStateImplCopyWith<$Res>
   $Res call(
       {List<Database> databases,
       TaskDatabase? taskDatabase,
-      TaskDatabase? selectedTaskDatabase});
+      SelectedDatabase? selectedTaskDatabase});
 
   @override
   $TaskDatabaseCopyWith<$Res>? get taskDatabase;
   @override
-  $TaskDatabaseCopyWith<$Res>? get selectedTaskDatabase;
+  $SelectedDatabaseCopyWith<$Res>? get selectedTaskDatabase;
 }
 
 /// @nodoc
@@ -154,7 +428,7 @@ class __$$TaskDatabaseStateImplCopyWithImpl<$Res>
       selectedTaskDatabase: freezed == selectedTaskDatabase
           ? _value.selectedTaskDatabase
           : selectedTaskDatabase // ignore: cast_nullable_to_non_nullable
-              as TaskDatabase?,
+              as SelectedDatabase?,
     ));
   }
 }
@@ -181,7 +455,7 @@ class _$TaskDatabaseStateImpl
   @override
   final TaskDatabase? taskDatabase;
   @override
-  final TaskDatabase? selectedTaskDatabase;
+  final SelectedDatabase? selectedTaskDatabase;
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
@@ -232,7 +506,7 @@ abstract class _TaskDatabaseState implements TaskDatabaseState {
   factory _TaskDatabaseState(
           {required final List<Database> databases,
           required final TaskDatabase? taskDatabase,
-          required final TaskDatabase? selectedTaskDatabase}) =
+          required final SelectedDatabase? selectedTaskDatabase}) =
       _$TaskDatabaseStateImpl;
 
   @override
@@ -240,7 +514,7 @@ abstract class _TaskDatabaseState implements TaskDatabaseState {
   @override
   TaskDatabase? get taskDatabase;
   @override
-  TaskDatabase? get selectedTaskDatabase;
+  SelectedDatabase? get selectedTaskDatabase;
 
   /// Create a copy of TaskDatabaseState
   /// with the given fields replaced by the non-null parameter values.

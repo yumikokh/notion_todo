@@ -11,11 +11,12 @@ _$SelectedTaskDatabaseImpl _$$SelectedTaskDatabaseImplFromJson(
     _$SelectedTaskDatabaseImpl(
       id: json['id'] as String,
       name: json['name'] as String,
-      properties: (json['properties'] as List<dynamic>)
-          .map((e) => Property.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      statusId: json['statusId'] as String?,
-      dateId: json['dateId'] as String?,
+      status: json['status'] == null
+          ? null
+          : Property.fromJson(json['status'] as Map<String, dynamic>),
+      date: json['date'] == null
+          ? null
+          : Property.fromJson(json['date'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$$SelectedTaskDatabaseImplToJson(
@@ -23,7 +24,6 @@ Map<String, dynamic> _$$SelectedTaskDatabaseImplToJson(
     <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
-      'properties': instance.properties,
-      'statusId': instance.statusId,
-      'dateId': instance.dateId,
+      'status': instance.status,
+      'date': instance.date,
     };

@@ -60,22 +60,16 @@ class SettingsView extends ConsumerWidget {
                 child: const Text('Deauthenticate'),
               ),
             if (taskDatabase != null &&
-                taskDatabase.statusId != null &&
-                taskDatabase.dateId != null)
+                taskDatabase.status?.name != null &&
+                taskDatabase.date?.name != null)
               Column(
                 children: [
                   const Text('Task Database'),
                   Text(taskDatabase.name),
                   const Text('Status Property'),
-                  Text(taskDatabase.properties
-                      .where((e) => e.id == taskDatabase.statusId)
-                      .first
-                      .name),
+                  Text(taskDatabase.status?.name ?? 'Not Set'),
                   const Text('Date Property'),
-                  Text(taskDatabase.properties
-                      .where((e) => e.id == taskDatabase.dateId)
-                      .first
-                      .name),
+                  Text(taskDatabase.date?.name ?? 'Not Set'),
                 ],
               ),
             if (isAuthenticated)
