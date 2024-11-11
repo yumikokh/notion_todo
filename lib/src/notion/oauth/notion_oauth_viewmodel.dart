@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../env/env.dart';
-import './notion_oauth_service.dart';
+import '../../env/env.dart';
+import 'notion_oauth_service.dart';
 
 part 'notion_oauth_viewmodel.g.dart';
 

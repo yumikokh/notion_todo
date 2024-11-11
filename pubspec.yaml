@@ -13,12 +13,16 @@ dependencies:
   envied: ^0.5.4+1
   flutter:
     sdk: flutter
+  flutter_hooks: ^0.20.5
   flutter_localizations:
     sdk: flutter
   flutter_riverpod: ^2.6.1
   flutter_secure_storage: ^4.2.1
   flutter_web_auth_2: ^4.0.1
+  freezed_annotation: ^2.4.4
+  hooks_riverpod: ^2.6.1
   http: ^1.2.2
+  json_annotation: ^4.9.0
   riverpod_annotation: ^2.6.1
   shared_preferences: ^2.3.2
 
@@ -32,6 +36,8 @@ dev_dependencies:
   riverpod_generator: ^2.6.2
   custom_lint: ^0.7.0
   riverpod_lint: ^2.6.2
+  freezed: ^2.5.7
+  json_serializable: ^6.8.0
 
 flutter:
   uses-material-design: true

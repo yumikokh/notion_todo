@@ -1,7 +1,7 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import './notion_oauth_repository.dart';
+import '../repository/notion_oauth_repository.dart';
 
 class NotionOAuth {
   final String? accessToken;

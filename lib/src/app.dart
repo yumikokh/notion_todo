@@ -3,6 +3,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'notion/task_database/view/task_database_setting_page.dart';
 import 'sample_feature/sample_item_details_view.dart';
 import 'sample_feature/sample_item_list_view.dart';
 import 'settings/settings_viewmodel.dart';
@@ -74,6 +75,9 @@ class MyApp extends ConsumerWidget {
                   case SampleItemDetailsView.routeName:
                     return const SampleItemDetailsView();
                   case SampleItemListView.routeName:
+                    return const SampleItemListView();
+                  case TaskDatabaseSettingPage.routeName:
+                    return const TaskDatabaseSettingPage();
                   default:
                     return const SampleItemListView();
                 }

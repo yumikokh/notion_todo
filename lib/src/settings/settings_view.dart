@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../notion/task_database/view/task_database_setting_page.dart';
 import 'settings_viewmodel.dart';
-import '../notion/notion_oauth_viewmodel.dart';
+import '../notion/oauth/notion_oauth_viewmodel.dart';
+import '../notion/task_database/task_database_viewmodel.dart';
 
 /// Displays the various settings that can be customized by the user.
 ///
@@ -16,9 +18,12 @@ class SettingsView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ref) {
-    final settings = ref.read(settingsViewModelProvider);
+    final settings = ref.watch(settingsViewModelProvider);
     final notionOAuth = ref.read(notionOAuthViewModelProvider.notifier);
     final isAuthenticated = ref.watch(isAuthenticatedProvider);
+    final taskDatabaseViewModel =
+        ref.watch(taskDatabaseViewModelProvider.notifier);
+    final taskDatabase = ref.watch(taskDatabaseViewModelProvider).taskDatabase;
 
     return Scaffold(
       appBar: AppBar(
@@ -39,6 +44,8 @@ class SettingsView extends ConsumerWidget {
             ElevatedButton(
               onPressed: () async {
                 await notionOAuth.authenticate();
+                print('aaaa');
+                await taskDatabaseViewModel.fetchDatabases();
               },
               child: isAuthenticated
                   ? const Text('Re-authenticate')
@@ -48,12 +55,41 @@ class SettingsView extends ConsumerWidget {
               ElevatedButton(
                 onPressed: () async {
                   await notionOAuth.deauthenticate();
+                  taskDatabaseViewModel.clear();
                 },
                 child: const Text('Deauthenticate'),
               ),
+            if (taskDatabase != null &&
+                taskDatabase.statusId != null &&
+                taskDatabase.dateId != null)
+              Column(
+                children: [
+                  const Text('Task Database'),
+                  Text(taskDatabase.name),
+                  const Text('Status Property'),
+                  Text(taskDatabase.properties
+                      .where((e) => e.id == taskDatabase.statusId)
+                      .first
+                      .name),
+                  const Text('Date Property'),
+                  Text(taskDatabase.properties
+                      .where((e) => e.id == taskDatabase.dateId)
+                      .first
+                      .name),
+                ],
+              ),
+            if (isAuthenticated)
+              ElevatedButton(
+                onPressed: () async {
+                  Navigator.of(context)
+                      .pushNamed(TaskDatabaseSettingPage.routeName);
+                  await taskDatabaseViewModel.fetchDatabases();
+                },
+                child: const Text('Task Database Settings'),
+              ),
             const Text('Theme Mode'),
             DropdownButton<ThemeMode>(
-              // Read the selected themeMode from the controller
+              // Read the task themeMode from the controller
               value: settings.themeMode,
               // Call the updateThemeMode method any time the user selects a theme.
               onChanged: settingsViewModel.updateThemeMode,
