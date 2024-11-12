@@ -82,6 +82,7 @@ class NotionDatabaseRepository {
       }),
     );
     final data = jsonDecode(res.body);
+    print('results: ${data['results']}');
     return data['results'];
   }
 }

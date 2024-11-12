@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:intl/intl.dart';
 
 import '../../../settings/settings_view.dart';
 import '../task_viewmodel.dart';
+
+final dateFormat = DateFormat('yyyy-MM-dd');
 
 class TodayListPage extends HookConsumerWidget {
   const TodayListPage({Key? key}) : super(key: key);
@@ -42,12 +45,16 @@ class TodayListPage extends HookConsumerWidget {
                 final task = tasks[index];
                 return ListTile(
                   title: Text(task.title),
-                  trailing: Checkbox(
+                  leading: Checkbox(
                     value: task.isCompleted,
                     onChanged: (value) {
                       // taskService.updateTask(task.id, isCompleted: value!);
                     },
                   ),
+                  // 曜日を表示
+                  subtitle: Text(task.dueDate == null
+                      ? ''
+                      : dateFormat.format(task.dueDate!)),
                 );
               },
             ),

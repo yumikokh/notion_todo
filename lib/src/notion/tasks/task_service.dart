@@ -15,18 +15,15 @@ class Task with _$Task {
     required String id,
     required String title,
     required bool isCompleted,
-    // required DateTime? dueDate,
+    required DateTime? dueDate,
     // required String createdTime,
     // required String updatedTime,
   }) = _Task;
 
   factory Task.fromJson(Map<String, dynamic> json) => _$TaskFromJson(json);
 
-  factory Task.initial() => const Task(
-        id: '',
-        title: '',
-        isCompleted: false,
-      );
+  factory Task.initial() =>
+      const Task(id: '', title: '', isCompleted: false, dueDate: null);
 }
 
 class TaskService {
@@ -48,10 +45,11 @@ class TaskService {
       return [];
     }
     return results
-        .map<Task>((e) => Task(
-            id: e['id'],
-            title: title(e),
-            isCompleted: isTaskCompleted(e, db.status)))
+        .map<Task>((data) => Task(
+            id: data['id'],
+            title: title(data),
+            isCompleted: isTaskCompleted(data, db.status),
+            dueDate: date(data, db.date.name)))
         .toList();
   }
 
@@ -60,6 +58,13 @@ class TaskService {
         .entries
         .firstWhere((e) => e.value['type'] == 'title')
         .value['title'][0]['plain_text'];
+  }
+
+  DateTime? date(Map<String, dynamic> task, String dateProperty) {
+    return task['properties'][dateProperty]['date'] != null
+        ? DateTime.parse(
+            task['properties'][dateProperty]['date']['start']) // TODO: end
+        : null;
   }
 
   bool isTaskCompleted(Map<String, dynamic> task, TaskStatusProperty status) {
