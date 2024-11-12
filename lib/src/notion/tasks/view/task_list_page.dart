@@ -11,16 +11,18 @@ class TodayListPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, ref) {
-    // final taskService = ref.watch(taskServiceProvider);
-    // final tasks = ref.watch(taskService).fetchTasks();
-    // final tasks = [const Task(id: 'hoge', title: 'title')];
-
     final tasks = ref.watch(taskViewModelProvider);
+    final taskViewModel = ref.watch(taskViewModelProvider.notifier);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Today'),
         actions: [
+          IconButton(
+              icon: const Icon(Icons.refresh),
+              onPressed: () {
+                taskViewModel.fetchTasks();
+              }),
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () {
@@ -41,8 +43,7 @@ class TodayListPage extends HookConsumerWidget {
                 return ListTile(
                   title: Text(task.title),
                   trailing: Checkbox(
-                    value: true,
-                    // value: task.isCompleted,
+                    value: task.isCompleted,
                     onChanged: (value) {
                       // taskService.updateTask(task.id, isCompleted: value!);
                     },

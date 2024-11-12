@@ -13,16 +13,15 @@ class TaskDatabase with _$TaskDatabase {
   const factory TaskDatabase({
     required String id,
     required String name,
-    required Property? status,
-    required Property? date,
+    required TaskStatusProperty status,
+    required TaskDateProperty date,
   }) = _SelectedTaskDatabase;
 
-  factory TaskDatabase.initial() => const TaskDatabase(
-        id: '',
-        name: '',
-        status: null,
-        date: null,
-      );
+  factory TaskDatabase.initial() => TaskDatabase(
+      id: '',
+      name: '',
+      status: TaskStatusProperty.initial(),
+      date: TaskDateProperty.initial());
 
   factory TaskDatabase.fromJson(Map<String, dynamic> json) =>
       _$TaskDatabaseFromJson(json);
@@ -83,7 +82,7 @@ class TaskDatabaseService {
             return Property.date(
               id: id,
               name: name,
-              type: type,
+              type: PropertyType.date,
               date: property['date'].isEmpty
                   ? null
                   : DateTime.parse(property['date']['start']),
@@ -92,7 +91,7 @@ class TaskDatabaseService {
             return Property.checkbox(
               id: id,
               name: name,
-              type: type,
+              type: PropertyType.checkbox,
               checked: property['checkbox'].isEmpty
                   ? false
                   : property['checkbox']['checked'],
@@ -107,7 +106,7 @@ class TaskDatabaseService {
             return Property.status(
               id: id,
               name: name,
-              type: type,
+              type: PropertyType.status,
               status: (
                 options: options,
                 groups: groups,

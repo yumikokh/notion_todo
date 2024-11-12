@@ -15,8 +15,8 @@ class SelectedDatabase with _$SelectedDatabase {
     required String id,
     required String name,
     required List<Property> properties,
-    required Property? status,
-    required Property? date,
+    required TaskStatusProperty? status,
+    required TaskDateProperty? date,
   }) = _SelectedDatabase;
 
   factory SelectedDatabase.initial() => const SelectedDatabase(
@@ -87,23 +87,54 @@ class TaskDatabaseViewModel extends _$TaskDatabaseViewModel {
   }
 
   List<Property> propertyOptions(SettingPropertyType type) {
-    final type0 =
-        type == SettingPropertyType.status ? ['status', 'checkbox'] : ['date'];
+    final types = type == SettingPropertyType.status
+        ? [PropertyType.status, PropertyType.checkbox]
+        : [PropertyType.date];
     return state.selectedTaskDatabase?.properties
-            .where((property) => type0.contains(property.type))
+            .where((property) => types.contains(property.type))
             .toList() ??
         [];
   }
 
-  void selectProperty(Property property, SettingPropertyType type) {
+  void selectProperty(String propertyId, SettingPropertyType type) {
+    final property = state.selectedTaskDatabase?.properties
+        .firstWhere((property) => property.id == propertyId);
+
+    if (property == null) {
+      return;
+    }
+
     if (type == SettingPropertyType.status) {
-      state = state.copyWith(
-          selectedTaskDatabase:
-              state.selectedTaskDatabase?.copyWith(status: property));
+      if (property.type == PropertyType.status) {
+        state = state.copyWith(
+          selectedTaskDatabase: state.selectedTaskDatabase?.copyWith(
+              status: TaskStatusProperty.status(
+                  id: property.id,
+                  name: property.name,
+                  type: property.type,
+                  status: (property as StatusProperty).status)),
+        );
+      }
+      if (property.type == PropertyType.checkbox) {
+        state = state.copyWith(
+          selectedTaskDatabase: state.selectedTaskDatabase?.copyWith(
+              status: TaskStatusProperty.checkbox(
+            id: property.id,
+            name: property.name,
+            type: property.type,
+            checked: (property as CheckboxProperty).checked,
+          )),
+        );
+      }
     } else {
       state = state.copyWith(
-        selectedTaskDatabase:
-            state.selectedTaskDatabase?.copyWith(date: property),
+        selectedTaskDatabase: state.selectedTaskDatabase?.copyWith(
+            date: TaskDateProperty(
+          id: property.id,
+          name: property.name,
+          type: property.type,
+          date: (property as DateProperty).date,
+        )),
       );
     }
   }
@@ -115,8 +146,8 @@ class TaskDatabaseViewModel extends _$TaskDatabaseViewModel {
     final taskDatabase = TaskDatabase(
       id: state.selectedTaskDatabase!.id,
       name: state.selectedTaskDatabase!.name,
-      status: state.selectedTaskDatabase!.status,
-      date: state.selectedTaskDatabase!.date,
+      status: state.selectedTaskDatabase!.status!,
+      date: state.selectedTaskDatabase!.date!,
     );
     _taskDatabaseService!.save(taskDatabase);
     state =

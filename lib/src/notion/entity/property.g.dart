@@ -10,7 +10,7 @@ _$DatePropertyImpl _$$DatePropertyImplFromJson(Map<String, dynamic> json) =>
     _$DatePropertyImpl(
       id: json['id'] as String,
       name: json['name'] as String,
-      type: json['type'] as String,
+      type: $enumDecode(_$PropertyTypeEnumMap, json['type']),
       date:
           json['date'] == null ? null : DateTime.parse(json['date'] as String),
       $type: json['runtimeType'] as String?,
@@ -20,17 +20,23 @@ Map<String, dynamic> _$$DatePropertyImplToJson(_$DatePropertyImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
-      'type': instance.type,
+      'type': _$PropertyTypeEnumMap[instance.type]!,
       'date': instance.date?.toIso8601String(),
       'runtimeType': instance.$type,
     };
+
+const _$PropertyTypeEnumMap = {
+  PropertyType.date: 'date',
+  PropertyType.checkbox: 'checkbox',
+  PropertyType.status: 'status',
+};
 
 _$CheckboxPropertyImpl _$$CheckboxPropertyImplFromJson(
         Map<String, dynamic> json) =>
     _$CheckboxPropertyImpl(
       id: json['id'] as String,
       name: json['name'] as String,
-      type: json['type'] as String,
+      type: $enumDecode(_$PropertyTypeEnumMap, json['type']),
       checked: json['checked'] as bool,
       $type: json['runtimeType'] as String?,
     );
@@ -40,7 +46,7 @@ Map<String, dynamic> _$$CheckboxPropertyImplToJson(
     <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
-      'type': instance.type,
+      'type': _$PropertyTypeEnumMap[instance.type]!,
       'checked': instance.checked,
       'runtimeType': instance.$type,
     };
@@ -49,7 +55,7 @@ _$StatusPropertyImpl _$$StatusPropertyImplFromJson(Map<String, dynamic> json) =>
     _$StatusPropertyImpl(
       id: json['id'] as String,
       name: json['name'] as String,
-      type: json['type'] as String,
+      type: $enumDecode(_$PropertyTypeEnumMap, json['type']),
       status: _$recordConvert(
         json['status'],
         ($jsonValue) => (
@@ -69,7 +75,7 @@ Map<String, dynamic> _$$StatusPropertyImplToJson(
     <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
-      'type': instance.type,
+      'type': _$PropertyTypeEnumMap[instance.type]!,
       'status': <String, dynamic>{
         'groups': instance.status.groups,
         'options': instance.status.options,
@@ -82,6 +88,78 @@ $Rec _$recordConvert<$Rec>(
   $Rec Function(Map) convert,
 ) =>
     convert(value as Map<String, dynamic>);
+
+_$TaskDatePropertyImpl _$$TaskDatePropertyImplFromJson(
+        Map<String, dynamic> json) =>
+    _$TaskDatePropertyImpl(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      type: $enumDecode(_$PropertyTypeEnumMap, json['type']),
+      date:
+          json['date'] == null ? null : DateTime.parse(json['date'] as String),
+    );
+
+Map<String, dynamic> _$$TaskDatePropertyImplToJson(
+        _$TaskDatePropertyImpl instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+      'type': _$PropertyTypeEnumMap[instance.type]!,
+      'date': instance.date?.toIso8601String(),
+    };
+
+_$CheckboxTaskStatusPropertyImpl _$$CheckboxTaskStatusPropertyImplFromJson(
+        Map<String, dynamic> json) =>
+    _$CheckboxTaskStatusPropertyImpl(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      type: $enumDecode(_$PropertyTypeEnumMap, json['type']),
+      checked: json['checked'] as bool,
+      $type: json['runtimeType'] as String?,
+    );
+
+Map<String, dynamic> _$$CheckboxTaskStatusPropertyImplToJson(
+        _$CheckboxTaskStatusPropertyImpl instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+      'type': _$PropertyTypeEnumMap[instance.type]!,
+      'checked': instance.checked,
+      'runtimeType': instance.$type,
+    };
+
+_$StatusTaskStatusPropertyImpl _$$StatusTaskStatusPropertyImplFromJson(
+        Map<String, dynamic> json) =>
+    _$StatusTaskStatusPropertyImpl(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      type: $enumDecode(_$PropertyTypeEnumMap, json['type']),
+      status: _$recordConvert(
+        json['status'],
+        ($jsonValue) => (
+          groups: ($jsonValue['groups'] as List<dynamic>)
+              .map((e) => StatusGroup.fromJson(e as Map<String, dynamic>))
+              .toList(),
+          options: ($jsonValue['options'] as List<dynamic>)
+              .map((e) => StatusOption.fromJson(e as Map<String, dynamic>))
+              .toList(),
+        ),
+      ),
+      $type: json['runtimeType'] as String?,
+    );
+
+Map<String, dynamic> _$$StatusTaskStatusPropertyImplToJson(
+        _$StatusTaskStatusPropertyImpl instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+      'type': _$PropertyTypeEnumMap[instance.type]!,
+      'status': <String, dynamic>{
+        'groups': instance.status.groups,
+        'options': instance.status.options,
+      },
+      'runtimeType': instance.$type,
+    };
 
 _$StatusOptionImpl _$$StatusOptionImplFromJson(Map<String, dynamic> json) =>
     _$StatusOptionImpl(

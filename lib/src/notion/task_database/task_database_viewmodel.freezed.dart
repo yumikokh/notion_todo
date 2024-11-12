@@ -19,8 +19,8 @@ mixin _$SelectedDatabase {
   String get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   List<Property> get properties => throw _privateConstructorUsedError;
-  Property? get status => throw _privateConstructorUsedError;
-  Property? get date => throw _privateConstructorUsedError;
+  TaskStatusProperty? get status => throw _privateConstructorUsedError;
+  TaskDateProperty? get date => throw _privateConstructorUsedError;
 
   /// Create a copy of SelectedDatabase
   /// with the given fields replaced by the non-null parameter values.
@@ -39,11 +39,11 @@ abstract class $SelectedDatabaseCopyWith<$Res> {
       {String id,
       String name,
       List<Property> properties,
-      Property? status,
-      Property? date});
+      TaskStatusProperty? status,
+      TaskDateProperty? date});
 
-  $PropertyCopyWith<$Res>? get status;
-  $PropertyCopyWith<$Res>? get date;
+  $TaskStatusPropertyCopyWith<$Res>? get status;
+  $TaskDatePropertyCopyWith<$Res>? get date;
 }
 
 /// @nodoc
@@ -83,11 +83,11 @@ class _$SelectedDatabaseCopyWithImpl<$Res, $Val extends SelectedDatabase>
       status: freezed == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
-              as Property?,
+              as TaskStatusProperty?,
       date: freezed == date
           ? _value.date
           : date // ignore: cast_nullable_to_non_nullable
-              as Property?,
+              as TaskDateProperty?,
     ) as $Val);
   }
 
@@ -95,12 +95,12 @@ class _$SelectedDatabaseCopyWithImpl<$Res, $Val extends SelectedDatabase>
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
-  $PropertyCopyWith<$Res>? get status {
+  $TaskStatusPropertyCopyWith<$Res>? get status {
     if (_value.status == null) {
       return null;
     }
 
-    return $PropertyCopyWith<$Res>(_value.status!, (value) {
+    return $TaskStatusPropertyCopyWith<$Res>(_value.status!, (value) {
       return _then(_value.copyWith(status: value) as $Val);
     });
   }
@@ -109,12 +109,12 @@ class _$SelectedDatabaseCopyWithImpl<$Res, $Val extends SelectedDatabase>
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
-  $PropertyCopyWith<$Res>? get date {
+  $TaskDatePropertyCopyWith<$Res>? get date {
     if (_value.date == null) {
       return null;
     }
 
-    return $PropertyCopyWith<$Res>(_value.date!, (value) {
+    return $TaskDatePropertyCopyWith<$Res>(_value.date!, (value) {
       return _then(_value.copyWith(date: value) as $Val);
     });
   }
@@ -132,13 +132,13 @@ abstract class _$$SelectedDatabaseImplCopyWith<$Res>
       {String id,
       String name,
       List<Property> properties,
-      Property? status,
-      Property? date});
+      TaskStatusProperty? status,
+      TaskDateProperty? date});
 
   @override
-  $PropertyCopyWith<$Res>? get status;
+  $TaskStatusPropertyCopyWith<$Res>? get status;
   @override
-  $PropertyCopyWith<$Res>? get date;
+  $TaskDatePropertyCopyWith<$Res>? get date;
 }
 
 /// @nodoc
@@ -176,11 +176,11 @@ class __$$SelectedDatabaseImplCopyWithImpl<$Res>
       status: freezed == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
-              as Property?,
+              as TaskStatusProperty?,
       date: freezed == date
           ? _value.date
           : date // ignore: cast_nullable_to_non_nullable
-              as Property?,
+              as TaskDateProperty?,
     ));
   }
 }
@@ -211,9 +211,9 @@ class _$SelectedDatabaseImpl
   }
 
   @override
-  final Property? status;
+  final TaskStatusProperty? status;
   @override
-  final Property? date;
+  final TaskDateProperty? date;
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
@@ -264,8 +264,8 @@ abstract class _SelectedDatabase implements SelectedDatabase {
       {required final String id,
       required final String name,
       required final List<Property> properties,
-      required final Property? status,
-      required final Property? date}) = _$SelectedDatabaseImpl;
+      required final TaskStatusProperty? status,
+      required final TaskDateProperty? date}) = _$SelectedDatabaseImpl;
 
   @override
   String get id;
@@ -274,9 +274,9 @@ abstract class _SelectedDatabase implements SelectedDatabase {
   @override
   List<Property> get properties;
   @override
-  Property? get status;
+  TaskStatusProperty? get status;
   @override
-  Property? get date;
+  TaskDateProperty? get date;
 
   /// Create a copy of SelectedDatabase
   /// with the given fields replaced by the non-null parameter values.

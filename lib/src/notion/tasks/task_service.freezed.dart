@@ -22,6 +22,7 @@ Task _$TaskFromJson(Map<String, dynamic> json) {
 mixin _$Task {
   String get id => throw _privateConstructorUsedError;
   String get title => throw _privateConstructorUsedError;
+  bool get isCompleted => throw _privateConstructorUsedError;
 
   /// Serializes this Task to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -37,7 +38,7 @@ abstract class $TaskCopyWith<$Res> {
   factory $TaskCopyWith(Task value, $Res Function(Task) then) =
       _$TaskCopyWithImpl<$Res, Task>;
   @useResult
-  $Res call({String id, String title});
+  $Res call({String id, String title, bool isCompleted});
 }
 
 /// @nodoc
@@ -57,6 +58,7 @@ class _$TaskCopyWithImpl<$Res, $Val extends Task>
   $Res call({
     Object? id = null,
     Object? title = null,
+    Object? isCompleted = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -67,6 +69,10 @@ class _$TaskCopyWithImpl<$Res, $Val extends Task>
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
               as String,
+      isCompleted: null == isCompleted
+          ? _value.isCompleted
+          : isCompleted // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -78,7 +84,7 @@ abstract class _$$TaskImplCopyWith<$Res> implements $TaskCopyWith<$Res> {
       __$$TaskImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String id, String title});
+  $Res call({String id, String title, bool isCompleted});
 }
 
 /// @nodoc
@@ -95,6 +101,7 @@ class __$$TaskImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? title = null,
+    Object? isCompleted = null,
   }) {
     return _then(_$TaskImpl(
       id: null == id
@@ -105,6 +112,10 @@ class __$$TaskImplCopyWithImpl<$Res>
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
               as String,
+      isCompleted: null == isCompleted
+          ? _value.isCompleted
+          : isCompleted // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -112,7 +123,8 @@ class __$$TaskImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$TaskImpl implements _Task {
-  const _$TaskImpl({required this.id, required this.title});
+  const _$TaskImpl(
+      {required this.id, required this.title, required this.isCompleted});
 
   factory _$TaskImpl.fromJson(Map<String, dynamic> json) =>
       _$$TaskImplFromJson(json);
@@ -121,10 +133,12 @@ class _$TaskImpl implements _Task {
   final String id;
   @override
   final String title;
+  @override
+  final bool isCompleted;
 
   @override
   String toString() {
-    return 'Task(id: $id, title: $title)';
+    return 'Task(id: $id, title: $title, isCompleted: $isCompleted)';
   }
 
   @override
@@ -133,12 +147,14 @@ class _$TaskImpl implements _Task {
         (other.runtimeType == runtimeType &&
             other is _$TaskImpl &&
             (identical(other.id, id) || other.id == id) &&
-            (identical(other.title, title) || other.title == title));
+            (identical(other.title, title) || other.title == title) &&
+            (identical(other.isCompleted, isCompleted) ||
+                other.isCompleted == isCompleted));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, title);
+  int get hashCode => Object.hash(runtimeType, id, title, isCompleted);
 
   /// Create a copy of Task
   /// with the given fields replaced by the non-null parameter values.
@@ -157,8 +173,10 @@ class _$TaskImpl implements _Task {
 }
 
 abstract class _Task implements Task {
-  const factory _Task({required final String id, required final String title}) =
-      _$TaskImpl;
+  const factory _Task(
+      {required final String id,
+      required final String title,
+      required final bool isCompleted}) = _$TaskImpl;
 
   factory _Task.fromJson(Map<String, dynamic> json) = _$TaskImpl.fromJson;
 
@@ -166,6 +184,8 @@ abstract class _Task implements Task {
   String get id;
   @override
   String get title;
+  @override
+  bool get isCompleted;
 
   /// Create a copy of Task
   /// with the given fields replaced by the non-null parameter values.

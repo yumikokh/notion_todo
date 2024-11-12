@@ -45,7 +45,7 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                   const Text('Status Property'),
                   // プルダウンでステータスプロパティ選択
                   DropdownButton<String>(
-                    value: state.selectedTaskDatabase?.statusId,
+                    value: state.selectedTaskDatabase?.status?.id,
                     onChanged: (String? newValue) {
                       // ステータスプロパティ選択時の処理
                       if (newValue != null) {
@@ -64,7 +64,7 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                   const Text('Date Property'),
                   // プルダウンで日付プロパティ選択
                   DropdownButton<String>(
-                    value: state.selectedTaskDatabase?.dateId,
+                    value: state.selectedTaskDatabase?.date?.id,
                     onChanged: (String? newValue) {
                       // 日付プロパティ選択時の処理
                       if (newValue != null) {

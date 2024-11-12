@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:notion_todo/src/notion/entity/property.dart';
 
 // - [x] list databases
 // - [x] list database pages
@@ -31,7 +32,7 @@ class NotionDatabaseRepository {
   }
 
   Future fetchDatabasePages(String databaseId, FilterType type,
-      String dateProperty, String statusProperty) async {
+      TaskDateProperty dateProperty, TaskStatusProperty statusProperty) async {
     final headers = {
       'Content-Type': 'application/json',
       'Notion-Version': '2022-06-28',
@@ -39,14 +40,31 @@ class NotionDatabaseRepository {
     };
     final filter = type == FilterType.today
         ? {
-            "property": dateProperty,
-            "date": {
-              "equals": DateTime.now().toIso8601String().substring(0, 10),
-            }
+            "and": [
+              {
+                "property": dateProperty.name,
+                "date": {
+                  // 今日 '2024-11-11'の形式
+                  "equals": DateTime.now().toIso8601String().split('T')[0]
+                }
+              },
+              // ...statusProperty.status.groups
+              //     .firstWhere(
+              //       (e) => e.name == 'Complete',
+              //     )
+              //     .option_ids
+              //     .map((e) => statusProperty.status.options.firstWhere(
+              //           (e2) => e2.id == e,
+              //         ))
+              //     .map((e) => {
+              //           "property": statusProperty.name,
+              //           "select": {"equals": e.name}
+              //         })
+            ]
           }
         : type == FilterType.done
             ? {
-                "property": statusProperty,
+                "property": statusProperty.name,
                 "select": {
                   "equals": "Done" // TODO
                 }
@@ -57,10 +75,10 @@ class NotionDatabaseRepository {
       headers: headers,
       body: jsonEncode({
         "filter": filter,
-        // "sorts": [
-        //   {"property": dateProperty, "direction": "ascending"},
-        //   {"timestamp": "last_edited_time", "direction": "descending"}
-        // ]
+        "sorts": [
+          {"property": dateProperty.name, "direction": "ascending"},
+          {"timestamp": "last_edited_time", "direction": "descending"}
+        ]
       }),
     );
     final data = jsonDecode(res.body);

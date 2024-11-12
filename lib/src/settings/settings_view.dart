@@ -44,7 +44,6 @@ class SettingsView extends ConsumerWidget {
             ElevatedButton(
               onPressed: () async {
                 await notionOAuth.authenticate();
-                print('aaaa');
                 await taskDatabaseViewModel.fetchDatabases();
               },
               child: isAuthenticated
@@ -59,17 +58,15 @@ class SettingsView extends ConsumerWidget {
                 },
                 child: const Text('Deauthenticate'),
               ),
-            if (taskDatabase != null &&
-                taskDatabase.status?.name != null &&
-                taskDatabase.date?.name != null)
+            if (taskDatabase != null)
               Column(
                 children: [
                   const Text('Task Database'),
                   Text(taskDatabase.name),
                   const Text('Status Property'),
-                  Text(taskDatabase.status?.name ?? 'Not Set'),
+                  Text(taskDatabase.status.name),
                   const Text('Date Property'),
-                  Text(taskDatabase.date?.name ?? 'Not Set'),
+                  Text(taskDatabase.date.name),
                 ],
               ),
             if (isAuthenticated)
