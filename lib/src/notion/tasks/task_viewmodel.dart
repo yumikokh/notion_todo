@@ -37,7 +37,6 @@ class TaskViewModel extends _$TaskViewModel {
     final tasks =
         await _taskService!.fetchTasks(taskDatabase, FilterType.today);
 
-    print('tasks: $tasks');
     state = tasks;
   }
 

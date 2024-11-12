@@ -40,7 +40,7 @@ class TaskService {
     FilterType type,
   ) async {
     final results = await _notionDatabaseRepository.fetchDatabasePages(
-        db.id, type, db.date, db.status);
+        type, db.id, db.date, db.status);
     if (results == null) {
       return [];
     }
