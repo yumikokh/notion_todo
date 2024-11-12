@@ -1,28 +1,32 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:notion_todo/src/notion/entity/property.dart';
+
+import '../model/property.dart';
 
 // - [x] list databases
 // - [x] list database pages
 // - [] create a database page
-// - [] update a database page
+// - [x] update a database page
 // - [] delete a database page
 
 enum FilterType { today, done, all }
 
 class NotionDatabaseRepository {
   final String _accessToken;
+  // ignore: prefer_typing_uninitialized_variables
+  late final _headers;
 
-  NotionDatabaseRepository(this._accessToken);
-
-  Future fetchAccessibleDatabases() async {
-    final headers = {
+  NotionDatabaseRepository(this._accessToken) {
+    _headers = {
       'Content-Type': 'application/json',
       'Notion-Version': '2022-06-28',
-      'Authorization': 'Bearer $_accessToken',
+      'Authorization': 'Bearer $_accessToken'
     };
+  }
+
+  Future fetchAccessibleDatabases() async {
     final res = await http.post(Uri.parse('https://api.notion.com/v1/search'),
-        headers: headers,
+        headers: _headers,
         body: jsonEncode({
           "query": "",
           "filter": {"value": "database", "property": "object"}
@@ -33,12 +37,6 @@ class NotionDatabaseRepository {
 
   Future fetchDatabasePages(FilterType type, String databaseId,
       TaskDateProperty dateProperty, TaskStatusProperty statusProperty) async {
-    final headers = {
-      'Content-Type': 'application/json',
-      'Notion-Version': '2022-06-28',
-      'Authorization': 'Bearer $_accessToken',
-    };
-    // print(getStatusFilter(statusProperty as StatusTaskStatusProperty));
     final filter = type == FilterType.today
         ? {
             "and": [
@@ -69,7 +67,7 @@ class NotionDatabaseRepository {
             : {};
     final res = await http.post(
       Uri.parse('https://api.notion.com/v1/databases/$databaseId/query'),
-      headers: headers,
+      headers: _headers,
       body: jsonEncode({
         "filter": filter,
         "sorts": [
@@ -80,6 +78,39 @@ class NotionDatabaseRepository {
     );
     final data = jsonDecode(res.body);
     return data['results'];
+  }
+
+  Future updateStatus(
+      String taskId, TaskStatusProperty status, bool isCompleted) async {
+    final res = await http.patch(
+      Uri.parse('https://api.notion.com/v1/pages/$taskId'),
+      headers: _headers,
+      body: jsonEncode({
+        "properties": status.type == PropertyType.status
+            ? {
+                status.name: {
+                  "status": {
+                    "name": (status as StatusTaskStatusProperty)
+                        .status
+                        .options
+                        .firstWhere((option) =>
+                            option.id ==
+                            status.status.groups
+                                .firstWhere((e) =>
+                                    e.name ==
+                                    (isCompleted ? 'Complete' : 'To-do'))
+                                .option_ids
+                                .first)
+                        .name
+                  }
+                }
+              }
+            : {
+                status.name: {"checkbox": isCompleted}
+              }
+      }),
+    );
+    return jsonDecode(res.body);
   }
 }
 

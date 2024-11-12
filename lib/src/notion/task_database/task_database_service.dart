@@ -1,31 +1,10 @@
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
+
 import 'dart:convert';
 
-import '../entity/index.dart';
+import '../model/index.dart';
+import '../model/task_database.dart';
 import '../repository/notion_database_repository.dart';
-
-part 'task_database_service.freezed.dart';
-part 'task_database_service.g.dart';
-
-@freezed
-class TaskDatabase with _$TaskDatabase {
-  const factory TaskDatabase({
-    required String id,
-    required String name,
-    required TaskStatusProperty status,
-    required TaskDateProperty date,
-  }) = _SelectedTaskDatabase;
-
-  factory TaskDatabase.initial() => TaskDatabase(
-      id: '',
-      name: '',
-      status: TaskStatusProperty.initial(),
-      date: TaskDateProperty.initial());
-
-  factory TaskDatabase.fromJson(Map<String, dynamic> json) =>
-      _$TaskDatabaseFromJson(json);
-}
 
 class TaskDatabaseService {
   static const _taskDatabaseKey = 'taskDatabase';

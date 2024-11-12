@@ -2,8 +2,9 @@ import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../model/task_database.dart';
 import '../oauth/notion_oauth_viewmodel.dart';
-import '../entity/index.dart';
+import '../model/index.dart';
 import './task_database_service.dart';
 
 part 'task_database_viewmodel.freezed.dart';

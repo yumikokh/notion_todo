@@ -1,30 +1,9 @@
 import 'dart:async';
 
-import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:notion_todo/src/notion/task_database/task_database_service.dart';
-
-import '../entity/property.dart';
+import '../model/property.dart';
+import '../model/task.dart';
+import '../model/task_database.dart';
 import '../repository/notion_database_repository.dart';
-
-part 'task_service.freezed.dart';
-part 'task_service.g.dart';
-
-@freezed
-class Task with _$Task {
-  const factory Task({
-    required String id,
-    required String title,
-    required bool isCompleted,
-    required DateTime? dueDate,
-    // required String createdTime,
-    // required String updatedTime,
-  }) = _Task;
-
-  factory Task.fromJson(Map<String, dynamic> json) => _$TaskFromJson(json);
-
-  factory Task.initial() =>
-      const Task(id: '', title: '', isCompleted: false, dueDate: null);
-}
 
 class TaskService {
   final String _accessToken;
@@ -51,6 +30,21 @@ class TaskService {
             isCompleted: isTaskCompleted(data, db.status),
             dueDate: date(data, db.date.name)))
         .toList();
+  }
+
+  Future<Task> updateStatus(
+      String taskId, TaskStatusProperty status, bool isCompleted) async {
+    final data = await _notionDatabaseRepository.updateStatus(
+        taskId, status, isCompleted);
+    if (data == null) {
+      return Task.initial();
+    }
+    return Task(
+      id: data['id'],
+      title: title(data),
+      isCompleted: isTaskCompleted(data, status),
+      dueDate: date(data, status.name),
+    );
   }
 
   String title(Map<String, dynamic> task) {

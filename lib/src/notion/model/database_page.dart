@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import './property.dart';
+import 'property.dart';
 
 part 'database_page.freezed.dart';
 

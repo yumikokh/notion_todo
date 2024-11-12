@@ -1,6 +1,7 @@
 import 'package:notion_todo/src/notion/task_database/task_database_viewmodel.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../model/task.dart';
 import '../oauth/notion_oauth_viewmodel.dart';
 import '../repository/notion_database_repository.dart';
 import 'task_service.dart';
@@ -53,16 +54,15 @@ class TaskViewModel extends _$TaskViewModel {
   //   );
   // }
 
-  // void updateTask(Task task) {
-  //   state = state.copyWith(
-  //     tasks: state.tasks.map((t) {
-  //       if (t.id == task.id) {
-  //         return task;
-  //       }
-  //       return t;
-  //     }).toList(),
-  //   );
-  // }
+  Future updateStatus(String taskId, bool isCompleted) async {
+    final taskDatabase = ref.watch(taskDatabaseViewModelProvider).taskDatabase;
+    if (taskDatabase == null) {
+      return;
+    }
+    final status = taskDatabase.status;
+    await _taskService!.updateStatus(taskId, status, isCompleted);
+    await fetchTasks();
+  }
 
   // void addTask(Task task) {
   //   state = state.copyWith(tasks: [...state.tasks, task]);
