@@ -90,18 +90,15 @@ class NotionDatabaseRepository {
             ? {
                 status.name: {
                   "status": {
-                    "name": (status as StatusTaskStatusProperty)
-                        .status
-                        .options
-                        .firstWhere((option) =>
-                            option.id ==
-                            status.status.groups
-                                .firstWhere((e) =>
-                                    e.name ==
-                                    (isCompleted ? 'Complete' : 'To-do'))
-                                .option_ids
-                                .first)
-                        .name
+                    "name": isCompleted
+                        ? (status as StatusTaskStatusProperty)
+                                .completeOption
+                                ?.name ??
+                            'Done'
+                        : (status as StatusTaskStatusProperty)
+                                .todoOption
+                                ?.name ??
+                            'To-do'
                   }
                 }
               }

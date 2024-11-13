@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import '../../model/property.dart';
 import '../task_database_viewmodel.dart';
 
 class TaskDatabaseSettingPage extends HookConsumerWidget {
@@ -61,6 +62,78 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                             ))
                         .toList(),
                   ),
+                  // StatusTaskStatusPropertyの場合のみTo-do/Complete Optionを選択
+                  if (state.selectedTaskDatabase?.status?.type ==
+                      PropertyType.status)
+                    Column(
+                      children: [
+                        const Text('To-do Option'),
+                        // プルダウンでTo-doオプション選択
+                        DropdownButton<String>(
+                          // value: '',
+                          value: (state.selectedTaskDatabase?.status
+                                  as StatusTaskStatusProperty)
+                              .todoOption
+                              ?.id,
+                          onChanged: (String? newValue) {
+                            // To-doオプション選択時の処理
+                            if (newValue != null) {
+                              taskDatabaseViewModel.selectOption(
+                                  newValue, 'To-do');
+                            }
+                          },
+                          items: (state.selectedTaskDatabase?.status
+                                  as StatusTaskStatusProperty)
+                              .status
+                              .groups
+                              .firstWhere((group) => group.name == 'To-do')
+                              .option_ids
+                              .map((String id) => DropdownMenuItem<String>(
+                                    value: id,
+                                    child: Text((state
+                                                .selectedTaskDatabase?.status
+                                            as StatusTaskStatusProperty)
+                                        .status
+                                        .options
+                                        .firstWhere((option) => option.id == id)
+                                        .name),
+                                  ))
+                              .toList(),
+                        ),
+                        const Text('Complete Option'),
+                        // プルダウンでCompleteオプション選択
+                        DropdownButton<String>(
+                            value: (state.selectedTaskDatabase?.status
+                                    as StatusTaskStatusProperty)
+                                .completeOption
+                                ?.id,
+                            onChanged: (String? newValue) {
+                              // Completeオプション選択時の処理
+                              if (newValue != null) {
+                                taskDatabaseViewModel.selectOption(
+                                    newValue, 'Complete');
+                              }
+                            },
+                            items: (state.selectedTaskDatabase?.status
+                                    as StatusTaskStatusProperty)
+                                .status
+                                .groups
+                                .firstWhere((group) => group.name == 'Complete')
+                                .option_ids
+                                .map((String id) => DropdownMenuItem<String>(
+                                      value: id,
+                                      child: Text(
+                                          (state.selectedTaskDatabase?.status
+                                                  as StatusTaskStatusProperty)
+                                              .status
+                                              .options
+                                              .firstWhere(
+                                                  (option) => option.id == id)
+                                              .name),
+                                    ))
+                                .toList()),
+                      ],
+                    ),
                   const Text('Date Property'),
                   // プルダウンで日付プロパティ選択
                   DropdownButton<String>(

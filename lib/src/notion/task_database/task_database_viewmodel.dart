@@ -109,11 +109,14 @@ class TaskDatabaseViewModel extends _$TaskDatabaseViewModel {
       if (property.type == PropertyType.status) {
         state = state.copyWith(
           selectedTaskDatabase: state.selectedTaskDatabase?.copyWith(
-              status: TaskStatusProperty.status(
-                  id: property.id,
-                  name: property.name,
-                  type: property.type,
-                  status: (property as StatusProperty).status)),
+            status: TaskStatusProperty.status(
+                id: property.id,
+                name: property.name,
+                type: property.type,
+                status: (property as StatusProperty).status,
+                todoOption: null,
+                completeOption: null),
+          ),
         );
       }
       if (property.type == PropertyType.checkbox) {
@@ -136,6 +139,35 @@ class TaskDatabaseViewModel extends _$TaskDatabaseViewModel {
           type: property.type,
           date: (property as DateProperty).date,
         )),
+      );
+    }
+  }
+
+  // optionType: 'To-do' or 'Complete'
+  void selectOption(String optionId, String optionType) {
+    if (state.selectedTaskDatabase == null ||
+        state.selectedTaskDatabase?.status == null ||
+        (optionType != 'To-do' && optionType != 'Complete')) {
+      return;
+    }
+    final status =
+        state.selectedTaskDatabase!.status as StatusTaskStatusProperty;
+    final option =
+        status.status.options.firstWhere((option) => option.id == optionId);
+
+    if (optionType == 'To-do') {
+      state = state.copyWith(
+        selectedTaskDatabase: state.selectedTaskDatabase!.copyWith(
+          status: status.copyWith(todoOption: option),
+        ),
+      );
+    } else {
+      state = state.copyWith(
+        selectedTaskDatabase: state.selectedTaskDatabase?.copyWith(
+          status: status.copyWith(
+            completeOption: option,
+          ),
+        ),
       );
     }
   }

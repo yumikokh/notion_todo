@@ -67,6 +67,13 @@ _$StatusPropertyImpl _$$StatusPropertyImplFromJson(Map<String, dynamic> json) =>
               .toList(),
         ),
       ),
+      todoOption: json['todoOption'] == null
+          ? null
+          : StatusOption.fromJson(json['todoOption'] as Map<String, dynamic>),
+      completeOption: json['completeOption'] == null
+          ? null
+          : StatusOption.fromJson(
+              json['completeOption'] as Map<String, dynamic>),
       $type: json['runtimeType'] as String?,
     );
 
@@ -80,6 +87,8 @@ Map<String, dynamic> _$$StatusPropertyImplToJson(
         'groups': instance.status.groups,
         'options': instance.status.options,
       },
+      'todoOption': instance.todoOption,
+      'completeOption': instance.completeOption,
       'runtimeType': instance.$type,
     };
 
@@ -145,6 +154,13 @@ _$StatusTaskStatusPropertyImpl _$$StatusTaskStatusPropertyImplFromJson(
               .toList(),
         ),
       ),
+      todoOption: json['todoOption'] == null
+          ? null
+          : StatusOption.fromJson(json['todoOption'] as Map<String, dynamic>),
+      completeOption: json['completeOption'] == null
+          ? null
+          : StatusOption.fromJson(
+              json['completeOption'] as Map<String, dynamic>),
       $type: json['runtimeType'] as String?,
     );
 
@@ -158,6 +174,8 @@ Map<String, dynamic> _$$StatusTaskStatusPropertyImplToJson(
         'groups': instance.status.groups,
         'options': instance.status.options,
       },
+      'todoOption': instance.todoOption,
+      'completeOption': instance.completeOption,
       'runtimeType': instance.$type,
     };
 

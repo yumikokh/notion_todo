@@ -42,8 +42,13 @@ mixin _$Property {
     required TResult Function(
             String id, String name, PropertyType type, bool checked)
         checkbox,
-    required TResult Function(String id, String name, PropertyType type,
-            ({List<StatusGroup> groups, List<StatusOption> options}) status)
+    required TResult Function(
+            String id,
+            String name,
+            PropertyType type,
+            ({List<StatusGroup> groups, List<StatusOption> options}) status,
+            StatusOption? todoOption,
+            StatusOption? completeOption)
         status,
   }) =>
       throw _privateConstructorUsedError;
@@ -54,8 +59,13 @@ mixin _$Property {
         date,
     TResult? Function(String id, String name, PropertyType type, bool checked)?
         checkbox,
-    TResult? Function(String id, String name, PropertyType type,
-            ({List<StatusGroup> groups, List<StatusOption> options}) status)?
+    TResult? Function(
+            String id,
+            String name,
+            PropertyType type,
+            ({List<StatusGroup> groups, List<StatusOption> options}) status,
+            StatusOption? todoOption,
+            StatusOption? completeOption)?
         status,
   }) =>
       throw _privateConstructorUsedError;
@@ -65,8 +75,13 @@ mixin _$Property {
         date,
     TResult Function(String id, String name, PropertyType type, bool checked)?
         checkbox,
-    TResult Function(String id, String name, PropertyType type,
-            ({List<StatusGroup> groups, List<StatusOption> options}) status)?
+    TResult Function(
+            String id,
+            String name,
+            PropertyType type,
+            ({List<StatusGroup> groups, List<StatusOption> options}) status,
+            StatusOption? todoOption,
+            StatusOption? completeOption)?
         status,
     required TResult orElse(),
   }) =>
@@ -218,7 +233,7 @@ class _$DatePropertyImpl implements DateProperty {
   final String name;
   @override
   final PropertyType type;
-// 省略したい
+// 省略したい: date固定
   @override
   final DateTime? date;
 
@@ -262,8 +277,13 @@ class _$DatePropertyImpl implements DateProperty {
     required TResult Function(
             String id, String name, PropertyType type, bool checked)
         checkbox,
-    required TResult Function(String id, String name, PropertyType type,
-            ({List<StatusGroup> groups, List<StatusOption> options}) status)
+    required TResult Function(
+            String id,
+            String name,
+            PropertyType type,
+            ({List<StatusGroup> groups, List<StatusOption> options}) status,
+            StatusOption? todoOption,
+            StatusOption? completeOption)
         status,
   }) {
     return date(id, name, type, this.date);
@@ -277,8 +297,13 @@ class _$DatePropertyImpl implements DateProperty {
         date,
     TResult? Function(String id, String name, PropertyType type, bool checked)?
         checkbox,
-    TResult? Function(String id, String name, PropertyType type,
-            ({List<StatusGroup> groups, List<StatusOption> options}) status)?
+    TResult? Function(
+            String id,
+            String name,
+            PropertyType type,
+            ({List<StatusGroup> groups, List<StatusOption> options}) status,
+            StatusOption? todoOption,
+            StatusOption? completeOption)?
         status,
   }) {
     return date?.call(id, name, type, this.date);
@@ -291,8 +316,13 @@ class _$DatePropertyImpl implements DateProperty {
         date,
     TResult Function(String id, String name, PropertyType type, bool checked)?
         checkbox,
-    TResult Function(String id, String name, PropertyType type,
-            ({List<StatusGroup> groups, List<StatusOption> options}) status)?
+    TResult Function(
+            String id,
+            String name,
+            PropertyType type,
+            ({List<StatusGroup> groups, List<StatusOption> options}) status,
+            StatusOption? todoOption,
+            StatusOption? completeOption)?
         status,
     required TResult orElse(),
   }) {
@@ -359,7 +389,7 @@ abstract class DateProperty implements Property {
   @override
   String get name;
   @override
-  PropertyType get type; // 省略したい
+  PropertyType get type; // 省略したい: date固定
   DateTime? get date;
 
   /// Create a copy of Property
@@ -440,6 +470,7 @@ class _$CheckboxPropertyImpl implements CheckboxProperty {
   final String name;
   @override
   final PropertyType type;
+// checkbox固定
   @override
   final bool checked;
 
@@ -484,8 +515,13 @@ class _$CheckboxPropertyImpl implements CheckboxProperty {
     required TResult Function(
             String id, String name, PropertyType type, bool checked)
         checkbox,
-    required TResult Function(String id, String name, PropertyType type,
-            ({List<StatusGroup> groups, List<StatusOption> options}) status)
+    required TResult Function(
+            String id,
+            String name,
+            PropertyType type,
+            ({List<StatusGroup> groups, List<StatusOption> options}) status,
+            StatusOption? todoOption,
+            StatusOption? completeOption)
         status,
   }) {
     return checkbox(id, name, type, checked);
@@ -499,8 +535,13 @@ class _$CheckboxPropertyImpl implements CheckboxProperty {
         date,
     TResult? Function(String id, String name, PropertyType type, bool checked)?
         checkbox,
-    TResult? Function(String id, String name, PropertyType type,
-            ({List<StatusGroup> groups, List<StatusOption> options}) status)?
+    TResult? Function(
+            String id,
+            String name,
+            PropertyType type,
+            ({List<StatusGroup> groups, List<StatusOption> options}) status,
+            StatusOption? todoOption,
+            StatusOption? completeOption)?
         status,
   }) {
     return checkbox?.call(id, name, type, checked);
@@ -513,8 +554,13 @@ class _$CheckboxPropertyImpl implements CheckboxProperty {
         date,
     TResult Function(String id, String name, PropertyType type, bool checked)?
         checkbox,
-    TResult Function(String id, String name, PropertyType type,
-            ({List<StatusGroup> groups, List<StatusOption> options}) status)?
+    TResult Function(
+            String id,
+            String name,
+            PropertyType type,
+            ({List<StatusGroup> groups, List<StatusOption> options}) status,
+            StatusOption? todoOption,
+            StatusOption? completeOption)?
         status,
     required TResult orElse(),
   }) {
@@ -581,7 +627,7 @@ abstract class CheckboxProperty implements Property {
   @override
   String get name;
   @override
-  PropertyType get type;
+  PropertyType get type; // checkbox固定
   bool get checked;
 
   /// Create a copy of Property
@@ -604,7 +650,12 @@ abstract class _$$StatusPropertyImplCopyWith<$Res>
       {String id,
       String name,
       PropertyType type,
-      ({List<StatusGroup> groups, List<StatusOption> options}) status});
+      ({List<StatusGroup> groups, List<StatusOption> options}) status,
+      StatusOption? todoOption,
+      StatusOption? completeOption});
+
+  $StatusOptionCopyWith<$Res>? get todoOption;
+  $StatusOptionCopyWith<$Res>? get completeOption;
 }
 
 /// @nodoc
@@ -624,6 +675,8 @@ class __$$StatusPropertyImplCopyWithImpl<$Res>
     Object? name = null,
     Object? type = null,
     Object? status = null,
+    Object? todoOption = freezed,
+    Object? completeOption = freezed,
   }) {
     return _then(_$StatusPropertyImpl(
       id: null == id
@@ -642,7 +695,43 @@ class __$$StatusPropertyImplCopyWithImpl<$Res>
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
               as ({List<StatusGroup> groups, List<StatusOption> options}),
+      todoOption: freezed == todoOption
+          ? _value.todoOption
+          : todoOption // ignore: cast_nullable_to_non_nullable
+              as StatusOption?,
+      completeOption: freezed == completeOption
+          ? _value.completeOption
+          : completeOption // ignore: cast_nullable_to_non_nullable
+              as StatusOption?,
     ));
+  }
+
+  /// Create a copy of Property
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $StatusOptionCopyWith<$Res>? get todoOption {
+    if (_value.todoOption == null) {
+      return null;
+    }
+
+    return $StatusOptionCopyWith<$Res>(_value.todoOption!, (value) {
+      return _then(_value.copyWith(todoOption: value));
+    });
+  }
+
+  /// Create a copy of Property
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $StatusOptionCopyWith<$Res>? get completeOption {
+    if (_value.completeOption == null) {
+      return null;
+    }
+
+    return $StatusOptionCopyWith<$Res>(_value.completeOption!, (value) {
+      return _then(_value.copyWith(completeOption: value));
+    });
   }
 }
 
@@ -654,6 +743,8 @@ class _$StatusPropertyImpl implements StatusProperty {
       required this.name,
       required this.type,
       required this.status,
+      required this.todoOption,
+      required this.completeOption,
       final String? $type})
       : $type = $type ?? 'status';
 
@@ -666,15 +757,20 @@ class _$StatusPropertyImpl implements StatusProperty {
   final String name;
   @override
   final PropertyType type;
+// status固定
   @override
   final ({List<StatusGroup> groups, List<StatusOption> options}) status;
+  @override
+  final StatusOption? todoOption;
+  @override
+  final StatusOption? completeOption;
 
   @JsonKey(name: 'runtimeType')
   final String $type;
 
   @override
   String toString() {
-    return 'Property.status(id: $id, name: $name, type: $type, status: $status)';
+    return 'Property.status(id: $id, name: $name, type: $type, status: $status, todoOption: $todoOption, completeOption: $completeOption)';
   }
 
   @override
@@ -685,12 +781,17 @@ class _$StatusPropertyImpl implements StatusProperty {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.type, type) || other.type == type) &&
-            (identical(other.status, status) || other.status == status));
+            (identical(other.status, status) || other.status == status) &&
+            (identical(other.todoOption, todoOption) ||
+                other.todoOption == todoOption) &&
+            (identical(other.completeOption, completeOption) ||
+                other.completeOption == completeOption));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, name, type, status);
+  int get hashCode => Object.hash(
+      runtimeType, id, name, type, status, todoOption, completeOption);
 
   /// Create a copy of Property
   /// with the given fields replaced by the non-null parameter values.
@@ -710,11 +811,16 @@ class _$StatusPropertyImpl implements StatusProperty {
     required TResult Function(
             String id, String name, PropertyType type, bool checked)
         checkbox,
-    required TResult Function(String id, String name, PropertyType type,
-            ({List<StatusGroup> groups, List<StatusOption> options}) status)
+    required TResult Function(
+            String id,
+            String name,
+            PropertyType type,
+            ({List<StatusGroup> groups, List<StatusOption> options}) status,
+            StatusOption? todoOption,
+            StatusOption? completeOption)
         status,
   }) {
-    return status(id, name, type, this.status);
+    return status(id, name, type, this.status, todoOption, completeOption);
   }
 
   @override
@@ -725,11 +831,17 @@ class _$StatusPropertyImpl implements StatusProperty {
         date,
     TResult? Function(String id, String name, PropertyType type, bool checked)?
         checkbox,
-    TResult? Function(String id, String name, PropertyType type,
-            ({List<StatusGroup> groups, List<StatusOption> options}) status)?
+    TResult? Function(
+            String id,
+            String name,
+            PropertyType type,
+            ({List<StatusGroup> groups, List<StatusOption> options}) status,
+            StatusOption? todoOption,
+            StatusOption? completeOption)?
         status,
   }) {
-    return status?.call(id, name, type, this.status);
+    return status?.call(
+        id, name, type, this.status, todoOption, completeOption);
   }
 
   @override
@@ -739,13 +851,18 @@ class _$StatusPropertyImpl implements StatusProperty {
         date,
     TResult Function(String id, String name, PropertyType type, bool checked)?
         checkbox,
-    TResult Function(String id, String name, PropertyType type,
-            ({List<StatusGroup> groups, List<StatusOption> options}) status)?
+    TResult Function(
+            String id,
+            String name,
+            PropertyType type,
+            ({List<StatusGroup> groups, List<StatusOption> options}) status,
+            StatusOption? todoOption,
+            StatusOption? completeOption)?
         status,
     required TResult orElse(),
   }) {
     if (status != null) {
-      return status(id, name, type, this.status);
+      return status(id, name, type, this.status, todoOption, completeOption);
     }
     return orElse();
   }
@@ -800,7 +917,9 @@ abstract class StatusProperty implements Property {
       required final ({
         List<StatusGroup> groups,
         List<StatusOption> options
-      }) status}) = _$StatusPropertyImpl;
+      }) status,
+      required final StatusOption? todoOption,
+      required final StatusOption? completeOption}) = _$StatusPropertyImpl;
 
   factory StatusProperty.fromJson(Map<String, dynamic> json) =
       _$StatusPropertyImpl.fromJson;
@@ -810,8 +929,10 @@ abstract class StatusProperty implements Property {
   @override
   String get name;
   @override
-  PropertyType get type;
+  PropertyType get type; // status固定
   ({List<StatusGroup> groups, List<StatusOption> options}) get status;
+  StatusOption? get todoOption;
+  StatusOption? get completeOption;
 
   /// Create a copy of Property
   /// with the given fields replaced by the non-null parameter values.
@@ -829,7 +950,7 @@ TaskDateProperty _$TaskDatePropertyFromJson(Map<String, dynamic> json) {
 mixin _$TaskDateProperty {
   String get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
-  PropertyType get type => throw _privateConstructorUsedError;
+  PropertyType get type => throw _privateConstructorUsedError; // date固定
   DateTime? get date => throw _privateConstructorUsedError;
 
   /// Serializes this TaskDateProperty to a JSON map.
@@ -960,6 +1081,7 @@ class _$TaskDatePropertyImpl implements _TaskDateProperty {
   final String name;
   @override
   final PropertyType type;
+// date固定
   @override
   final DateTime? date;
 
@@ -1015,7 +1137,7 @@ abstract class _TaskDateProperty implements TaskDateProperty {
   @override
   String get name;
   @override
-  PropertyType get type;
+  PropertyType get type; // date固定
   @override
   DateTime? get date;
 
@@ -1050,8 +1172,13 @@ mixin _$TaskStatusProperty {
     required TResult Function(
             String id, String name, PropertyType type, bool checked)
         checkbox,
-    required TResult Function(String id, String name, PropertyType type,
-            ({List<StatusGroup> groups, List<StatusOption> options}) status)
+    required TResult Function(
+            String id,
+            String name,
+            PropertyType type,
+            ({List<StatusGroup> groups, List<StatusOption> options}) status,
+            StatusOption? todoOption,
+            StatusOption? completeOption)
         status,
   }) =>
       throw _privateConstructorUsedError;
@@ -1059,8 +1186,13 @@ mixin _$TaskStatusProperty {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(String id, String name, PropertyType type, bool checked)?
         checkbox,
-    TResult? Function(String id, String name, PropertyType type,
-            ({List<StatusGroup> groups, List<StatusOption> options}) status)?
+    TResult? Function(
+            String id,
+            String name,
+            PropertyType type,
+            ({List<StatusGroup> groups, List<StatusOption> options}) status,
+            StatusOption? todoOption,
+            StatusOption? completeOption)?
         status,
   }) =>
       throw _privateConstructorUsedError;
@@ -1068,8 +1200,13 @@ mixin _$TaskStatusProperty {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String id, String name, PropertyType type, bool checked)?
         checkbox,
-    TResult Function(String id, String name, PropertyType type,
-            ({List<StatusGroup> groups, List<StatusOption> options}) status)?
+    TResult Function(
+            String id,
+            String name,
+            PropertyType type,
+            ({List<StatusGroup> groups, List<StatusOption> options}) status,
+            StatusOption? todoOption,
+            StatusOption? completeOption)?
         status,
     required TResult orElse(),
   }) =>
@@ -1223,6 +1360,7 @@ class _$CheckboxTaskStatusPropertyImpl implements CheckboxTaskStatusProperty {
   final String name;
   @override
   final PropertyType type;
+// checkbox固定
   @override
   final bool checked;
 
@@ -1264,8 +1402,13 @@ class _$CheckboxTaskStatusPropertyImpl implements CheckboxTaskStatusProperty {
     required TResult Function(
             String id, String name, PropertyType type, bool checked)
         checkbox,
-    required TResult Function(String id, String name, PropertyType type,
-            ({List<StatusGroup> groups, List<StatusOption> options}) status)
+    required TResult Function(
+            String id,
+            String name,
+            PropertyType type,
+            ({List<StatusGroup> groups, List<StatusOption> options}) status,
+            StatusOption? todoOption,
+            StatusOption? completeOption)
         status,
   }) {
     return checkbox(id, name, type, checked);
@@ -1276,8 +1419,13 @@ class _$CheckboxTaskStatusPropertyImpl implements CheckboxTaskStatusProperty {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(String id, String name, PropertyType type, bool checked)?
         checkbox,
-    TResult? Function(String id, String name, PropertyType type,
-            ({List<StatusGroup> groups, List<StatusOption> options}) status)?
+    TResult? Function(
+            String id,
+            String name,
+            PropertyType type,
+            ({List<StatusGroup> groups, List<StatusOption> options}) status,
+            StatusOption? todoOption,
+            StatusOption? completeOption)?
         status,
   }) {
     return checkbox?.call(id, name, type, checked);
@@ -1288,8 +1436,13 @@ class _$CheckboxTaskStatusPropertyImpl implements CheckboxTaskStatusProperty {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String id, String name, PropertyType type, bool checked)?
         checkbox,
-    TResult Function(String id, String name, PropertyType type,
-            ({List<StatusGroup> groups, List<StatusOption> options}) status)?
+    TResult Function(
+            String id,
+            String name,
+            PropertyType type,
+            ({List<StatusGroup> groups, List<StatusOption> options}) status,
+            StatusOption? todoOption,
+            StatusOption? completeOption)?
         status,
     required TResult orElse(),
   }) {
@@ -1353,7 +1506,7 @@ abstract class CheckboxTaskStatusProperty implements TaskStatusProperty {
   @override
   String get name;
   @override
-  PropertyType get type;
+  PropertyType get type; // checkbox固定
   bool get checked;
 
   /// Create a copy of TaskStatusProperty
@@ -1377,7 +1530,12 @@ abstract class _$$StatusTaskStatusPropertyImplCopyWith<$Res>
       {String id,
       String name,
       PropertyType type,
-      ({List<StatusGroup> groups, List<StatusOption> options}) status});
+      ({List<StatusGroup> groups, List<StatusOption> options}) status,
+      StatusOption? todoOption,
+      StatusOption? completeOption});
+
+  $StatusOptionCopyWith<$Res>? get todoOption;
+  $StatusOptionCopyWith<$Res>? get completeOption;
 }
 
 /// @nodoc
@@ -1399,6 +1557,8 @@ class __$$StatusTaskStatusPropertyImplCopyWithImpl<$Res>
     Object? name = null,
     Object? type = null,
     Object? status = null,
+    Object? todoOption = freezed,
+    Object? completeOption = freezed,
   }) {
     return _then(_$StatusTaskStatusPropertyImpl(
       id: null == id
@@ -1417,7 +1577,43 @@ class __$$StatusTaskStatusPropertyImplCopyWithImpl<$Res>
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
               as ({List<StatusGroup> groups, List<StatusOption> options}),
+      todoOption: freezed == todoOption
+          ? _value.todoOption
+          : todoOption // ignore: cast_nullable_to_non_nullable
+              as StatusOption?,
+      completeOption: freezed == completeOption
+          ? _value.completeOption
+          : completeOption // ignore: cast_nullable_to_non_nullable
+              as StatusOption?,
     ));
+  }
+
+  /// Create a copy of TaskStatusProperty
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $StatusOptionCopyWith<$Res>? get todoOption {
+    if (_value.todoOption == null) {
+      return null;
+    }
+
+    return $StatusOptionCopyWith<$Res>(_value.todoOption!, (value) {
+      return _then(_value.copyWith(todoOption: value));
+    });
+  }
+
+  /// Create a copy of TaskStatusProperty
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $StatusOptionCopyWith<$Res>? get completeOption {
+    if (_value.completeOption == null) {
+      return null;
+    }
+
+    return $StatusOptionCopyWith<$Res>(_value.completeOption!, (value) {
+      return _then(_value.copyWith(completeOption: value));
+    });
   }
 }
 
@@ -1429,6 +1625,8 @@ class _$StatusTaskStatusPropertyImpl implements StatusTaskStatusProperty {
       required this.name,
       required this.type,
       required this.status,
+      required this.todoOption,
+      required this.completeOption,
       final String? $type})
       : $type = $type ?? 'status';
 
@@ -1441,15 +1639,21 @@ class _$StatusTaskStatusPropertyImpl implements StatusTaskStatusProperty {
   final String name;
   @override
   final PropertyType type;
+// status固定
   @override
   final ({List<StatusGroup> groups, List<StatusOption> options}) status;
+  @override
+  final StatusOption? todoOption;
+// ほんとはnon-nullにしたい
+  @override
+  final StatusOption? completeOption;
 
   @JsonKey(name: 'runtimeType')
   final String $type;
 
   @override
   String toString() {
-    return 'TaskStatusProperty.status(id: $id, name: $name, type: $type, status: $status)';
+    return 'TaskStatusProperty.status(id: $id, name: $name, type: $type, status: $status, todoOption: $todoOption, completeOption: $completeOption)';
   }
 
   @override
@@ -1460,12 +1664,17 @@ class _$StatusTaskStatusPropertyImpl implements StatusTaskStatusProperty {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.type, type) || other.type == type) &&
-            (identical(other.status, status) || other.status == status));
+            (identical(other.status, status) || other.status == status) &&
+            (identical(other.todoOption, todoOption) ||
+                other.todoOption == todoOption) &&
+            (identical(other.completeOption, completeOption) ||
+                other.completeOption == completeOption));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, name, type, status);
+  int get hashCode => Object.hash(
+      runtimeType, id, name, type, status, todoOption, completeOption);
 
   /// Create a copy of TaskStatusProperty
   /// with the given fields replaced by the non-null parameter values.
@@ -1482,11 +1691,16 @@ class _$StatusTaskStatusPropertyImpl implements StatusTaskStatusProperty {
     required TResult Function(
             String id, String name, PropertyType type, bool checked)
         checkbox,
-    required TResult Function(String id, String name, PropertyType type,
-            ({List<StatusGroup> groups, List<StatusOption> options}) status)
+    required TResult Function(
+            String id,
+            String name,
+            PropertyType type,
+            ({List<StatusGroup> groups, List<StatusOption> options}) status,
+            StatusOption? todoOption,
+            StatusOption? completeOption)
         status,
   }) {
-    return status(id, name, type, this.status);
+    return status(id, name, type, this.status, todoOption, completeOption);
   }
 
   @override
@@ -1494,11 +1708,17 @@ class _$StatusTaskStatusPropertyImpl implements StatusTaskStatusProperty {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(String id, String name, PropertyType type, bool checked)?
         checkbox,
-    TResult? Function(String id, String name, PropertyType type,
-            ({List<StatusGroup> groups, List<StatusOption> options}) status)?
+    TResult? Function(
+            String id,
+            String name,
+            PropertyType type,
+            ({List<StatusGroup> groups, List<StatusOption> options}) status,
+            StatusOption? todoOption,
+            StatusOption? completeOption)?
         status,
   }) {
-    return status?.call(id, name, type, this.status);
+    return status?.call(
+        id, name, type, this.status, todoOption, completeOption);
   }
 
   @override
@@ -1506,13 +1726,18 @@ class _$StatusTaskStatusPropertyImpl implements StatusTaskStatusProperty {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String id, String name, PropertyType type, bool checked)?
         checkbox,
-    TResult Function(String id, String name, PropertyType type,
-            ({List<StatusGroup> groups, List<StatusOption> options}) status)?
+    TResult Function(
+            String id,
+            String name,
+            PropertyType type,
+            ({List<StatusGroup> groups, List<StatusOption> options}) status,
+            StatusOption? todoOption,
+            StatusOption? completeOption)?
         status,
     required TResult orElse(),
   }) {
     if (status != null) {
-      return status(id, name, type, this.status);
+      return status(id, name, type, this.status, todoOption, completeOption);
     }
     return orElse();
   }
@@ -1558,13 +1783,16 @@ class _$StatusTaskStatusPropertyImpl implements StatusTaskStatusProperty {
 
 abstract class StatusTaskStatusProperty implements TaskStatusProperty {
   const factory StatusTaskStatusProperty(
-      {required final String id,
-      required final String name,
-      required final PropertyType type,
-      required final ({
-        List<StatusGroup> groups,
-        List<StatusOption> options
-      }) status}) = _$StatusTaskStatusPropertyImpl;
+          {required final String id,
+          required final String name,
+          required final PropertyType type,
+          required final ({
+            List<StatusGroup> groups,
+            List<StatusOption> options
+          }) status,
+          required final StatusOption? todoOption,
+          required final StatusOption? completeOption}) =
+      _$StatusTaskStatusPropertyImpl;
 
   factory StatusTaskStatusProperty.fromJson(Map<String, dynamic> json) =
       _$StatusTaskStatusPropertyImpl.fromJson;
@@ -1574,8 +1802,10 @@ abstract class StatusTaskStatusProperty implements TaskStatusProperty {
   @override
   String get name;
   @override
-  PropertyType get type;
+  PropertyType get type; // status固定
   ({List<StatusGroup> groups, List<StatusOption> options}) get status;
+  StatusOption? get todoOption; // ほんとはnon-nullにしたい
+  StatusOption? get completeOption;
 
   /// Create a copy of TaskStatusProperty
   /// with the given fields replaced by the non-null parameter values.
@@ -1778,7 +2008,8 @@ StatusGroup _$StatusGroupFromJson(Map<String, dynamic> json) {
 mixin _$StatusGroup {
   String get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
-  String? get color => throw _privateConstructorUsedError;
+  String? get color =>
+      throw _privateConstructorUsedError; // ignore: non_constant_identifier_names
   List<String> get option_ids => throw _privateConstructorUsedError;
 
   /// Serializes this StatusGroup to a JSON map.
@@ -1910,7 +2141,9 @@ class _$StatusGroupImpl implements _StatusGroup {
   final String name;
   @override
   final String? color;
+// ignore: non_constant_identifier_names
   final List<String> _option_ids;
+// ignore: non_constant_identifier_names
   @override
   List<String> get option_ids {
     if (_option_ids is EqualUnmodifiableListView) return _option_ids;
@@ -1971,7 +2204,7 @@ abstract class _StatusGroup implements StatusGroup {
   @override
   String get name;
   @override
-  String? get color;
+  String? get color; // ignore: non_constant_identifier_names
   @override
   List<String> get option_ids;
 

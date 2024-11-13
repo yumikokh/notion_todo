@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../notion/model/property.dart';
 import '../notion/task_database/view/task_database_setting_page.dart';
 import 'settings_viewmodel.dart';
 import '../notion/oauth/notion_oauth_viewmodel.dart';
@@ -67,6 +68,25 @@ class SettingsView extends ConsumerWidget {
                   Text(taskDatabase.status.name),
                   const Text('Date Property'),
                   Text(taskDatabase.date.name),
+                ],
+              ),
+            if (taskDatabase?.status.type == PropertyType.status &&
+                (taskDatabase?.status as StatusTaskStatusProperty)
+                        .todoOption
+                        ?.name !=
+                    null)
+              Column(
+                children: [
+                  const Text('To-do Option'),
+                  Text((taskDatabase?.status as StatusTaskStatusProperty)
+                          .todoOption
+                          ?.name ??
+                      'None'),
+                  const Text('Complete Option'),
+                  Text((taskDatabase?.status as StatusTaskStatusProperty)
+                          .completeOption
+                          ?.name ??
+                      'None'),
                 ],
               ),
             if (isAuthenticated)

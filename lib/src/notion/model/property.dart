@@ -15,22 +15,24 @@ class Property with _$Property {
   const factory Property.date({
     required String id,
     required String name,
-    required PropertyType type, // 省略したい
+    required PropertyType type, // 省略したい: date固定
     required DateTime? date,
   }) = DateProperty;
 
   const factory Property.checkbox({
     required String id,
     required String name,
-    required PropertyType type,
+    required PropertyType type, // checkbox固定
     required bool checked,
   }) = CheckboxProperty;
 
   const factory Property.status({
     required String id,
     required String name,
-    required PropertyType type,
+    required PropertyType type, // status固定
     required ({List<StatusOption> options, List<StatusGroup> groups}) status,
+    required StatusOption? todoOption,
+    required StatusOption? completeOption,
   }) = StatusProperty;
 
   factory Property.fromJson(Map<String, dynamic> json) =>
@@ -42,7 +44,7 @@ class TaskDateProperty with _$TaskDateProperty {
   const factory TaskDateProperty({
     required String id,
     required String name,
-    required PropertyType type,
+    required PropertyType type, // date固定
     required DateTime? date,
   }) = _TaskDateProperty;
 
@@ -62,15 +64,17 @@ class TaskStatusProperty with _$TaskStatusProperty {
   const factory TaskStatusProperty.checkbox({
     required String id,
     required String name,
-    required PropertyType type,
+    required PropertyType type, // checkbox固定
     required bool checked,
   }) = CheckboxTaskStatusProperty;
 
   const factory TaskStatusProperty.status({
     required String id,
     required String name,
-    required PropertyType type,
+    required PropertyType type, // status固定
     required ({List<StatusOption> options, List<StatusGroup> groups}) status,
+    required StatusOption? todoOption, // ほんとはnon-nullにしたい
+    required StatusOption? completeOption,
   }) = StatusTaskStatusProperty;
 
   factory TaskStatusProperty.initial() => const CheckboxTaskStatusProperty(
@@ -102,6 +106,7 @@ class StatusGroup with _$StatusGroup {
       {required String id,
       required String name,
       required String? color,
+      // ignore: non_constant_identifier_names
       required List<String> option_ids}) = _StatusGroup;
 
   factory StatusGroup.fromJson(Map<String, dynamic> json) =>

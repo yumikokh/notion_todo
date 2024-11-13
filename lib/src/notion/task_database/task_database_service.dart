@@ -90,6 +90,20 @@ class TaskDatabaseService {
                 options: options,
                 groups: groups,
               ),
+              todoOption: null,
+              completeOption: null,
+              // todoOption: options.firstWhere((option) => groups
+              //     .firstWhere((group) => group.name == 'To-do')
+              //     .option_ids
+              //     .contains(
+              //       option.id,
+              //     )),
+              // completeOption: options.firstWhere((option) => groups
+              //     .firstWhere((group) => group.name == 'Complete')
+              //     .option_ids
+              //     .contains(
+              //       option.id,
+              //     )),
             );
           default:
             throw Exception('Unknown property type: $type');

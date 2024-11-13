@@ -36,7 +36,7 @@ class TaskService {
       String taskId, TaskStatusProperty status, bool isCompleted) async {
     final data = await _notionDatabaseRepository.updateStatus(
         taskId, status, isCompleted);
-    if (data == null) {
+    if (data == null || data.isEmpty) {
       return Task.initial();
     }
     return Task(
