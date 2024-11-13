@@ -4,6 +4,7 @@ part 'property.freezed.dart';
 part 'property.g.dart';
 
 enum PropertyType {
+  title,
   date,
   checkbox,
   status,
@@ -12,6 +13,13 @@ enum PropertyType {
 /// Property
 @freezed
 class Property with _$Property {
+  const factory Property.title({
+    required String id,
+    required String name,
+    required PropertyType type, // 省略したい: title固定
+    required String title,
+  }) = TitleProperty;
+
   const factory Property.date({
     required String id,
     required String name,
@@ -37,6 +45,26 @@ class Property with _$Property {
 
   factory Property.fromJson(Map<String, dynamic> json) =>
       _$PropertyFromJson(json);
+}
+
+@freezed
+class TaskTitleProperty with _$TaskTitleProperty {
+  const factory TaskTitleProperty({
+    required String id,
+    required String name,
+    required PropertyType type, // 省略したい: title固定
+    required String title,
+  }) = _TaskTitleProperty;
+
+  factory TaskTitleProperty.initial() => const TaskTitleProperty(
+        id: '',
+        name: '',
+        type: PropertyType.checkbox,
+        title: '',
+      );
+
+  factory TaskTitleProperty.fromJson(Map<String, dynamic> json) =>
+      _$TaskTitlePropertyFromJson(json);
 }
 
 @freezed

@@ -21,7 +21,13 @@ class TaskDatabaseService {
     if (taskDatabase == null) {
       return null;
     }
-    return TaskDatabase.fromJson(jsonDecode(taskDatabase));
+    try {
+      return TaskDatabase.fromJson(jsonDecode(taskDatabase));
+    } catch (e) {
+      print('Failed to load task database: $e');
+      clear();
+      return null;
+    }
   }
 
   Future<void> save(TaskDatabase taskDatabase) async {
@@ -47,9 +53,10 @@ class TaskDatabaseService {
           .entries
           // typeがdate, checkbox, statusのものだけを取得
           .where((entry) =>
-              entry.value['type'] == 'date' ||
+              entry.value['type'] == 'title' ||
+              entry.value['type'] == 'status' ||
               entry.value['type'] == 'checkbox' ||
-              entry.value['type'] == 'status')
+              entry.value['type'] == 'date')
           .map<Property>((entry) {
         final property = entry.value;
         final id = property['id'] as String;
@@ -57,6 +64,15 @@ class TaskDatabaseService {
         final type = property['type'] as String;
 
         switch (type) {
+          case 'title':
+            return Property.title(
+              id: id,
+              name: name,
+              type: PropertyType.title,
+              title: property['title'].isEmpty
+                  ? ''
+                  : property['title'][0]['plain_text'],
+            );
           case 'date':
             return Property.date(
               id: id,
@@ -92,18 +108,6 @@ class TaskDatabaseService {
               ),
               todoOption: null,
               completeOption: null,
-              // todoOption: options.firstWhere((option) => groups
-              //     .firstWhere((group) => group.name == 'To-do')
-              //     .option_ids
-              //     .contains(
-              //       option.id,
-              //     )),
-              // completeOption: options.firstWhere((option) => groups
-              //     .firstWhere((group) => group.name == 'Complete')
-              //     .option_ids
-              //     .contains(
-              //       option.id,
-              //     )),
             );
           default:
             throw Exception('Unknown property type: $type');
@@ -112,6 +116,8 @@ class TaskDatabaseService {
 
       return Database(id: id, name: name, url: url, properties: properties);
     }).toList();
+
+    print('databases: $databases');
     return databases;
   }
 }

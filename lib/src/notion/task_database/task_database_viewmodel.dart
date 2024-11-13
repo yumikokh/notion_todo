@@ -85,6 +85,7 @@ class TaskDatabaseViewModel extends _$TaskDatabaseViewModel {
         date: null,
       ),
     );
+    print('state.selectedTaskDatabase: ${state.selectedTaskDatabase}');
   }
 
   List<Property> propertyOptions(SettingPropertyType type) {
@@ -176,12 +177,15 @@ class TaskDatabaseViewModel extends _$TaskDatabaseViewModel {
     if (_taskDatabaseService == null || state.selectedTaskDatabase == null) {
       return;
     }
+    final json = state.selectedTaskDatabase!.properties
+        .firstWhere((property) => property.type == PropertyType.title)
+        .toJson();
     final taskDatabase = TaskDatabase(
-      id: state.selectedTaskDatabase!.id,
-      name: state.selectedTaskDatabase!.name,
-      status: state.selectedTaskDatabase!.status!,
-      date: state.selectedTaskDatabase!.date!,
-    );
+        id: state.selectedTaskDatabase!.id,
+        name: state.selectedTaskDatabase!.name,
+        status: state.selectedTaskDatabase!.status!,
+        date: state.selectedTaskDatabase!.date!,
+        title: TaskTitleProperty.fromJson(json));
     _taskDatabaseService!.save(taskDatabase);
     state =
         state.copyWith(taskDatabase: taskDatabase, selectedTaskDatabase: null);

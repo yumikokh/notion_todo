@@ -22,6 +22,7 @@ TaskDatabase _$TaskDatabaseFromJson(Map<String, dynamic> json) {
 mixin _$TaskDatabase {
   String get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
+  TaskTitleProperty get title => throw _privateConstructorUsedError;
   TaskStatusProperty get status => throw _privateConstructorUsedError;
   TaskDateProperty get date => throw _privateConstructorUsedError;
 
@@ -44,9 +45,11 @@ abstract class $TaskDatabaseCopyWith<$Res> {
   $Res call(
       {String id,
       String name,
+      TaskTitleProperty title,
       TaskStatusProperty status,
       TaskDateProperty date});
 
+  $TaskTitlePropertyCopyWith<$Res> get title;
   $TaskStatusPropertyCopyWith<$Res> get status;
   $TaskDatePropertyCopyWith<$Res> get date;
 }
@@ -68,6 +71,7 @@ class _$TaskDatabaseCopyWithImpl<$Res, $Val extends TaskDatabase>
   $Res call({
     Object? id = null,
     Object? name = null,
+    Object? title = null,
     Object? status = null,
     Object? date = null,
   }) {
@@ -80,6 +84,10 @@ class _$TaskDatabaseCopyWithImpl<$Res, $Val extends TaskDatabase>
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
+      title: null == title
+          ? _value.title
+          : title // ignore: cast_nullable_to_non_nullable
+              as TaskTitleProperty,
       status: null == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
@@ -89,6 +97,16 @@ class _$TaskDatabaseCopyWithImpl<$Res, $Val extends TaskDatabase>
           : date // ignore: cast_nullable_to_non_nullable
               as TaskDateProperty,
     ) as $Val);
+  }
+
+  /// Create a copy of TaskDatabase
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $TaskTitlePropertyCopyWith<$Res> get title {
+    return $TaskTitlePropertyCopyWith<$Res>(_value.title, (value) {
+      return _then(_value.copyWith(title: value) as $Val);
+    });
   }
 
   /// Create a copy of TaskDatabase
@@ -123,9 +141,12 @@ abstract class _$$SelectedTaskDatabaseImplCopyWith<$Res>
   $Res call(
       {String id,
       String name,
+      TaskTitleProperty title,
       TaskStatusProperty status,
       TaskDateProperty date});
 
+  @override
+  $TaskTitlePropertyCopyWith<$Res> get title;
   @override
   $TaskStatusPropertyCopyWith<$Res> get status;
   @override
@@ -147,6 +168,7 @@ class __$$SelectedTaskDatabaseImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? name = null,
+    Object? title = null,
     Object? status = null,
     Object? date = null,
   }) {
@@ -159,6 +181,10 @@ class __$$SelectedTaskDatabaseImplCopyWithImpl<$Res>
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
+      title: null == title
+          ? _value.title
+          : title // ignore: cast_nullable_to_non_nullable
+              as TaskTitleProperty,
       status: null == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
@@ -177,6 +203,7 @@ class _$SelectedTaskDatabaseImpl implements _SelectedTaskDatabase {
   const _$SelectedTaskDatabaseImpl(
       {required this.id,
       required this.name,
+      required this.title,
       required this.status,
       required this.date});
 
@@ -188,13 +215,15 @@ class _$SelectedTaskDatabaseImpl implements _SelectedTaskDatabase {
   @override
   final String name;
   @override
+  final TaskTitleProperty title;
+  @override
   final TaskStatusProperty status;
   @override
   final TaskDateProperty date;
 
   @override
   String toString() {
-    return 'TaskDatabase(id: $id, name: $name, status: $status, date: $date)';
+    return 'TaskDatabase(id: $id, name: $name, title: $title, status: $status, date: $date)';
   }
 
   @override
@@ -204,13 +233,14 @@ class _$SelectedTaskDatabaseImpl implements _SelectedTaskDatabase {
             other is _$SelectedTaskDatabaseImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
+            (identical(other.title, title) || other.title == title) &&
             (identical(other.status, status) || other.status == status) &&
             (identical(other.date, date) || other.date == date));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, name, status, date);
+  int get hashCode => Object.hash(runtimeType, id, name, title, status, date);
 
   /// Create a copy of TaskDatabase
   /// with the given fields replaced by the non-null parameter values.
@@ -234,6 +264,7 @@ abstract class _SelectedTaskDatabase implements TaskDatabase {
   const factory _SelectedTaskDatabase(
       {required final String id,
       required final String name,
+      required final TaskTitleProperty title,
       required final TaskStatusProperty status,
       required final TaskDateProperty date}) = _$SelectedTaskDatabaseImpl;
 
@@ -244,6 +275,8 @@ abstract class _SelectedTaskDatabase implements TaskDatabase {
   String get id;
   @override
   String get name;
+  @override
+  TaskTitleProperty get title;
   @override
   TaskStatusProperty get status;
   @override

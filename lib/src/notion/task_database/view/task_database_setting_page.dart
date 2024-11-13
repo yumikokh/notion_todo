@@ -40,7 +40,7 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                       ))
                   .toList(),
             ),
-            if (state.taskDatabase != null)
+            if (state.selectedTaskDatabase != null)
               Column(
                 children: [
                   const Text('Status Property'),

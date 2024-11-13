@@ -2,10 +2,11 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import '../model/property.dart';
+import '../model/task_database.dart';
 
 // - [x] list databases
 // - [x] list database pages
-// - [] create a database page
+// - [x] create a database page
 // - [x] update a database page
 // - [] delete a database page
 
@@ -106,6 +107,40 @@ class NotionDatabaseRepository {
                 status.name: {"checkbox": isCompleted}
               }
       }),
+    );
+    return jsonDecode(res.body);
+  }
+
+  Future addTask(TaskDatabase database, String title, DateTime? dueDate) async {
+    final properties = {
+      database.title.name: {
+        "title": [
+          {
+            "type": "text",
+            "text": {"content": title}
+          }
+        ]
+      },
+      if (dueDate != null)
+        database.date.name: {
+          "date": {"start": dueDate.toIso8601String()}
+        }
+    };
+    final res = await http.post(
+      Uri.parse('https://api.notion.com/v1/pages'),
+      headers: _headers,
+      body: jsonEncode({
+        "parent": {"database_id": database.id},
+        "properties": properties
+      }),
+    );
+    return jsonDecode(res.body);
+  }
+
+  Future deleteTask(String taskId) async {
+    final res = await http.delete(
+      Uri.parse('https://api.notion.com/v1/pages/$taskId'),
+      headers: _headers,
     );
     return jsonDecode(res.body);
   }

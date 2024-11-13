@@ -15,7 +15,7 @@ class TaskViewModel extends _$TaskViewModel {
   @override
   List<Task> build() {
     _initialize();
-    return [Task.initial()];
+    return [];
   }
 
   _initialize() async {
@@ -41,19 +41,6 @@ class TaskViewModel extends _$TaskViewModel {
     state = tasks;
   }
 
-  // void selectTask(String? taskId) {
-  //   final selected = state.tasks.firstWhere((task) => task.id == taskId);
-  //   state = state.copyWith(
-  //     selectedTask: Task(
-  //       id: taskId!,
-  //       title: selected.title,
-  //       description: selected.description,
-  //       status: selected.status,
-  //       dueDate: selected.dueDate,
-  //     ),
-  //   );
-  // }
-
   Future updateStatus(String taskId, bool isCompleted) async {
     final taskDatabase = ref.watch(taskDatabaseViewModelProvider).taskDatabase;
     if (taskDatabase == null) {
@@ -64,13 +51,18 @@ class TaskViewModel extends _$TaskViewModel {
     await fetchTasks();
   }
 
-  // void addTask(Task task) {
-  //   state = state.copyWith(tasks: [...state.tasks, task]);
-  // }
+  Future addTask(String title, DateTime? dueDate) async {
+    final taskDatabase = ref.watch(taskDatabaseViewModelProvider).taskDatabase;
+    if (taskDatabase == null) {
+      return;
+    }
+    await _taskService!.addTask(taskDatabase, title, dueDate);
+    await fetchTasks();
+  }
 
-  // void deleteTask(String taskId) {
-  //   state = state.copyWith(
-  //     tasks: state.tasks.where((task) => task.id != taskId).toList(),
-  //   );
-  // }
+  void deleteTask(String taskId) {
+    // state = state.copyWith(
+    //   tasks: state.tasks.where((task) => task.id != taskId).toList(),
+    // );
+  }
 }

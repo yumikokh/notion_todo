@@ -6,6 +6,31 @@ part of 'property.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+_$TitlePropertyImpl _$$TitlePropertyImplFromJson(Map<String, dynamic> json) =>
+    _$TitlePropertyImpl(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      type: $enumDecode(_$PropertyTypeEnumMap, json['type']),
+      title: json['title'] as String,
+      $type: json['runtimeType'] as String?,
+    );
+
+Map<String, dynamic> _$$TitlePropertyImplToJson(_$TitlePropertyImpl instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+      'type': _$PropertyTypeEnumMap[instance.type]!,
+      'title': instance.title,
+      'runtimeType': instance.$type,
+    };
+
+const _$PropertyTypeEnumMap = {
+  PropertyType.title: 'title',
+  PropertyType.date: 'date',
+  PropertyType.checkbox: 'checkbox',
+  PropertyType.status: 'status',
+};
+
 _$DatePropertyImpl _$$DatePropertyImplFromJson(Map<String, dynamic> json) =>
     _$DatePropertyImpl(
       id: json['id'] as String,
@@ -24,12 +49,6 @@ Map<String, dynamic> _$$DatePropertyImplToJson(_$DatePropertyImpl instance) =>
       'date': instance.date?.toIso8601String(),
       'runtimeType': instance.$type,
     };
-
-const _$PropertyTypeEnumMap = {
-  PropertyType.date: 'date',
-  PropertyType.checkbox: 'checkbox',
-  PropertyType.status: 'status',
-};
 
 _$CheckboxPropertyImpl _$$CheckboxPropertyImplFromJson(
         Map<String, dynamic> json) =>
@@ -97,6 +116,24 @@ $Rec _$recordConvert<$Rec>(
   $Rec Function(Map) convert,
 ) =>
     convert(value as Map<String, dynamic>);
+
+_$TaskTitlePropertyImpl _$$TaskTitlePropertyImplFromJson(
+        Map<String, dynamic> json) =>
+    _$TaskTitlePropertyImpl(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      type: $enumDecode(_$PropertyTypeEnumMap, json['type']),
+      title: json['title'] as String,
+    );
+
+Map<String, dynamic> _$$TaskTitlePropertyImplToJson(
+        _$TaskTitlePropertyImpl instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+      'type': _$PropertyTypeEnumMap[instance.type]!,
+      'title': instance.title,
+    };
 
 _$TaskDatePropertyImpl _$$TaskDatePropertyImplFromJson(
         Map<String, dynamic> json) =>

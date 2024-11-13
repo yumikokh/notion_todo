@@ -4,7 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'notion/task_database/view/task_database_setting_page.dart';
-import 'notion/tasks/view/task_list_page.dart';
+import 'notion/tasks/view/today_task_list_page.dart';
 import 'settings/settings_viewmodel.dart';
 import 'settings/settings_view.dart';
 

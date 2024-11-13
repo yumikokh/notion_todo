@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../../../settings/settings_view.dart';
 import '../../model/task.dart';
+import '../../task_database/task_database_viewmodel.dart';
 import '../task_viewmodel.dart';
 
 final dateFormat = DateFormat('yyyy-MM-dd');
@@ -12,12 +13,13 @@ final dateFormat = DateFormat('yyyy-MM-dd');
 class TodayListPage extends HookConsumerWidget {
   const TodayListPage({Key? key}) : super(key: key);
 
-  static const routeName = '/tasks/today';
+  static const routeName = '/';
 
   @override
   Widget build(BuildContext context, ref) {
     final tasks = ref.watch(taskViewModelProvider);
     final taskViewModel = ref.watch(taskViewModelProvider.notifier);
+    final database = ref.watch(taskDatabaseViewModelProvider).taskDatabase;
 
     final uiTasks = useState<List<Task>>(tasks);
     final waiting = useState(false);
@@ -82,6 +84,65 @@ class TodayListPage extends HookConsumerWidget {
                 );
               },
             ),
+      // FloatingActionButtonはaccessTokenがあるときだけ表示
+      floatingActionButton: database?.id != null
+          ? FloatingActionButton(
+              onPressed: () {
+                // モーダルを開く
+                showModalBottomSheet(
+                  context: context,
+                  builder: (context) {
+                    // テキスト表示
+                    return const SizedBox.expand(
+                        child: Center(
+                            child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        AddTaskSheet(),
+                      ],
+                    )));
+                  },
+                );
+              },
+              backgroundColor: Colors.blue,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(100),
+              ),
+              child: const Icon(Icons.add, size: 28),
+            )
+          : null,
+    );
+  }
+}
+
+class AddTaskSheet extends HookConsumerWidget {
+  const AddTaskSheet({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, ref) {
+    final taskViewModel = ref.watch(taskViewModelProvider.notifier);
+    final titleController = useTextEditingController();
+
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          TextField(
+            controller: titleController,
+            decoration: const InputDecoration(labelText: 'Title'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final today = DateTime.now();
+              taskViewModel.addTask(titleController.text, today);
+              Navigator.pop(context);
+            },
+            child: const Text('Add'),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -32,6 +32,19 @@ class TaskService {
         .toList();
   }
 
+  Future<Task> addTask(TaskDatabase db, String title, DateTime? dueDate) async {
+    final data = await _notionDatabaseRepository.addTask(db, title, dueDate);
+    if (data == null || data.isEmpty) {
+      return Task.initial();
+    }
+    return Task(
+      id: data['id'],
+      title: title,
+      isCompleted: isTaskCompleted(data, db.status),
+      dueDate: date(data, db.date.name),
+    );
+  }
+
   Future<Task> updateStatus(
       String taskId, TaskStatusProperty status, bool isCompleted) async {
     final data = await _notionDatabaseRepository.updateStatus(
@@ -48,10 +61,11 @@ class TaskService {
   }
 
   String title(Map<String, dynamic> task) {
-    return task['properties']
+    final titleProperty = task['properties']
         .entries
         .firstWhere((e) => e.value['type'] == 'title')
-        .value['title'][0]['plain_text'];
+        .value['title'];
+    return titleProperty.length > 0 ? titleProperty[0]['plain_text'] : '';
   }
 
   DateTime? date(Map<String, dynamic> task, String dateProperty) {

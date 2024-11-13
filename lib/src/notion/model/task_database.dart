@@ -10,6 +10,7 @@ class TaskDatabase with _$TaskDatabase {
   const factory TaskDatabase({
     required String id,
     required String name,
+    required TaskTitleProperty title,
     required TaskStatusProperty status,
     required TaskDateProperty date,
   }) = _SelectedTaskDatabase;
@@ -17,6 +18,7 @@ class TaskDatabase with _$TaskDatabase {
   factory TaskDatabase.initial() => TaskDatabase(
       id: '',
       name: '',
+      title: TaskTitleProperty.initial(),
       status: TaskStatusProperty.initial(),
       date: TaskDateProperty.initial());
 
