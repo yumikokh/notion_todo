@@ -8,7 +8,7 @@ import '../model/task_database.dart';
 // - [x] list database pages
 // - [x] create a database page
 // - [x] update a database page
-// - [] delete a database page
+// - [x] delete a database page
 
 enum FilterType { today, done, all }
 
@@ -36,7 +36,7 @@ class NotionDatabaseRepository {
     return data['results'];
   }
 
-  Future fetchDatabasePages(FilterType type, String databaseId,
+  Future fetchPages(FilterType type, String databaseId,
       TaskDateProperty dateProperty, TaskStatusProperty statusProperty) async {
     final filter = type == FilterType.today
         ? {
@@ -137,10 +137,21 @@ class NotionDatabaseRepository {
     return jsonDecode(res.body);
   }
 
-  Future deleteTask(String taskId) async {
+  Future undoDeleteTask(String taskId) async {
     final res = await http.delete(
+      Uri.parse('https://api.notion.com/v1/blocks/$taskId'),
+      headers: _headers,
+    );
+    return jsonDecode(res.body);
+  }
+
+  Future revertTask(String taskId) async {
+    final res = await http.patch(
       Uri.parse('https://api.notion.com/v1/pages/$taskId'),
       headers: _headers,
+      body: jsonEncode({
+        "archived": false,
+      }),
     );
     return jsonDecode(res.body);
   }

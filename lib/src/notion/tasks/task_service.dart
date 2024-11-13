@@ -18,7 +18,7 @@ class TaskService {
     TaskDatabase db,
     FilterType type,
   ) async {
-    final results = await _notionDatabaseRepository.fetchDatabasePages(
+    final results = await _notionDatabaseRepository.fetchPages(
         type, db.id, db.date, db.status);
     if (results == null) {
       return [];
@@ -26,9 +26,9 @@ class TaskService {
     return results
         .map<Task>((data) => Task(
             id: data['id'],
-            title: title(data),
-            isCompleted: isTaskCompleted(data, db.status),
-            dueDate: date(data, db.date.name)))
+            title: _title(data),
+            isCompleted: _isTaskCompleted(data, db.status),
+            dueDate: _date(data, db.date.name)))
         .toList();
   }
 
@@ -40,8 +40,8 @@ class TaskService {
     return Task(
       id: data['id'],
       title: title,
-      isCompleted: isTaskCompleted(data, db.status),
-      dueDate: date(data, db.date.name),
+      isCompleted: _isTaskCompleted(data, db.status),
+      dueDate: _date(data, db.date.name),
     );
   }
 
@@ -52,15 +52,33 @@ class TaskService {
     if (data == null || data.isEmpty) {
       return Task.initial();
     }
+    // TODO: すでに存在しないIDだった場合のエラーハンドリング
     return Task(
       id: data['id'],
-      title: title(data),
-      isCompleted: isTaskCompleted(data, status),
-      dueDate: date(data, status.name),
+      title: _title(data),
+      isCompleted: _isTaskCompleted(data, status),
+      dueDate: _date(data, status.name),
     );
   }
 
-  String title(Map<String, dynamic> task) {
+  Future<void> deleteTask(String taskId) async {
+    await _notionDatabaseRepository.undoDeleteTask(taskId);
+  }
+
+  Future<Task> undoDeleteTask(String taskId, TaskStatusProperty status) async {
+    final data = await _notionDatabaseRepository.revertTask(taskId);
+    if (data == null || data.isEmpty) {
+      return Task.initial();
+    }
+    return Task(
+      id: data['id'],
+      title: _title(data),
+      isCompleted: _isTaskCompleted(data, status),
+      dueDate: _date(data, status.name),
+    );
+  }
+
+  String _title(Map<String, dynamic> task) {
     final titleProperty = task['properties']
         .entries
         .firstWhere((e) => e.value['type'] == 'title')
@@ -68,14 +86,14 @@ class TaskService {
     return titleProperty.length > 0 ? titleProperty[0]['plain_text'] : '';
   }
 
-  DateTime? date(Map<String, dynamic> task, String dateProperty) {
+  DateTime? _date(Map<String, dynamic> task, String dateProperty) {
     return task['properties'][dateProperty]['date'] != null
         ? DateTime.parse(
             task['properties'][dateProperty]['date']['start']) // TODO: end
         : null;
   }
 
-  bool isTaskCompleted(Map<String, dynamic> task, TaskStatusProperty status) {
+  bool _isTaskCompleted(Map<String, dynamic> task, TaskStatusProperty status) {
     if (status.type == PropertyType.checkbox) {
       return task['properties'][status.name]['checkbox'];
     }

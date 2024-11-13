@@ -55,32 +55,61 @@ class TodayListPage extends HookConsumerWidget {
               itemCount: uiTasks.value.length,
               itemBuilder: (context, index) {
                 final task = uiTasks.value[index];
-                return CheckboxListTile(
-                  value: task.isCompleted,
-                  title: Text(task.title),
-                  // 曜日を表示
-                  subtitle: Text(task.dueDate == null
-                      ? ''
-                      : dateFormat.format(task.dueDate!)),
-                  onChanged: (bool? value) async {
-                    if (waiting.value) return;
-                    waiting.value = true;
-                    // UI更新
-                    uiTasks.value = uiTasks.value
-                        .map((t) => t.id == task.id
-                            ? task.copyWith(isCompleted: value!)
-                            : t)
-                        .toList();
-                    taskViewModel.updateStatus(task.id, value!);
-                    // 時間を置く
-                    await Future.delayed(const Duration(milliseconds: 460));
-                    // リストから削除
-                    if (value == true) {
-                      uiTasks.value =
-                          uiTasks.value.where((t) => t.id != task.id).toList();
-                    }
-                    waiting.value = false;
+                return Dismissible(
+                  key: Key(task.id),
+                  direction: DismissDirection.startToEnd,
+                  onDismissed: (direction) {
+                    taskViewModel.deleteTask(task.id);
+                    uiTasks.value =
+                        uiTasks.value.where((t) => t.id != task.id).toList();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('「${task.title}」が削除されました'),
+                        action: SnackBarAction(
+                          label: 'Undo',
+                          onPressed: () {
+                            taskViewModel.undoDeleteTask(task);
+                          },
+                        ),
+                      ),
+                    );
                   },
+                  background: Container(
+                    color: Colors.red,
+                    alignment: Alignment.centerLeft,
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: const Icon(Icons.delete, color: Colors.white),
+                  ),
+                  child: ListTile(
+                    leading: Checkbox(
+                      value: task.isCompleted,
+                      onChanged: (bool? value) async {
+                        if (waiting.value) return;
+                        waiting.value = true;
+                        // UI更新
+                        uiTasks.value = uiTasks.value
+                            .map((t) => t.id == task.id
+                                ? task.copyWith(isCompleted: value!)
+                                : t)
+                            .toList();
+                        taskViewModel.updateStatus(task.id, value!);
+                        // 時間を置く
+                        await Future.delayed(const Duration(milliseconds: 460));
+                        // リストから削除
+                        if (value == true) {
+                          uiTasks.value = uiTasks.value
+                              .where((t) => t.id != task.id)
+                              .toList();
+                        }
+                        waiting.value = false;
+                      },
+                    ),
+                    title: Text(task.title),
+                    // 曜日を表示
+                    subtitle: Text(task.dueDate == null
+                        ? ''
+                        : dateFormat.format(task.dueDate!)),
+                  ),
                 );
               },
             ),
@@ -136,10 +165,15 @@ class AddTaskSheet extends HookConsumerWidget {
           ElevatedButton(
             onPressed: () {
               final today = DateTime.now();
-              taskViewModel.addTask(titleController.text, today);
+              final title = titleController.text;
+              taskViewModel.addTask(title, today);
               Navigator.pop(context);
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('「$title」が追加されました')),
+              );
             },
-            child: const Text('Add'),
+            child: const Text('追加'),
           ),
         ],
       ),

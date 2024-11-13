@@ -56,13 +56,25 @@ class TaskViewModel extends _$TaskViewModel {
     if (taskDatabase == null) {
       return;
     }
-    await _taskService!.addTask(taskDatabase, title, dueDate);
-    await fetchTasks();
+    final task = await _taskService!.addTask(taskDatabase, title, dueDate);
+    state = [...state, task];
+    fetchTasks();
   }
 
   void deleteTask(String taskId) {
-    // state = state.copyWith(
-    //   tasks: state.tasks.where((task) => task.id != taskId).toList(),
-    // );
+    _taskService!.deleteTask(taskId);
+    state = state.where((task) => task.id != taskId).toList();
+  }
+
+  Future undoDeleteTask(Task prev) async {
+    final taskDatabase = ref.watch(taskDatabaseViewModelProvider).taskDatabase;
+    if (taskDatabase == null) {
+      return;
+    }
+    final task =
+        await _taskService!.undoDeleteTask(prev.id, taskDatabase.status);
+    state = [...state, prev];
+    fetchTasks();
+    return task;
   }
 }
