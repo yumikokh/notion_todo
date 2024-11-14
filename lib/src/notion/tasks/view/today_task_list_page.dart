@@ -116,6 +116,19 @@ class TodayListPage extends HookConsumerWidget {
                               .where((t) => t.id != task.id)
                               .toList();
                         }
+                        // ignore: use_build_context_synchronously
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('「${task.title}」を完了しました 🎉'),
+                            action: SnackBarAction(
+                              label: 'Undo',
+                              onPressed: () {
+                                taskViewModel.updateStatus(task.id, false);
+                                uiTasks.value = [...uiTasks.value, task];
+                              },
+                            ),
+                          ),
+                        );
                         loading.value = false;
                       },
                     ),
@@ -149,10 +162,11 @@ class TodayListPage extends HookConsumerWidget {
                   },
                 );
               },
-              backgroundColor: Colors.blue,
+              backgroundColor: Colors.black,
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(100),
+                side: const BorderSide(color: Colors.black, width: 3),
               ),
               child: const Icon(Icons.add, size: 28),
             )
