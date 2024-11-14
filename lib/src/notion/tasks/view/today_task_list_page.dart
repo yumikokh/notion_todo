@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_app_badger/flutter_app_badger.dart';
+import 'dart:async';
 
 import '../../../settings/settings_view.dart';
 import '../../model/task.dart';
@@ -9,6 +11,8 @@ import '../../task_database/task_database_viewmodel.dart';
 import '../task_viewmodel.dart';
 
 final dateFormat = DateFormat('yyyy-MM-dd');
+
+const int updateIntervalSec = 30;
 
 class TodayListPage extends HookConsumerWidget {
   const TodayListPage({Key? key}) : super(key: key);
@@ -22,12 +26,26 @@ class TodayListPage extends HookConsumerWidget {
     final database = ref.watch(taskDatabaseViewModelProvider).taskDatabase;
 
     final uiTasks = useState<List<Task>>(tasks);
-    final waiting = useState(false);
+    final loading = useState(false);
 
+    // ポーリングする
+    useEffect(() {
+      final timer = Timer.periodic(const Duration(seconds: updateIntervalSec),
+          (timer) => taskViewModel.fetchTasks());
+      return () => timer.cancel();
+    }, []);
+
+    // 即時反映のための表示用のstateを更新
     useEffect(() {
       uiTasks.value = tasks;
       return null;
     }, [tasks]);
+
+    // バッジの更新
+    useEffect(() {
+      FlutterAppBadger.updateBadgeCount(uiTasks.value.length);
+      return null;
+    }, [uiTasks.value.length]);
 
     return Scaffold(
       appBar: AppBar(
@@ -41,9 +59,6 @@ class TodayListPage extends HookConsumerWidget {
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () {
-              // Navigate to the settings page. If the user leaves and returns
-              // to the app after it has been killed while running in the
-              // background, the navigation stack is restored.
               Navigator.restorablePushNamed(context, SettingsView.routeName);
             },
           ),
@@ -84,8 +99,8 @@ class TodayListPage extends HookConsumerWidget {
                     leading: Checkbox(
                       value: task.isCompleted,
                       onChanged: (bool? value) async {
-                        if (waiting.value) return;
-                        waiting.value = true;
+                        if (loading.value) return;
+                        loading.value = true;
                         // UI更新
                         uiTasks.value = uiTasks.value
                             .map((t) => t.id == task.id
@@ -101,7 +116,7 @@ class TodayListPage extends HookConsumerWidget {
                               .where((t) => t.id != task.id)
                               .toList();
                         }
-                        waiting.value = false;
+                        loading.value = false;
                       },
                     ),
                     title: Text(task.title),
