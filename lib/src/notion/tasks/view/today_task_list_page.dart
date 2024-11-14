@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'dart:async';
 
@@ -9,8 +8,8 @@ import '../../../settings/settings_view.dart';
 import '../../model/task.dart';
 import '../../task_database/task_database_viewmodel.dart';
 import '../task_viewmodel.dart';
-
-final dateFormat = DateFormat('yyyy-MM-dd');
+import 'task_list_tile.dart';
+import 'task_sheet.dart';
 
 const int updateIntervalSec = 30;
 
@@ -95,49 +94,11 @@ class TodayListPage extends HookConsumerWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: const Icon(Icons.delete, color: Colors.white),
                   ),
-                  child: ListTile(
-                    leading: Checkbox(
-                      value: task.isCompleted,
-                      onChanged: (bool? value) async {
-                        if (loading.value) return;
-                        loading.value = true;
-                        // UI更新
-                        uiTasks.value = uiTasks.value
-                            .map((t) => t.id == task.id
-                                ? task.copyWith(isCompleted: value!)
-                                : t)
-                            .toList();
-                        taskViewModel.updateStatus(task.id, value!);
-                        // 時間を置く
-                        await Future.delayed(const Duration(milliseconds: 460));
-                        // リストから削除
-                        if (value == true) {
-                          uiTasks.value = uiTasks.value
-                              .where((t) => t.id != task.id)
-                              .toList();
-                        }
-                        // ignore: use_build_context_synchronously
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('「${task.title}」を完了しました 🎉'),
-                            action: SnackBarAction(
-                              label: 'Undo',
-                              onPressed: () {
-                                taskViewModel.updateStatus(task.id, false);
-                                uiTasks.value = [...uiTasks.value, task];
-                              },
-                            ),
-                          ),
-                        );
-                        loading.value = false;
-                      },
-                    ),
-                    title: Text(task.title),
-                    // 曜日を表示
-                    subtitle: Text(task.dueDate == null
-                        ? ''
-                        : dateFormat.format(task.dueDate!)),
-                  ),
+                  child: TaskListTile(
+                      task: task,
+                      loading: loading,
+                      uiTasks: uiTasks,
+                      taskViewModel: taskViewModel),
                 );
               },
             ),
@@ -171,41 +132,6 @@ class TodayListPage extends HookConsumerWidget {
               child: const Icon(Icons.add, size: 28),
             )
           : null,
-    );
-  }
-}
-
-class AddTaskSheet extends HookConsumerWidget {
-  const AddTaskSheet({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context, ref) {
-    final taskViewModel = ref.watch(taskViewModelProvider.notifier);
-    final titleController = useTextEditingController();
-
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          TextField(
-            controller: titleController,
-            decoration: const InputDecoration(labelText: 'Title'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              final today = DateTime.now();
-              final title = titleController.text;
-              taskViewModel.addTask(title, today);
-              Navigator.pop(context);
-
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('「$title」が追加されました')),
-              );
-            },
-            child: const Text('追加'),
-          ),
-        ],
-      ),
     );
   }
 }
