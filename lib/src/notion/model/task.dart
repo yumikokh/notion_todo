@@ -4,12 +4,23 @@ part 'task.freezed.dart';
 part 'task.g.dart';
 
 @freezed
+class TaskDate with _$TaskDate {
+  const factory TaskDate({
+    required String start,
+    required String? end,
+  }) = _TaskDate;
+
+  factory TaskDate.fromJson(Map<String, dynamic> json) =>
+      _$TaskDateFromJson(json);
+}
+
+@freezed
 class Task with _$Task {
   const factory Task({
     required String id,
     required String title,
     required bool isCompleted,
-    required DateTime? dueDate,
+    required TaskDate? dueDate,
     // required String createdTime,
     // required String updatedTime,
   }) = _Task;

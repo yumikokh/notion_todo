@@ -6,13 +6,25 @@ part of 'task.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+_$TaskDateImpl _$$TaskDateImplFromJson(Map<String, dynamic> json) =>
+    _$TaskDateImpl(
+      start: json['start'] as String,
+      end: json['end'] as String?,
+    );
+
+Map<String, dynamic> _$$TaskDateImplToJson(_$TaskDateImpl instance) =>
+    <String, dynamic>{
+      'start': instance.start,
+      'end': instance.end,
+    };
+
 _$TaskImpl _$$TaskImplFromJson(Map<String, dynamic> json) => _$TaskImpl(
       id: json['id'] as String,
       title: json['title'] as String,
       isCompleted: json['isCompleted'] as bool,
       dueDate: json['dueDate'] == null
           ? null
-          : DateTime.parse(json['dueDate'] as String),
+          : TaskDate.fromJson(json['dueDate'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$$TaskImplToJson(_$TaskImpl instance) =>
@@ -20,5 +32,5 @@ Map<String, dynamic> _$$TaskImplToJson(_$TaskImpl instance) =>
       'id': instance.id,
       'title': instance.title,
       'isCompleted': instance.isCompleted,
-      'dueDate': instance.dueDate?.toIso8601String(),
+      'dueDate': instance.dueDate,
     };

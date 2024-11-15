@@ -1,8 +1,9 @@
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:notion_todo/src/notion/task_database/task_database_viewmodel.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../model/task.dart';
-import '../oauth/notion_oauth_viewmodel.dart';
 import '../repository/notion_database_repository.dart';
 import 'task_service.dart';
 
@@ -15,23 +16,20 @@ class TaskViewModel extends _$TaskViewModel {
   @override
   List<Task> build() {
     _initialize();
+    fetchTasks();
     return [];
   }
 
-  _initialize() async {
-    final accessToken = ref.watch(notionOAuthViewModelProvider).accessToken;
-    if (accessToken == null) {
-      return;
-    }
-    _taskService = TaskService(accessToken);
-    fetchTasks();
+  _initialize() {
+    final repository = ref.watch(notionDatabaseRepositoryProvider);
+    _taskService = TaskService(repository);
   }
 
   Future<void> fetchTasks() async {
     if (_taskService == null) {
       return;
     }
-    final taskDatabase = ref.watch(taskDatabaseViewModelProvider).taskDatabase;
+    final taskDatabase = ref.read(taskDatabaseViewModelProvider).taskDatabase;
     if (taskDatabase == null) {
       return;
     }
@@ -46,8 +44,7 @@ class TaskViewModel extends _$TaskViewModel {
     if (taskDatabase == null) {
       return;
     }
-    final status = taskDatabase.status;
-    await _taskService!.updateStatus(taskId, status, isCompleted);
+    await _taskService!.updateStatus(taskDatabase, taskId, isCompleted);
     await fetchTasks();
   }
 
@@ -77,4 +74,72 @@ class TaskViewModel extends _$TaskViewModel {
     fetchTasks();
     return task;
   }
+
+  ({Color color, IconData icon, double size, List<String> dateStrings})?
+      getDisplayDate(Task task) {
+    final defaultColor = Colors.grey[600];
+    const icon = Icons.event_rounded;
+    const size = 13.0;
+    final dueDate = task.dueDate;
+    final now = DateTime.now();
+
+    if (dueDate == null) {
+      return null;
+    }
+
+    final color =
+        ((dueDate.end != null && DateTime.parse(dueDate.end!).isBefore(now)) ||
+                (dueDate.end == null &&
+                    DateTime.parse(dueDate.start).isBefore(now)))
+            ? Colors.red // 過ぎてたら赤
+            : defaultColor; // それ以外は灰色
+
+    List<String> dateStrings = [
+      formatDateTime(dueDate.start),
+      if (dueDate.end != null) formatDateTime(dueDate.end!),
+    ].whereType<String>().toList();
+
+    return (
+      color: color!,
+      icon: icon,
+      size: size,
+      dateStrings: dateStrings,
+    );
+  }
+}
+
+String? formatDateTime(String dateTime, {bool showToday = false}) {
+  final parsed = DateTime.parse(dateTime).toLocal();
+  final date = DateTime(parsed.year, parsed.month, parsed.day);
+  final now = DateTime.now();
+  final today = DateTime(now.year, now.month, now.day);
+  final yesterday = DateTime(now.year, now.month, now.day - 1);
+  final tomorrow = DateTime(now.year, now.month, now.day + 1);
+  final hasTime = dateTime.contains('T');
+
+  String? formatText() {
+    if (date == today) {
+      if (!showToday) {
+        return hasTime ? "HH:mm" : null;
+      }
+      return hasTime ? "'Today' HH:mm" : "'Today'";
+    }
+    if (date == yesterday) {
+      return hasTime ? "'Yesterday' HH:mm" : "'Yesterday'";
+    }
+    if (date == tomorrow) {
+      return hasTime ? "'Tomorrow' HH:mm" : "'Tomorrow'";
+    }
+    if (date.year == today.year) {
+      if (date.month == today.month) {
+        return hasTime ? "dd E HH:mm" : "dd E";
+      }
+      return hasTime ? "MM/dd HH:mm" : "MM/dd";
+    }
+    return 'yyyy/MM/dd';
+  }
+
+  final format = formatText();
+
+  return format != null ? DateFormat(format).format(parsed.toLocal()) : null;
 }

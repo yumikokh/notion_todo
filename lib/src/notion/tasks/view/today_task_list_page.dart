@@ -29,6 +29,7 @@ class TodayListPage extends HookConsumerWidget {
 
     // ポーリングする
     useEffect(() {
+      taskViewModel.fetchTasks();
       final timer = Timer.periodic(const Duration(seconds: updateIntervalSec),
           (timer) => taskViewModel.fetchTasks());
       return () => timer.cancel();

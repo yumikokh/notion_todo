@@ -6,13 +6,10 @@ import '../model/task_database.dart';
 import '../repository/notion_database_repository.dart';
 
 class TaskService {
-  final String _accessToken;
+  final NotionDatabaseRepository _notionDatabaseRepository;
 
-  late final NotionDatabaseRepository _notionDatabaseRepository;
-
-  TaskService(this._accessToken) {
-    _notionDatabaseRepository = NotionDatabaseRepository(_accessToken);
-  }
+  TaskService(NotionDatabaseRepository notionDatabaseRepository)
+      : _notionDatabaseRepository = notionDatabaseRepository;
 
   FutureOr<List<Task>> fetchTasks(
     TaskDatabase db,
@@ -46,9 +43,9 @@ class TaskService {
   }
 
   Future<Task> updateStatus(
-      String taskId, TaskStatusProperty status, bool isCompleted) async {
+      TaskDatabase db, String taskId, bool isCompleted) async {
     final data = await _notionDatabaseRepository.updateStatus(
-        taskId, status, isCompleted);
+        taskId, db.status, isCompleted);
     if (data == null || data.isEmpty) {
       return Task.initial();
     }
@@ -56,8 +53,8 @@ class TaskService {
     return Task(
       id: data['id'],
       title: _title(data),
-      isCompleted: _isTaskCompleted(data, status),
-      dueDate: _date(data, status.name),
+      isCompleted: _isTaskCompleted(data, db.status),
+      dueDate: _date(data, db.date.name),
     );
   }
 
@@ -86,11 +83,19 @@ class TaskService {
     return titleProperty.length > 0 ? titleProperty[0]['plain_text'] : '';
   }
 
-  DateTime? _date(Map<String, dynamic> task, String dateProperty) {
-    return task['properties'][dateProperty]['date'] != null
-        ? DateTime.parse(
-            task['properties'][dateProperty]['date']['start']) // TODO: end
-        : null;
+  TaskDate? _date(Map<String, dynamic> task, String dateProperty) {
+    final datePropertyData = task['properties'][dateProperty];
+    if (datePropertyData == null) {
+      return null;
+    }
+    final date = datePropertyData['date'];
+    if (date == null) {
+      return null;
+    }
+    return TaskDate(
+      start: date['start'],
+      end: date['end'],
+    );
   }
 
   bool _isTaskCompleted(Map<String, dynamic> task, TaskStatusProperty status) {

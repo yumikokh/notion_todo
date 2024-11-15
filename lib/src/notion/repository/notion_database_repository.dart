@@ -1,8 +1,12 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../model/property.dart';
 import '../model/task_database.dart';
+import '../oauth/notion_oauth_viewmodel.dart';
+
+part 'notion_database_repository.g.dart';
 
 // - [x] list databases
 // - [x] list database pages
@@ -72,7 +76,7 @@ class NotionDatabaseRepository {
       body: jsonEncode({
         "filter": filter,
         "sorts": [
-          {"property": dateProperty.name, "direction": 'descending'},
+          {"property": dateProperty.name, "direction": "ascending"},
           {"timestamp": "last_edited_time", "direction": "descending"}
         ]
       }),
@@ -178,4 +182,13 @@ dynamic getStatusFilter(StatusTaskStatusProperty statusProperty,
                   }
           })
       .toList();
+}
+
+@riverpod
+NotionDatabaseRepository notionDatabaseRepository(ref) {
+  final accessToken = ref.watch(notionOAuthViewModelProvider).accessToken;
+  if (accessToken == null) {
+    return NotionDatabaseRepository('');
+  }
+  return NotionDatabaseRepository(accessToken);
 }
