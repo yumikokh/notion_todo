@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../helpers/date.dart';
 import '../model/property.dart';
 import '../model/task_database.dart';
 import '../oauth/notion_oauth_viewmodel.dart';
@@ -48,8 +49,8 @@ class NotionDatabaseRepository {
               {
                 "property": dateProperty.name,
                 "date": {
-                  // 今日 '2024-11-11'の形式
-                  "on_or_before": DateTime.now().toIso8601String().split('T')[0]
+                  "on_or_before":
+                      endTimeOfDay(DateTime.now()).toUtc().toIso8601String()
                 }
               },
               statusProperty.type == PropertyType.status
@@ -127,7 +128,7 @@ class NotionDatabaseRepository {
       },
       if (dueDate != null)
         database.date.name: {
-          "date": {"start": dueDate.toIso8601String()}
+          "date": {"start": dueDate.toUtc().toIso8601String()}
         }
     };
     final res = await http.post(
