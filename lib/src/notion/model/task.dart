@@ -7,7 +7,7 @@ part 'task.g.dart';
 class TaskDate with _$TaskDate {
   const factory TaskDate({
     required String start, // TODO: DateTimeにして、時間指定があるかのフラグを追加する
-    required String? end,
+    String? end,
   }) = _TaskDate;
 
   factory TaskDate.fromJson(Map<String, dynamic> json) =>

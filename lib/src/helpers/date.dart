@@ -12,3 +12,7 @@ bool isToday(DateTime? date) {
 DateTime endTimeOfDay(DateTime date) {
   return DateTime(date.year, date.month, date.day, 23, 59, 59);
 }
+
+String dateString(DateTime date) {
+  return date.toIso8601String().split('T').first;
+}

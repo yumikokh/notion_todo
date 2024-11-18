@@ -20,7 +20,8 @@ TaskDate _$TaskDateFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$TaskDate {
-  String get start => throw _privateConstructorUsedError;
+  String get start =>
+      throw _privateConstructorUsedError; // TODO: DateTimeにして、時間指定があるかのフラグを追加する
   String? get end => throw _privateConstructorUsedError;
 
   /// Serializes this TaskDate to a JSON map.
@@ -115,13 +116,14 @@ class __$$TaskDateImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$TaskDateImpl implements _TaskDate {
-  const _$TaskDateImpl({required this.start, required this.end});
+  const _$TaskDateImpl({required this.start, this.end});
 
   factory _$TaskDateImpl.fromJson(Map<String, dynamic> json) =>
       _$$TaskDateImplFromJson(json);
 
   @override
   final String start;
+// TODO: DateTimeにして、時間指定があるかのフラグを追加する
   @override
   final String? end;
 
@@ -160,15 +162,14 @@ class _$TaskDateImpl implements _TaskDate {
 }
 
 abstract class _TaskDate implements TaskDate {
-  const factory _TaskDate(
-      {required final String start,
-      required final String? end}) = _$TaskDateImpl;
+  const factory _TaskDate({required final String start, final String? end}) =
+      _$TaskDateImpl;
 
   factory _TaskDate.fromJson(Map<String, dynamic> json) =
       _$TaskDateImpl.fromJson;
 
   @override
-  String get start;
+  String get start; // TODO: DateTimeにして、時間指定があるかのフラグを追加する
   @override
   String? get end;
 

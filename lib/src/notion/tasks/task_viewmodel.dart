@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:notion_todo/src/helpers/date.dart';
 import 'package:notion_todo/src/notion/task_database/task_database_viewmodel.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -11,7 +12,7 @@ part 'task_viewmodel.g.dart';
 
 @riverpod
 class TaskViewModel extends _$TaskViewModel {
-  late final TaskService _taskService;
+  late TaskService _taskService;
 
   @override
   List<Task> build() {
@@ -37,7 +38,8 @@ class TaskViewModel extends _$TaskViewModel {
     if (taskDatabase == null) {
       return;
     }
-    await _taskService.addTask(taskDatabase, title, dueDate);
+    await _taskService.addTask(
+        taskDatabase, title, dueDate != null ? dateString(dueDate) : null);
     // state = [...state, task]; // 表示の更新はfetchTasksで行う
     fetchTasks();
   }
@@ -49,8 +51,7 @@ class TaskViewModel extends _$TaskViewModel {
     if (db == null) {
       return;
     }
-    await _taskService.updateTask(db, task.id, task.title,
-        dueDate == null ? null : DateTime.parse(dueDate.start));
+    await _taskService.updateTask(db, task.id, task.title, dueDate?.start);
     // state = state.map((t) => t.id == task.id ? updatedTask : t).toList(); // 表示の更新はfetchTasksで行う
 
     fetchTasks();

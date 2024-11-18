@@ -104,7 +104,6 @@ class TodayListPage extends HookConsumerWidget {
                       showModalBottomSheet(
                         context: context,
                         builder: (context) {
-                          // テキスト表示
                           return SizedBox.expand(
                               child: Center(
                                   child: Column(
@@ -120,11 +119,7 @@ class TodayListPage extends HookConsumerWidget {
                                   final newTask = task.copyWith(
                                       dueDate: date == null
                                           ? null
-                                          : TaskDate(
-                                              start: date
-                                                  .toUtc()
-                                                  .toIso8601String(),
-                                              end: null));
+                                          : TaskDate(start: dateString(date)));
                                   uiTasks.value = uiTasks.value.where((t) {
                                     if (t.id == task.id) {
                                       return isToday(date);

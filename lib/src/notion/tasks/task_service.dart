@@ -28,7 +28,7 @@ class TaskService {
         .toList();
   }
 
-  Future<Task> addTask(TaskDatabase db, String title, DateTime? dueDate) async {
+  Future<Task> addTask(TaskDatabase db, String title, String? dueDate) async {
     final data = await _notionDatabaseRepository.addTask(title, dueDate);
     if (data == null || data.isEmpty) {
       return Task.initial();
@@ -42,7 +42,7 @@ class TaskService {
   }
 
   Future<Task> updateTask(
-      TaskDatabase db, String taskId, String title, DateTime? dueDate) async {
+      TaskDatabase db, String taskId, String title, String? dueDate) async {
     final data =
         await _notionDatabaseRepository.updateTask(taskId, title, dueDate);
     if (data == null || data['id'] == null) {
