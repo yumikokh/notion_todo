@@ -16,7 +16,7 @@ part 'notion_database_repository.g.dart';
 // - [x] update a database page
 // - [x] delete a database page
 
-enum FilterType { today, done, all }
+enum FilterType { today, all }
 
 class NotionDatabaseRepository {
   final String _accessToken;
@@ -49,43 +49,54 @@ class NotionDatabaseRepository {
     if (db == null || db.id.isEmpty) {
       return;
     }
+
     final databaseId = db.id;
     final dateProperty = db.date;
     final statusProperty = db.status;
-    final filter = type == FilterType.today
-        ? {
-            "and": [
+    final todayStart = startTimeOfDay(DateTime.now()).toUtc().toIso8601String();
+    final todayEnd = endTimeOfDay(DateTime.now()).toUtc().toIso8601String();
+    final filter = {
+      "or": [
+        // 今日のタスク
+        {
+          "and": [
+            {
+              "property": dateProperty.name,
+              "date": {"on_or_after": todayStart}
+            },
+            {
+              "property": dateProperty.name,
+              "date": {"on_or_before": todayEnd}
+            }
+          ]
+        },
+        // 期限切れで未完了のタスク
+        {
+          "and": [
+            {
+              "property": dateProperty.name,
+              "date": {"before": todayStart}
+            },
+            if (statusProperty.type == PropertyType.status)
+              ...getNotCompleteStatusFilter(
+                  statusProperty as StatusTaskStatusProperty)
+            else
               {
-                "property": dateProperty.name,
-                "date": {
-                  "on_or_before":
-                      endTimeOfDay(DateTime.now()).toUtc().toIso8601String()
-                }
-              },
-              statusProperty.type == PropertyType.status
-                  ? {
-                      "and": getStatusFilter(
-                          statusProperty as StatusTaskStatusProperty)
-                    }
-                  : {
-                      "property": statusProperty.name,
-                      "checkbox": {"equals": false}
-                    }
-            ]
-          }
-        : type == FilterType.done
-            ? {
-                "or": getStatusFilter(
-                    statusProperty as StatusTaskStatusProperty,
-                    isCompleted: true)
+                "property": statusProperty.name,
+                "checkbox": {"equals": false}
               }
-            : {};
+          ]
+        }
+      ]
+    };
+
     final res = await http.post(
       Uri.parse('https://api.notion.com/v1/databases/$databaseId/query'),
       headers: _headers,
       body: jsonEncode({
         "filter": filter,
         "sorts": [
+          {"property": statusProperty.name, "direction": "ascending"},
           {"property": dateProperty.name, "direction": "ascending"},
           {"timestamp": "last_edited_time", "direction": "descending"}
         ]
@@ -165,6 +176,7 @@ class NotionDatabaseRepository {
     if (db == null || db.id.isEmpty) {
       return;
     }
+
     final status = db.status;
     final res = await http.patch(
       Uri.parse('https://api.notion.com/v1/pages/$taskId'),
@@ -214,27 +226,19 @@ class NotionDatabaseRepository {
   }
 }
 
-dynamic getStatusFilter(StatusTaskStatusProperty statusProperty,
-    {bool isCompleted = false}) {
+List<dynamic> getNotCompleteStatusFilter(
+    StatusTaskStatusProperty statusProperty) {
   final optionIds = statusProperty.status.groups
       .firstWhere((e) => e.name == 'Complete')
       .option_ids;
-  return optionIds
-      .map((id) => {
-            "property": statusProperty.name,
-            "status": isCompleted
-                ? {
-                    "equals": statusProperty.status.options
-                        .firstWhere((e) => e.id == id)
-                        .name
-                  }
-                : {
-                    "does_not_equal": statusProperty.status.options
-                        .firstWhere((e) => e.id == id)
-                        .name
-                  }
-          })
-      .toList();
+  return optionIds.map((id) {
+    final completeOptionName =
+        statusProperty.status.options.firstWhere((e) => e.id == id).name;
+    return {
+      "property": statusProperty.name,
+      "status": {"does_not_equal": completeOptionName}
+    };
+  }).toList();
 }
 
 @riverpod

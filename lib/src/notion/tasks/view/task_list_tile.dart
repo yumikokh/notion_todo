@@ -10,14 +10,14 @@ class TaskListTile extends StatelessWidget {
     super.key,
     required this.task,
     required this.loading,
-    required this.uiTasks,
+    required this.updateUITasks,
     required this.taskViewModel,
   });
 
   // HACK: あとでリファクタ
   final Task task;
   final ValueNotifier<bool> loading; // けす
-  final ValueNotifier<List<Task>> uiTasks; // けす
+  final Function(Task task, bool isComplete) updateUITasks;
   final TaskViewModel taskViewModel;
 
   @override
@@ -39,34 +39,35 @@ class TaskListTile extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(0),
         ),
-        onChanged: (bool? value) async {
+        onChanged: (bool? willComplete) async {
           if (loading.value) return;
+          if (willComplete == null) return;
           loading.value = true;
           // UI更新
-          uiTasks.value = uiTasks.value
-              .map((t) =>
-                  t.id == task.id ? task.copyWith(isCompleted: value!) : t)
-              .toList();
-          taskViewModel.updateStatus(task.id, value!);
+          updateUITasks(task, willComplete);
+
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('「${task.title}」を完了しました 🎉'),
+              content: willComplete
+                  ? Text('「${task.title}」を完了しました 🎉')
+                  : Text('「${task.title}」を未完了に戻しました'),
               action: SnackBarAction(
                 label: 'Undo',
                 onPressed: () {
-                  taskViewModel.updateStatus(task.id, false);
-                  uiTasks.value = [...uiTasks.value, task];
+                  taskViewModel.updateStatus(task.id, !willComplete);
+                  updateUITasks(task, !willComplete);
                 },
               ),
             ),
           );
-          // 時間を置く
-          await Future.delayed(const Duration(milliseconds: 460));
-          // リストから削除
-          if (value == true) {
-            uiTasks.value =
-                uiTasks.value.where((t) => t.id != task.id).toList();
-          }
+          await taskViewModel.updateStatus(task.id, willComplete);
+          // // 時間を置く
+          // await Future.delayed(const Duration(milliseconds: 460));
+          // // リストから削除
+          // if (willComplete == true) {
+          //   uiTasks.value =
+          //       uiTasks.value.where((t) => t.id != task.id).toList();
+          // }
 
           loading.value = false;
         },

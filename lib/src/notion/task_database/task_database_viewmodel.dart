@@ -69,9 +69,13 @@ class TaskDatabaseViewModel extends _$TaskDatabaseViewModel {
     if (_taskDatabaseService == null) {
       return;
     }
-    final taskDatabases = await _taskDatabaseService!.fetchDatabases();
-    // print('taskDatabase length: ${taskDatabases.length}');
-    state = state.copyWith(databases: taskDatabases);
+    try {
+      final taskDatabases = await _taskDatabaseService!.fetchDatabases();
+      // print('taskDatabase length: ${taskDatabases.length}');
+      state = state.copyWith(databases: taskDatabases);
+    } catch (e) {
+      print(e);
+    }
   }
 
   void selectDatabase(String? databaseId) {

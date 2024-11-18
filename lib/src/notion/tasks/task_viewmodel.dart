@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:notion_todo/src/helpers/date.dart';
 import 'package:notion_todo/src/notion/task_database/task_database_viewmodel.dart';
@@ -28,9 +29,13 @@ class TaskViewModel extends _$TaskViewModel {
     if (taskDatabase == null) {
       return;
     }
-    final tasks = await _taskService.fetchTasks(
-        taskDatabase, FilterType.today); // TODO: filterを追加
-    state = tasks;
+    try {
+      final tasks = await _taskService.fetchTasks(
+          taskDatabase, FilterType.today); // TODO: filterを追加
+      state = tasks;
+    } catch (e) {
+      print(e);
+    }
   }
 
   Future addTask(String title, DateTime? dueDate) async {
@@ -45,16 +50,21 @@ class TaskViewModel extends _$TaskViewModel {
   }
 
   Future updateTask(Task task) async {
-    final taskDatabase = ref.watch(taskDatabaseViewModelProvider).taskDatabase;
-    final db = taskDatabase;
-    final dueDate = task.dueDate;
-    if (db == null) {
-      return;
-    }
-    await _taskService.updateTask(db, task.id, task.title, dueDate?.start);
-    // state = state.map((t) => t.id == task.id ? updatedTask : t).toList(); // 表示の更新はfetchTasksで行う
+    try {
+      final taskDatabase =
+          ref.watch(taskDatabaseViewModelProvider).taskDatabase;
+      final db = taskDatabase;
+      final dueDate = task.dueDate;
+      if (db == null) {
+        return;
+      }
+      await _taskService.updateTask(db, task.id, task.title, dueDate?.start);
+      // state = state.map((t) => t.id == task.id ? updatedTask : t).toList(); // 表示の更新はfetchTasksで行う
 
-    fetchTasks();
+      fetchTasks();
+    } catch (e) {
+      print(e);
+    }
   }
 
   Future updateStatus(String taskId, bool isCompleted) async {
@@ -150,4 +160,16 @@ String? formatDateTime(String dateTime, {bool showToday = false}) {
   final format = formatText();
 
   return format != null ? DateFormat(format).format(parsed.toLocal()) : null;
+}
+
+@riverpod
+List<Task> completedTasks(Ref ref) {
+  final tasks = ref.watch(taskViewModelProvider);
+  return tasks.where((task) => task.isCompleted).toList();
+}
+
+@riverpod
+List<Task> notCompletedTasks(Ref ref) {
+  final tasks = ref.watch(taskViewModelProvider);
+  return tasks.where((task) => !task.isCompleted).toList();
 }
