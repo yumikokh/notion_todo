@@ -51,6 +51,7 @@ class TaskDateSheet extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
+    final now = DateTime.now();
     return Padding(
         padding: const EdgeInsets.all(16),
         child: Column(children: [
@@ -72,9 +73,13 @@ class TaskDateSheet extends HookWidget {
             ],
           ),
           TableCalendar(
-            firstDay: DateTime.now(),
-            lastDay: DateTime.now().add(const Duration(days: 365)),
-            focusedDay: selectedDate ?? DateTime.now(),
+            firstDay: selectedDate == null
+                ? now
+                : selectedDate!.isBefore(now)
+                    ? selectedDate!
+                    : now,
+            lastDay: now.add(const Duration(days: 365)),
+            focusedDay: selectedDate ?? now,
             currentDay: selectedDate,
             calendarFormat: CalendarFormat.twoWeeks,
             onDaySelected: (date, focusedDate) {

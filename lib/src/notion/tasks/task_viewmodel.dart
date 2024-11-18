@@ -11,41 +11,25 @@ part 'task_viewmodel.g.dart';
 
 @riverpod
 class TaskViewModel extends _$TaskViewModel {
-  late TaskService? _taskService;
+  late final TaskService _taskService;
 
   @override
   List<Task> build() {
-    _initialize();
+    final repository = ref.watch(notionDatabaseRepositoryProvider);
+    _taskService = TaskService(repository);
+
     fetchTasks();
     return [];
   }
 
-  _initialize() {
-    final repository = ref.watch(notionDatabaseRepositoryProvider);
-    _taskService = TaskService(repository);
-  }
-
   Future<void> fetchTasks() async {
-    if (_taskService == null) {
-      return;
-    }
     final taskDatabase = ref.read(taskDatabaseViewModelProvider).taskDatabase;
     if (taskDatabase == null) {
       return;
     }
-    final tasks = await _taskService!
-        .fetchTasks(taskDatabase, FilterType.today); // TODO: filterを追加
-
+    final tasks = await _taskService.fetchTasks(
+        taskDatabase, FilterType.today); // TODO: filterを追加
     state = tasks;
-  }
-
-  Future updateStatus(String taskId, bool isCompleted) async {
-    final taskDatabase = ref.watch(taskDatabaseViewModelProvider).taskDatabase;
-    if (taskDatabase == null) {
-      return;
-    }
-    await _taskService!.updateStatus(taskDatabase, taskId, isCompleted);
-    await fetchTasks();
   }
 
   Future addTask(String title, DateTime? dueDate) async {
@@ -53,13 +37,36 @@ class TaskViewModel extends _$TaskViewModel {
     if (taskDatabase == null) {
       return;
     }
-    final task = await _taskService!.addTask(taskDatabase, title, dueDate);
-    state = [...state, task];
+    await _taskService.addTask(taskDatabase, title, dueDate);
+    // state = [...state, task]; // 表示の更新はfetchTasksで行う
     fetchTasks();
   }
 
+  Future updateTask(Task task) async {
+    final taskDatabase = ref.watch(taskDatabaseViewModelProvider).taskDatabase;
+    final db = taskDatabase;
+    final dueDate = task.dueDate;
+    if (db == null) {
+      return;
+    }
+    await _taskService.updateTask(db, task.id, task.title,
+        dueDate == null ? null : DateTime.parse(dueDate.start));
+    // state = state.map((t) => t.id == task.id ? updatedTask : t).toList(); // 表示の更新はfetchTasksで行う
+
+    fetchTasks();
+  }
+
+  Future updateStatus(String taskId, bool isCompleted) async {
+    final taskDatabase = ref.watch(taskDatabaseViewModelProvider).taskDatabase;
+    if (taskDatabase == null) {
+      return;
+    }
+    await _taskService.updateStatus(taskDatabase, taskId, isCompleted);
+    await fetchTasks();
+  }
+
   void deleteTask(String taskId) {
-    _taskService!.deleteTask(taskId);
+    _taskService.deleteTask(taskId);
     state = state.where((task) => task.id != taskId).toList();
   }
 
@@ -69,7 +76,7 @@ class TaskViewModel extends _$TaskViewModel {
       return;
     }
     final task =
-        await _taskService!.undoDeleteTask(prev.id, taskDatabase.status);
+        await _taskService.undoDeleteTask(prev.id, taskDatabase.status);
     state = [...state, prev];
     fetchTasks();
     return task;

@@ -15,8 +15,7 @@ class TaskService {
     TaskDatabase db,
     FilterType type,
   ) async {
-    final results = await _notionDatabaseRepository.fetchPages(
-        type, db.id, db.date, db.status);
+    final results = await _notionDatabaseRepository.fetchPages(type);
     if (results == null) {
       return [];
     }
@@ -30,8 +29,23 @@ class TaskService {
   }
 
   Future<Task> addTask(TaskDatabase db, String title, DateTime? dueDate) async {
-    final data = await _notionDatabaseRepository.addTask(db, title, dueDate);
+    final data = await _notionDatabaseRepository.addTask(title, dueDate);
     if (data == null || data.isEmpty) {
+      return Task.initial();
+    }
+    return Task(
+      id: data['id'],
+      title: title,
+      isCompleted: _isTaskCompleted(data, db.status),
+      dueDate: _date(data, db.date.name),
+    );
+  }
+
+  Future<Task> updateTask(
+      TaskDatabase db, String taskId, String title, DateTime? dueDate) async {
+    final data =
+        await _notionDatabaseRepository.updateTask(taskId, title, dueDate);
+    if (data == null || data['id'] == null) {
       return Task.initial();
     }
     return Task(
@@ -44,8 +58,8 @@ class TaskService {
 
   Future<Task> updateStatus(
       TaskDatabase db, String taskId, bool isCompleted) async {
-    final data = await _notionDatabaseRepository.updateStatus(
-        taskId, db.status, isCompleted);
+    final data =
+        await _notionDatabaseRepository.updateStatus(taskId, isCompleted);
     if (data == null || data.isEmpty) {
       return Task.initial();
     }

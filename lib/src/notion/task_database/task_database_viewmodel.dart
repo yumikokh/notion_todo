@@ -85,7 +85,6 @@ class TaskDatabaseViewModel extends _$TaskDatabaseViewModel {
         date: null,
       ),
     );
-    print('state.selectedTaskDatabase: ${state.selectedTaskDatabase}');
   }
 
   List<Property> propertyOptions(SettingPropertyType type) {

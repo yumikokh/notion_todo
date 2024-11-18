@@ -6,7 +6,7 @@ part 'task.g.dart';
 @freezed
 class TaskDate with _$TaskDate {
   const factory TaskDate({
-    required String start,
+    required String start, // TODO: DateTimeにして、時間指定があるかのフラグを追加する
     required String? end,
   }) = _TaskDate;
 

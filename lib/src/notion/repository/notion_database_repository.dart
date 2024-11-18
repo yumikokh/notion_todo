@@ -6,6 +6,7 @@ import '../../helpers/date.dart';
 import '../model/property.dart';
 import '../model/task_database.dart';
 import '../oauth/notion_oauth_viewmodel.dart';
+import '../task_database/task_database_viewmodel.dart';
 
 part 'notion_database_repository.g.dart';
 
@@ -19,10 +20,12 @@ enum FilterType { today, done, all }
 
 class NotionDatabaseRepository {
   final String _accessToken;
+  final TaskDatabase? _database;
   // ignore: prefer_typing_uninitialized_variables
   late final _headers;
 
-  NotionDatabaseRepository(this._accessToken) {
+  NotionDatabaseRepository(this._accessToken, {TaskDatabase? database})
+      : _database = database ?? TaskDatabase.initial() {
     _headers = {
       'Content-Type': 'application/json',
       'Notion-Version': '2022-06-28',
@@ -41,8 +44,14 @@ class NotionDatabaseRepository {
     return data['results'];
   }
 
-  Future fetchPages(FilterType type, String databaseId,
-      TaskDateProperty dateProperty, TaskStatusProperty statusProperty) async {
+  Future fetchPages(FilterType type) async {
+    final db = _database;
+    if (db == null || db.id.isEmpty) {
+      return;
+    }
+    final databaseId = db.id;
+    final dateProperty = db.date;
+    final statusProperty = db.status;
     final filter = type == FilterType.today
         ? {
             "and": [
@@ -86,8 +95,72 @@ class NotionDatabaseRepository {
     return data['results'];
   }
 
-  Future updateStatus(
-      String taskId, TaskStatusProperty status, bool isCompleted) async {
+  Future addTask(String title, DateTime? dueDate) async {
+    final db = _database;
+    if (db == null || db.id.isEmpty) {
+      return;
+    }
+    final properties = {
+      db.title.name: {
+        "title": [
+          {
+            "type": "text",
+            "text": {"content": title}
+          }
+        ]
+      },
+      if (dueDate != null)
+        db.date.name: {
+          "date": {"start": dueDate.toUtc().toIso8601String()}
+        }
+    };
+    final res = await http.post(
+      Uri.parse('https://api.notion.com/v1/pages'),
+      headers: _headers,
+      body: jsonEncode({
+        "parent": {"database_id": db.id},
+        "properties": properties
+      }),
+    );
+    return jsonDecode(res.body);
+  }
+
+  Future updateTask(String taskId, String title, DateTime? dueDate) async {
+    final db = _database;
+    if (db == null || db.id.isEmpty) {
+      return;
+    }
+    final properties = {
+      db.title.name: {
+        "id": db.title.id,
+        "title": [
+          {
+            "type": "text",
+            "text": {"content": title}
+          }
+        ]
+      },
+      db.date.name: {
+        "id": db.date.id,
+        "date": dueDate != null
+            ? {"start": dueDate.toUtc().toIso8601String()}
+            : null
+      }
+    };
+    final res = await http.patch(
+      Uri.parse('https://api.notion.com/v1/pages/$taskId'),
+      headers: _headers,
+      body: jsonEncode({"properties": properties}),
+    );
+    return jsonDecode(res.body);
+  }
+
+  Future updateStatus(String taskId, bool isCompleted) async {
+    final db = _database;
+    if (db == null || db.id.isEmpty) {
+      return;
+    }
+    final status = db.status;
     final res = await http.patch(
       Uri.parse('https://api.notion.com/v1/pages/$taskId'),
       headers: _headers,
@@ -111,32 +184,6 @@ class NotionDatabaseRepository {
             : {
                 status.name: {"checkbox": isCompleted}
               }
-      }),
-    );
-    return jsonDecode(res.body);
-  }
-
-  Future addTask(TaskDatabase database, String title, DateTime? dueDate) async {
-    final properties = {
-      database.title.name: {
-        "title": [
-          {
-            "type": "text",
-            "text": {"content": title}
-          }
-        ]
-      },
-      if (dueDate != null)
-        database.date.name: {
-          "date": {"start": dueDate.toUtc().toIso8601String()}
-        }
-    };
-    final res = await http.post(
-      Uri.parse('https://api.notion.com/v1/pages'),
-      headers: _headers,
-      body: jsonEncode({
-        "parent": {"database_id": database.id},
-        "properties": properties
       }),
     );
     return jsonDecode(res.body);
@@ -188,8 +235,9 @@ dynamic getStatusFilter(StatusTaskStatusProperty statusProperty,
 @riverpod
 NotionDatabaseRepository notionDatabaseRepository(ref) {
   final accessToken = ref.watch(notionOAuthViewModelProvider).accessToken;
-  if (accessToken == null) {
+  final taskDatabase = ref.watch(taskDatabaseViewModelProvider).taskDatabase;
+  if (accessToken == null || taskDatabase == null) {
     return NotionDatabaseRepository('');
   }
-  return NotionDatabaseRepository(accessToken);
+  return NotionDatabaseRepository(accessToken, database: taskDatabase);
 }

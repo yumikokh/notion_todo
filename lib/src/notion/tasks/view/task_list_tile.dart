@@ -23,6 +23,19 @@ class TaskListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final d = taskViewModel.getDisplayDate(task);
     return ListTile(
+      // onTap: () {
+      //   showModalBottomSheet(
+      //     context: context,
+      //     builder: (context) {
+      //       return TaskDateSheet(
+      //         selectedDate: task.dueDate,
+      //         onSelected: (DateTime? date) {
+      //           taskViewModel.updateTask(task.id, task.title, date);
+      //         },
+      //       );
+      //     },
+      //   );
+      // },
       leading: Checkbox(
         value: task.isCompleted,
         activeColor: Colors.black,

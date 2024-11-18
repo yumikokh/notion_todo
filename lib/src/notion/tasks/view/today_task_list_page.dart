@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
+import 'package:notion_todo/src/helpers/date.dart';
 import 'dart:async';
 
 import '../../../settings/settings_view.dart';
 import '../../model/task.dart';
 import '../../task_database/task_database_viewmodel.dart';
 import '../task_viewmodel.dart';
+import 'task_date_sheet.dart';
 import 'task_list_tile.dart';
-import 'task_sheet.dart';
+import 'add_task_sheet.dart';
 
 const int updateIntervalSec = 30;
 
@@ -72,28 +74,99 @@ class TodayListPage extends HookConsumerWidget {
                 final task = uiTasks.value[index];
                 return Dismissible(
                   key: Key(task.id),
-                  direction: DismissDirection.startToEnd,
+                  direction: DismissDirection.horizontal,
+                  dismissThresholds: const {
+                    DismissDirection.startToEnd: 0.5, // delete
+                    DismissDirection.endToStart: 0.2, // edit
+                  },
+                  resizeDuration: null,
                   onDismissed: (direction) {
-                    taskViewModel.deleteTask(task.id);
-                    uiTasks.value =
-                        uiTasks.value.where((t) => t.id != task.id).toList();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('「${task.title}」が削除されました'),
-                        action: SnackBarAction(
-                          label: 'Undo',
-                          onPressed: () {
-                            taskViewModel.undoDeleteTask(task);
-                          },
+                    if (direction == DismissDirection.startToEnd) {
+                      taskViewModel.deleteTask(task.id);
+                      uiTasks.value =
+                          uiTasks.value.where((t) => t.id != task.id).toList();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('「${task.title}」が削除されました'),
+                          action: SnackBarAction(
+                            label: 'Undo',
+                            onPressed: () {
+                              taskViewModel.undoDeleteTask(task);
+                            },
+                          ),
                         ),
-                      ),
-                    );
+                      );
+                    }
+                  },
+                  confirmDismiss: (direction) async {
+                    if (direction == DismissDirection.endToStart) {
+                      // 日時編集の処理を追加
+                      showModalBottomSheet(
+                        context: context,
+                        builder: (context) {
+                          // テキスト表示
+                          return SizedBox.expand(
+                              child: Center(
+                                  child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              TaskDateSheet(
+                                selectedDate: task.dueDate?.start == null
+                                    ? null
+                                    : DateTime.parse(task.dueDate!.start)
+                                        .toLocal(),
+                                onSelected: (DateTime? date) async {
+                                  final newTask = task.copyWith(
+                                      dueDate: date == null
+                                          ? null
+                                          : TaskDate(
+                                              start: date
+                                                  .toUtc()
+                                                  .toIso8601String(),
+                                              end: null));
+                                  uiTasks.value = uiTasks.value.where((t) {
+                                    if (t.id == task.id) {
+                                      return isToday(date);
+                                    }
+                                    return true;
+                                  }).toList();
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('「${task.title}」が変更されました'),
+                                      action: SnackBarAction(
+                                        label: 'Undo',
+                                        onPressed: () {
+                                          taskViewModel.updateTask(task);
+                                        },
+                                      ),
+                                    ),
+                                  );
+                                  await taskViewModel.updateTask(newTask);
+                                },
+                              ),
+                            ],
+                          )));
+                        },
+                      );
+                      return false;
+                    }
+                    if (direction == DismissDirection.startToEnd) {
+                      return true;
+                    }
+                    return false;
                   },
                   background: Container(
                     color: Colors.red,
                     alignment: Alignment.centerLeft,
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: const Icon(Icons.delete, color: Colors.white),
+                  ),
+                  secondaryBackground: Container(
+                    color: Colors.orange,
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: const Icon(Icons.edit_calendar, color: Colors.white),
                   ),
                   child: TaskListTile(
                       task: task,
