@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
+import '../../repository/notion_database_repository.dart';
 import '../task_viewmodel.dart';
 import 'task_date_sheet.dart';
 
@@ -12,7 +13,9 @@ class AddTaskSheet extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final titleController = useTextEditingController();
-    final selectedDueDate = useState<DateTime?>(DateTime.now());
+    final initialDueDate =
+        taskViewModel.filterType == FilterType.today ? DateTime.now() : null;
+    final selectedDueDate = useState<DateTime?>(initialDueDate);
     final dueDateChangeHandler = useCallback(
       (DateTime? newDueDate) {
         selectedDueDate.value = newDueDate;

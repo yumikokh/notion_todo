@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../common/snackbar/model/snackbar_state.dart';
@@ -12,7 +11,7 @@ import 'task_service.dart';
 
 part 'task_viewmodel.g.dart';
 
-@Riverpod(keepAlive: false)
+@riverpod
 class TaskViewModel extends _$TaskViewModel {
   late TaskService _taskService;
   late FilterType _filterType;
@@ -54,7 +53,7 @@ class TaskViewModel extends _$TaskViewModel {
 
     try {
       final t = await _taskService.addTask(
-          taskDatabase, title, dueDate != null ? dateString(dueDate) : null);
+          taskDatabase, newTask.title, newTask.dueDate?.start); // MEMO: endは未実装
       state = AsyncValue.data([
         for (final task in state.valueOrNull ?? [])
           if (task.id == tempId) t else task
