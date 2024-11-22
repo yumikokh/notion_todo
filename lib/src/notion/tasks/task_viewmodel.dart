@@ -15,11 +15,13 @@ part 'task_viewmodel.g.dart';
 @Riverpod(keepAlive: false)
 class TaskViewModel extends _$TaskViewModel {
   late TaskService _taskService;
+  late FilterType _filterType;
 
   @override
   Future<List<Task>> build({FilterType filterType = FilterType.all}) async {
     final repository = ref.watch(notionDatabaseRepositoryProvider);
     _taskService = TaskService(repository);
+    _filterType = filterType;
     return _fetchTasks(filterType);
   }
 
@@ -204,7 +206,7 @@ class TaskViewModel extends _$TaskViewModel {
 
   ({Color color, IconData icon, double size, List<String> dateStrings})?
       getDisplayDate(Task task) {
-    final defaultColor = Colors.grey[600];
+    final defaultColor = Colors.grey[600]!;
     const icon = Icons.event_rounded;
     const size = 13.0;
     final dueDate = task.dueDate;
@@ -213,21 +215,33 @@ class TaskViewModel extends _$TaskViewModel {
     if (dueDate == null) {
       return null;
     }
+    final dueDateEnd = dueDate.end;
 
-    final color =
-        ((dueDate.end != null && DateTime.parse(dueDate.end!).isBefore(now)) ||
-                (dueDate.end == null &&
-                    DateTime.parse(dueDate.start).isBefore(now)))
-            ? Colors.red // 過ぎてたら赤
-            : defaultColor; // それ以外は灰色
+    Color determineColor(TaskDate dueDate, DateTime now) {
+      final dueDateEnd = dueDate.end;
+      if (dueDateEnd == null &&
+          isToday(DateTime.parse(dueDate.start)) &&
+          !hasTime(dueDate.start)) {
+        return Colors.blue; // 今日だったら青
+      } else if ((dueDateEnd != null &&
+              DateTime.parse(dueDateEnd).isBefore(now)) ||
+          (dueDateEnd == null && DateTime.parse(dueDate.start).isBefore(now))) {
+        return Colors.red; // 過ぎてたら赤
+      } else {
+        return defaultColor; // それ以外は灰色
+      }
+    }
+
+    final c = determineColor(dueDate, now);
 
     List<String> dateStrings = [
-      formatDateTime(dueDate.start),
-      if (dueDate.end != null) formatDateTime(dueDate.end!),
+      formatDateTime(dueDate.start, showToday: _filterType == FilterType.all),
+      if (dueDateEnd != null)
+        formatDateTime(dueDateEnd, showToday: _filterType == FilterType.all),
     ].whereType<String>().toList();
 
     return (
-      color: color!,
+      color: c,
       icon: icon,
       size: size,
       dateStrings: dateStrings,
