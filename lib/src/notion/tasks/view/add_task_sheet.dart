@@ -58,14 +58,10 @@ class AddTaskSheet extends HookConsumerWidget {
             },
           ),
           ElevatedButton(
-            onPressed: () {
-              final title = titleController.text;
-              taskViewModel.addTask(title, selectedDueDate.value);
+            onPressed: () async {
               Navigator.pop(context);
-
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('「$title」が追加されました')),
-              );
+              await taskViewModel.addTask(
+                  titleController.text, selectedDueDate.value);
             },
             child: const Text('追加'),
           ),

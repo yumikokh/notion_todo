@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'common/snackbar/view/snackbar_listener.dart';
 
 import 'notion/task_database/view/task_database_setting_page.dart';
 import 'notion/tasks/view/today_task_list_page.dart';
@@ -18,18 +19,17 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, ref) {
     final settings = ref.watch(settingsViewModelProvider);
     final settingsViewModel = ref.read(settingsViewModelProvider.notifier);
+    final scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
     // Glue the SettingsController to the MaterialApp.
     //
     // The AnimatedBuilder Widget listens to the SettingsController for changes.
     // Whenever the user updates their settings, the MaterialApp is rebuilt.
     return AnimatedBuilder(
       animation: settingsViewModel,
-      builder: (BuildContext context, Widget? child) {
-        return MaterialApp(
-          // Providing a restorationScopeId allows the Navigator built by the
-          // MaterialApp to restore the navigation stack when a user leaves and
-          // returns to the app after it has been killed while running in the
-          // background.
+      builder: (BuildContext context, Widget? child) => SnackbarListener(
+        scaffoldMessengerKey: scaffoldMessengerKey,
+        child: MaterialApp(
+          scaffoldMessengerKey: scaffoldMessengerKey,
           restorationScopeId: 'app',
 
           // Provide the generated AppLocalizations to the MaterialApp. This
@@ -81,8 +81,8 @@ class MyApp extends ConsumerWidget {
               },
             );
           },
-        );
-      },
+        ),
+      ),
     );
   }
 }

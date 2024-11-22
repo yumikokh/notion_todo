@@ -72,38 +72,14 @@ class EditTaskSheet extends HookConsumerWidget {
               taskViewModel
                   .updateTask(task.copyWith(title: title, dueDate: dueDate));
               Navigator.pop(context);
-
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('「$title」が変更されました'),
-                  action: SnackBarAction(
-                    label: 'Undo',
-                    onPressed: () {
-                      taskViewModel.updateTask(task);
-                    },
-                  ),
-                ),
-              );
             },
             child: const Text('変更'),
           ),
           // 削除ボタン
           ElevatedButton(
             onPressed: () {
-              taskViewModel.deleteTask(task.id);
+              taskViewModel.deleteTask(task);
               Navigator.pop(context);
-
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('「${task.title}」が削除されました'),
-                  action: SnackBarAction(
-                    label: 'Undo',
-                    onPressed: () {
-                      taskViewModel.undoDeleteTask(task);
-                    },
-                  ),
-                ),
-              );
             },
             child: const Text('削除'),
           ),

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
-import 'package:notion_todo/src/helpers/date.dart';
-import 'package:notion_todo/src/notion/task_database/task_database_viewmodel.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../common/snackbar/model/snackbar_state.dart';
+import '../../common/snackbar/snackbar.dart';
+import '../../helpers/date.dart';
+import '../../notion/task_database/task_database_viewmodel.dart';
 import '../model/task.dart';
 import '../repository/notion_database_repository.dart';
 import 'task_service.dart';
@@ -16,81 +17,195 @@ class TaskViewModel extends _$TaskViewModel {
   late TaskService _taskService;
 
   @override
-  List<Task> build() {
+  Future<List<Task>> build() async {
     final repository = ref.watch(notionDatabaseRepositoryProvider);
     _taskService = TaskService(repository);
-
-    fetchTasks();
-    return [];
+    final filterType = ref.watch(taskFilterTypeProvider);
+    final tasks = await _fetchTasks(filterType);
+    return tasks;
   }
 
-  Future<void> fetchTasks() async {
+  Future<List<Task>> _fetchTasks(FilterType filterType) async {
     final taskDatabase = ref.read(taskDatabaseViewModelProvider).taskDatabase;
     if (taskDatabase == null) {
-      return;
+      return [];
     }
-    try {
-      final tasks = await _taskService.fetchTasks(
-          taskDatabase, FilterType.today); // TODO: filterを追加
-      state = tasks;
-    } catch (e) {
-      print(e);
-    }
+    final tasks = await _taskService.fetchTasks(taskDatabase, filterType);
+    state = AsyncValue.data(tasks);
+    return tasks;
   }
 
-  Future addTask(String title, DateTime? dueDate) async {
+  Future<void> addTask(String title, DateTime? dueDate) async {
     final taskDatabase = ref.watch(taskDatabaseViewModelProvider).taskDatabase;
     if (taskDatabase == null) {
       return;
     }
-    await _taskService.addTask(
-        taskDatabase, title, dueDate != null ? dateString(dueDate) : null);
-    // state = [...state, task]; // 表示の更新はfetchTasksで行う
-    fetchTasks();
+    final snackbar = ref.read(snackbarProvider.notifier);
+
+    final prevState = state;
+    final tempId = DateTime.now().millisecondsSinceEpoch.toString();
+    final newTask = Task(
+        id: tempId,
+        title: title,
+        isCompleted: false,
+        dueDate: dueDate != null ? TaskDate(start: dateString(dueDate)) : null);
+    state.whenData((tasks) {
+      state = AsyncValue.data([...tasks, newTask]);
+    });
+    snackbar.show('「$title」を追加しました', type: SnackbarType.success);
+
+    try {
+      final t = await _taskService.addTask(
+          taskDatabase, title, dueDate != null ? dateString(dueDate) : null);
+      state.whenData((tasks) {
+        state = AsyncValue.data([
+          for (final task in tasks)
+            if (task.id == tempId) t else task
+        ]);
+      });
+    } catch (e) {
+      // エラーが起きたら一時的なidを持つタスクを元に戻す
+      state = prevState;
+      snackbar.show('「$title」の追加に失敗しました', type: SnackbarType.error);
+    }
   }
 
-  Future updateTask(Task task) async {
+  Future updateTask(Task updatedTask) async {
+    final prevState = state;
+
+    final taskDatabase = ref.watch(taskDatabaseViewModelProvider).taskDatabase;
+    final db = taskDatabase;
+    final dueDate = updatedTask.dueDate;
+    final prevTask =
+        prevState.valueOrNull?.firstWhere((t) => t.id == updatedTask.id);
+    if (prevTask == null) {
+      return;
+    }
+    if (db == null) {
+      return;
+    }
+    final snackbar = ref.read(snackbarProvider.notifier);
+
+    state = state.whenData((t) {
+      return t.map((t) => t.id == updatedTask.id ? updatedTask : t).toList();
+    });
+    snackbar.show('「${updatedTask.title}」を変更しました', type: SnackbarType.success,
+        onUndo: () {
+      updateTask(prevTask);
+    });
+
     try {
-      final taskDatabase =
-          ref.watch(taskDatabaseViewModelProvider).taskDatabase;
-      final db = taskDatabase;
-      final dueDate = task.dueDate;
-      if (db == null) {
+      final res = await _taskService.updateTask(
+          db, updatedTask.id, updatedTask.title, dueDate?.start);
+
+      state = state.whenData((t) {
+        return t.map((t) => t.id == updatedTask.id ? res : t).toList();
+      });
+    } catch (e) {
+      state = prevState;
+      snackbar.show('「${updatedTask.title}」の変更に失敗しました',
+          type: SnackbarType.error);
+    }
+  }
+
+  Future updateStatus(Task task, bool isCompleted) async {
+    final prevState = state;
+    final taskDatabase = ref.watch(taskDatabaseViewModelProvider).taskDatabase;
+    if (taskDatabase == null) {
+      return;
+    }
+
+    final snackbar = ref.read(snackbarProvider.notifier);
+
+    state = state.whenData((tasks) {
+      return tasks.map((t) {
+        if (t.id == task.id) {
+          return task.copyWith(isCompleted: isCompleted);
+        }
+        return t;
+      }).toList();
+    });
+
+    snackbar.show(
+        isCompleted ? '「${task.title}」を完了しました 🎉' : '「${task.title}」を未完了に戻しました',
+        type: SnackbarType.success, onUndo: () {
+      updateStatus(task, !isCompleted);
+    });
+
+    try {
+      final res =
+          await _taskService.updateStatus(taskDatabase, task.id, isCompleted);
+      state = state.whenData((t) {
+        return t.map((t) => t.id == res.id ? res : t).toList();
+      });
+    } catch (e) {
+      state = prevState;
+      snackbar.show('ステータスの更新に失敗しました', type: SnackbarType.error);
+    }
+  }
+
+  Future<void> deleteTask(Task task) async {
+    final prevState = state;
+    final snackbar = ref.read(snackbarProvider.notifier);
+    final taskDatabase = ref.watch(taskDatabaseViewModelProvider).taskDatabase;
+    if (taskDatabase == null) {
+      return;
+    }
+    state = state.whenData((tasks) {
+      return tasks.where((t) => t.id != task.id).toList();
+    });
+    snackbar.show('「${task.title}」を削除しました', type: SnackbarType.success,
+        onUndo: () {
+      undoDeleteTask(task);
+    });
+    try {
+      final res = await _taskService.deleteTask(task.id, taskDatabase.status);
+      if (res == null) {
         return;
       }
-      await _taskService.updateTask(db, task.id, task.title, dueDate?.start);
-      // state = state.map((t) => t.id == task.id ? updatedTask : t).toList(); // 表示の更新はfetchTasksで行う
-
-      fetchTasks();
     } catch (e) {
-      print(e);
+      // エラーが発生した場合は元の状態に戻す
+      state = prevState;
+      snackbar.show('削除に失敗しました', type: SnackbarType.error);
     }
   }
 
-  Future updateStatus(String taskId, bool isCompleted) async {
+  Future<Task?> undoDeleteTask(Task prev) async {
+    final prevState = state;
     final taskDatabase = ref.watch(taskDatabaseViewModelProvider).taskDatabase;
     if (taskDatabase == null) {
-      return;
+      return null;
     }
-    await _taskService.updateStatus(taskDatabase, taskId, isCompleted);
-    await fetchTasks();
-  }
+    final snackbar = ref.read(snackbarProvider.notifier);
+    state = state.whenData((tasks) {
+      return [...tasks, prev];
+    });
+    snackbar.show('「${prev.title}」を復元しました', type: SnackbarType.success);
 
-  void deleteTask(String taskId) {
-    _taskService.deleteTask(taskId);
-    state = state.where((task) => task.id != taskId).toList();
-  }
+    try {
+      final restoredTask =
+          await _taskService.undoDeleteTask(prev.id, taskDatabase.status);
+      if (restoredTask == null) {
+        return null;
+      }
 
-  Future undoDeleteTask(Task prev) async {
-    final taskDatabase = ref.watch(taskDatabaseViewModelProvider).taskDatabase;
-    if (taskDatabase == null) {
-      return;
+      // APIからの応答で状態を更新
+      state = state.whenData((tasks) {
+        return tasks.map((task) {
+          if (task.id == prev.id) {
+            return restoredTask;
+          }
+          return task;
+        }).toList();
+      });
+
+      return restoredTask;
+    } catch (e) {
+      // エラーが発生した場合は元の状態に戻す
+      state = prevState;
+      snackbar.show('復元に失敗しました', type: SnackbarType.error);
     }
-    final task =
-        await _taskService.undoDeleteTask(prev.id, taskDatabase.status);
-    state = [...state, prev];
-    fetchTasks();
-    return task;
+    return null;
   }
 
   ({Color color, IconData icon, double size, List<String> dateStrings})?
@@ -126,50 +241,30 @@ class TaskViewModel extends _$TaskViewModel {
   }
 }
 
-String? formatDateTime(String dateTime, {bool showToday = false}) {
-  final parsed = DateTime.parse(dateTime).toLocal();
-  final date = DateTime(parsed.year, parsed.month, parsed.day);
-  final now = DateTime.now();
-  final today = DateTime(now.year, now.month, now.day);
-  final yesterday = DateTime(now.year, now.month, now.day - 1);
-  final tomorrow = DateTime(now.year, now.month, now.day + 1);
-  final hasTime = dateTime.contains('T');
+@riverpod
+class TaskFilterType extends _$TaskFilterType {
+  @override
+  FilterType build() => FilterType.today;
 
-  String? formatText() {
-    if (date == today) {
-      if (!showToday) {
-        return hasTime ? "HH:mm" : null;
-      }
-      return hasTime ? "'Today' HH:mm" : "'Today'";
-    }
-    if (date == yesterday) {
-      return hasTime ? "'Yesterday' HH:mm" : "'Yesterday'";
-    }
-    if (date == tomorrow) {
-      return hasTime ? "'Tomorrow' HH:mm" : "'Tomorrow'";
-    }
-    if (date.year == today.year) {
-      if (date.month == today.month) {
-        return hasTime ? "dd E HH:mm" : "dd E";
-      }
-      return hasTime ? "MM/dd HH:mm" : "MM/dd";
-    }
-    return 'yyyy/MM/dd';
+  void update(FilterType type) {
+    state = type;
   }
-
-  final format = formatText();
-
-  return format != null ? DateFormat(format).format(parsed.toLocal()) : null;
 }
 
 @riverpod
 List<Task> completedTasks(Ref ref) {
-  final tasks = ref.watch(taskViewModelProvider);
+  final tasks = ref.watch(taskViewModelProvider).value;
+  if (tasks == null) {
+    return [];
+  }
   return tasks.where((task) => task.isCompleted).toList();
 }
 
 @riverpod
 List<Task> notCompletedTasks(Ref ref) {
-  final tasks = ref.watch(taskViewModelProvider);
+  final tasks = ref.watch(taskViewModelProvider).value;
+  if (tasks == null) {
+    return [];
+  }
   return tasks.where((task) => !task.isCompleted).toList();
 }

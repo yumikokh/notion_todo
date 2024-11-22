@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -44,7 +45,7 @@ class NotionDatabaseRepository {
     return data['results'];
   }
 
-  Future fetchPages(FilterType type) async {
+  Future fetchPages(FilterType filterType) async {
     final db = _database;
     if (db == null || db.id.isEmpty) {
       return;
@@ -94,12 +95,14 @@ class NotionDatabaseRepository {
       Uri.parse('https://api.notion.com/v1/databases/$databaseId/query'),
       headers: _headers,
       body: jsonEncode({
-        "filter": filter,
+        if (filterType == FilterType.today) "filter": filter,
         "sorts": [
-          {"property": statusProperty.name, "direction": "ascending"},
+          {"property": statusProperty.name, "direction": "descending"},
           {"property": dateProperty.name, "direction": "ascending"},
           {"timestamp": "last_edited_time", "direction": "descending"}
-        ]
+        ],
+        "page_size": 50
+        // TODO: ページネーション
       }),
     );
     final data = jsonDecode(res.body);
@@ -125,6 +128,7 @@ class NotionDatabaseRepository {
           "date": {"start": dueDate}
         }
     };
+
     final res = await http.post(
       Uri.parse('https://api.notion.com/v1/pages'),
       headers: _headers,
@@ -133,7 +137,11 @@ class NotionDatabaseRepository {
         "properties": properties
       }),
     );
-    return jsonDecode(res.body);
+    final data = jsonDecode(res.body);
+    if (data['object'] == 'error') {
+      throw Exception(data['message']);
+    }
+    return data;
   }
 
   Future updateTask(String taskId, String title, String? dueDate) async {
@@ -206,10 +214,11 @@ class NotionDatabaseRepository {
     return jsonDecode(res.body);
   }
 
-  Future undoDeleteTask(String taskId) async {
-    final res = await http.delete(
-      Uri.parse('https://api.notion.com/v1/blocks/$taskId'),
+  Future deleteTask(String taskId) async {
+    final res = await http.patch(
+      Uri.parse('https://api.notion.com/v1/pages/$taskId'),
       headers: _headers,
+      body: jsonEncode({"archived": true}),
     );
     return jsonDecode(res.body);
   }
@@ -242,7 +251,7 @@ List<dynamic> getNotCompleteStatusFilter(
 }
 
 @riverpod
-NotionDatabaseRepository notionDatabaseRepository(ref) {
+NotionDatabaseRepository notionDatabaseRepository(Ref ref) {
   final accessToken = ref.watch(notionOAuthViewModelProvider).accessToken;
   final taskDatabase = ref.watch(taskDatabaseViewModelProvider).taskDatabase;
   if (accessToken == null || taskDatabase == null) {

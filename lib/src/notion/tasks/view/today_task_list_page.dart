@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
-import 'package:notion_todo/src/helpers/date.dart';
-import 'dart:async';
 
+import '../../../helpers/date.dart';
 import '../../../settings/settings_view.dart';
 import '../../model/task.dart';
+import '../../repository/notion_database_repository.dart';
 import '../../task_database/task_database_viewmodel.dart';
 import '../task_viewmodel.dart';
 import 'task_date_sheet.dart';
@@ -24,47 +24,26 @@ class TodayListPage extends HookConsumerWidget {
   Widget build(BuildContext context, ref) {
     final notCompletedTasks = ref.watch(notCompletedTasksProvider);
     final completedTasks = ref.watch(completedTasksProvider);
-    final taskViewModel = ref.watch(taskViewModelProvider.notifier);
+    final taskViewModel = ref.read(taskViewModelProvider.notifier);
     final database = ref.watch(taskDatabaseViewModelProvider).taskDatabase;
-
-    final uiNotCompletedTasks = useState<List<Task>>(notCompletedTasks);
-    final uiCompletedTasks = useState<List<Task>>(completedTasks);
+    final filterType = ref.watch(taskFilterTypeProvider.notifier);
     final showCompletedTasks = useState(false);
+    final showAllTasks = useState(false);
     final loading = useState(false);
 
-    final updateUIList = useCallback((
-      Task task,
-      bool willComplete,
-    ) {
-      uiNotCompletedTasks.value = willComplete
-          ? uiNotCompletedTasks.value.where((t) => t.id != task.id).toList()
-          : [...uiNotCompletedTasks.value, task.copyWith(isCompleted: false)];
-
-      uiCompletedTasks.value = willComplete
-          ? [...uiCompletedTasks.value, task.copyWith(isCompleted: true)]
-          : uiCompletedTasks.value.where((t) => t.id != task.id).toList();
-    }, [uiNotCompletedTasks]);
-
     // ポーリングする
-    useEffect(() {
-      taskViewModel.fetchTasks();
-      // final timer = Timer.periodic(const Duration(seconds: updateIntervalSec),
-      //     (timer) => taskViewModel.fetchTasks());
-      // return () => timer.cancel();
-    }, []);
-
-    // 即時反映のための表示用のstateを更新
-    useEffect(() {
-      uiNotCompletedTasks.value = notCompletedTasks;
-      uiCompletedTasks.value = completedTasks;
-      return null;
-    }, [notCompletedTasks, completedTasks]);
+    // useEffect(() {
+    //   taskViewModel.fetchTasks();
+    //   final timer = Timer.periodic(const Duration(seconds: updateIntervalSec),
+    //       (timer) => taskViewModel.fetchTasks());
+    //   return () => timer.cancel();
+    // }, [showAllTasks.value]);
 
     // バッジの更新
     useEffect(() {
-      FlutterAppBadger.updateBadgeCount(uiNotCompletedTasks.value.length);
+      FlutterAppBadger.updateBadgeCount(notCompletedTasks.length);
       return null;
-    }, [uiNotCompletedTasks.value.length]);
+    }, [notCompletedTasks.length]);
 
     return Scaffold(
       appBar: AppBar(
@@ -73,7 +52,7 @@ class TodayListPage extends HookConsumerWidget {
           IconButton(
               icon: const Icon(Icons.refresh),
               onPressed: () {
-                taskViewModel.fetchTasks();
+                ref.invalidate(taskViewModelProvider);
               }),
           IconButton(
             icon: const Icon(Icons.settings),
@@ -83,11 +62,11 @@ class TodayListPage extends HookConsumerWidget {
           ),
         ],
       ),
-      body: uiNotCompletedTasks.value.isEmpty && uiCompletedTasks.value.isEmpty
+      body: notCompletedTasks.isEmpty && completedTasks.isEmpty
           ? const Center(child: Text('No tasks'))
           : ListView(
               children: [
-                ...uiNotCompletedTasks.value.map((task) {
+                ...notCompletedTasks.map((task) {
                   return Dismissible(
                     key: Key(task.id),
                     direction: DismissDirection.horizontal,
@@ -98,21 +77,7 @@ class TodayListPage extends HookConsumerWidget {
                     resizeDuration: null,
                     onDismissed: (direction) {
                       if (direction == DismissDirection.startToEnd) {
-                        taskViewModel.deleteTask(task.id);
-                        uiNotCompletedTasks.value = uiNotCompletedTasks.value
-                            .where((t) => t.id != task.id)
-                            .toList();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('「${task.title}」が削除されました'),
-                            action: SnackBarAction(
-                              label: 'Undo',
-                              onPressed: () {
-                                taskViewModel.undoDeleteTask(task);
-                              },
-                            ),
-                          ),
-                        );
+                        taskViewModel.deleteTask(task);
                       }
                     },
                     confirmDismiss: (direction) async {
@@ -138,25 +103,6 @@ class TodayListPage extends HookConsumerWidget {
                                             ? null
                                             : TaskDate(
                                                 start: dateString(date)));
-                                    uiNotCompletedTasks.value =
-                                        uiNotCompletedTasks.value.where((t) {
-                                      if (t.id == task.id) {
-                                        return isToday(date);
-                                      }
-                                      return true;
-                                    }).toList();
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content:
-                                            Text('「${task.title}」が変更されました'),
-                                        action: SnackBarAction(
-                                          label: 'Undo',
-                                          onPressed: () {
-                                            taskViewModel.updateTask(task);
-                                          },
-                                        ),
-                                      ),
-                                    );
                                     await taskViewModel.updateTask(newTask);
                                   },
                                 ),
@@ -187,17 +133,14 @@ class TodayListPage extends HookConsumerWidget {
                     child: TaskListTile(
                         task: task,
                         loading: loading,
-                        updateUITasks: updateUIList,
                         taskViewModel: taskViewModel),
                   );
                 }).toList(),
-                if (showCompletedTasks.value &&
-                    uiCompletedTasks.value.isNotEmpty)
-                  ...uiCompletedTasks.value.map((task) {
+                if (showCompletedTasks.value && completedTasks.isNotEmpty)
+                  ...completedTasks.map((task) {
                     return TaskListTile(
                         task: task,
                         loading: loading,
-                        updateUITasks: updateUIList,
                         taskViewModel: taskViewModel);
                   }).toList(),
               ],
@@ -243,6 +186,25 @@ class TodayListPage extends HookConsumerWidget {
               ),
               child: const Icon(Icons.add, size: 28),
             ),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: showAllTasks.value ? 1 : 0,
+        onTap: (index) {
+          // taskViewModel
+          //     .updateFilterType(index == 1 ? FilterType.all : FilterType.today);
+          filterType.update(index == 1 ? FilterType.all : FilterType.today);
+          showAllTasks.value = index == 1;
+        },
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.today),
+            label: 'Today',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list),
+            label: 'Index',
+          ),
         ],
       ),
     );

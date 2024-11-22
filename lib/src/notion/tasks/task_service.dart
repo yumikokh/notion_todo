@@ -7,15 +7,16 @@ import '../repository/notion_database_repository.dart';
 
 class TaskService {
   final NotionDatabaseRepository _notionDatabaseRepository;
+  // TODO: DATABASE情報も所有させる
 
   TaskService(NotionDatabaseRepository notionDatabaseRepository)
       : _notionDatabaseRepository = notionDatabaseRepository;
 
   FutureOr<List<Task>> fetchTasks(
     TaskDatabase db,
-    FilterType type,
+    FilterType filterType,
   ) async {
-    final results = await _notionDatabaseRepository.fetchPages(type);
+    final results = await _notionDatabaseRepository.fetchPages(filterType);
     if (results == null) {
       return [];
     }
@@ -72,14 +73,23 @@ class TaskService {
     );
   }
 
-  Future<void> deleteTask(String taskId) async {
-    await _notionDatabaseRepository.undoDeleteTask(taskId);
+  Future<Task?> deleteTask(String taskId, TaskStatusProperty status) async {
+    final data = await _notionDatabaseRepository.deleteTask(taskId);
+    if (data == null || data.isEmpty) {
+      return null;
+    }
+    return Task(
+      id: data['id'],
+      title: _title(data),
+      isCompleted: _isTaskCompleted(data, status),
+      dueDate: _date(data, status.name),
+    );
   }
 
-  Future<Task> undoDeleteTask(String taskId, TaskStatusProperty status) async {
+  Future<Task?> undoDeleteTask(String taskId, TaskStatusProperty status) async {
     final data = await _notionDatabaseRepository.revertTask(taskId);
     if (data == null || data.isEmpty) {
-      return Task.initial();
+      return null;
     }
     return Task(
       id: data['id'],

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
 
 import './edit_task_sheet.dart';
 import '../../model/task.dart';
@@ -10,14 +9,12 @@ class TaskListTile extends StatelessWidget {
     super.key,
     required this.task,
     required this.loading,
-    required this.updateUITasks,
     required this.taskViewModel,
   });
 
   // HACK: あとでリファクタ
   final Task task;
   final ValueNotifier<bool> loading; // けす
-  final Function(Task task, bool isComplete) updateUITasks;
   final TaskViewModel taskViewModel;
 
   @override
@@ -43,32 +40,7 @@ class TaskListTile extends StatelessWidget {
           if (loading.value) return;
           if (willComplete == null) return;
           loading.value = true;
-          // UI更新
-          updateUITasks(task, willComplete);
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: willComplete
-                  ? Text('「${task.title}」を完了しました 🎉')
-                  : Text('「${task.title}」を未完了に戻しました'),
-              action: SnackBarAction(
-                label: 'Undo',
-                onPressed: () {
-                  taskViewModel.updateStatus(task.id, !willComplete);
-                  updateUITasks(task, !willComplete);
-                },
-              ),
-            ),
-          );
-          await taskViewModel.updateStatus(task.id, willComplete);
-          // // 時間を置く
-          // await Future.delayed(const Duration(milliseconds: 460));
-          // // リストから削除
-          // if (willComplete == true) {
-          //   uiTasks.value =
-          //       uiTasks.value.where((t) => t.id != task.id).toList();
-          // }
-
+          await taskViewModel.updateStatus(task, willComplete);
           loading.value = false;
         },
       ),
