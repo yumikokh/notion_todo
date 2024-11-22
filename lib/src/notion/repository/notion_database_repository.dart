@@ -11,12 +11,6 @@ import '../task_database/task_database_viewmodel.dart';
 
 part 'notion_database_repository.g.dart';
 
-// - [x] list databases
-// - [x] list database pages
-// - [x] create a database page
-// - [x] update a database page
-// - [x] delete a database page
-
 enum FilterType { today, all }
 
 class NotionDatabaseRepository {
@@ -97,11 +91,15 @@ class NotionDatabaseRepository {
       body: jsonEncode({
         if (filterType == FilterType.today) "filter": filter,
         "sorts": [
-          {"property": statusProperty.name, "direction": "descending"},
+          {
+            "property": statusProperty.name,
+            "direction":
+                FilterType.today == filterType ? "descending" : "ascending"
+          },
           {"property": dateProperty.name, "direction": "ascending"},
           {"timestamp": "last_edited_time", "direction": "descending"}
         ],
-        "page_size": 50
+        "page_size": 100
         // TODO: ページネーション
       }),
     );

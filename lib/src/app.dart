@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'common/snackbar/view/snackbar_listener.dart';
 
 import 'notion/task_database/view/task_database_setting_page.dart';
-import 'notion/tasks/view/today_task_list_page.dart';
+import 'notion/tasks/view/task_main_page.dart';
 import 'settings/settings_viewmodel.dart';
 import 'settings/settings_view.dart';
 
@@ -73,10 +73,10 @@ class MyApp extends ConsumerWidget {
                     );
                   case TaskDatabaseSettingPage.routeName:
                     return const TaskDatabaseSettingPage();
-                  case TodayListPage.routeName:
-                    return const TodayListPage();
+                  case TaskMainPage.routeName:
+                    return const TaskMainPage();
                   default:
-                    return const TodayListPage();
+                    return const TaskMainPage();
                 }
               },
             );

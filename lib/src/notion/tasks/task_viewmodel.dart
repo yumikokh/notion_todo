@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../common/snackbar/model/snackbar_state.dart';
@@ -12,17 +12,15 @@ import 'task_service.dart';
 
 part 'task_viewmodel.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: false)
 class TaskViewModel extends _$TaskViewModel {
   late TaskService _taskService;
 
   @override
-  Future<List<Task>> build() async {
+  Future<List<Task>> build({FilterType filterType = FilterType.all}) async {
     final repository = ref.watch(notionDatabaseRepositoryProvider);
     _taskService = TaskService(repository);
-    final filterType = ref.watch(taskFilterTypeProvider);
-    final tasks = await _fetchTasks(filterType);
-    return tasks;
+    return _fetchTasks(filterType);
   }
 
   Future<List<Task>> _fetchTasks(FilterType filterType) async {
@@ -49,20 +47,16 @@ class TaskViewModel extends _$TaskViewModel {
         title: title,
         isCompleted: false,
         dueDate: dueDate != null ? TaskDate(start: dateString(dueDate)) : null);
-    state.whenData((tasks) {
-      state = AsyncValue.data([...tasks, newTask]);
-    });
+    state = AsyncValue.data([...state.valueOrNull ?? [], newTask]);
     snackbar.show('「$title」を追加しました', type: SnackbarType.success);
 
     try {
       final t = await _taskService.addTask(
           taskDatabase, title, dueDate != null ? dateString(dueDate) : null);
-      state.whenData((tasks) {
-        state = AsyncValue.data([
-          for (final task in tasks)
-            if (task.id == tempId) t else task
-        ]);
-      });
+      state = AsyncValue.data([
+        for (final task in state.valueOrNull ?? [])
+          if (task.id == tempId) t else task
+      ]);
     } catch (e) {
       // エラーが起きたら一時的なidを持つタスクを元に戻す
       state = prevState;
@@ -239,32 +233,4 @@ class TaskViewModel extends _$TaskViewModel {
       dateStrings: dateStrings,
     );
   }
-}
-
-@riverpod
-class TaskFilterType extends _$TaskFilterType {
-  @override
-  FilterType build() => FilterType.today;
-
-  void update(FilterType type) {
-    state = type;
-  }
-}
-
-@riverpod
-List<Task> completedTasks(Ref ref) {
-  final tasks = ref.watch(taskViewModelProvider).value;
-  if (tasks == null) {
-    return [];
-  }
-  return tasks.where((task) => task.isCompleted).toList();
-}
-
-@riverpod
-List<Task> notCompletedTasks(Ref ref) {
-  final tasks = ref.watch(taskViewModelProvider).value;
-  if (tasks == null) {
-    return [];
-  }
-  return tasks.where((task) => !task.isCompleted).toList();
 }

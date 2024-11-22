@@ -25,7 +25,7 @@ class TaskListTile extends StatelessWidget {
         showModalBottomSheet(
           context: context,
           builder: (context) {
-            return EditTaskSheet(task: task);
+            return EditTaskSheet(task: task, taskViewModel: taskViewModel);
           },
         );
       },

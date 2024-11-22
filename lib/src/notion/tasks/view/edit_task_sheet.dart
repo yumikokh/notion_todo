@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:notion_todo/src/helpers/date.dart';
 
 import '../../model/task.dart';
 import '../task_viewmodel.dart';
 import 'task_date_sheet.dart';
 
-class EditTaskSheet extends HookConsumerWidget {
+class EditTaskSheet extends HookWidget {
   final Task task;
-  const EditTaskSheet({Key? key, required this.task}) : super(key: key);
+  final TaskViewModel taskViewModel;
+  const EditTaskSheet(
+      {Key? key, required this.task, required this.taskViewModel})
+      : super(key: key);
 
   @override
-  Widget build(BuildContext context, ref) {
-    final taskViewModel = ref.watch(taskViewModelProvider.notifier);
+  Widget build(BuildContext context) {
     final titleController = useTextEditingController(text: task.title);
     final initialDueDate = task.dueDate?.start == null
         ? null

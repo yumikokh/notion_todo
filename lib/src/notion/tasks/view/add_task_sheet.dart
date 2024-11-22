@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../task_viewmodel.dart';
 import 'task_date_sheet.dart';
 
-class AddTaskSheet extends HookConsumerWidget {
-  const AddTaskSheet({Key? key}) : super(key: key);
+class AddTaskSheet extends HookWidget {
+  final TaskViewModel taskViewModel;
+
+  const AddTaskSheet({Key? key, required this.taskViewModel}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, ref) {
-    final taskViewModel = ref.watch(taskViewModelProvider.notifier);
+  Widget build(BuildContext context) {
     final titleController = useTextEditingController();
     final selectedDueDate = useState<DateTime?>(DateTime.now());
     final dueDateChangeHandler = useCallback(

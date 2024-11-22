@@ -6,71 +6,171 @@ part of 'task_viewmodel.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$completedTasksHash() => r'9b1573ba02068440c5abbc67bce1860551a725cb';
+String _$taskViewModelHash() => r'4fffae6d05ed129b16e76d5cde0b9f5c49b8be49';
 
-/// See also [completedTasks].
-@ProviderFor(completedTasks)
-final completedTasksProvider = AutoDisposeProvider<List<Task>>.internal(
-  completedTasks,
-  name: r'completedTasksProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$completedTasksHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+/// Copied from Dart SDK
+class _SystemHash {
+  _SystemHash._();
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef CompletedTasksRef = AutoDisposeProviderRef<List<Task>>;
-String _$notCompletedTasksHash() => r'6ab13f9e9f432e5006d8725f9cdd3f9c8fa94bb4';
+  static int combine(int hash, int value) {
+    // ignore: parameter_assignments
+    hash = 0x1fffffff & (hash + value);
+    // ignore: parameter_assignments
+    hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
+    return hash ^ (hash >> 6);
+  }
 
-/// See also [notCompletedTasks].
-@ProviderFor(notCompletedTasks)
-final notCompletedTasksProvider = AutoDisposeProvider<List<Task>>.internal(
-  notCompletedTasks,
-  name: r'notCompletedTasksProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$notCompletedTasksHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+  static int finish(int hash) {
+    // ignore: parameter_assignments
+    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
+    // ignore: parameter_assignments
+    hash = hash ^ (hash >> 11);
+    return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
+  }
+}
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef NotCompletedTasksRef = AutoDisposeProviderRef<List<Task>>;
-String _$taskViewModelHash() => r'6b03948518801eb3ca762ba4981b04061711a401';
+abstract class _$TaskViewModel
+    extends BuildlessAutoDisposeAsyncNotifier<List<Task>> {
+  late final FilterType filterType;
+
+  FutureOr<List<Task>> build({
+    FilterType filterType = FilterType.all,
+  });
+}
 
 /// See also [TaskViewModel].
 @ProviderFor(TaskViewModel)
-final taskViewModelProvider =
-    AutoDisposeAsyncNotifierProvider<TaskViewModel, List<Task>>.internal(
-  TaskViewModel.new,
-  name: r'taskViewModelProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$taskViewModelHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+const taskViewModelProvider = TaskViewModelFamily();
 
-typedef _$TaskViewModel = AutoDisposeAsyncNotifier<List<Task>>;
-String _$taskFilterTypeHash() => r'0aac10c1d66b0393902c04228fd0e98dbe8f3456';
+/// See also [TaskViewModel].
+class TaskViewModelFamily extends Family<AsyncValue<List<Task>>> {
+  /// See also [TaskViewModel].
+  const TaskViewModelFamily();
 
-/// See also [TaskFilterType].
-@ProviderFor(TaskFilterType)
-final taskFilterTypeProvider =
-    AutoDisposeNotifierProvider<TaskFilterType, FilterType>.internal(
-  TaskFilterType.new,
-  name: r'taskFilterTypeProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$taskFilterTypeHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+  /// See also [TaskViewModel].
+  TaskViewModelProvider call({
+    FilterType filterType = FilterType.all,
+  }) {
+    return TaskViewModelProvider(
+      filterType: filterType,
+    );
+  }
 
-typedef _$TaskFilterType = AutoDisposeNotifier<FilterType>;
+  @override
+  TaskViewModelProvider getProviderOverride(
+    covariant TaskViewModelProvider provider,
+  ) {
+    return call(
+      filterType: provider.filterType,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'taskViewModelProvider';
+}
+
+/// See also [TaskViewModel].
+class TaskViewModelProvider
+    extends AutoDisposeAsyncNotifierProviderImpl<TaskViewModel, List<Task>> {
+  /// See also [TaskViewModel].
+  TaskViewModelProvider({
+    FilterType filterType = FilterType.all,
+  }) : this._internal(
+          () => TaskViewModel()..filterType = filterType,
+          from: taskViewModelProvider,
+          name: r'taskViewModelProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$taskViewModelHash,
+          dependencies: TaskViewModelFamily._dependencies,
+          allTransitiveDependencies:
+              TaskViewModelFamily._allTransitiveDependencies,
+          filterType: filterType,
+        );
+
+  TaskViewModelProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.filterType,
+  }) : super.internal();
+
+  final FilterType filterType;
+
+  @override
+  FutureOr<List<Task>> runNotifierBuild(
+    covariant TaskViewModel notifier,
+  ) {
+    return notifier.build(
+      filterType: filterType,
+    );
+  }
+
+  @override
+  Override overrideWith(TaskViewModel Function() create) {
+    return ProviderOverride(
+      origin: this,
+      override: TaskViewModelProvider._internal(
+        () => create()..filterType = filterType,
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        filterType: filterType,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeAsyncNotifierProviderElement<TaskViewModel, List<Task>>
+      createElement() {
+    return _TaskViewModelProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is TaskViewModelProvider && other.filterType == filterType;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, filterType.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin TaskViewModelRef on AutoDisposeAsyncNotifierProviderRef<List<Task>> {
+  /// The parameter `filterType` of this provider.
+  FilterType get filterType;
+}
+
+class _TaskViewModelProviderElement
+    extends AutoDisposeAsyncNotifierProviderElement<TaskViewModel, List<Task>>
+    with TaskViewModelRef {
+  _TaskViewModelProviderElement(super.provider);
+
+  @override
+  FilterType get filterType => (origin as TaskViewModelProvider).filterType;
+}
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
