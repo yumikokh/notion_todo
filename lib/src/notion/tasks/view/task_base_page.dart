@@ -28,21 +28,15 @@ class TaskBasePage extends HookConsumerWidget {
   Widget build(BuildContext context, ref) {
     return Scaffold(
         appBar: AppBar(
-          centerTitle: true,
-          title: currentIndex == 1
-              ? const Text('Index',
-                  style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black54,
-                      fontSize: 20))
-              : null,
+          title: currentIndex == 1 ? const Text('Index') : null,
           actions: [
             IconButton(
               icon: Icon(
-                  showCompletedTasks
-                      ? Icons.visibility_rounded
-                      : Icons.visibility_off_outlined,
-                  color: Colors.black45),
+                showCompletedTasks
+                    ? Icons.visibility_rounded
+                    : Icons.visibility_off_outlined,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
               onPressed: () {
                 setShowCompletedTasks(!showCompletedTasks);
               },
@@ -50,42 +44,38 @@ class TaskBasePage extends HookConsumerWidget {
             Stack(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.settings_outlined,
-                      color: Colors.black45),
+                  icon: syncedNotion
+                      ? Icon(Icons.settings_outlined,
+                          color: Theme.of(context).colorScheme.onSurface)
+                      : Badge(
+                          child: Icon(Icons.settings_outlined,
+                              color: Theme.of(context).colorScheme.onSurface),
+                        ),
                   onPressed: () {
                     Navigator.restorablePushNamed(
                         context, SettingsView.routeName);
                   },
                 ),
-                if (!syncedNotion)
-                  const Positioned(
-                    right: 8,
-                    top: 8,
-                    child: CircleAvatar(
-                      radius: 5,
-                      backgroundColor: Colors.red,
-                    ),
-                  ),
               ],
             ),
           ],
         ),
         body: body,
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: currentIndex,
-          onTap: onIndexChanged,
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.today_rounded),
+        bottomNavigationBar: NavigationBar(
+          selectedIndex: currentIndex,
+          onDestinationSelected: onIndexChanged,
+          destinations: const [
+            NavigationDestination(
+              icon: Icon(Icons.today_outlined),
+              selectedIcon: Icon(Icons.today_rounded),
               label: 'Today',
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.inbox_rounded),
+            NavigationDestination(
+              icon: Icon(Icons.inbox_outlined),
+              selectedIcon: Icon(Icons.inbox_rounded),
               label: 'Index',
             ),
           ],
-          selectedItemColor: Colors.black,
-          unselectedItemColor: Colors.grey,
         ),
         floatingActionButton: !syncedNotion
             ? null
@@ -110,11 +100,8 @@ class TaskBasePage extends HookConsumerWidget {
                     },
                   );
                 },
-                backgroundColor: Colors.black,
-                foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(100),
-                  side: const BorderSide(color: Colors.black, width: 3),
                 ),
                 child: const Icon(Icons.add, size: 28),
               ));

@@ -79,7 +79,7 @@ class TaskMainPage extends HookConsumerWidget {
             onRefresh: () async {
               ref.invalidate(todayProvider);
             },
-            color: Colors.black12,
+            color: Theme.of(context).colorScheme.inversePrimary,
             child: todayTasks.when(
               data: (tasks) => TaskListView(
                 list: tasks,
@@ -96,7 +96,7 @@ class TaskMainPage extends HookConsumerWidget {
             onRefresh: () async {
               ref.invalidate(allProvider);
             },
-            color: Colors.black12,
+            color: Theme.of(context).colorScheme.inversePrimary,
             child: allTasks.when(
               data: (tasks) => TaskListView(
                 list: tasks,

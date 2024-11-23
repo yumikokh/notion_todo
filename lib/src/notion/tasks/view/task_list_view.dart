@@ -45,10 +45,10 @@ class TaskListView extends HookWidget {
             child: Text(
               titleWidget,
               style: GoogleFonts.bodoniModa(
-                  fontSize: 32,
-                  fontStyle: FontStyle.italic,
-                  letterSpacing: -.8,
-                  color: Colors.black),
+                fontSize: 32,
+                fontStyle: FontStyle.italic,
+                letterSpacing: -.8,
+              ),
             ),
           ),
         ...notCompletedTasks.map((task) {
@@ -104,17 +104,23 @@ class TaskListView extends HookWidget {
               color: Colors.red,
               alignment: Alignment.centerLeft,
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: const Icon(Icons.delete, color: Colors.white),
+              child: Icon(
+                Icons.delete,
+                color: Theme.of(context).colorScheme.onError,
+              ),
             ),
             secondaryBackground: Container(
               color: Colors.orange,
               alignment: Alignment.centerRight,
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: const Icon(Icons.edit_calendar, color: Colors.white),
+              child: Icon(
+                Icons.edit_calendar,
+                color: Theme.of(context).colorScheme.onError,
+              ),
             ),
             child: Column(
               children: [
-                Divider(height: 0, color: Colors.grey[300]),
+                const Divider(height: 0),
                 TaskListTile(
                   key: Key('${task.id}notCompleted'),
                   task: task,
@@ -129,7 +135,7 @@ class TaskListView extends HookWidget {
           ...completedTasks.map((task) {
             return Column(
               children: [
-                Divider(height: 0, color: Colors.grey[300]),
+                const Divider(height: 0),
                 TaskListTile(
                   key: Key('${task.id}completed'),
                   task: task,
@@ -139,7 +145,7 @@ class TaskListView extends HookWidget {
               ],
             );
           }).toList(),
-        Divider(height: 0, color: Colors.grey[300]),
+        const Divider(height: 0),
       ],
     );
   }

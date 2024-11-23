@@ -34,8 +34,9 @@ class TaskListTile extends HookWidget {
       },
       leading: Checkbox(
         value: checked.value,
-        activeColor: Colors.black,
-        side: const BorderSide(color: Colors.black, width: 1),
+        activeColor: Theme.of(context).colorScheme.onSurface,
+        side:
+            BorderSide(width: 1, color: Theme.of(context).colorScheme.outline),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(0),
         ),
@@ -50,9 +51,11 @@ class TaskListTile extends HookWidget {
       ),
       title: Text(task.title,
           style: TextStyle(
-            color: checked.value ? Colors.grey : Colors.black,
+            color: checked.value
+                ? Theme.of(context).colorScheme.outline
+                : Theme.of(context).colorScheme.onSurface,
             decoration: checked.value ? TextDecoration.lineThrough : null,
-            decorationColor: Colors.grey,
+            decorationColor: Theme.of(context).colorScheme.outline,
           )),
       subtitle: d != null && d.dateStrings.isNotEmpty
           ? Padding(

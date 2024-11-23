@@ -1,9 +1,11 @@
+import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'common/snackbar/view/snackbar_listener.dart';
 
+import 'common/app_theme.dart';
+import 'common/snackbar/view/snackbar_listener.dart';
 import 'notion/task_database/view/task_database_setting_page.dart';
 import 'notion/tasks/view/task_main_page.dart';
 import 'settings/settings_viewmodel.dart';
@@ -53,11 +55,33 @@ class MyApp extends ConsumerWidget {
           onGenerateTitle: (BuildContext context) =>
               AppLocalizations.of(context)!.appTitle,
 
-          // Define a light and dark color theme. Then, read the user's
-          // preferred ThemeMode (light, dark, or system default) from the
-          // SettingsController to display the correct theme.
-          theme: ThemeData(),
-          darkTheme: ThemeData.dark(),
+          theme: AppTheme.light.copyWith(
+              dividerTheme: DividerThemeData(color: Colors.grey[300]),
+              appBarTheme: AppTheme.light.appBarTheme.copyWith(
+                  centerTitle: true,
+                  titleTextStyle: const TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 18,
+                    color: Colors.black,
+                  ),
+                  backgroundColor: Colors.white,
+                  surfaceTintColor: Colors.grey),
+              navigationBarTheme: AppTheme.light.navigationBarTheme.copyWith(
+                  shadowColor: Colors.black,
+                  labelBehavior:
+                      NavigationDestinationLabelBehavior.alwaysHide)),
+          darkTheme: AppTheme.dark.copyWith(
+              appBarTheme: AppTheme.dark.appBarTheme.copyWith(
+                  centerTitle: true,
+                  titleTextStyle: const TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 18,
+                    color: Colors.white,
+                  ),
+                  backgroundColor: Colors.black),
+              navigationBarTheme: AppTheme.dark.navigationBarTheme.copyWith(
+                  labelBehavior:
+                      NavigationDestinationLabelBehavior.alwaysHide)),
           themeMode: settings.themeMode,
 
           // Define a function to handle named routes in order to support
