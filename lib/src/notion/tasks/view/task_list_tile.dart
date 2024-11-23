@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
 import './edit_task_sheet.dart';
 import '../../model/task.dart';
 import '../task_viewmodel.dart';
 
-class TaskListTile extends StatelessWidget {
+class TaskListTile extends HookWidget {
   const TaskListTile({
     super.key,
     required this.task,
@@ -12,14 +13,16 @@ class TaskListTile extends StatelessWidget {
     required this.taskViewModel,
   });
 
-  // HACK: あとでリファクタ
   final Task task;
-  final ValueNotifier<bool> loading; // けす
+  final ValueNotifier<bool> loading;
   final TaskViewModel taskViewModel;
 
   @override
   Widget build(BuildContext context) {
     final d = taskViewModel.getDisplayDate(task);
+
+    final checked = useState(task.isCompleted);
+
     return ListTile(
       onTap: () {
         showModalBottomSheet(
@@ -30,7 +33,7 @@ class TaskListTile extends StatelessWidget {
         );
       },
       leading: Checkbox(
-        value: task.isCompleted,
+        value: checked.value,
         activeColor: Colors.black,
         side: const BorderSide(color: Colors.black, width: 2),
         shape: RoundedRectangleBorder(
@@ -39,6 +42,7 @@ class TaskListTile extends StatelessWidget {
         onChanged: (bool? willComplete) async {
           if (loading.value) return;
           if (willComplete == null) return;
+          checked.value = willComplete;
           loading.value = true;
           await taskViewModel.updateStatus(task, willComplete);
           loading.value = false;

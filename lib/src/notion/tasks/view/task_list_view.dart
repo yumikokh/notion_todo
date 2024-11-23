@@ -26,7 +26,10 @@ class TaskListView extends HookWidget {
     final loading = useState(false);
 
     if (notCompletedTasks.isEmpty && completedTasks.isEmpty) {
-      return const Center(child: Text('No tasks'));
+      return const Center(child: Text('タスクがありません'));
+    }
+    if (notCompletedTasks.isEmpty && completedTasks.isNotEmpty) {
+      return const Center(child: Text('よい1日をお過ごしください！'));
     }
 
     return ListView(children: [
@@ -92,13 +95,19 @@ class TaskListView extends HookWidget {
             child: const Icon(Icons.edit_calendar, color: Colors.white),
           ),
           child: TaskListTile(
-              task: task, loading: loading, taskViewModel: taskViewModel),
+              key: Key('${task.id}notCompleted'),
+              task: task,
+              loading: loading,
+              taskViewModel: taskViewModel),
         );
       }).toList(),
       if (showCompletedTasks && completedTasks.isNotEmpty)
         ...completedTasks.map((task) {
           return TaskListTile(
-              task: task, loading: loading, taskViewModel: taskViewModel);
+              key: Key('${task.id}completed'),
+              task: task,
+              loading: loading,
+              taskViewModel: taskViewModel);
         }).toList(),
     ]);
   }

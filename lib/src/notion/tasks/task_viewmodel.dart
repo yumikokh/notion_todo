@@ -112,15 +112,6 @@ class TaskViewModel extends _$TaskViewModel {
 
     final snackbar = ref.read(snackbarProvider.notifier);
 
-    state = state.whenData((tasks) {
-      return tasks.map((t) {
-        if (t.id == task.id) {
-          return task.copyWith(isCompleted: isCompleted);
-        }
-        return t;
-      }).toList();
-    });
-
     snackbar.show(
         isCompleted ? '「${task.title}」を完了しました 🎉' : '「${task.title}」を未完了に戻しました',
         type: SnackbarType.success, onUndo: () {
