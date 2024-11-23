@@ -5,6 +5,7 @@ import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../../helpers/date.dart';
 import '../../repository/notion_database_repository.dart';
 import '../../task_database/task_database_viewmodel.dart';
 import '../task_viewmodel.dart';
@@ -66,9 +67,6 @@ class TaskMainPage extends HookConsumerWidget {
       },
       syncedNotion:
           ref.watch(taskDatabaseViewModelProvider).taskDatabase?.id != null,
-      onRefresh: () {
-        ref.invalidate(provider);
-      },
       currentIndex: currentIndex.value,
       onIndexChanged: (index) {
         currentIndex.value = index;
@@ -81,11 +79,13 @@ class TaskMainPage extends HookConsumerWidget {
             onRefresh: () async {
               ref.invalidate(todayProvider);
             },
+            color: Colors.black12,
             child: todayTasks.when(
               data: (tasks) => TaskListView(
                 list: tasks,
                 taskViewModel: taskViewModel,
                 showCompletedTasks: showCompletedTasks.value,
+                title: formatDate(DateTime.now(), format: 'EE, MMM d'),
               ),
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (error, stack) => Center(child: Text(error.toString())),
@@ -96,11 +96,13 @@ class TaskMainPage extends HookConsumerWidget {
             onRefresh: () async {
               ref.invalidate(allProvider);
             },
+            color: Colors.black12,
             child: allTasks.when(
               data: (tasks) => TaskListView(
                 list: tasks,
                 taskViewModel: taskViewModel,
                 showCompletedTasks: showCompletedTasks.value,
+                title: null,
               ),
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (error, stack) => Center(child: Text(error.toString())),

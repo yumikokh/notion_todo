@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-
-import '../../../helpers/date.dart';
 import '../../../settings/settings_view.dart';
 import '../task_viewmodel.dart';
 import 'add_task_sheet.dart';
@@ -12,7 +10,6 @@ class TaskBasePage extends HookConsumerWidget {
   final ValueChanged<int> onIndexChanged;
   final bool showCompletedTasks;
   final Function(bool) setShowCompletedTasks;
-  final Function() onRefresh;
   final bool syncedNotion;
   final TaskViewModel taskViewModel;
 
@@ -24,7 +21,6 @@ class TaskBasePage extends HookConsumerWidget {
       required this.showCompletedTasks,
       required this.setShowCompletedTasks,
       required this.syncedNotion,
-      required this.onRefresh,
       required this.taskViewModel})
       : super(key: key);
 
@@ -32,16 +28,21 @@ class TaskBasePage extends HookConsumerWidget {
   Widget build(BuildContext context, ref) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(
-              currentIndex == 0
-                  ? formatDate(DateTime.now(), format: 'EE, MMM d')
-                  : 'Index',
-              style: const TextStyle(
-                  fontWeight: FontWeight.bold, color: Colors.black54)),
+          centerTitle: true,
+          title: currentIndex == 1
+              ? const Text('Index',
+                  style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black54,
+                      fontSize: 20))
+              : null,
           actions: [
             IconButton(
               icon: Icon(
-                  showCompletedTasks ? Icons.visibility : Icons.visibility_off),
+                  showCompletedTasks
+                      ? Icons.visibility_rounded
+                      : Icons.visibility_off_outlined,
+                  color: Colors.black45),
               onPressed: () {
                 setShowCompletedTasks(!showCompletedTasks);
               },
@@ -49,7 +50,8 @@ class TaskBasePage extends HookConsumerWidget {
             Stack(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.settings),
+                  icon: const Icon(Icons.settings_outlined,
+                      color: Colors.black45),
                   onPressed: () {
                     Navigator.restorablePushNamed(
                         context, SettingsView.routeName);

@@ -35,7 +35,7 @@ class TaskListTile extends HookWidget {
       leading: Checkbox(
         value: checked.value,
         activeColor: Colors.black,
-        side: const BorderSide(color: Colors.black, width: 2),
+        side: const BorderSide(color: Colors.black, width: 1),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(0),
         ),
@@ -50,8 +50,9 @@ class TaskListTile extends HookWidget {
       ),
       title: Text(task.title,
           style: TextStyle(
-            color: task.isCompleted ? Colors.grey : Colors.black,
-            decoration: task.isCompleted ? TextDecoration.lineThrough : null,
+            color: checked.value ? Colors.grey : Colors.black,
+            decoration: checked.value ? TextDecoration.lineThrough : null,
+            decorationColor: Colors.grey,
           )),
       subtitle: d != null && d.dateStrings.isNotEmpty
           ? Padding(
