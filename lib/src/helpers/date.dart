@@ -61,3 +61,7 @@ String? formatDateTime(String dateTime, {bool showToday = false}) {
 
   return format != null ? DateFormat(format).format(parsed.toLocal()) : null;
 }
+
+String formatDate(DateTime date, {String format = 'yyyy/MM/dd'}) {
+  return DateFormat(format).format(date);
+}

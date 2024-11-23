@@ -77,24 +77,34 @@ class TaskMainPage extends HookConsumerWidget {
         index: currentIndex.value,
         children: [
           // Today Tasks
-          todayTasks.when(
-            data: (tasks) => TaskListView(
-              list: tasks,
-              taskViewModel: taskViewModel,
-              showCompletedTasks: showCompletedTasks.value,
+          RefreshIndicator(
+            onRefresh: () async {
+              ref.invalidate(todayProvider);
+            },
+            child: todayTasks.when(
+              data: (tasks) => TaskListView(
+                list: tasks,
+                taskViewModel: taskViewModel,
+                showCompletedTasks: showCompletedTasks.value,
+              ),
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (error, stack) => Center(child: Text(error.toString())),
             ),
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (error, stack) => Center(child: Text(error.toString())),
           ),
           // All Tasks
-          allTasks.when(
-            data: (tasks) => TaskListView(
-              list: tasks,
-              taskViewModel: taskViewModel,
-              showCompletedTasks: showCompletedTasks.value,
+          RefreshIndicator(
+            onRefresh: () async {
+              ref.invalidate(allProvider);
+            },
+            child: allTasks.when(
+              data: (tasks) => TaskListView(
+                list: tasks,
+                taskViewModel: taskViewModel,
+                showCompletedTasks: showCompletedTasks.value,
+              ),
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (error, stack) => Center(child: Text(error.toString())),
             ),
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (error, stack) => Center(child: Text(error.toString())),
           ),
         ],
       ),

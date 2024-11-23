@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../../helpers/date.dart';
 import '../../../settings/settings_view.dart';
 import '../task_viewmodel.dart';
 import 'add_task_sheet.dart';
@@ -11,8 +12,8 @@ class TaskBasePage extends HookConsumerWidget {
   final ValueChanged<int> onIndexChanged;
   final bool showCompletedTasks;
   final Function(bool) setShowCompletedTasks;
-  final bool syncedNotion;
   final Function() onRefresh;
+  final bool syncedNotion;
   final TaskViewModel taskViewModel;
 
   const TaskBasePage(
@@ -30,82 +31,90 @@ class TaskBasePage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, ref) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(currentIndex == 0 ? 'Today' : 'Index'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: onRefresh,
-          ),
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () {
-              Navigator.restorablePushNamed(context, SettingsView.routeName);
-            },
-          ),
-        ],
-      ),
-      body: body,
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: currentIndex,
-        onTap: onIndexChanged,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.today),
-            label: 'Today',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.list),
-            label: 'Index',
-          ),
-        ],
-      ),
-      floatingActionButton: syncedNotion
-          ? Column(
-              mainAxisAlignment: MainAxisAlignment.end,
+        appBar: AppBar(
+          title: Text(
+              currentIndex == 0
+                  ? formatDate(DateTime.now(), format: 'EE, MMM d')
+                  : 'Index',
+              style: const TextStyle(
+                  fontWeight: FontWeight.bold, color: Colors.black54)),
+          actions: [
+            IconButton(
+              icon: Icon(
+                  showCompletedTasks ? Icons.visibility : Icons.visibility_off),
+              onPressed: () {
+                setShowCompletedTasks(!showCompletedTasks);
+              },
+            ),
+            Stack(
               children: [
-                FloatingActionButton(
+                IconButton(
+                  icon: const Icon(Icons.settings),
                   onPressed: () {
-                    setShowCompletedTasks(!showCompletedTasks);
+                    Navigator.restorablePushNamed(
+                        context, SettingsView.routeName);
                   },
-                  backgroundColor: Colors.blue,
-                  child: Icon(showCompletedTasks
-                      ? Icons.visibility_off
-                      : Icons.visibility),
                 ),
-                const SizedBox(height: 10),
-                FloatingActionButton(
-                  onPressed: () {
-                    // モーダルを開く
-                    showModalBottomSheet(
-                      context: context,
-                      builder: (context) {
-                        // テキスト表示
-                        return SizedBox.expand(
-                            child: Center(
-                                child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            AddTaskSheet(
-                              taskViewModel: taskViewModel,
-                            ),
-                          ],
-                        )));
-                      },
-                    );
-                  },
-                  backgroundColor: Colors.black,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(100),
-                    side: const BorderSide(color: Colors.black, width: 3),
+                if (!syncedNotion)
+                  const Positioned(
+                    right: 8,
+                    top: 8,
+                    child: CircleAvatar(
+                      radius: 5,
+                      backgroundColor: Colors.red,
+                    ),
                   ),
-                  child: const Icon(Icons.add, size: 28),
-                ),
               ],
-            )
-          : null,
-    );
+            ),
+          ],
+        ),
+        body: body,
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: currentIndex,
+          onTap: onIndexChanged,
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.today_rounded),
+              label: 'Today',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.inbox_rounded),
+              label: 'Index',
+            ),
+          ],
+          selectedItemColor: Colors.black,
+          unselectedItemColor: Colors.grey,
+        ),
+        floatingActionButton: !syncedNotion
+            ? null
+            : FloatingActionButton(
+                onPressed: () {
+                  // モーダルを開く
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (context) {
+                      // テキスト表示
+                      return SizedBox.expand(
+                          child: Center(
+                              child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          AddTaskSheet(
+                            taskViewModel: taskViewModel,
+                          ),
+                        ],
+                      )));
+                    },
+                  );
+                },
+                backgroundColor: Colors.black,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(100),
+                  side: const BorderSide(color: Colors.black, width: 3),
+                ),
+                child: const Icon(Icons.add, size: 28),
+              ));
   }
 }
