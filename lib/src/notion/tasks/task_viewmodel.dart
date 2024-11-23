@@ -58,6 +58,8 @@ class TaskViewModel extends _$TaskViewModel {
         for (final task in state.valueOrNull ?? [])
           if (task.id == tempId) t else task
       ]);
+
+      _fetchTasks(_filterType);
     } catch (e) {
       // エラーが起きたら一時的なidを持つタスクを元に戻す
       state = prevState;
@@ -96,6 +98,8 @@ class TaskViewModel extends _$TaskViewModel {
       state = state.whenData((t) {
         return t.map((t) => t.id == updatedTask.id ? res : t).toList();
       });
+
+      _fetchTasks(_filterType);
     } catch (e) {
       state = prevState;
       snackbar.show('「${updatedTask.title}」の変更に失敗しました',
@@ -184,6 +188,8 @@ class TaskViewModel extends _$TaskViewModel {
           return task;
         }).toList();
       });
+
+      _fetchTasks(_filterType);
 
       return restoredTask;
     } catch (e) {
