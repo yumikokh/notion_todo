@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
-import '../../repository/notion_database_repository.dart';
+import '../../repository/notion_task_repository.dart';
 import '../task_viewmodel.dart';
 import 'task_date_sheet.dart';
 

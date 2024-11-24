@@ -3,20 +3,19 @@ import 'dart:async';
 import '../model/property.dart';
 import '../model/task.dart';
 import '../model/task_database.dart';
-import '../repository/notion_database_repository.dart';
+import '../repository/notion_task_repository.dart';
 
 class TaskService {
-  final NotionDatabaseRepository _notionDatabaseRepository;
+  final NotionTaskRepository notionTaskRepository;
   // TODO: DATABASE情報も所有させる
 
-  TaskService(NotionDatabaseRepository notionDatabaseRepository)
-      : _notionDatabaseRepository = notionDatabaseRepository;
+  TaskService(this.notionTaskRepository);
 
   FutureOr<List<Task>> fetchTasks(
     TaskDatabase db,
     FilterType filterType,
   ) async {
-    final results = await _notionDatabaseRepository.fetchPages(filterType);
+    final results = await notionTaskRepository.fetchPages(filterType);
     if (results == null) {
       return [];
     }
@@ -30,7 +29,7 @@ class TaskService {
   }
 
   Future<Task> addTask(TaskDatabase db, String title, String? dueDate) async {
-    final data = await _notionDatabaseRepository.addTask(title, dueDate);
+    final data = await notionTaskRepository.addTask(title, dueDate);
     if (data == null || data.isEmpty) {
       return Task.initial();
     }
@@ -44,8 +43,7 @@ class TaskService {
 
   Future<Task> updateTask(
       TaskDatabase db, String taskId, String title, String? dueDate) async {
-    final data =
-        await _notionDatabaseRepository.updateTask(taskId, title, dueDate);
+    final data = await notionTaskRepository.updateTask(taskId, title, dueDate);
     if (data == null || data['id'] == null) {
       return Task.initial();
     }
@@ -59,8 +57,7 @@ class TaskService {
 
   Future<Task> updateStatus(
       TaskDatabase db, String taskId, bool isCompleted) async {
-    final data =
-        await _notionDatabaseRepository.updateStatus(taskId, isCompleted);
+    final data = await notionTaskRepository.updateStatus(taskId, isCompleted);
     if (data == null || data.isEmpty) {
       return Task.initial();
     }
@@ -74,7 +71,7 @@ class TaskService {
   }
 
   Future<Task?> deleteTask(String taskId, TaskStatusProperty status) async {
-    final data = await _notionDatabaseRepository.deleteTask(taskId);
+    final data = await notionTaskRepository.deleteTask(taskId);
     if (data == null || data.isEmpty) {
       return null;
     }
@@ -87,7 +84,7 @@ class TaskService {
   }
 
   Future<Task?> undoDeleteTask(String taskId, TaskStatusProperty status) async {
-    final data = await _notionDatabaseRepository.revertTask(taskId);
+    final data = await notionTaskRepository.revertTask(taskId);
     if (data == null || data.isEmpty) {
       return null;
     }

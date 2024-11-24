@@ -24,7 +24,8 @@ class SettingsView extends ConsumerWidget {
     final isAuthenticated = ref.watch(isAuthenticatedProvider);
     final taskDatabaseViewModel =
         ref.watch(taskDatabaseViewModelProvider.notifier);
-    final taskDatabase = ref.watch(taskDatabaseViewModelProvider).taskDatabase;
+    final taskDatabase =
+        ref.watch(taskDatabaseViewModelProvider).valueOrNull?.taskDatabase;
 
     return Scaffold(
       appBar: AppBar(

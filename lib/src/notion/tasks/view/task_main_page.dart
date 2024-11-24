@@ -6,7 +6,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../helpers/date.dart';
-import '../../repository/notion_database_repository.dart';
+import '../../repository/notion_task_repository.dart';
 import '../../task_database/task_database_viewmodel.dart';
 import '../task_viewmodel.dart';
 import 'task_list_view.dart';
@@ -65,8 +65,12 @@ class TaskMainPage extends HookConsumerWidget {
       setShowCompletedTasks: (value) {
         showCompletedTasks.value = value;
       },
-      syncedNotion:
-          ref.watch(taskDatabaseViewModelProvider).taskDatabase?.id != null,
+      syncedNotion: ref
+              .watch(taskDatabaseViewModelProvider)
+              .valueOrNull
+              ?.taskDatabase
+              ?.id !=
+          null,
       currentIndex: currentIndex.value,
       onIndexChanged: (index) {
         currentIndex.value = index;

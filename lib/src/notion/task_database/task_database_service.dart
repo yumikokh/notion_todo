@@ -8,12 +8,9 @@ import '../repository/notion_database_repository.dart';
 
 class TaskDatabaseService {
   static const _taskDatabaseKey = 'taskDatabase';
-  final String _accessToken;
-  late final NotionDatabaseRepository _notionDatabaseRepository;
+  final NotionDatabaseRepository notionDatabaseRepository;
 
-  TaskDatabaseService(this._accessToken) {
-    _notionDatabaseRepository = NotionDatabaseRepository(_accessToken);
-  }
+  TaskDatabaseService({required this.notionDatabaseRepository});
 
   Future<TaskDatabase?> loadSetting() async {
     final pref = await SharedPreferences.getInstance();
@@ -42,7 +39,7 @@ class TaskDatabaseService {
   }
 
   Future<List<Database>> fetchDatabases() async {
-    final data = await _notionDatabaseRepository.fetchAccessibleDatabases();
+    final data = await notionDatabaseRepository.fetchAccessibleDatabases();
     final databases = data.map<Database>((e) {
       final id = e['id'];
       final name =

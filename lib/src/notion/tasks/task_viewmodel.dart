@@ -6,7 +6,7 @@ import '../../common/snackbar/snackbar.dart';
 import '../../helpers/date.dart';
 import '../../notion/task_database/task_database_viewmodel.dart';
 import '../model/task.dart';
-import '../repository/notion_database_repository.dart';
+import '../repository/notion_task_repository.dart';
 import 'task_service.dart';
 
 part 'task_viewmodel.g.dart';
@@ -18,14 +18,18 @@ class TaskViewModel extends _$TaskViewModel {
 
   @override
   Future<List<Task>> build({FilterType filterType = FilterType.all}) async {
-    final repository = ref.watch(notionDatabaseRepositoryProvider);
+    final repository = ref.watch(notionTaskRepositoryProvider);
+    if (repository == null) {
+      return [];
+    }
     _taskService = TaskService(repository);
     _filterType = filterType;
     return _fetchTasks(filterType);
   }
 
   Future<List<Task>> _fetchTasks(FilterType filterType) async {
-    final taskDatabase = ref.read(taskDatabaseViewModelProvider).taskDatabase;
+    final taskDatabase =
+        ref.read(taskDatabaseViewModelProvider).valueOrNull?.taskDatabase;
     if (taskDatabase == null) {
       return [];
     }
@@ -35,7 +39,8 @@ class TaskViewModel extends _$TaskViewModel {
   }
 
   Future<void> addTask(String title, DateTime? dueDate) async {
-    final taskDatabase = ref.watch(taskDatabaseViewModelProvider).taskDatabase;
+    final taskDatabase =
+        ref.read(taskDatabaseViewModelProvider).valueOrNull?.taskDatabase;
     if (taskDatabase == null) {
       return;
     }
@@ -69,8 +74,8 @@ class TaskViewModel extends _$TaskViewModel {
 
   Future updateTask(Task updatedTask) async {
     final prevState = state;
-
-    final taskDatabase = ref.watch(taskDatabaseViewModelProvider).taskDatabase;
+    final taskDatabase =
+        ref.read(taskDatabaseViewModelProvider).valueOrNull?.taskDatabase;
     final db = taskDatabase;
     final dueDate = updatedTask.dueDate;
     final prevTask =
@@ -109,7 +114,8 @@ class TaskViewModel extends _$TaskViewModel {
 
   Future updateStatus(Task task, bool isCompleted) async {
     final prevState = state;
-    final taskDatabase = ref.watch(taskDatabaseViewModelProvider).taskDatabase;
+    final taskDatabase =
+        ref.read(taskDatabaseViewModelProvider).valueOrNull?.taskDatabase;
     if (taskDatabase == null) {
       return;
     }
@@ -137,7 +143,8 @@ class TaskViewModel extends _$TaskViewModel {
   Future<void> deleteTask(Task task) async {
     final prevState = state;
     final snackbar = ref.read(snackbarProvider.notifier);
-    final taskDatabase = ref.watch(taskDatabaseViewModelProvider).taskDatabase;
+    final taskDatabase =
+        ref.read(taskDatabaseViewModelProvider).valueOrNull?.taskDatabase;
     if (taskDatabase == null) {
       return;
     }
@@ -162,7 +169,8 @@ class TaskViewModel extends _$TaskViewModel {
 
   Future<Task?> undoDeleteTask(Task prev) async {
     final prevState = state;
-    final taskDatabase = ref.watch(taskDatabaseViewModelProvider).taskDatabase;
+    final taskDatabase =
+        ref.read(taskDatabaseViewModelProvider).valueOrNull?.taskDatabase;
     if (taskDatabase == null) {
       return null;
     }

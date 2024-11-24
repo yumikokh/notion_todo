@@ -3,8 +3,8 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../model/task_database.dart';
-import '../oauth/notion_oauth_viewmodel.dart';
 import '../model/index.dart';
+import '../repository/notion_database_repository.dart';
 import './task_database_service.dart';
 
 part 'task_database_viewmodel.freezed.dart';
@@ -43,163 +43,175 @@ class TaskDatabaseState with _$TaskDatabaseState {
 
 @riverpod
 class TaskDatabaseViewModel extends _$TaskDatabaseViewModel {
-  late TaskDatabaseService? _taskDatabaseService;
+  late TaskDatabaseService _taskDatabaseService;
 
   @override
-  TaskDatabaseState build() {
-    _initialize();
-    return TaskDatabaseState.initialState();
-  }
-
-  _initialize() async {
-    final accessToken = ref.watch(notionOAuthViewModelProvider).accessToken;
-    if (accessToken == null) {
-      return;
+  Future<TaskDatabaseState> build() async {
+    final notionDatabaseRepository =
+        ref.watch(notionDatabaseRepositoryProvider);
+    if (notionDatabaseRepository == null) {
+      return TaskDatabaseState.initialState();
     }
-    _taskDatabaseService = TaskDatabaseService(accessToken);
-    state = TaskDatabaseState(
-      databases: [],
-      taskDatabase: await _taskDatabaseService!.loadSetting(),
+
+    _taskDatabaseService =
+        TaskDatabaseService(notionDatabaseRepository: notionDatabaseRepository);
+    final taskDatabase = await _taskDatabaseService.loadSetting();
+    return TaskDatabaseState(
+      databases: await _taskDatabaseService.fetchDatabases(),
+      taskDatabase: taskDatabase,
       selectedTaskDatabase: null,
     );
-    fetchDatabases();
   }
 
   Future<void> fetchDatabases() async {
-    if (_taskDatabaseService == null) {
-      return;
-    }
     try {
-      final taskDatabases = await _taskDatabaseService!.fetchDatabases();
+      final taskDatabases = await _taskDatabaseService.fetchDatabases();
+      state.whenData((value) {
+        state = AsyncValue.data(value.copyWith(databases: taskDatabases));
+      });
       // print('taskDatabase length: ${taskDatabases.length}');
-      state = state.copyWith(databases: taskDatabases);
+      // final s = state.copyWith(databases: taskDatabases);
+      // return taskDatabases;
     } catch (e) {
       print(e);
     }
   }
 
   void selectDatabase(String? databaseId) {
-    final selected = state.databases.firstWhere((db) => db.id == databaseId);
-    state = state.copyWith(
-      selectedTaskDatabase: SelectedDatabase(
-        id: databaseId!,
-        name: selected.name,
-        properties: selected.properties,
-        status: null,
-        date: null,
-      ),
-    );
+    state.whenData((value) {
+      final selected = value.databases.firstWhere((db) => db.id == databaseId);
+      state = AsyncValue.data(value.copyWith(
+        selectedTaskDatabase: SelectedDatabase(
+          id: databaseId!,
+          name: selected.name,
+          properties: selected.properties,
+          status: null,
+          date: null,
+        ),
+      ));
+    });
   }
 
   List<Property> propertyOptions(SettingPropertyType type) {
     final types = type == SettingPropertyType.status
         ? [PropertyType.status, PropertyType.checkbox]
         : [PropertyType.date];
-    return state.selectedTaskDatabase?.properties
+    return state.value?.selectedTaskDatabase?.properties
             .where((property) => types.contains(property.type))
             .toList() ??
         [];
   }
 
   void selectProperty(String propertyId, SettingPropertyType type) {
-    final property = state.selectedTaskDatabase?.properties
+    final property = state.value?.selectedTaskDatabase?.properties
         .firstWhere((property) => property.id == propertyId);
 
     if (property == null) {
       return;
     }
 
-    if (type == SettingPropertyType.status) {
-      if (property.type == PropertyType.status) {
-        state = state.copyWith(
-          selectedTaskDatabase: state.selectedTaskDatabase?.copyWith(
-            status: TaskStatusProperty.status(
-                id: property.id,
-                name: property.name,
-                type: property.type,
-                status: (property as StatusProperty).status,
-                todoOption: null,
-                completeOption: null),
+    state.whenData((value) {
+      if (type == SettingPropertyType.status) {
+        if (property.type == PropertyType.status) {
+          state = AsyncValue.data(value.copyWith(
+            selectedTaskDatabase: value.selectedTaskDatabase?.copyWith(
+              status: TaskStatusProperty.status(
+                  id: property.id,
+                  name: property.name,
+                  type: property.type,
+                  status: (property as StatusProperty).status,
+                  todoOption: null,
+                  completeOption: null),
+            ),
+          ));
+        }
+        if (property.type == PropertyType.checkbox) {
+          state = AsyncValue.data(value.copyWith(
+            selectedTaskDatabase: value.selectedTaskDatabase?.copyWith(
+                status: TaskStatusProperty.checkbox(
+              id: property.id,
+              name: property.name,
+              type: property.type,
+              checked: (property as CheckboxProperty).checked,
+            )),
+          ));
+        }
+      } else {
+        state = AsyncValue.data(
+          value.copyWith(
+            selectedTaskDatabase: value.selectedTaskDatabase?.copyWith(
+                date: TaskDateProperty(
+              id: property.id,
+              name: property.name,
+              type: property.type,
+              date: (property as DateProperty).date,
+            )),
           ),
         );
       }
-      if (property.type == PropertyType.checkbox) {
-        state = state.copyWith(
-          selectedTaskDatabase: state.selectedTaskDatabase?.copyWith(
-              status: TaskStatusProperty.checkbox(
-            id: property.id,
-            name: property.name,
-            type: property.type,
-            checked: (property as CheckboxProperty).checked,
-          )),
-        );
-      }
-    } else {
-      state = state.copyWith(
-        selectedTaskDatabase: state.selectedTaskDatabase?.copyWith(
-            date: TaskDateProperty(
-          id: property.id,
-          name: property.name,
-          type: property.type,
-          date: (property as DateProperty).date,
-        )),
-      );
-    }
+    });
   }
 
   // optionType: 'To-do' or 'Complete'
   void selectOption(String optionId, String optionType) {
-    if (state.selectedTaskDatabase == null ||
-        state.selectedTaskDatabase?.status == null ||
-        (optionType != 'To-do' && optionType != 'Complete')) {
-      return;
-    }
-    final status =
-        state.selectedTaskDatabase!.status as StatusTaskStatusProperty;
-    final option =
-        status.status.options.firstWhere((option) => option.id == optionId);
+    final selectedTaskDatabase = state.value?.selectedTaskDatabase;
+    state.whenData((value) {
+      if (selectedTaskDatabase == null ||
+          selectedTaskDatabase.status == null ||
+          (optionType != 'To-do' && optionType != 'Complete')) {
+        return;
+      }
+      final status = selectedTaskDatabase.status as StatusTaskStatusProperty;
+      final option =
+          status.status.options.firstWhere((option) => option.id == optionId);
 
-    if (optionType == 'To-do') {
-      state = state.copyWith(
-        selectedTaskDatabase: state.selectedTaskDatabase!.copyWith(
-          status: status.copyWith(todoOption: option),
-        ),
-      );
-    } else {
-      state = state.copyWith(
-        selectedTaskDatabase: state.selectedTaskDatabase?.copyWith(
-          status: status.copyWith(
-            completeOption: option,
+      if (optionType == 'To-do') {
+        state = AsyncValue.data(value.copyWith(
+          selectedTaskDatabase: selectedTaskDatabase.copyWith(
+            status: status.copyWith(todoOption: option),
           ),
-        ),
-      );
-    }
+        ));
+      } else {
+        state = AsyncValue.data(value.copyWith(
+          selectedTaskDatabase: selectedTaskDatabase.copyWith(
+            status: status.copyWith(
+              completeOption: option,
+            ),
+          ),
+        ));
+      }
+    });
   }
 
   void save() {
-    if (_taskDatabaseService == null || state.selectedTaskDatabase == null) {
-      return;
-    }
-    final json = state.selectedTaskDatabase!.properties
-        .firstWhere((property) => property.type == PropertyType.title)
-        .toJson();
-    final taskDatabase = TaskDatabase(
-        id: state.selectedTaskDatabase!.id,
-        name: state.selectedTaskDatabase!.name,
-        status: state.selectedTaskDatabase!.status!,
-        date: state.selectedTaskDatabase!.date!,
-        title: TaskTitleProperty.fromJson(json));
-    _taskDatabaseService!.save(taskDatabase);
-    state =
-        state.copyWith(taskDatabase: taskDatabase, selectedTaskDatabase: null);
+    state.whenData((value) {
+      final selectedTaskDatabase = value.selectedTaskDatabase;
+      final status = selectedTaskDatabase?.status;
+      final date = selectedTaskDatabase?.date;
+      if (selectedTaskDatabase == null || status == null || date == null) {
+        return;
+      }
+      final json = selectedTaskDatabase.properties
+          .firstWhere((property) => property.type == PropertyType.title)
+          .toJson();
+      final taskDatabase = TaskDatabase(
+        id: selectedTaskDatabase.id,
+        name: selectedTaskDatabase.name,
+        status: status,
+        date: date,
+        title: TaskTitleProperty.fromJson(json),
+      );
+      _taskDatabaseService.save(taskDatabase);
+      state = AsyncValue.data(value.copyWith(
+        taskDatabase: taskDatabase,
+        selectedTaskDatabase: null,
+      ));
+    });
   }
 
   void clear() {
-    if (_taskDatabaseService == null) {
-      return;
-    }
-    _taskDatabaseService!.clear();
-    state = TaskDatabaseState.initialState();
+    _taskDatabaseService.clear();
+    state = AsyncValue.data(TaskDatabaseState.initialState());
   }
 }
 

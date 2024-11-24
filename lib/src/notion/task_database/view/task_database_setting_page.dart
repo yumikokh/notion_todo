@@ -10,9 +10,12 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, ref) {
-    final state = ref.watch(taskDatabaseViewModelProvider);
+    final state = ref.watch(taskDatabaseViewModelProvider).valueOrNull;
     final taskDatabaseViewModel =
         ref.watch(taskDatabaseViewModelProvider.notifier);
+    if (state == null) {
+      return const SizedBox.shrink();
+    }
 
     return Scaffold(
       appBar: AppBar(
