@@ -57,17 +57,17 @@ class TaskListView extends HookWidget {
             key: Key(task.id),
             direction: DismissDirection.horizontal,
             dismissThresholds: const {
-              DismissDirection.startToEnd: 0.5, // delete
-              DismissDirection.endToStart: 0.2, // edit
+              DismissDirection.endToStart: 0.5, // delete
+              DismissDirection.startToEnd: 0.2, // edit
             },
             resizeDuration: null,
             onDismissed: (direction) {
-              if (direction == DismissDirection.startToEnd) {
+              if (direction == DismissDirection.endToStart) {
                 taskViewModel.deleteTask(task);
               }
             },
             confirmDismiss: (direction) async {
-              if (direction == DismissDirection.endToStart) {
+              if (direction == DismissDirection.startToEnd) {
                 // 日時編集の処理を追加
                 showModalBottomSheet(
                   shape: RoundedRectangleBorder(
@@ -91,26 +91,26 @@ class TaskListView extends HookWidget {
                 );
                 return false;
               }
-              if (direction == DismissDirection.startToEnd) {
+              if (direction == DismissDirection.endToStart) {
                 return true;
               }
               return false;
             },
-            background: Container(
+            secondaryBackground: Container(
               color: Theme.of(context).colorScheme.error,
-              alignment: Alignment.centerLeft,
+              alignment: Alignment.centerRight,
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Icon(
                 Icons.delete,
                 color: Theme.of(context).colorScheme.onError,
               ),
             ),
-            secondaryBackground: Container(
+            background: Container(
               color: MaterialTheme(Theme.of(context).textTheme)
                   .extendedColors[0]
                   .light
                   .colorContainer,
-              alignment: Alignment.centerRight,
+              alignment: Alignment.centerLeft,
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Icon(
                 Icons.edit_calendar,
