@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:notion_todo/src/helpers/date.dart';
 
-import '../../model/task.dart';
-import '../task_viewmodel.dart';
+import '../../../model/task.dart';
+import '../../task_viewmodel.dart';
 import 'task_date_sheet.dart';
 
 class EditTaskSheet extends HookWidget {

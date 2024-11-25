@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../settings/settings_view.dart';
 import '../task_viewmodel.dart';
-import 'add_task_sheet.dart';
+import 'task_sheet/add_task_sheet.dart';
 
 class TaskBasePage extends HookConsumerWidget {
   final Widget body;
@@ -83,20 +83,19 @@ class TaskBasePage extends HookConsumerWidget {
                 onPressed: () {
                   // モーダルを開く
                   showModalBottomSheet(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     context: context,
                     builder: (context) {
                       // テキスト表示
-                      return SizedBox.expand(
-                          child: Center(
-                              child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
+                      return Wrap(
                         children: <Widget>[
                           AddTaskSheet(
                             taskViewModel: taskViewModel,
                           ),
                         ],
-                      )));
+                      );
                     },
                   );
                 },

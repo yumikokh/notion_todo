@@ -54,7 +54,6 @@ class TaskViewModel extends _$TaskViewModel {
         isCompleted: false,
         dueDate: dueDate != null ? TaskDate(start: dateString(dueDate)) : null);
     state = AsyncValue.data([...state.valueOrNull ?? [], newTask]);
-    snackbar.show('「$title」を追加しました', type: SnackbarType.success);
 
     try {
       final t = await _taskService.addTask(
@@ -63,6 +62,9 @@ class TaskViewModel extends _$TaskViewModel {
         for (final task in state.valueOrNull ?? [])
           if (task.id == tempId) t else task
       ]);
+      snackbar.show('「$title」を追加しました', type: SnackbarType.success, onUndo: () {
+        deleteTask(t);
+      });
 
       _fetchTasks(_filterType);
     } catch (e) {
@@ -214,29 +216,30 @@ class TaskViewModel extends _$TaskViewModel {
     const icon = Icons.event_rounded;
     const size = 13.0;
     final dueDate = task.dueDate;
-    final now = DateTime.now();
 
     if (dueDate == null) {
       return null;
     }
     final dueDateEnd = dueDate.end;
 
-    Color determineColor(TaskDate dueDate, DateTime now) {
+    Color determineColor(TaskDate dueDate) {
+      final now = DateTime.now();
       final dueDateEnd = dueDate.end;
       if (dueDateEnd == null &&
           isToday(DateTime.parse(dueDate.start)) &&
           !hasTime(dueDate.start)) {
         return Theme.of(context).colorScheme.tertiary; // 今日だったら青
-      } else if ((dueDateEnd != null &&
-              DateTime.parse(dueDateEnd).isBefore(now)) ||
+      }
+
+      if ((dueDateEnd != null && DateTime.parse(dueDateEnd).isBefore(now)) ||
           (dueDateEnd == null && DateTime.parse(dueDate.start).isBefore(now))) {
         return Theme.of(context).colorScheme.error; // 過ぎてたら赤
-      } else {
-        return defaultColor; // それ以外は灰色
       }
+
+      return defaultColor; // それ以外は灰色
     }
 
-    final c = determineColor(dueDate, now);
+    final c = determineColor(dueDate);
 
     List<String> dateStrings = [
       formatDateTime(dueDate.start, showToday: _filterType == FilterType.all),
