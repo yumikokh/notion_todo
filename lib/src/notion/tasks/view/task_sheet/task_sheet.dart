@@ -52,24 +52,16 @@ class TaskSheet extends HookWidget {
                   context: context,
                   onSelected: (selected) {
                     showModalBottomSheet(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                       context: context,
-                      builder: (context) {
-                        // テキスト表示
-                        return SizedBox.expand(
-                            child: Center(
-                                child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            TaskDateSheet(
-                              selectedDate: selectedDueDate.value,
-                              onSelected: (DateTime? date) {
-                                changeDueDate(date);
-                              },
-                            ),
-                          ],
-                        )));
-                      },
+                      builder: (context) => TaskDateSheet(
+                        selectedDate: selectedDueDate.value,
+                        onSelected: (DateTime? date) {
+                          changeDueDate(date);
+                        },
+                      ),
                     );
                   },
                   onDeleted: () => changeDueDate(null),

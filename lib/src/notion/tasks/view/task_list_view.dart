@@ -70,28 +70,23 @@ class TaskListView extends HookWidget {
               if (direction == DismissDirection.endToStart) {
                 // 日時編集の処理を追加
                 showModalBottomSheet(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   context: context,
                   builder: (context) {
-                    return SizedBox.expand(
-                        child: Center(
-                            child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        TaskDateSheet(
-                          selectedDate: task.dueDate?.start == null
-                              ? null
-                              : DateTime.parse(task.dueDate!.start).toLocal(),
-                          onSelected: (DateTime? date) async {
-                            final newTask = task.copyWith(
-                                dueDate: date == null
-                                    ? null
-                                    : TaskDate(start: dateString(date)));
-                            await taskViewModel.updateTask(newTask);
-                          },
-                        ),
-                      ],
-                    )));
+                    return TaskDateSheet(
+                      selectedDate: task.dueDate?.start == null
+                          ? null
+                          : DateTime.parse(task.dueDate!.start).toLocal(),
+                      onSelected: (DateTime? date) async {
+                        final newTask = task.copyWith(
+                            dueDate: date == null
+                                ? null
+                                : TaskDate(start: dateString(date)));
+                        await taskViewModel.updateTask(newTask);
+                      },
+                    );
                   },
                 );
                 return false;

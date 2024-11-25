@@ -27,10 +27,6 @@ class DateChip extends StatelessWidget {
   String get label {
     final d = date;
     if (d == null) return '日付を選択';
-    final config = this.config;
-    if (config != null) {
-      return config.text;
-    }
     final formatted = formatDateTime(d.toLocal().toString(), showToday: true);
     return formatted ?? '';
   }

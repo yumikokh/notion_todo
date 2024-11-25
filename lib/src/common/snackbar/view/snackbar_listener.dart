@@ -31,7 +31,7 @@ class SnackbarListener extends HookConsumerWidget {
                   },
                 )
               : null,
-          duration: const Duration(milliseconds: 1000),
+          duration: const Duration(milliseconds: 2000),
         );
 
         // FIXME: 同時表示するとき不自然
