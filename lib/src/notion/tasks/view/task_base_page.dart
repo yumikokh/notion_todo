@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import '../../../settings/settings_view.dart';
+import '../../../settings/view/settings_view.dart';
 import '../../repository/notion_task_repository.dart';
 import '../task_viewmodel.dart';
 import 'task_sheet/task_sheet.dart';

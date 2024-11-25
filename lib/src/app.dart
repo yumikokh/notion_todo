@@ -6,10 +6,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'common/snackbar/view/snackbar_listener.dart';
 import 'notion/task_database/view/task_database_setting_page.dart';
 import 'notion/tasks/view/task_main_page.dart';
+import 'settings/view/notion_settings_view.dart';
 import 'settings/settings_viewmodel.dart';
-import 'settings/settings_view.dart';
+import 'settings/view/settings_view.dart';
 import 'settings/theme/theme.dart';
 import 'settings/theme/util.dart';
+import 'settings/view/theme_settings_view.dart';
 
 /// The Widget that configures your application.
 class MyApp extends ConsumerWidget {
@@ -67,9 +69,11 @@ class MyApp extends ConsumerWidget {
               builder: (BuildContext context) {
                 switch (routeSettings.name) {
                   case SettingsView.routeName:
-                    return SettingsView(
-                      settingsViewModel: settingsViewModel,
-                    );
+                    return SettingsView(settingsViewModel: settingsViewModel);
+                  case NotionSettingsView.routeName:
+                    return const NotionSettingsView();
+                  case ThemeSettingsView.routeName:
+                    return ThemeSettingsView(settingsViewModel);
                   case TaskDatabaseSettingPage.routeName:
                     return const TaskDatabaseSettingPage();
                   case TaskMainPage.routeName:
