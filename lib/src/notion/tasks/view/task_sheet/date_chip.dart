@@ -57,6 +57,6 @@ class DateChip extends StatelessWidget {
         deleteIcon: const Icon(Icons.clear),
         showCheckmark: false,
         labelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-        avatar: const Icon(Icons.calendar_today, size: 14));
+        avatar: const Icon(Icons.event_rounded, size: 14));
   }
 }

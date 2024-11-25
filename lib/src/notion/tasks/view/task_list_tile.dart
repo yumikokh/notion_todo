@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
-import 'task_sheet/edit_task_sheet.dart';
+import '../../../helpers/date.dart';
 import '../../model/task.dart';
 import '../task_viewmodel.dart';
+import 'task_sheet/task_sheet.dart';
 
 class TaskListTile extends HookWidget {
   const TaskListTile({
@@ -26,9 +27,29 @@ class TaskListTile extends HookWidget {
     return ListTile(
       onTap: () {
         showModalBottomSheet(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           context: context,
           builder: (context) {
-            return EditTaskSheet(task: task, taskViewModel: taskViewModel);
+            return TaskSheet(
+              initialDueDate: task.dueDate?.start == null
+                  ? null
+                  : DateTime.parse(task.dueDate!.start).toLocal(),
+              initialTitle: task.title,
+              onSubmitted: (title, dueDate) {
+                final d = dueDate == null
+                    ? null
+                    : TaskDate(start: dateString(dueDate));
+                taskViewModel.updateTask(task.copyWith(
+                  title: title,
+                  dueDate: d,
+                ));
+              },
+              onDeleted: () {
+                taskViewModel.deleteTask(task);
+              },
+            );
           },
         );
       },

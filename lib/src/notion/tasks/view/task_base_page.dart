@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../settings/settings_view.dart';
+import '../../repository/notion_task_repository.dart';
 import '../task_viewmodel.dart';
-import 'task_sheet/add_task_sheet.dart';
+import 'task_sheet/task_sheet.dart';
 
 class TaskBasePage extends HookConsumerWidget {
   final Widget body;
@@ -87,16 +88,16 @@ class TaskBasePage extends HookConsumerWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     context: context,
-                    builder: (context) {
-                      // テキスト表示
-                      return Wrap(
-                        children: <Widget>[
-                          AddTaskSheet(
-                            taskViewModel: taskViewModel,
-                          ),
-                        ],
-                      );
-                    },
+                    builder: (context) => TaskSheet(
+                      initialDueDate:
+                          taskViewModel.filterType == FilterType.today
+                              ? DateTime.now()
+                              : null,
+                      initialTitle: null,
+                      onSubmitted: (title, dueDate) {
+                        taskViewModel.addTask(title, dueDate);
+                      },
+                    ),
                   );
                 },
                 shape: RoundedRectangleBorder(
