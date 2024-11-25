@@ -19,7 +19,7 @@ class TaskListTile extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final d = taskViewModel.getDisplayDate(task);
+    final d = taskViewModel.getDisplayDate(task, context);
 
     final checked = useState(task.isCompleted);
 

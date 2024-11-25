@@ -209,8 +209,8 @@ class TaskViewModel extends _$TaskViewModel {
   }
 
   ({Color color, IconData icon, double size, List<String> dateStrings})?
-      getDisplayDate(Task task) {
-    final defaultColor = Colors.grey[600]!;
+      getDisplayDate(Task task, BuildContext context) {
+    final defaultColor = Theme.of(context).colorScheme.secondary;
     const icon = Icons.event_rounded;
     const size = 13.0;
     final dueDate = task.dueDate;
@@ -226,11 +226,11 @@ class TaskViewModel extends _$TaskViewModel {
       if (dueDateEnd == null &&
           isToday(DateTime.parse(dueDate.start)) &&
           !hasTime(dueDate.start)) {
-        return Colors.blue; // 今日だったら青
+        return Theme.of(context).colorScheme.tertiary; // 今日だったら青
       } else if ((dueDateEnd != null &&
               DateTime.parse(dueDateEnd).isBefore(now)) ||
           (dueDateEnd == null && DateTime.parse(dueDate.start).isBefore(now))) {
-        return Colors.red; // 過ぎてたら赤
+        return Theme.of(context).colorScheme.error; // 過ぎてたら赤
       } else {
         return defaultColor; // それ以外は灰色
       }

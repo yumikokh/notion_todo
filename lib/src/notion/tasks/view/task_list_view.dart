@@ -3,6 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../helpers/date.dart';
+import '../../../settings/theme/theme.dart';
 import '../../model/task.dart';
 import '../task_viewmodel.dart';
 import 'task_date_sheet.dart';
@@ -45,7 +46,7 @@ class TaskListView extends HookWidget {
             child: Text(
               titleWidget,
               style: GoogleFonts.bodoniModa(
-                fontSize: 32,
+                fontSize: 28,
                 fontStyle: FontStyle.italic,
                 letterSpacing: -.8,
               ),
@@ -101,7 +102,7 @@ class TaskListView extends HookWidget {
               return false;
             },
             background: Container(
-              color: Colors.red,
+              color: Theme.of(context).colorScheme.error,
               alignment: Alignment.centerLeft,
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Icon(
@@ -110,7 +111,10 @@ class TaskListView extends HookWidget {
               ),
             ),
             secondaryBackground: Container(
-              color: Colors.orange,
+              color: MaterialTheme(Theme.of(context).textTheme)
+                  .extendedColors[0]
+                  .light
+                  .colorContainer,
               alignment: Alignment.centerRight,
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Icon(

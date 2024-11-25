@@ -1,57 +1,67 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:notion_todo/src/helpers/date.dart';
+import 'package:notion_todo/src/settings/theme/theme.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-class TaskDateSheet extends HookWidget {
+class TaskDateSheet extends StatelessWidget {
   final DateTime? selectedDate;
   final void Function(DateTime?) onSelected;
 
-  TaskDateSheet({
+  const TaskDateSheet({
     super.key,
     required this.selectedDate,
     required this.onSelected,
   });
 
-  final fixedDates = [
-    (
-      text: '今日',
-      date: DateTime.now(),
-      icon: Icons.calendar_today,
-      activeStyle: ButtonStyle(
-        backgroundColor: WidgetStateProperty.all(Colors.red),
-        iconColor: WidgetStateProperty.all(Colors.white),
-        textStyle: // FIXME: 適用されない
-            WidgetStateProperty.all(const TextStyle(color: Colors.white)),
-      ),
-    ),
-    (
-      text: '明日',
-      date: DateTime.now().add(const Duration(days: 1)),
-      icon: Icons.upcoming,
-      activeStyle: ButtonStyle(
-        backgroundColor: WidgetStateProperty.all(Colors.orange),
-        iconColor: WidgetStateProperty.all(Colors.white),
-        textStyle:
-            WidgetStateProperty.all(const TextStyle(color: Colors.white)),
-      ),
-    ),
-    (
-      text: '未定',
-      date: null,
-      icon: Icons.event_busy,
-      activeStyle: ButtonStyle(
-        backgroundColor: WidgetStateProperty.all(Colors.grey),
-        iconColor: WidgetStateProperty.all(Colors.white),
-        textStyle:
-            WidgetStateProperty.all(const TextStyle(color: Colors.white)),
-      ),
-    ),
-  ];
-
   @override
   Widget build(BuildContext context) {
     final now = DateTime.now();
+    final fixedDates = [
+      (
+        text: '今日',
+        date: DateTime.now(),
+        icon: Icons.calendar_today,
+        activeTextStyle: TextStyle(
+          color: Theme.of(context).colorScheme.onTertiaryContainer,
+        ),
+        activeButtonStyle: ButtonStyle(
+          backgroundColor: WidgetStateProperty.all(
+              Theme.of(context).colorScheme.tertiaryContainer),
+          iconColor: WidgetStateProperty.all(
+              Theme.of(context).colorScheme.onTertiaryContainer),
+        ),
+      ),
+      (
+        text: '明日',
+        date: DateTime.now().add(const Duration(days: 1)),
+        icon: Icons.upcoming,
+        activeTextStyle: const TextStyle(
+          color: Colors.white,
+        ),
+        activeButtonStyle: ButtonStyle(
+          backgroundColor: WidgetStateProperty.all(
+              MaterialTheme(Theme.of(context).textTheme)
+                  .extendedColors[0]
+                  .value),
+          iconColor: WidgetStateProperty.all(Colors.white),
+        ),
+      ),
+      (
+        text: '未定',
+        date: null,
+        icon: Icons.event_busy,
+        activeTextStyle: TextStyle(
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
+        activeButtonStyle: ButtonStyle(
+          backgroundColor: WidgetStateProperty.all(
+              Theme.of(context).colorScheme.outlineVariant),
+          iconColor: WidgetStateProperty.all(
+              Theme.of(context).colorScheme.onSurfaceVariant),
+        ),
+      ),
+    ];
+
     return Padding(
         padding: const EdgeInsets.all(16),
         child: Column(children: [
@@ -65,9 +75,14 @@ class TaskDateSheet extends HookWidget {
                     Navigator.pop(context);
                   },
                   icon: Icon(d.icon),
-                  label: Text(d.text),
+                  label: Text(d.text,
+                      style: isThisDay(selectedDate, d.date)
+                          ? d.activeTextStyle
+                          : null),
                   // 選択した日付と同じのときアクティブ色にする
-                  style: isThisDay(selectedDate, d.date) ? d.activeStyle : null,
+                  style: isThisDay(selectedDate, d.date)
+                      ? d.activeButtonStyle
+                      : null,
                 );
               }),
             ],
