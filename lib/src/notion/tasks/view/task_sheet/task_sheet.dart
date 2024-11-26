@@ -22,6 +22,17 @@ class TaskSheet extends HookWidget {
   Widget build(BuildContext context) {
     final titleController = useTextEditingController(text: initialTitle);
     final selectedDueDate = useState<DateTime?>(initialDueDate);
+    final isValidTitle = useState<bool>(initialTitle?.isNotEmpty ?? false);
+
+    useEffect(() {
+      void listener() {
+        isValidTitle.value = titleController.text.isNotEmpty;
+      }
+
+      titleController.addListener(listener);
+      return () => titleController.removeListener(listener);
+    }, [titleController]);
+
     final changeDueDate = useCallback(
       (DateTime? newDueDate) {
         selectedDueDate.value = newDueDate;
@@ -38,9 +49,11 @@ class TaskSheet extends HookWidget {
               controller: titleController,
               autofocus: true, // 起動時にフォーカスを設定
               decoration: const InputDecoration(hintText: 'タスク名を入力'),
-              onSubmitted: (value) async {
+              onSubmitted: (value) {
                 Navigator.pop(context);
-                onSubmitted(value, selectedDueDate.value);
+                if (isValidTitle.value) {
+                  onSubmitted(value, selectedDueDate.value);
+                }
               },
             ),
             const SizedBox(height: 16), // 余白を追加
@@ -78,11 +91,13 @@ class TaskSheet extends HookWidget {
                     //     icon: const Icon(Icons.delete),
                     //   ),
                     IconButton.filled(
-                      onPressed: () async {
-                        Navigator.pop(context);
-                        onSubmitted(
-                            titleController.text, selectedDueDate.value);
-                      },
+                      onPressed: isValidTitle.value
+                          ? () async {
+                              Navigator.pop(context);
+                              onSubmitted(
+                                  titleController.text, selectedDueDate.value);
+                            }
+                          : null,
                       icon: const Icon(Icons.arrow_forward_rounded),
                     ),
                   ],

@@ -60,7 +60,7 @@ class TaskViewModel extends _$TaskViewModel {
 
   Future<void> addTask(String title, DateTime? dueDate) async {
     final taskDatabase = ref.read(taskDatabaseViewModelProvider).valueOrNull;
-    if (taskDatabase == null) {
+    if (taskDatabase == null || title.trim().isEmpty) {
       return;
     }
     final snackbar = ref.read(snackbarProvider.notifier);
@@ -99,7 +99,7 @@ class TaskViewModel extends _$TaskViewModel {
     final dueDate = updatedTask.dueDate;
     final prevTask =
         prevState.valueOrNull?.firstWhere((t) => t.id == updatedTask.id);
-    if (prevTask == null) {
+    if (prevTask == null || updatedTask.title.trim().isEmpty) {
       return;
     }
     if (db == null) {
