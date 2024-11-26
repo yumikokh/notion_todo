@@ -88,6 +88,9 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
   }
 
   void selectProperty(String? propertyId, SettingPropertyType type) {
+    if (propertyId == null) {
+      return;
+    }
     final property = state.value?.properties
         .firstWhere((property) => property.id == propertyId);
 
@@ -137,6 +140,9 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
 
   // optionType: 'To-do' or 'Complete'
   void selectStatusOption(String? optionId, String optionType) {
+    if (optionId == null) {
+      return;
+    }
     state = state.whenData((value) {
       if (value == null ||
           value.status == null ||

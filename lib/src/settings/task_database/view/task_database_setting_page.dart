@@ -19,6 +19,16 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
     final selectedDatabaseViewModel =
         ref.watch(selectedDatabaseViewModelProvider.notifier);
 
+    final disabled = selectedDatabase == null ||
+        selectedDatabase.status == null ||
+        selectedDatabase.date == null ||
+        (selectedDatabase.status is StatusTaskStatusProperty &&
+            ((selectedDatabase.status as StatusTaskStatusProperty).todoOption ==
+                    null ||
+                (selectedDatabase.status as StatusTaskStatusProperty)
+                        .completeOption ==
+                    null));
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Task Database Settings'),
@@ -31,7 +41,7 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // データベース選択セクション
-                    _buildSectionTitle('データベース'),
+                    _buildSectionTitle(context, 'データベース'),
                     const SizedBox(height: 8),
                     _buildDropdown(
                       value: selectedDatabase?.id,
@@ -46,7 +56,8 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
 
                     if (selectedDatabase != null) ...[
                       // ステータスプロパティセクション
-                      _buildSectionTitle('ステータスプロパティ'),
+                      _buildSectionTitle(context, 'ステータスプロパティ',
+                          tooltip: '種類: Status, Checkbox'),
                       const SizedBox(height: 8),
                       _buildDropdown(
                         value: selectedDatabase.status?.id,
@@ -63,7 +74,8 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                       // StatusTaskStatusPropertyの場合のみ表示
                       if (selectedDatabase.status?.type ==
                           PropertyType.status) ...[
-                        _buildSectionTitle('To-doオプション'),
+                        _buildSectionTitle(context, 'To-doオプション',
+                            tooltip: '未完了時に指定するオプション'),
                         const SizedBox(height: 8),
                         _buildDropdown(
                           value: (selectedDatabase.status
@@ -75,7 +87,8 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                               .selectStatusOption(value, 'To-do'),
                         ),
                         const SizedBox(height: 24),
-                        _buildSectionTitle('Completeオプション'),
+                        _buildSectionTitle(context, 'Completeオプション',
+                            tooltip: '完了時に指定するオプション'),
                         const SizedBox(height: 8),
                         _buildDropdown(
                           value: (selectedDatabase.status
@@ -91,7 +104,8 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                       ],
 
                       // 日付プロパティセクション
-                      _buildSectionTitle('日付プロパティ'),
+                      _buildSectionTitle(context, '日付プロパティ',
+                          tooltip: '種類: Date'),
                       const SizedBox(height: 8),
                       _buildDropdown(
                         value: selectedDatabase.date?.id,
@@ -110,14 +124,12 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                     SizedBox(
                       width: double.infinity,
                       child: FilledButton(
-                        onPressed: () {
-                          if (selectedDatabase == null) {
-                            return;
-                          }
-                          taskDatabaseViewModel.save(selectedDatabase);
-                          // taskDatabaseSettingViewModel.clear();
-                          Navigator.of(context).pop();
-                        },
+                        onPressed: disabled
+                            ? null
+                            : () {
+                                taskDatabaseViewModel.save(selectedDatabase);
+                                Navigator.of(context).pop();
+                              },
                         child: const Padding(
                           padding: EdgeInsets.symmetric(vertical: 16),
                           child: Text('保存'),
@@ -134,13 +146,29 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
     );
   }
 
-  Widget _buildSectionTitle(String title) {
-    return Text(
-      title,
-      style: const TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.bold,
-      ),
+  Widget _buildSectionTitle(BuildContext context, String title,
+      {String? tooltip}) {
+    return Row(
+      children: [
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        if (tooltip != null) ...[
+          const SizedBox(width: 4),
+          Tooltip(
+            message: tooltip,
+            child: Icon(
+              Icons.info_outline,
+              size: 16,
+              color: Theme.of(context).colorScheme.outline,
+            ),
+          ),
+        ],
+      ],
     );
   }
 
@@ -156,6 +184,8 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: DropdownButton<String>(
+        hint: const Text('選択してください'),
+        disabledHint: const Text('プロパティを作成してください'),
         value: value,
         items: items,
         onChanged: onChanged,
