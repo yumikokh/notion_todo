@@ -16,18 +16,14 @@ class TaskDatabaseViewModel extends _$TaskDatabaseViewModel {
   Future<TaskDatabase?> build() async {
     final notionDatabaseRepository =
         ref.watch(notionDatabaseRepositoryProvider);
-    final accessibleDatabases = ref.watch(accessibleDatabasesProvider);
     _taskDatabaseService =
         TaskDatabaseService(notionDatabaseRepository: notionDatabaseRepository);
-    final taskDatabase = await _taskDatabaseService.loadSetting();
 
-    if (notionDatabaseRepository == null ||
-        accessibleDatabases.valueOrNull
-                ?.firstWhere((db) => db.id == taskDatabase?.id) ==
-            null) {
-      _taskDatabaseService.clear();
+    if (notionDatabaseRepository == null) {
       return null;
     }
+
+    final taskDatabase = await _taskDatabaseService.loadSetting();
 
     if (taskDatabase == null) {
       return null;

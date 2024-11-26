@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../task_database/task_database_viewmodel.dart';
 import 'notion_settings_view.dart';
@@ -21,6 +22,7 @@ class SettingsView extends ConsumerWidget {
   Widget build(BuildContext context, ref) {
     final themeMode = ref.watch(settingsViewModelProvider).themeMode;
     final database = ref.watch(taskDatabaseViewModelProvider).valueOrNull;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings'),

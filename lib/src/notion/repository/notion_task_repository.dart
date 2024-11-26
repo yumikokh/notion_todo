@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../common/error.dart';
 import '../../helpers/date.dart';
 import '../model/property.dart';
 import '../model/task_database.dart';
@@ -91,6 +92,9 @@ class NotionTaskRepository {
       }),
     );
     final data = jsonDecode(res.body);
+    if (data['object'] == 'error') {
+      throw TaskException(data['message'], data['status']);
+    }
     return data['results'];
   }
 

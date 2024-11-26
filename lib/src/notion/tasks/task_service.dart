@@ -15,17 +15,23 @@ class TaskService {
     TaskDatabase db,
     FilterType filterType,
   ) async {
-    final results = await notionTaskRepository.fetchPages(filterType);
-    if (results == null) {
-      return [];
+    try {
+      final results = await notionTaskRepository.fetchPages(filterType);
+
+      if (results == null) {
+        return [];
+      }
+      return results
+          .map<Task>((data) => Task(
+              id: data['id'],
+              title: _title(data),
+              isCompleted: _isTaskCompleted(data, db.status),
+              dueDate: _date(data, db.date.name)))
+          .toList();
+    } catch (e) {
+      print(e);
+      rethrow;
     }
-    return results
-        .map<Task>((data) => Task(
-            id: data['id'],
-            title: _title(data),
-            isCompleted: _isTaskCompleted(data, db.status),
-            dueDate: _date(data, db.date.name)))
-        .toList();
   }
 
   Future<Task> addTask(TaskDatabase db, String title, String? dueDate) async {

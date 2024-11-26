@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../common/error.dart';
 import '../../common/snackbar/model/snackbar_state.dart';
 import '../../common/snackbar/snackbar.dart';
 import '../../helpers/date.dart';
@@ -32,9 +33,29 @@ class TaskViewModel extends _$TaskViewModel {
     if (taskDatabase == null) {
       return [];
     }
-    final tasks = await _taskService.fetchTasks(taskDatabase, filterType);
-    state = AsyncValue.data(tasks);
-    return tasks;
+    try {
+      final tasks = await _taskService.fetchTasks(taskDatabase, filterType);
+      state = AsyncValue.data(tasks);
+      return tasks;
+    } catch (e) {
+      if (e is TaskException && e.statusCode == 404) {
+        final snackbar = ref.read(snackbarProvider.notifier);
+        final taskDatabaseViewModel =
+            ref.read(taskDatabaseViewModelProvider.notifier);
+        taskDatabaseViewModel.clear();
+        snackbar.show('適切なデータベースが見つかりませんでした。再設定が必要です。',
+            type: SnackbarType.error);
+      }
+      if (e is TaskException && e.statusCode == 400) {
+        final snackbar = ref.read(snackbarProvider.notifier);
+        final taskDatabaseViewModel =
+            ref.read(taskDatabaseViewModelProvider.notifier);
+        taskDatabaseViewModel.clear();
+        snackbar.show('適切なプロパティが見つかりませんでした。再設定が必要です。',
+            type: SnackbarType.error);
+      }
+      return [];
+    }
   }
 
   Future<void> addTask(String title, DateTime? dueDate) async {

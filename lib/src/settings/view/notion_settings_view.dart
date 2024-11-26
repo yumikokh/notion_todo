@@ -24,69 +24,132 @@ class NotionSettingsView extends ConsumerWidget {
         title: const Text('Notion Settings'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: const EdgeInsets.all(16),
         child: ListView(
           children: [
-            if (isAuthenticated) const Text('Authenticated ✅'),
-            ElevatedButton(
-              onPressed: () async {
-                await notionOAuth.authenticate();
-                // await taskDatabaseViewModel.fetchDatabases();
-              },
-              child: isAuthenticated
-                  ? const Text('Notionに再接続')
-                  : const Text('Notionに接続'),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      '認証状態',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    isAuthenticated
+                        ? ListTile(
+                            leading: Icon(
+                              Icons.check_circle_rounded,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                            title: const Text('認証済み'),
+                            dense: true,
+                          )
+                        : FilledButton.icon(
+                            onPressed: () async {
+                              await notionOAuth.authenticate();
+                            },
+                            icon: const Icon(Icons.link),
+                            label: const Text('Notionに接続'),
+                          ),
+                    if (isAuthenticated) ...[
+                      const SizedBox(height: 8),
+                      OutlinedButton.icon(
+                        onPressed: () async {
+                          await notionOAuth.deauthenticate();
+                          taskDatabaseViewModel.clear();
+                        },
+                        icon: const Icon(Icons.link_off),
+                        label: const Text('Notionの接続を解除'),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
             ),
-            if (isAuthenticated)
-              ElevatedButton(
-                onPressed: () async {
-                  await notionOAuth.deauthenticate();
-                  taskDatabaseViewModel.clear();
-                },
-                child: const Text('Notionの接続を解除'),
+            if (isAuthenticated) ...[
+              const SizedBox(height: 16),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          const Text(
+                            'データベース設定',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Tooltip(
+                            message: 'プロパティ名や種類が変わった場合は、再設定が必要です',
+                            child: Icon(
+                              Icons.info_outline,
+                              size: 16,
+                              color: Theme.of(context).colorScheme.outline,
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (taskDatabase != null) ...[
+                        const SizedBox(height: 16),
+                        _buildInfoTile('データベース名', taskDatabase.name),
+                        _buildInfoTile('ステータスプロパティ', taskDatabase.status.name),
+                        if (taskDatabase.status.type ==
+                            PropertyType.status) ...[
+                          _buildInfoTile(
+                            'To-doオプション',
+                            (taskDatabase.status as StatusTaskStatusProperty)
+                                    .todoOption
+                                    ?.name ??
+                                'None',
+                          ),
+                          _buildInfoTile(
+                            'Completeオプション',
+                            (taskDatabase.status as StatusTaskStatusProperty)
+                                    .completeOption
+                                    ?.name ??
+                                'None',
+                          ),
+                        ],
+                        _buildInfoTile('日付プロパティ', taskDatabase.date.name),
+                        const SizedBox(height: 16),
+                      ],
+                      SizedBox(
+                        width: double.infinity,
+                        child: FilledButton.icon(
+                          onPressed: () {
+                            Navigator.of(context)
+                                .pushNamed(TaskDatabaseSettingPage.routeName);
+                          },
+                          icon: const Icon(Icons.settings),
+                          label: const Text('データベース設定を変更'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-            if (taskDatabase != null)
-              Column(
-                children: [
-                  const Text('Task Database'),
-                  Text(taskDatabase.name),
-                  const Text('Status Property'),
-                  Text(taskDatabase.status.name),
-                  const Text('Date Property'),
-                  Text(taskDatabase.date.name),
-                ],
-              ),
-            if (taskDatabase?.status.type == PropertyType.status &&
-                (taskDatabase?.status as StatusTaskStatusProperty)
-                        .todoOption
-                        ?.name !=
-                    null)
-              Column(
-                children: [
-                  const Text('To-do Option'),
-                  Text((taskDatabase?.status as StatusTaskStatusProperty)
-                          .todoOption
-                          ?.name ??
-                      'None'),
-                  const Text('Complete Option'),
-                  Text((taskDatabase?.status as StatusTaskStatusProperty)
-                          .completeOption
-                          ?.name ??
-                      'None'),
-                ],
-              ),
-            if (isAuthenticated)
-              ElevatedButton(
-                onPressed: () async {
-                  Navigator.of(context)
-                      .pushNamed(TaskDatabaseSettingPage.routeName);
-                  // await taskDatabaseViewModel.fetchDatabases();
-                },
-                child: const Text('Task Database Settings'),
-              ),
+            ],
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildInfoTile(String label, String value) {
+    return ListTile(
+      title: Text(label, style: const TextStyle(fontSize: 14)),
+      subtitle: Text(value, style: const TextStyle(fontSize: 16)),
     );
   }
 }
