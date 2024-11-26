@@ -4,7 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'common/snackbar/view/snackbar_listener.dart';
-import 'notion/task_database/view/task_database_setting_page.dart';
+import 'settings/task_database/view/task_database_setting_page.dart';
 import 'notion/tasks/view/task_main_page.dart';
 import 'settings/view/notion_settings_view.dart';
 import 'settings/settings_viewmodel.dart';

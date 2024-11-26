@@ -7,12 +7,12 @@ part of 'task_database_viewmodel.dart';
 // **************************************************************************
 
 String _$taskDatabaseViewModelHash() =>
-    r'bdb3bd240cc1e4825f1153618186d29f864bc36f';
+    r'6cbeea06f73f27ec379218280e782f0c10365049';
 
 /// See also [TaskDatabaseViewModel].
 @ProviderFor(TaskDatabaseViewModel)
 final taskDatabaseViewModelProvider = AutoDisposeAsyncNotifierProvider<
-    TaskDatabaseViewModel, TaskDatabaseState>.internal(
+    TaskDatabaseViewModel, TaskDatabase?>.internal(
   TaskDatabaseViewModel.new,
   name: r'taskDatabaseViewModelProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -22,6 +22,6 @@ final taskDatabaseViewModelProvider = AutoDisposeAsyncNotifierProvider<
   allTransitiveDependencies: null,
 );
 
-typedef _$TaskDatabaseViewModel = AutoDisposeAsyncNotifier<TaskDatabaseState>;
+typedef _$TaskDatabaseViewModel = AutoDisposeAsyncNotifier<TaskDatabase?>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

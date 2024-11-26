@@ -7,29 +7,27 @@ import '../../helpers/date.dart';
 import '../model/property.dart';
 import '../model/task_database.dart';
 import '../oauth/notion_oauth_viewmodel.dart';
-import '../task_database/task_database_viewmodel.dart';
+import '../../settings/task_database/task_database_viewmodel.dart';
 
 part 'notion_task_repository.g.dart';
 
 enum FilterType { today, all }
 
 class NotionTaskRepository {
-  final String _accessToken;
-  final TaskDatabase _database;
-  // ignore: prefer_typing_uninitialized_variables
-  late final _headers;
+  final String accessToken;
+  final TaskDatabase database;
+  late final Map<String, String> headers;
 
-  NotionTaskRepository(this._accessToken, {TaskDatabase? database})
-      : _database = database ?? TaskDatabase.initial() {
-    _headers = {
+  NotionTaskRepository(this.accessToken, this.database) {
+    headers = {
       'Content-Type': 'application/json',
       'Notion-Version': '2022-06-28',
-      'Authorization': 'Bearer $_accessToken'
+      'Authorization': 'Bearer $accessToken'
     };
   }
 
   Future fetchPages(FilterType filterType) async {
-    final db = _database;
+    final db = database;
     if (db.id.isEmpty) {
       return;
     }
@@ -76,7 +74,7 @@ class NotionTaskRepository {
 
     final res = await http.post(
       Uri.parse('https://api.notion.com/v1/databases/$databaseId/query'),
-      headers: _headers,
+      headers: headers,
       body: jsonEncode({
         if (filterType == FilterType.today) "filter": filter,
         "sorts": [
@@ -97,7 +95,7 @@ class NotionTaskRepository {
   }
 
   Future addTask(String title, String? dueDate) async {
-    final db = _database;
+    final db = database;
     if (db.id.isEmpty) {
       return;
     }
@@ -118,7 +116,7 @@ class NotionTaskRepository {
 
     final res = await http.post(
       Uri.parse('https://api.notion.com/v1/pages'),
-      headers: _headers,
+      headers: headers,
       body: jsonEncode({
         "parent": {"database_id": db.id},
         "properties": properties
@@ -132,7 +130,7 @@ class NotionTaskRepository {
   }
 
   Future updateTask(String taskId, String title, String? dueDate) async {
-    final db = _database;
+    final db = database;
     if (db.id.isEmpty) {
       return;
     }
@@ -160,14 +158,14 @@ class NotionTaskRepository {
     };
     final res = await http.patch(
       Uri.parse('https://api.notion.com/v1/pages/$taskId'),
-      headers: _headers,
+      headers: headers,
       body: jsonEncode({"properties": properties}),
     );
     return jsonDecode(res.body);
   }
 
   Future updateStatus(String taskId, bool isCompleted) async {
-    final db = _database;
+    final db = database;
     if (db.id.isEmpty) {
       return;
     }
@@ -175,7 +173,7 @@ class NotionTaskRepository {
     final status = db.status;
     final res = await http.patch(
       Uri.parse('https://api.notion.com/v1/pages/$taskId'),
-      headers: _headers,
+      headers: headers,
       body: jsonEncode({
         "properties": status.type == PropertyType.status
             ? {
@@ -204,7 +202,7 @@ class NotionTaskRepository {
   Future deleteTask(String taskId) async {
     final res = await http.patch(
       Uri.parse('https://api.notion.com/v1/pages/$taskId'),
-      headers: _headers,
+      headers: headers,
       body: jsonEncode({"archived": true}),
     );
     return jsonDecode(res.body);
@@ -213,7 +211,7 @@ class NotionTaskRepository {
   Future revertTask(String taskId) async {
     final res = await http.patch(
       Uri.parse('https://api.notion.com/v1/pages/$taskId'),
-      headers: _headers,
+      headers: headers,
       body: jsonEncode({
         "archived": false,
       }),
@@ -240,10 +238,9 @@ List<dynamic> getNotCompleteStatusFilter(
 @riverpod
 NotionTaskRepository? notionTaskRepository(Ref ref) {
   final accessToken = ref.watch(notionOAuthViewModelProvider).accessToken;
-  final taskDatabase =
-      ref.watch(taskDatabaseViewModelProvider).valueOrNull?.taskDatabase;
-  if (accessToken == null) {
+  final taskDatabase = ref.watch(taskDatabaseViewModelProvider).valueOrNull;
+  if (accessToken == null || taskDatabase == null) {
     return null;
   }
-  return NotionTaskRepository(accessToken, database: taskDatabase);
+  return NotionTaskRepository(accessToken, taskDatabase);
 }

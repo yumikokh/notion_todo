@@ -2,13 +2,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'dart:convert';
 
-import '../model/index.dart';
-import '../model/task_database.dart';
-import '../repository/notion_database_repository.dart';
+import '../../notion/model/index.dart';
+import '../../notion/model/task_database.dart';
+import '../../notion/repository/notion_database_repository.dart';
 
 class TaskDatabaseService {
   static const _taskDatabaseKey = 'taskDatabase';
-  final NotionDatabaseRepository notionDatabaseRepository;
+  final NotionDatabaseRepository? notionDatabaseRepository;
 
   TaskDatabaseService({required this.notionDatabaseRepository});
 
@@ -39,7 +39,10 @@ class TaskDatabaseService {
   }
 
   Future<List<Database>> fetchDatabases() async {
-    final data = await notionDatabaseRepository.fetchAccessibleDatabases();
+    final data = await notionDatabaseRepository?.fetchAccessibleDatabases();
+    if (data == null) {
+      return [];
+    }
     final databases = data.map<Database>((e) {
       final id = e['id'];
       final name =

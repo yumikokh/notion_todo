@@ -15,13 +15,6 @@ class TaskDatabase with _$TaskDatabase {
     required TaskDateProperty date,
   }) = _SelectedTaskDatabase;
 
-  factory TaskDatabase.initial() => TaskDatabase(
-      id: '',
-      name: '',
-      title: TaskTitleProperty.initial(),
-      status: TaskStatusProperty.initial(),
-      date: TaskDateProperty.initial());
-
   factory TaskDatabase.fromJson(Map<String, dynamic> json) =>
       _$TaskDatabaseFromJson(json);
 }

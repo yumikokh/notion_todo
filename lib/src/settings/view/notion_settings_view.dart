@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../notion/model/index.dart';
 import '../../notion/oauth/notion_oauth_viewmodel.dart';
-import '../../notion/task_database/task_database_viewmodel.dart';
-import '../../notion/task_database/view/task_database_setting_page.dart';
+import '../task_database/task_database_viewmodel.dart';
+import '../task_database/view/task_database_setting_page.dart';
 
 class NotionSettingsView extends ConsumerWidget {
   static const routeName = '/settings/notion';
@@ -17,8 +17,7 @@ class NotionSettingsView extends ConsumerWidget {
     final isAuthenticated = ref.watch(isAuthenticatedProvider);
     final taskDatabaseViewModel =
         ref.watch(taskDatabaseViewModelProvider.notifier);
-    final taskDatabase =
-        ref.watch(taskDatabaseViewModelProvider).valueOrNull?.taskDatabase;
+    final taskDatabase = ref.watch(taskDatabaseViewModelProvider).valueOrNull;
 
     return Scaffold(
       appBar: AppBar(
@@ -28,17 +27,15 @@ class NotionSettingsView extends ConsumerWidget {
         padding: const EdgeInsets.all(32),
         child: ListView(
           children: [
-            isAuthenticated
-                ? const Text('Authenticated ✅')
-                : const Text('Not Authenticated'),
+            if (isAuthenticated) const Text('Authenticated ✅'),
             ElevatedButton(
               onPressed: () async {
                 await notionOAuth.authenticate();
-                await taskDatabaseViewModel.fetchDatabases();
+                // await taskDatabaseViewModel.fetchDatabases();
               },
               child: isAuthenticated
-                  ? const Text('Re-authenticate')
-                  : const Text('Authenticate'),
+                  ? const Text('Notionに再接続')
+                  : const Text('Notionに接続'),
             ),
             if (isAuthenticated)
               ElevatedButton(
@@ -46,7 +43,7 @@ class NotionSettingsView extends ConsumerWidget {
                   await notionOAuth.deauthenticate();
                   taskDatabaseViewModel.clear();
                 },
-                child: const Text('Deauthenticate'),
+                child: const Text('Notionの接続を解除'),
               ),
             if (taskDatabase != null)
               Column(
@@ -83,7 +80,7 @@ class NotionSettingsView extends ConsumerWidget {
                 onPressed: () async {
                   Navigator.of(context)
                       .pushNamed(TaskDatabaseSettingPage.routeName);
-                  await taskDatabaseViewModel.fetchDatabases();
+                  // await taskDatabaseViewModel.fetchDatabases();
                 },
                 child: const Text('Task Database Settings'),
               ),

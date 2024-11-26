@@ -14,27 +14,33 @@ class ThemeSettingsView extends StatelessWidget {
         title: const Text('Theme Settings'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            DropdownButton<ThemeMode>(
-              value: settingsViewModel.themeMode,
-              onChanged: settingsViewModel.updateThemeMode,
-              items: const [
-                DropdownMenuItem(
-                  value: ThemeMode.system,
-                  child: Text('System Theme'),
-                ),
-                DropdownMenuItem(
-                  value: ThemeMode.light,
-                  child: Text('Light Theme'),
-                ),
-                DropdownMenuItem(
-                  value: ThemeMode.dark,
-                  child: Text('Dark Theme'),
-                )
-              ],
+            ListTile(
+              title: const Text('System Theme'),
+              leading: Radio<ThemeMode>(
+                value: ThemeMode.system,
+                groupValue: settingsViewModel.themeMode,
+                onChanged: settingsViewModel.updateThemeMode,
+              ),
+            ),
+            ListTile(
+              title: const Text('Light Theme'),
+              leading: Radio<ThemeMode>(
+                value: ThemeMode.light,
+                groupValue: settingsViewModel.themeMode,
+                onChanged: settingsViewModel.updateThemeMode,
+              ),
+            ),
+            ListTile(
+              title: const Text('Dark Theme'),
+              leading: Radio<ThemeMode>(
+                value: ThemeMode.dark,
+                groupValue: settingsViewModel.themeMode,
+                onChanged: settingsViewModel.updateThemeMode,
+              ),
             ),
           ],
         ),
