@@ -118,6 +118,8 @@ class TaskViewModel extends _$TaskViewModel {
             onUndo: () {
           deleteTask(t);
         });
+
+        _fetchTasks(_filterType);
       } catch (e) {
         state = prevState;
         snackbar.show('「$title」の追加に失敗しました', type: SnackbarType.error);

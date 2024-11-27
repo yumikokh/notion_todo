@@ -7,7 +7,7 @@ import '../../const/date.dart';
 
 class TaskDateSheet extends HookWidget {
   final DateTime? selectedDate;
-  final void Function(DateTime?) onSelected;
+  final Function(DateTime?) onSelected;
 
   const TaskDateSheet({
     super.key,
@@ -19,59 +19,67 @@ class TaskDateSheet extends HookWidget {
   Widget build(BuildContext context) {
     final now = DateTime.now();
     final options = dateStyleConfigs(context);
-    final selected =
-        useState(selectedDate != null ? formatDate(selectedDate!) : null);
+    final selected = useState<String?>(
+      selectedDate != null ? formatDate(selectedDate!) : null,
+    );
 
-    return Wrap(children: <Widget>[
-      Padding(
-        padding: const EdgeInsets.fromLTRB(40, 30, 40, 60),
-        child: Column(
-          children: [
-            SegmentedButton(
-              expandedInsets: const EdgeInsets.symmetric(horizontal: 0),
-              emptySelectionAllowed: true,
-              selected: {selected.value},
-              onSelectionChanged: (selectedSet) {
-                Navigator.pop(context);
-                selected.value = selectedSet.first;
-                onSelected(selectedSet.first != null
-                    ? DateTime.parse(selectedSet.first!)
-                    : null);
-              },
-              segments: options
-                  .map((d) => ButtonSegment(
-                      value: d.date != null ? formatDate(d.date!) : null,
-                      icon: Icon(d.icon, size: 16),
-                      label:
-                          Text(d.text, style: const TextStyle(fontSize: 14))))
-                  .toList(),
-            ),
-            TableCalendar(
-              firstDay: selectedDate == null
-                  ? now
-                  : selectedDate!.isBefore(now)
-                      ? selectedDate!
-                      : now,
-              lastDay: now.add(const Duration(days: 365)),
-              focusedDay: selectedDate ?? now,
-              currentDay: selectedDate,
-              calendarFormat: CalendarFormat.twoWeeks,
-              calendarStyle: CalendarStyle(
-                todayDecoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Theme.of(context).colorScheme.secondary),
-              ),
-              onDaySelected: (date, focusedDate) {
-                onSelected(date);
-                Navigator.pop(context);
-              },
-              onFormatChanged: (format) {
-                return; // Week選択時のエラーを回避
-              },
-            ),
-          ],
-        ),
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
       ),
-    ]);
+      child: Wrap(
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.fromLTRB(40, 30, 40, 60),
+            child: Column(
+              children: [
+                SegmentedButton(
+                  expandedInsets: const EdgeInsets.symmetric(horizontal: 0),
+                  emptySelectionAllowed: true,
+                  selected: {selected.value},
+                  onSelectionChanged: (selectedSet) {
+                    Navigator.pop(context);
+                    selected.value = selectedSet.first;
+                    onSelected(selectedSet.first != null
+                        ? DateTime.parse(selectedSet.first!)
+                        : null);
+                  },
+                  segments: options
+                      .map((d) => ButtonSegment(
+                          value: d.date != null ? formatDate(d.date!) : null,
+                          icon: Icon(d.icon, size: 16),
+                          label: Text(d.text,
+                              style: const TextStyle(fontSize: 14))))
+                      .toList(),
+                ),
+                TableCalendar(
+                  firstDay: selectedDate == null
+                      ? now
+                      : selectedDate!.isBefore(now)
+                          ? selectedDate!
+                          : now,
+                  lastDay: now.add(const Duration(days: 365)),
+                  focusedDay: selectedDate ?? now,
+                  currentDay: selectedDate,
+                  calendarFormat: CalendarFormat.twoWeeks,
+                  calendarStyle: CalendarStyle(
+                    todayDecoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Theme.of(context).colorScheme.secondary),
+                  ),
+                  onDaySelected: (date, focusedDate) {
+                    onSelected(date);
+                    Navigator.pop(context);
+                  },
+                  onFormatChanged: (format) {
+                    return; // Week選択時のエラーを回避
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

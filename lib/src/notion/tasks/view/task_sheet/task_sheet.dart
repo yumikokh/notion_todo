@@ -40,26 +40,30 @@ class TaskSheet extends HookWidget {
       [selectedDueDate],
     );
 
-    return Wrap(children: <Widget>[
-      Padding(
-        padding: const EdgeInsets.fromLTRB(40, 30, 40, 60),
-        child: Column(
-          children: [
-            TextField(
-              controller: titleController,
-              autofocus: true, // 起動時にフォーカスを設定
-              decoration: const InputDecoration(hintText: 'タスク名を入力'),
-              onSubmitted: (value) {
-                Navigator.pop(context);
-                if (isValidTitle.value) {
-                  onSubmitted(value, selectedDueDate.value);
-                }
-              },
-            ),
-            const SizedBox(height: 16), // 余白を追加
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
+      child: Wrap(children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.fromLTRB(40, 20, 40, 20),
+          // padding: const EdgeInsets.all(10),
+          child: Column(
+            children: [
+              TextField(
+                controller: titleController,
+                autofocus: true,
+                textInputAction: TextInputAction.done,
+                decoration: const InputDecoration(hintText: 'タスク名を入力'),
+                onSubmitted: (value) {
+                  if (value.trim().isNotEmpty) {
+                    Navigator.pop(context);
+                    onSubmitted(value, selectedDueDate.value);
+                  }
+                },
+              ),
+              const SizedBox(height: 16),
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 DateChip(
                   date: selectedDueDate.value,
                   context: context,
@@ -92,7 +96,7 @@ class TaskSheet extends HookWidget {
                     //   ),
                     IconButton.filled(
                       onPressed: isValidTitle.value
-                          ? () async {
+                          ? () {
                               Navigator.pop(context);
                               onSubmitted(
                                   titleController.text, selectedDueDate.value);
@@ -102,12 +106,11 @@ class TaskSheet extends HookWidget {
                     ),
                   ],
                 ),
-              ],
-            ),
-            const SizedBox(height: 16), // 余白を追加
-          ],
+              ]),
+            ],
+          ),
         ),
-      ),
-    ]);
+      ]),
+    );
   }
 }
