@@ -30,6 +30,7 @@ dependencies:
   shared_preferences: ^2.3.2
   table_calendar: ^3.1.2
   sentry_flutter: ^8.10.1
+  flutter_launcher_icons: ^0.14.1
 
 dev_dependencies:
   flutter_test:
@@ -53,3 +54,9 @@ flutter:
   assets:
     # Add assets from the images directory to the application.
     - assets/images/
+
+flutter_launcher_icons:
+  ios: true
+  image_path_ios: "assets/images/app_icon.png"
+  image_path_ios_dark_transparent: "assets/images/app_icon_dark.png"
+  image_path_ios_tinted_grayscale: "assets/images/app_icon_gray.png"
