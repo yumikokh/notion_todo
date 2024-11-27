@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../notion/model/property.dart';
+import '../../../notion/tasks/view/task_main_page.dart';
 import '../task_database_setting_viewmodel.dart';
 import '../task_database_viewmodel.dart';
 
@@ -128,7 +129,11 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                             ? null
                             : () {
                                 taskDatabaseViewModel.save(selectedDatabase);
-                                Navigator.of(context).pop();
+                                Navigator.pushNamedAndRemoveUntil(
+                                  context,
+                                  TaskMainPage.routeName,
+                                  (route) => false,
+                                );
                               },
                         child: const Padding(
                           padding: EdgeInsets.symmetric(vertical: 16),

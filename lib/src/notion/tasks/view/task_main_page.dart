@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:notion_todo/src/settings/view/notion_settings_view.dart';
 
 import '../../../helpers/date.dart';
 import '../../repository/notion_task_repository.dart';
@@ -28,6 +29,8 @@ class TaskMainPage extends HookConsumerWidget {
     final allProvider = taskViewModelProvider(filterType: FilterType.all);
     final todayTasks = ref.watch(todayProvider);
     final allTasks = ref.watch(allProvider);
+    final syncedNotion =
+        ref.watch(taskDatabaseViewModelProvider).valueOrNull != null;
 
     final taskViewModel = useMemoized(() {
       return currentIndex.value == 0
@@ -65,51 +68,80 @@ class TaskMainPage extends HookConsumerWidget {
       setShowCompletedTasks: (value) {
         showCompletedTasks.value = value;
       },
-      syncedNotion:
-          ref.watch(taskDatabaseViewModelProvider).valueOrNull != null,
+      syncedNotion: syncedNotion,
       currentIndex: currentIndex.value,
       onIndexChanged: (index) {
         currentIndex.value = index;
       },
-      body: IndexedStack(
-        index: currentIndex.value,
-        children: [
-          // Today Tasks
-          RefreshIndicator(
-            onRefresh: () async {
-              ref.invalidate(todayProvider);
-            },
-            color: Theme.of(context).colorScheme.inversePrimary,
-            child: todayTasks.when(
-              data: (tasks) => TaskListView(
-                list: tasks,
-                taskViewModel: taskViewModel,
-                showCompletedTasks: showCompletedTasks.value,
-                title: formatDate(DateTime.now(), format: 'EE, MMM d'),
+      body: syncedNotion
+          ? IndexedStack(
+              index: currentIndex.value,
+              children: [
+                // Today Tasks
+                RefreshIndicator(
+                  onRefresh: () async {
+                    ref.invalidate(todayProvider);
+                  },
+                  color: Theme.of(context).colorScheme.inversePrimary,
+                  child: todayTasks.when(
+                    data: (tasks) => TaskListView(
+                      list: tasks,
+                      taskViewModel: taskViewModel,
+                      showCompletedTasks: showCompletedTasks.value,
+                      title: formatDate(DateTime.now(), format: 'EE, MMM d'),
+                    ),
+                    loading: () =>
+                        const Center(child: CircularProgressIndicator()),
+                    error: (error, stack) =>
+                        Center(child: Text(error.toString())),
+                  ),
+                ),
+                // All Tasks
+                RefreshIndicator(
+                  onRefresh: () async {
+                    ref.invalidate(allProvider);
+                  },
+                  color: Theme.of(context).colorScheme.inversePrimary,
+                  child: allTasks.when(
+                    data: (tasks) => TaskListView(
+                      list: tasks,
+                      taskViewModel: taskViewModel,
+                      showCompletedTasks: showCompletedTasks.value,
+                      title: null,
+                    ),
+                    loading: () =>
+                        const Center(child: CircularProgressIndicator()),
+                    error: (error, stack) =>
+                        Center(child: Text(error.toString())),
+                  ),
+                ),
+              ],
+            )
+          : Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Icon(Icons.warning_rounded,
+                          color: Theme.of(context).colorScheme.secondary),
+                      const SizedBox(width: 8),
+                      const Text('Notionのデータベース設定が必要です'),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  FilledButton(
+                    onPressed: () {
+                      Navigator.restorablePushNamed(
+                          context, NotionSettingsView.routeName);
+                    },
+                    child: const Text('設定ページへ'),
+                  ),
+                ],
               ),
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (error, stack) => Center(child: Text(error.toString())),
             ),
-          ),
-          // All Tasks
-          RefreshIndicator(
-            onRefresh: () async {
-              ref.invalidate(allProvider);
-            },
-            color: Theme.of(context).colorScheme.inversePrimary,
-            child: allTasks.when(
-              data: (tasks) => TaskListView(
-                list: tasks,
-                taskViewModel: taskViewModel,
-                showCompletedTasks: showCompletedTasks.value,
-                title: null,
-              ),
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (error, stack) => Center(child: Text(error.toString())),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

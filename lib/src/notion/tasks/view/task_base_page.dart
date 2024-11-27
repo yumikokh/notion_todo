@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../settings/view/settings_view.dart';
 import '../../repository/notion_task_repository.dart';
 import '../task_viewmodel.dart';
 import 'task_sheet/task_sheet.dart';
 
-class TaskBasePage extends HookConsumerWidget {
+class TaskBasePage extends StatelessWidget {
   final Widget body;
   final int currentIndex;
   final ValueChanged<int> onIndexChanged;
@@ -26,7 +25,7 @@ class TaskBasePage extends HookConsumerWidget {
       : super(key: key);
 
   @override
-  Widget build(BuildContext context, ref) {
+  Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           title: currentIndex == 1 ? const Text('Index') : null,

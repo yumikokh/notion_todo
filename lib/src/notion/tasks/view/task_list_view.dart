@@ -32,7 +32,9 @@ class TaskListView extends HookWidget {
     if (notCompletedTasks.isEmpty && completedTasks.isEmpty) {
       return const Center(child: Text('タスクがありません'));
     }
-    if (notCompletedTasks.isEmpty && completedTasks.isNotEmpty) {
+    if (notCompletedTasks.isEmpty &&
+        completedTasks.isNotEmpty &&
+        !showCompletedTasks) {
       return const Center(child: Text('よい1日をお過ごしください！'));
     }
 

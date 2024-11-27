@@ -40,24 +40,16 @@ class NotionSettingsView extends ConsumerWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    isAuthenticated
-                        ? ListTile(
-                            leading: Icon(
-                              Icons.check_circle_rounded,
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
-                            title: const Text('認証済み'),
-                            dense: true,
-                          )
-                        : FilledButton.icon(
-                            onPressed: () async {
-                              await notionOAuth.authenticate();
-                            },
-                            icon: const Icon(Icons.link),
-                            label: const Text('Notionに接続'),
-                          ),
+                    const SizedBox(height: 8),
                     if (isAuthenticated) ...[
+                      ListTile(
+                        leading: Icon(
+                          Icons.check_circle_rounded,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        title: const Text('Notionに接続されています'),
+                        dense: true,
+                      ),
                       const SizedBox(height: 8),
                       OutlinedButton.icon(
                         onPressed: () async {
@@ -67,6 +59,24 @@ class NotionSettingsView extends ConsumerWidget {
                         icon: const Icon(Icons.link_off),
                         label: const Text('Notionの接続を解除'),
                       ),
+                    ],
+                    if (!isAuthenticated) ...[
+                      ListTile(
+                        leading: Icon(
+                          Icons.warning_rounded,
+                          color: Theme.of(context).colorScheme.secondary,
+                        ),
+                        title: const Text('Notionに接続されていません'),
+                        dense: true,
+                      ),
+                      const SizedBox(height: 8),
+                      FilledButton.icon(
+                        onPressed: () async {
+                          await notionOAuth.authenticate();
+                        },
+                        icon: const Icon(Icons.link),
+                        label: const Text('Notionに接続'),
+                      )
                     ],
                   ],
                 ),
@@ -106,8 +116,8 @@ class NotionSettingsView extends ConsumerWidget {
                           ),
                         ],
                       ),
+                      const SizedBox(height: 8),
                       if (taskDatabase != null) ...[
-                        const SizedBox(height: 16),
                         _buildInfoTile('データベース名', taskDatabase.name),
                         _buildInfoTile('ステータスプロパティ', taskDatabase.status.name),
                         if (taskDatabase.status.type ==
