@@ -161,9 +161,14 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
           const SizedBox(width: 4),
           Tooltip(
             message: tooltip,
+            triggerMode: TooltipTriggerMode.tap,
+            preferBelow: false,
+            showDuration: const Duration(seconds: 3),
+            margin: const EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             child: Icon(
               Icons.info_outline,
-              size: 16,
+              size: 22,
               color: Theme.of(context).colorScheme.outline,
             ),
           ),

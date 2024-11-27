@@ -91,10 +91,16 @@ class NotionSettingsView extends ConsumerWidget {
                           ),
                           const SizedBox(width: 4),
                           Tooltip(
-                            message: 'プロパティ名や種類が変わった場合は、再設定が必要です',
+                            message: '該当プロパティの名前や種類などが変わった場合は、再設定が必要です',
+                            triggerMode: TooltipTriggerMode.tap,
+                            preferBelow: false,
+                            showDuration: const Duration(seconds: 3),
+                            margin: const EdgeInsets.symmetric(horizontal: 20),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 10),
                             child: Icon(
-                              Icons.info_outline,
-                              size: 16,
+                              Icons.warning_amber_rounded,
+                              size: 22,
                               color: Theme.of(context).colorScheme.outline,
                             ),
                           ),
