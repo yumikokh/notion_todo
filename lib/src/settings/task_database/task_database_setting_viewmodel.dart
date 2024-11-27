@@ -92,8 +92,8 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
       return;
     }
     final property = state.value?.properties
-        .firstWhere((property) => property.id == propertyId);
-
+        .where((property) => property.id == propertyId)
+        .firstOrNull;
     if (property == null) {
       return;
     }

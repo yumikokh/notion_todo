@@ -104,7 +104,7 @@ class TaskService {
         .entries
         .firstWhere((e) => e.value['type'] == 'title')
         .value['title'];
-    return titleProperty.length > 0 ? titleProperty[0]['plain_text'] : '';
+    return titleProperty?.length > 0 ? titleProperty[0]['plain_text'] : '';
   }
 
   TaskDate? _date(Map<String, dynamic> task) {
@@ -131,10 +131,14 @@ class TaskService {
     if (status.type == PropertyType.status &&
         status is StatusTaskStatusProperty) {
       final completeGroupIds = status.status.groups
-          .firstWhere(
+          .where(
             (group) => group.name == 'Complete',
           )
-          .option_ids;
+          .firstOrNull
+          ?.option_ids;
+      if (completeGroupIds == null) {
+        throw Exception('Complete group not found');
+      }
       return completeGroupIds.contains(
         task['properties'][status.name]['status']['id'],
       );

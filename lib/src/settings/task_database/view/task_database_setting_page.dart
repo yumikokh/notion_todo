@@ -198,18 +198,20 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
   List<DropdownMenuItem<String>> _buildStatusOptions(
       SelectedDatabaseState state, String groupName) {
     return (state.status as StatusTaskStatusProperty)
-        .status
-        .groups
-        .firstWhere((group) => group.name == groupName)
-        .option_ids
-        .map((id) => DropdownMenuItem<String>(
-              value: id,
-              child: Text((state.status as StatusTaskStatusProperty)
-                  .status
-                  .options
-                  .firstWhere((option) => option.id == id)
-                  .name),
-            ))
-        .toList();
+            .status
+            .groups
+            .where((group) => group.name == groupName)
+            .firstOrNull
+            ?.option_ids
+            .map((id) => DropdownMenuItem<String>(
+                  value: id,
+                  child: Text((state.status as StatusTaskStatusProperty)
+                      .status
+                      .options
+                      .firstWhere((option) => option.id == id)
+                      .name),
+                ))
+            .toList() ??
+        [];
   }
 }

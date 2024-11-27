@@ -227,11 +227,18 @@ class NotionTaskRepository {
 List<dynamic> getNotCompleteStatusFilter(
     StatusTaskStatusProperty statusProperty) {
   final optionIds = statusProperty.status.groups
-      .firstWhere((e) => e.name == 'Complete')
-      .option_ids;
+          .where((e) => e.name == 'Complete')
+          .firstOrNull
+          ?.option_ids ??
+      [];
   return optionIds.map((id) {
-    final completeOptionName =
-        statusProperty.status.options.firstWhere((e) => e.id == id).name;
+    final completeOptionName = statusProperty.status.options
+        .where((e) => e.id == id)
+        .firstOrNull
+        ?.name;
+    if (completeOptionName == null) {
+      throw Exception('Complete option name not found');
+    }
     return {
       "property": statusProperty.name,
       "status": {"does_not_equal": completeOptionName}
