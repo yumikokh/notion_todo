@@ -1,12 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 import 'src/app.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  runApp(const ProviderScope(
-    child: MyApp(),
-  ));
+  await SentryFlutter.init(
+    (options) {
+      options.dsn =
+          'https://ab9a02bed82b03f8835d64551399426e@o4508367629123584.ingest.us.sentry.io/4508367636004864';
+      // Set tracesSampleRate to 1.0 to capture 100% of transactions for tracing.
+      // We recommend adjusting this value in production.
+      options.tracesSampleRate = 1.0;
+      // The sampling rate for profiling is relative to tracesSampleRate
+      // Setting to 1.0 will profile 100% of sampled transactions:
+      options.profilesSampleRate = 1.0;
+    },
+    appRunner: () => runApp(
+      ProviderScope(
+        observers: [SentryProviderObserver()],
+        child: const MyApp(),
+      ),
+    ),
+  );
+}
+
+class SentryProviderObserver extends ProviderObserver {
+  void handleError(
+    ProviderBase provider,
+    Object error,
+    StackTrace? stackTrace,
+    ProviderContainer container,
+  ) {
+    Sentry.captureException(
+      error,
+      stackTrace: stackTrace,
+      withScope: (scope) {
+        scope.setTag(
+            'provider', provider.name ?? provider.runtimeType.toString());
+      },
+    );
+  }
 }
