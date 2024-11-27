@@ -7,12 +7,11 @@ import '../repository/notion_task_repository.dart';
 
 class TaskService {
   final NotionTaskRepository notionTaskRepository;
-  // TODO: DATABASE情報も所有させる
+  final TaskDatabase taskDatabase;
 
-  TaskService(this.notionTaskRepository);
+  TaskService(this.notionTaskRepository, this.taskDatabase);
 
   FutureOr<List<Task>> fetchTasks(
-    TaskDatabase db,
     FilterType filterType,
   ) async {
     try {
@@ -25,8 +24,8 @@ class TaskService {
           .map<Task>((data) => Task(
               id: data['id'],
               title: _title(data),
-              isCompleted: _isTaskCompleted(data, db.status),
-              dueDate: _date(data, db.date.name)))
+              isCompleted: _isTaskCompleted(data),
+              dueDate: _date(data)))
           .toList();
     } catch (e) {
       print(e);
@@ -34,7 +33,7 @@ class TaskService {
     }
   }
 
-  Future<Task> addTask(TaskDatabase db, String title, String? dueDate) async {
+  Future<Task> addTask(String title, String? dueDate) async {
     final data = await notionTaskRepository.addTask(title, dueDate);
     if (data == null || data.isEmpty) {
       return Task.initial();
@@ -42,13 +41,12 @@ class TaskService {
     return Task(
       id: data['id'],
       title: title,
-      isCompleted: _isTaskCompleted(data, db.status),
-      dueDate: _date(data, db.date.name),
+      isCompleted: _isTaskCompleted(data),
+      dueDate: _date(data),
     );
   }
 
-  Future<Task> updateTask(
-      TaskDatabase db, String taskId, String title, String? dueDate) async {
+  Future<Task> updateTask(String taskId, String title, String? dueDate) async {
     final data = await notionTaskRepository.updateTask(taskId, title, dueDate);
     if (data == null || data['id'] == null) {
       return Task.initial();
@@ -56,13 +54,12 @@ class TaskService {
     return Task(
       id: data['id'],
       title: title,
-      isCompleted: _isTaskCompleted(data, db.status),
-      dueDate: _date(data, db.date.name),
+      isCompleted: _isTaskCompleted(data),
+      dueDate: _date(data),
     );
   }
 
-  Future<Task> updateStatus(
-      TaskDatabase db, String taskId, bool isCompleted) async {
+  Future<Task> updateStatus(String taskId, bool isCompleted) async {
     final data = await notionTaskRepository.updateStatus(taskId, isCompleted);
     if (data == null || data.isEmpty) {
       return Task.initial();
@@ -71,12 +68,12 @@ class TaskService {
     return Task(
       id: data['id'],
       title: _title(data),
-      isCompleted: _isTaskCompleted(data, db.status),
-      dueDate: _date(data, db.date.name),
+      isCompleted: _isTaskCompleted(data),
+      dueDate: _date(data),
     );
   }
 
-  Future<Task?> deleteTask(String taskId, TaskStatusProperty status) async {
+  Future<Task?> deleteTask(String taskId) async {
     final data = await notionTaskRepository.deleteTask(taskId);
     if (data == null || data.isEmpty) {
       return null;
@@ -84,12 +81,12 @@ class TaskService {
     return Task(
       id: data['id'],
       title: _title(data),
-      isCompleted: _isTaskCompleted(data, status),
-      dueDate: _date(data, status.name),
+      isCompleted: _isTaskCompleted(data),
+      dueDate: _date(data),
     );
   }
 
-  Future<Task?> undoDeleteTask(String taskId, TaskStatusProperty status) async {
+  Future<Task?> undoDeleteTask(String taskId) async {
     final data = await notionTaskRepository.revertTask(taskId);
     if (data == null || data.isEmpty) {
       return null;
@@ -97,8 +94,8 @@ class TaskService {
     return Task(
       id: data['id'],
       title: _title(data),
-      isCompleted: _isTaskCompleted(data, status),
-      dueDate: _date(data, status.name),
+      isCompleted: _isTaskCompleted(data),
+      dueDate: _date(data),
     );
   }
 
@@ -110,7 +107,8 @@ class TaskService {
     return titleProperty.length > 0 ? titleProperty[0]['plain_text'] : '';
   }
 
-  TaskDate? _date(Map<String, dynamic> task, String dateProperty) {
+  TaskDate? _date(Map<String, dynamic> task) {
+    final dateProperty = taskDatabase.date.name;
     final datePropertyData = task['properties'][dateProperty];
     if (datePropertyData == null) {
       return null;
@@ -125,7 +123,8 @@ class TaskService {
     );
   }
 
-  bool _isTaskCompleted(Map<String, dynamic> task, TaskStatusProperty status) {
+  bool _isTaskCompleted(Map<String, dynamic> task) {
+    final status = taskDatabase.status;
     if (status.type == PropertyType.checkbox) {
       return task['properties'][status.name]['checkbox'];
     }

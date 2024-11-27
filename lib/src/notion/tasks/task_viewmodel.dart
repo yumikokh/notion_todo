@@ -20,10 +20,11 @@ class TaskViewModel extends _$TaskViewModel {
   @override
   Future<List<Task>> build({FilterType filterType = FilterType.all}) async {
     final repository = ref.watch(notionTaskRepositoryProvider);
-    if (repository == null) {
+    final taskDatabase = ref.read(taskDatabaseViewModelProvider).valueOrNull;
+    if (repository == null || taskDatabase == null) {
       return [];
     }
-    _taskService = TaskService(repository);
+    _taskService = TaskService(repository, taskDatabase);
     _filterType = filterType;
     return _fetchTasks(filterType);
   }
@@ -34,7 +35,7 @@ class TaskViewModel extends _$TaskViewModel {
       return [];
     }
     try {
-      final tasks = await _taskService.fetchTasks(taskDatabase, filterType);
+      final tasks = await _taskService.fetchTasks(filterType);
       state = AsyncValue.data(tasks);
       return tasks;
     } catch (e) {
@@ -76,7 +77,7 @@ class TaskViewModel extends _$TaskViewModel {
 
     try {
       final t = await _taskService.addTask(
-          taskDatabase, newTask.title, newTask.dueDate?.start); // MEMO: endは未実装
+          newTask.title, newTask.dueDate?.start); // MEMO: endは未実装
       state = AsyncValue.data([
         for (final task in state.valueOrNull ?? [])
           if (task.id == tempId) t else task
@@ -117,7 +118,7 @@ class TaskViewModel extends _$TaskViewModel {
 
     try {
       final res = await _taskService.updateTask(
-          db, updatedTask.id, updatedTask.title, dueDate?.start);
+          updatedTask.id, updatedTask.title, dueDate?.start);
 
       state = state.whenData((t) {
         return t.map((t) => t.id == updatedTask.id ? res : t).toList();
@@ -147,8 +148,7 @@ class TaskViewModel extends _$TaskViewModel {
     });
 
     try {
-      final res =
-          await _taskService.updateStatus(taskDatabase, task.id, isCompleted);
+      final res = await _taskService.updateStatus(task.id, isCompleted);
       state = state.whenData((t) {
         return t.map((t) => t.id == res.id ? res : t).toList();
       });
@@ -173,7 +173,7 @@ class TaskViewModel extends _$TaskViewModel {
       undoDeleteTask(task);
     });
     try {
-      final res = await _taskService.deleteTask(task.id, taskDatabase.status);
+      final res = await _taskService.deleteTask(task.id);
       if (res == null) {
         return;
       }
@@ -197,8 +197,7 @@ class TaskViewModel extends _$TaskViewModel {
     snackbar.show('「${prev.title}」を復元しました', type: SnackbarType.success);
 
     try {
-      final restoredTask =
-          await _taskService.undoDeleteTask(prev.id, taskDatabase.status);
+      final restoredTask = await _taskService.undoDeleteTask(prev.id);
       if (restoredTask == null) {
         return null;
       }
