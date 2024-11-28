@@ -611,7 +611,7 @@ packages:
     source: hosted
     version: "2.1.0"
   package_info_plus:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: package_info_plus
       sha256: da8d9ac8c4b1df253d1a328b7bf01ae77ef132833479ab40763334db13b91cce
@@ -1000,7 +1000,7 @@ packages:
     source: hosted
     version: "1.4.0"
   url_launcher:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: url_launcher
       sha256: "9d06212b1362abc2f0f0d78e6f09f726608c74e3b9462e8368bb03314aa8d603"

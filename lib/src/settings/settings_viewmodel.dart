@@ -12,6 +12,7 @@ import 'settings_service.dart';
 class SettingsViewModel with ChangeNotifier {
   SettingsViewModel(this._settingsService) {
     _themeMode = ThemeMode.system;
+    _version = '';
     loadSettings();
   }
 
@@ -25,12 +26,15 @@ class SettingsViewModel with ChangeNotifier {
   // Allow Widgets to read the user's preferred ThemeMode.
   ThemeMode get themeMode => _themeMode;
 
+  late String _version;
+  String get version => _version;
+
   /// Load the user's settings from the SettingsService. It may load from a
   /// local database or the internet. The controller only knows it can load the
   /// settings from the service.
   Future<void> loadSettings() async {
     _themeMode = await _settingsService.themeMode();
-
+    _version = (await _settingsService.packageInfo()).version;
     // Important! Inform listeners a change has occurred.
     notifyListeners();
   }

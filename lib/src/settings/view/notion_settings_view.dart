@@ -64,7 +64,7 @@ class NotionSettingsView extends ConsumerWidget {
                       ListTile(
                         leading: Icon(
                           Icons.warning_rounded,
-                          color: Theme.of(context).colorScheme.secondary,
+                          color: Theme.of(context).colorScheme.error,
                         ),
                         title: const Text('Notionに接続されていません'),
                         dense: true,

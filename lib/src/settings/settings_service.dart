@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// A service that stores and retrieves user settings.
@@ -22,5 +23,9 @@ class SettingsService {
     // http package to persist settings over the network.
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_themeModeKey, theme.index);
+  }
+
+  Future<PackageInfo> packageInfo() async {
+    return await PackageInfo.fromPlatform();
   }
 }
