@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../notion/model/property.dart';
+import '../../../notion/oauth/notion_oauth_viewmodel.dart';
 import '../../../notion/tasks/view/task_main_page.dart';
 import '../task_database_setting_viewmodel.dart';
 import '../task_database_viewmodel.dart';
@@ -19,6 +20,8 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
         ref.watch(selectedDatabaseViewModelProvider).valueOrNull;
     final selectedDatabaseViewModel =
         ref.watch(selectedDatabaseViewModelProvider.notifier);
+    final notionOAuthViewModel =
+        ref.read(notionOAuthViewModelProvider.notifier);
 
     final disabled = selectedDatabase == null ||
         selectedDatabase.status == null ||
@@ -144,7 +147,23 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                   ],
                 ),
               )
-            : const Center(child: CircularProgressIndicator()),
+            : Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text('アクセス可能なデータベースが見つかりませんでした。'),
+                    const SizedBox(height: 4),
+                    const Text('設定をやり直してください。'),
+                    const SizedBox(height: 16),
+                    FilledButton(
+                      onPressed: () {
+                        notionOAuthViewModel.authenticate();
+                      },
+                      child: const Text('Notionに再接続'),
+                    ),
+                  ],
+                ),
+              ),
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(child: Text(error.toString())),
       ),
