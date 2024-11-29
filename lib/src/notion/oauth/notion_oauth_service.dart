@@ -28,10 +28,9 @@ class NotionOAuthService {
     _notionOAuthRepository = NotionOAuthRepository(
         notionAuthUrl, clientId, clientSecret, redirectUri);
     _secureStorage = const FlutterSecureStorage();
-    _initialize();
   }
 
-  Future<void> _initialize() async {
+  Future<String?> initialize() async {
     final prefs = await SharedPreferences.getInstance();
     final isFirstLaunch = prefs.getBool('isFirstLaunch') ?? true;
 
@@ -41,14 +40,14 @@ class NotionOAuthService {
       await prefs.setBool('isFirstLaunch', false);
     }
 
-    await loadAccessToken();
+    return await _loadAccessToken();
   }
 
   Future<String?> fetchAccessToken() async {
     return _notionOAuthRepository.fetchAccessToken();
   }
 
-  Future<String?> loadAccessToken() async {
+  Future<String?> _loadAccessToken() async {
     return await _secureStorage.read(key: _accessTokenKey);
   }
 

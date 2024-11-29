@@ -22,7 +22,7 @@ class NotionOAuthViewModel extends _$NotionOAuthViewModel {
   NotionOAuth build() => NotionOAuth.initialState();
 
   Future<void> _initialize() async {
-    final accessToken = await _notionOAuthService.loadAccessToken();
+    final accessToken = await _notionOAuthService.initialize();
     state = NotionOAuth(accessToken: accessToken);
   }
 
