@@ -118,8 +118,7 @@ class TaskViewModel extends _$TaskViewModel {
             onUndo: () {
           deleteTask(t);
         });
-
-        _fetchTasks(_filterType);
+        ref.invalidateSelf();
       } catch (e) {
         state = prevState;
         snackbar.show('「$title」の追加に失敗しました', type: SnackbarType.error);
@@ -158,8 +157,7 @@ class TaskViewModel extends _$TaskViewModel {
         state = state.whenData((t) {
           return t.map((t) => t.id == updatedTask.id ? res : t).toList();
         });
-
-        _fetchTasks(_filterType);
+        ref.invalidateSelf();
       } catch (e) {
         state = prevState;
         snackbar.show('「${updatedTask.title}」の変更に失敗しました',
@@ -190,6 +188,7 @@ class TaskViewModel extends _$TaskViewModel {
         state = state.whenData((t) {
           return t.map((t) => t.id == res.id ? res : t).toList();
         });
+        ref.invalidateSelf();
       } catch (e) {
         snackbar.show('ステータスの更新に失敗しました', type: SnackbarType.error);
       }
@@ -209,13 +208,13 @@ class TaskViewModel extends _$TaskViewModel {
         for (final t in state.valueOrNull ?? [])
           if (t.id != task.id) t
       ]);
+      snackbar.show('「${task.title}」を削除しました', type: SnackbarType.success,
+          onUndo: () {
+        undoDeleteTask(task);
+      });
 
       try {
         await _taskService.deleteTask(task.id);
-        snackbar.show('「${task.title}」を削除しました', type: SnackbarType.success,
-            onUndo: () {
-          undoDeleteTask(task);
-        });
       } catch (e) {
         state = prevState;
         snackbar.show('「${task.title}」の削除に失敗しました', type: SnackbarType.error);
@@ -252,7 +251,7 @@ class TaskViewModel extends _$TaskViewModel {
           }).toList();
         });
 
-        _fetchTasks(_filterType);
+        ref.invalidateSelf();
       } catch (e) {
         // エラーが発生した場合は元の状態に戻す
         state = prevState;

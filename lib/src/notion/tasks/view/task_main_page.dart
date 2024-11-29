@@ -13,7 +13,7 @@ import '../task_viewmodel.dart';
 import 'task_list_view.dart';
 import 'task_base_page.dart';
 
-const int updateIntervalSec = 30;
+const int updateIntervalSec = 60;
 
 class TaskMainPage extends HookConsumerWidget {
   const TaskMainPage({Key? key}) : super(key: key);
@@ -49,6 +49,7 @@ class TaskMainPage extends HookConsumerWidget {
         [currentIndex.value]);
 
     // ポーリングする
+    // TODO: 前回の実行時間を記録して、余分にリクエストしないようにする
     useEffect(() {
       ref.invalidate(provider);
       final timer = Timer.periodic(const Duration(seconds: updateIntervalSec),
