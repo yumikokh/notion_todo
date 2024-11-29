@@ -34,6 +34,7 @@ dependencies:
   url_launcher: ^6.3.1
   package_info_plus: ^8.1.1
   app_tracking_transparency: ^2.0.6
+  flutter_native_splash: ^2.4.3
 
 dev_dependencies:
   flutter_test:
@@ -64,3 +65,10 @@ flutter_launcher_icons:
   image_path_ios: "assets/images/app_icon.png"
   image_path_ios_dark_transparent: "assets/images/app_icon_dark.png"
   image_path_ios_tinted_grayscale: "assets/images/app_icon_gray.png"
+
+flutter_native_splash:
+  color: "#FAF9F6"
+  image: "assets/images/splash_light.png"
+  color_dark: "#3D3D3C"
+  image_dark: "assets/images/splash_dark.png"
+  fullscreen: true

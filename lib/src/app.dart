@@ -1,4 +1,3 @@
-import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -28,8 +27,6 @@ class MyApp extends ConsumerWidget {
 
     final TextTheme textTheme = createTextTheme(context, "Roboto", "Roboto");
     final MaterialTheme theme = MaterialTheme(textTheme);
-
-    initATT();
 
     return AnimatedBuilder(
       animation: settingsViewModel,
@@ -90,13 +87,5 @@ class MyApp extends ConsumerWidget {
         ),
       ),
     );
-  }
-
-  Future<void> initATT() async {
-    if (await AppTrackingTransparency.trackingAuthorizationStatus ==
-        TrackingStatus.notDetermined) {
-      await Future.delayed(const Duration(milliseconds: 200));
-      await AppTrackingTransparency.requestTrackingAuthorization();
-    }
   }
 }

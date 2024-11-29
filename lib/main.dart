@@ -1,11 +1,16 @@
+import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 import 'src/app.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+
+  await initATT();
 
   await SentryFlutter.init(
     (options) {
@@ -25,6 +30,8 @@ void main() async {
       ),
     ),
   );
+
+  FlutterNativeSplash.remove();
 }
 
 class SentryProviderObserver extends ProviderObserver {
@@ -42,5 +49,13 @@ class SentryProviderObserver extends ProviderObserver {
             'provider', provider.name ?? provider.runtimeType.toString());
       },
     );
+  }
+}
+
+Future<void> initATT() async {
+  if (await AppTrackingTransparency.trackingAuthorizationStatus ==
+      TrackingStatus.notDetermined) {
+    await Future.delayed(const Duration(milliseconds: 200));
+    await AppTrackingTransparency.requestTrackingAuthorization();
   }
 }
