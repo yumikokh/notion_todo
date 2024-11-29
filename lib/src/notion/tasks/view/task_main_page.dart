@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:notion_todo/src/settings/view/notion_settings_view.dart';
 
 import '../../../helpers/date.dart';
+import '../../../settings/view/notion_settings_view.dart';
 import '../../repository/notion_task_repository.dart';
 import '../../../settings/task_database/task_database_viewmodel.dart';
 import '../task_viewmodel.dart';

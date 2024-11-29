@@ -1,10 +1,10 @@
-import 'package:notion_todo/src/settings/task_database/task_database_setting_viewmodel.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../notion/model/task_database.dart';
 import '../../notion/model/index.dart';
 import '../../notion/repository/notion_database_repository.dart';
 import 'task_database_service.dart';
+import 'task_database_setting_viewmodel.dart';
 
 part 'task_database_viewmodel.g.dart';
 

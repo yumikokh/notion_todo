@@ -1,5 +1,5 @@
-name: notion_todo
-description: A new Flutter project.
+name: tanzaku_todo
+description: Simple Task manager made for Notion
 
 # Prevent accidental publishing to pub.dev.
 publish_to: "none"

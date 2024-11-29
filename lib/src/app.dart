@@ -33,6 +33,7 @@ class MyApp extends ConsumerWidget {
       builder: (BuildContext context, Widget? child) => SnackbarListener(
         scaffoldMessengerKey: scaffoldMessengerKey,
         child: MaterialApp(
+          debugShowCheckedModeBanner: false,
           scaffoldMessengerKey: scaffoldMessengerKey,
           restorationScopeId: 'app',
 

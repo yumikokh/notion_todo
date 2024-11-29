@@ -78,7 +78,7 @@ class SettingsView extends ConsumerWidget {
                   trailing: const Icon(Icons.open_in_new_rounded),
                   onTap: () async {
                     await launchUrl(Uri.parse(
-                        'https://yumikokh.notion.site/Notion-Todo-11f54c37a54c800da12cf5162f5beada'));
+                        'https://yumikokh.notion.site/Tanzaku-Todo-11f54c37a54c800da12cf5162f5beada'));
                   },
                 ),
                 ListTile(
