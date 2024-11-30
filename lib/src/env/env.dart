@@ -15,4 +15,7 @@ abstract class Env {
 
   @EnviedField(varName: 'REDIRECT_URI')
   static const String redirectUri = _Env.redirectUri;
+
+  @EnviedField(varName: 'SENTRY_DSN')
+  static const String sentryDsn = _Env.sentryDsn;
 }
