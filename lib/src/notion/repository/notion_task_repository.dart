@@ -36,8 +36,9 @@ class NotionTaskRepository {
     final databaseId = db.id;
     final dateProperty = db.date;
     final statusProperty = db.status;
-    final todayStart = startTimeOfDay(DateTime.now()).toUtc().toIso8601String();
-    final todayEnd = endTimeOfDay(DateTime.now()).toUtc().toIso8601String();
+    final now = DateTime.now();
+    final todayStart = startTimeOfDay(now).toUtc().toIso8601String();
+    final todayEnd = endTimeOfDay(now).toUtc().toIso8601String();
     final filter = {
       "or": [
         // 今日のタスク
@@ -112,6 +113,14 @@ class NotionTaskRepository {
           }
         ]
       },
+      if (db.status.type == PropertyType.status)
+        db.status.name: {
+          "status": {
+            "name": (db.status as StatusTaskStatusProperty).todoOption?.name
+          }
+        }
+      else
+        db.status.name: {"checkbox": false},
       if (dueDate != null)
         db.date.name: {
           "date": {"start": dueDate}

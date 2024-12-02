@@ -28,7 +28,6 @@ class TaskService {
               dueDate: _date(data)))
           .toList();
     } catch (e) {
-      print(e);
       rethrow;
     }
   }
@@ -99,17 +98,17 @@ class TaskService {
     );
   }
 
-  String _title(Map<String, dynamic> task) {
-    final titleProperty = task['properties']
+  String _title(Map<String, dynamic> data) {
+    final titleProperty = data['properties']
         .entries
         .firstWhere((e) => e.value['type'] == 'title')
         .value['title'];
     return titleProperty?.length > 0 ? titleProperty[0]['plain_text'] : '';
   }
 
-  TaskDate? _date(Map<String, dynamic> task) {
+  TaskDate? _date(Map<String, dynamic> data) {
     final dateProperty = taskDatabase.date.name;
-    final datePropertyData = task['properties'][dateProperty];
+    final datePropertyData = data['properties'][dateProperty];
     if (datePropertyData == null) {
       return null;
     }
@@ -123,10 +122,10 @@ class TaskService {
     );
   }
 
-  bool _isTaskCompleted(Map<String, dynamic> task) {
+  bool _isTaskCompleted(Map<String, dynamic> data) {
     final status = taskDatabase.status;
     if (status.type == PropertyType.checkbox) {
-      return task['properties'][status.name]['checkbox'];
+      return data['properties'][status.name]['checkbox'];
     }
     if (status.type == PropertyType.status &&
         status is StatusTaskStatusProperty) {
@@ -139,8 +138,12 @@ class TaskService {
       if (completeGroupIds == null) {
         throw Exception('Complete group not found');
       }
+      // statusが未指定の場合がある
+      if (data['properties'][status.name]['status'] == null) {
+        return false;
+      }
       return completeGroupIds.contains(
-        task['properties'][status.name]['status']['id'],
+        data['properties'][status.name]['status']['id'],
       );
     }
     return false;
