@@ -39,16 +39,12 @@ class TaskDatabaseViewModel extends _$TaskDatabaseViewModel {
   }
 
   void save(SelectedDatabaseState selectedTaskDatabase) async {
-    final json = selectedTaskDatabase.properties
-        .firstWhere((property) => property.type == PropertyType.title)
-        .toJson();
-    final title = TaskTitleProperty.fromJson(json);
     final taskDatabase = TaskDatabase(
         id: selectedTaskDatabase.id,
         name: selectedTaskDatabase.name,
         status: selectedTaskDatabase.status as TaskStatusProperty,
         date: selectedTaskDatabase.date as TaskDateProperty,
-        title: title);
+        title: selectedTaskDatabase.title);
     _taskDatabaseService.save(taskDatabase);
     state = AsyncValue.data(taskDatabase);
   }

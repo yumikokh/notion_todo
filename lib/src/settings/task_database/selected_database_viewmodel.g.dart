@@ -26,7 +26,7 @@ final accessibleDatabasesProvider =
 // ignore: unused_element
 typedef AccessibleDatabasesRef = AutoDisposeFutureProviderRef<List<Database>>;
 String _$selectedDatabaseViewModelHash() =>
-    r'6d14c7f1321f391de5693fa3986179f07e015610';
+    r'c0907443e8c92413ea62164716fbba2dcbe7ff6e';
 
 /// See also [SelectedDatabaseViewModel].
 @ProviderFor(SelectedDatabaseViewModel)
