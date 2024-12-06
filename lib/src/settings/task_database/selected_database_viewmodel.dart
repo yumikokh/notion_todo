@@ -8,8 +8,8 @@ import '../../notion/repository/notion_database_repository.dart';
 import 'task_database_service.dart';
 import 'task_database_viewmodel.dart';
 
-part 'task_database_setting_viewmodel.freezed.dart';
-part 'task_database_setting_viewmodel.g.dart';
+part 'selected_database_viewmodel.freezed.dart';
+part 'selected_database_viewmodel.g.dart';
 
 @riverpod
 Future<List<Database>> accessibleDatabases(Ref ref) async {
@@ -38,6 +38,8 @@ class SelectedDatabaseState with _$SelectedDatabaseState {
 
 @riverpod
 class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
+  late TaskDatabaseService _taskDatabaseService;
+
   @override
   Future<SelectedDatabaseState?> build() async {
     final taskDatabase = ref.watch(taskDatabaseViewModelProvider).valueOrNull;
@@ -45,6 +47,10 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
     final selected = accessibleDatabases
         ?.where((db) => db.id == taskDatabase?.id)
         .firstOrNull;
+    final notionDatabaseRepository =
+        ref.watch(notionDatabaseRepositoryProvider);
+    _taskDatabaseService =
+        TaskDatabaseService(notionDatabaseRepository: notionDatabaseRepository);
     if (taskDatabase == null || selected == null) {
       return null;
     }
@@ -168,5 +174,14 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
 
   void clear() {
     state = const AsyncValue.data(null);
+  }
+
+  void createProperty(CreatePropertyType type, String name) async {
+    final databaseId = state.value?.id;
+    if (databaseId == null) {
+      return;
+    }
+    await _taskDatabaseService.createProperty(databaseId, type, name);
+    ref.invalidate(taskDatabaseViewModelProvider);
   }
 }

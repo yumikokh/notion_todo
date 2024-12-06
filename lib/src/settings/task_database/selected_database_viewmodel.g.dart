@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'task_database_setting_viewmodel.dart';
+part of 'selected_database_viewmodel.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -26,7 +26,7 @@ final accessibleDatabasesProvider =
 // ignore: unused_element
 typedef AccessibleDatabasesRef = AutoDisposeFutureProviderRef<List<Database>>;
 String _$selectedDatabaseViewModelHash() =>
-    r'f4727fa4ea116f380ff65694a099752bc177127b';
+    r'6d14c7f1321f391de5693fa3986179f07e015610';
 
 /// See also [SelectedDatabaseViewModel].
 @ProviderFor(SelectedDatabaseViewModel)

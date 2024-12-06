@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../notion/model/property.dart';
 import '../../../notion/oauth/notion_oauth_viewmodel.dart';
+import '../../../notion/repository/notion_database_repository.dart';
 import '../../../notion/tasks/view/task_main_page.dart';
-import '../task_database_setting_viewmodel.dart';
+import '../selected_database_viewmodel.dart';
 import '../task_database_viewmodel.dart';
 
 class TaskDatabaseSettingPage extends HookConsumerWidget {
@@ -111,6 +112,47 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                       _buildSectionTitle(context, '日付プロパティ',
                           tooltip: '種類: Date'),
                       const SizedBox(height: 8),
+                      ElevatedButton(
+                        onPressed: () async {
+                          final propertyName = await showDialog<String>(
+                            context: context,
+                            builder: (BuildContext context) {
+                              String tempName = '';
+                              return AlertDialog(
+                                title: const Text('プロパティ名を入力'),
+                                content: TextField(
+                                  onChanged: (value) {
+                                    tempName = value;
+                                  },
+                                  decoration: const InputDecoration(
+                                    hintText: 'プロパティ名',
+                                  ),
+                                ),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text('キャンセル'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop(tempName);
+                                    },
+                                    child: const Text('確定'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+
+                          if (propertyName != null && propertyName.isNotEmpty) {
+                            selectedDatabaseViewModel.createProperty(
+                                CreatePropertyType.date, propertyName);
+                          }
+                        },
+                        child: const Text('日付プロパティを作成'),
+                      ),
                       _buildDropdown(
                         value: selectedDatabase.date?.id,
                         items: selectedDatabaseViewModel

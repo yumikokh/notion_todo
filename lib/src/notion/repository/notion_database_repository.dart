@@ -7,13 +7,18 @@ import '../oauth/notion_oauth_viewmodel.dart';
 
 part 'notion_database_repository.g.dart';
 
+// NotionAPIの仕様上、titleとstatusプロパティは作成できない
+enum CreatePropertyType {
+  date,
+  checkbox,
+}
+
 class NotionDatabaseRepository {
   final String accessToken;
-  // ignore: prefer_typing_uninitialized_variables
-  late final _headers;
+  late final Map<String, String> headers;
 
   NotionDatabaseRepository(this.accessToken) {
-    _headers = {
+    headers = {
       'Content-Type': 'application/json',
       'Notion-Version': '2022-06-28',
       'Authorization': 'Bearer $accessToken'
@@ -22,13 +27,31 @@ class NotionDatabaseRepository {
 
   Future fetchAccessibleDatabases() async {
     final res = await http.post(Uri.parse('https://api.notion.com/v1/search'),
-        headers: _headers,
+        headers: headers,
         body: jsonEncode({
           "query": "",
           "filter": {"value": "database", "property": "object"}
         }));
     final data = jsonDecode(res.body);
     return data['results'];
+  }
+
+  Future createProperty(
+      String databaseId, CreatePropertyType type, String name) async {
+    final body = {
+      "properties": {
+        name: {
+          if (type == CreatePropertyType.date) "date": {},
+          if (type == CreatePropertyType.checkbox) "checkbox": {},
+        }
+      }
+    };
+    final res = await http.patch(
+        Uri.parse('https://api.notion.com/v1/databases/$databaseId'),
+        headers: headers,
+        body: jsonEncode(body));
+    final data = jsonDecode(res.body);
+    return data;
   }
 }
 

@@ -4,7 +4,7 @@ import '../../notion/model/task_database.dart';
 import '../../notion/model/index.dart';
 import '../../notion/repository/notion_database_repository.dart';
 import 'task_database_service.dart';
-import 'task_database_setting_viewmodel.dart';
+import 'selected_database_viewmodel.dart';
 
 part 'task_database_viewmodel.g.dart';
 
@@ -38,22 +38,17 @@ class TaskDatabaseViewModel extends _$TaskDatabaseViewModel {
     );
   }
 
-  void save(SelectedDatabaseState selectedTaskDatabase) {
-    final status = selectedTaskDatabase.status;
-    final date = selectedTaskDatabase.date;
-    if (status == null || date == null) {
-      return;
-    }
+  void save(SelectedDatabaseState selectedTaskDatabase) async {
     final json = selectedTaskDatabase.properties
         .firstWhere((property) => property.type == PropertyType.title)
         .toJson();
+    final title = TaskTitleProperty.fromJson(json);
     final taskDatabase = TaskDatabase(
-      id: selectedTaskDatabase.id,
-      name: selectedTaskDatabase.name,
-      status: status,
-      date: date,
-      title: TaskTitleProperty.fromJson(json),
-    );
+        id: selectedTaskDatabase.id,
+        name: selectedTaskDatabase.name,
+        status: selectedTaskDatabase.status as TaskStatusProperty,
+        date: selectedTaskDatabase.date as TaskDateProperty,
+        title: title);
     _taskDatabaseService.save(taskDatabase);
     state = AsyncValue.data(taskDatabase);
   }
