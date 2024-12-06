@@ -8,8 +8,8 @@ import '../../notion/repository/notion_database_repository.dart';
 import 'task_database_service.dart';
 import 'task_database_viewmodel.dart';
 
-part 'task_database_setting_viewmodel.freezed.dart';
-part 'task_database_setting_viewmodel.g.dart';
+part 'selected_database_viewmodel.freezed.dart';
+part 'selected_database_viewmodel.g.dart';
 
 @riverpod
 Future<List<Database>> accessibleDatabases(Ref ref) async {
@@ -30,7 +30,7 @@ class SelectedDatabaseState with _$SelectedDatabaseState {
   const factory SelectedDatabaseState({
     required String id,
     required String name,
-    required List<Property> properties,
+    required TaskTitleProperty title,
     required TaskStatusProperty? status,
     required TaskDateProperty? date,
   }) = _SelectedDatabaseState;
@@ -38,24 +38,38 @@ class SelectedDatabaseState with _$SelectedDatabaseState {
 
 @riverpod
 class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
+  late TaskDatabaseService _taskDatabaseService;
+
   @override
   Future<SelectedDatabaseState?> build() async {
-    final taskDatabase = ref.watch(taskDatabaseViewModelProvider).valueOrNull;
-    final accessibleDatabases = ref.watch(accessibleDatabasesProvider).value;
-    final selected = accessibleDatabases
-        ?.where((db) => db.id == taskDatabase?.id)
-        .firstOrNull;
-    if (taskDatabase == null || selected == null) {
+    final taskDatabase = await ref.watch(taskDatabaseViewModelProvider.future);
+    final notionDatabaseRepository =
+        ref.watch(notionDatabaseRepositoryProvider);
+    _taskDatabaseService =
+        TaskDatabaseService(notionDatabaseRepository: notionDatabaseRepository);
+
+    if (taskDatabase == null) {
       return null;
     }
 
     return SelectedDatabaseState(
       id: taskDatabase.id,
       name: taskDatabase.name,
-      properties: selected.properties,
+      title: taskDatabase.title,
       status: taskDatabase.status,
       date: taskDatabase.date,
     );
+  }
+
+  List<Property> get properties {
+    final selectedId = state.value?.id;
+    if (selectedId == null) {
+      return [];
+    }
+    final accessibleDatabases = ref.watch(accessibleDatabasesProvider).value;
+    final selected =
+        accessibleDatabases?.where((db) => db.id == selectedId).firstOrNull;
+    return selected?.properties ?? [];
   }
 
   void selectDatabase(String? databaseId) {
@@ -63,14 +77,19 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
       final accessibleDatabases = ref.watch(accessibleDatabasesProvider).value;
       final selected =
           accessibleDatabases?.where((db) => db.id == databaseId).firstOrNull;
+      final title = selected?.properties
+          .where((property) => property.type == PropertyType.title)
+          .firstOrNull
+          ?.toJson();
 
-      if (selected == null) {
+      if (selected == null || title == null) {
         return value;
       }
+
       return SelectedDatabaseState(
         id: selected.id,
         name: selected.name,
-        properties: selected.properties,
+        title: TaskTitleProperty.fromJson(title),
         status: null,
         date: null,
       );
@@ -81,7 +100,7 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
     final types = type == SettingPropertyType.status
         ? [PropertyType.status, PropertyType.checkbox]
         : [PropertyType.date];
-    return state.value?.properties
+    return properties
             .where((property) => types.contains(property.type))
             .toList() ??
         [];
@@ -91,9 +110,8 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
     if (propertyId == null) {
       return;
     }
-    final property = state.value?.properties
-        .where((property) => property.id == propertyId)
-        .firstOrNull;
+    final property =
+        properties.where((property) => property.id == propertyId).firstOrNull;
     if (property == null) {
       return;
     }
@@ -168,5 +186,14 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
 
   void clear() {
     state = const AsyncValue.data(null);
+  }
+
+  void createProperty(CreatePropertyType type, String name) async {
+    final databaseId = state.value?.id;
+    if (databaseId == null) {
+      return;
+    }
+    await _taskDatabaseService.createProperty(databaseId, type, name);
+    ref.invalidate(taskDatabaseViewModelProvider);
   }
 }

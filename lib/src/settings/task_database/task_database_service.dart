@@ -1,5 +1,4 @@
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'dart:convert';
 
 import '../../notion/model/index.dart';
@@ -43,15 +42,34 @@ class TaskDatabaseService {
     if (data == null) {
       return [];
     }
-    final databases = data.map<Database>((e) {
-      final id = e['id'];
-      final name =
-          e['title'].length > 0 ? e['title'][0]['plain_text'] : 'NoTitle';
-      final url = e['url'];
+    final databases = data.map<Database>((e) => _getDatabase(e)).toList();
 
-      final properties = (e['properties'] as Map<String, dynamic>)
-          .entries
-          // typeがdate, checkbox, statusのものだけを取得
+    // print('databases: $databases');
+    return databases;
+  }
+
+  Future<List<Property>> createProperty(
+      String databaseId, CreatePropertyType type, String name) async {
+    final data =
+        await notionDatabaseRepository?.createProperty(databaseId, type, name);
+    if (data == null) {
+      return [];
+    }
+    return _getProperties(data["properties"]);
+  }
+
+  Database _getDatabase(Map<String, dynamic> e) {
+    final id = e['id'];
+    final name =
+        e['title'].length > 0 ? e['title'][0]['plain_text'] : 'NoTitle';
+    final url = e['url'];
+    final properties = _getProperties(e['properties']);
+    return Database(id: id, name: name, url: url, properties: properties);
+  }
+
+  List<Property> _getProperties(Map<String, dynamic> properties) =>
+      properties.entries
+          // typeがtitle, date, checkbox, statusのものだけを取得
           .where((entry) =>
               entry.value['type'] == 'title' ||
               entry.value['type'] == 'status' ||
@@ -113,11 +131,4 @@ class TaskDatabaseService {
             throw Exception('Unknown property type: $type');
         }
       }).toList();
-
-      return Database(id: id, name: name, url: url, properties: properties);
-    }).toList();
-
-    // print('databases: $databases');
-    return databases;
-  }
 }

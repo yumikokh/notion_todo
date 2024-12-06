@@ -6,9 +6,8 @@ part of 'task_database.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$SelectedTaskDatabaseImpl _$$SelectedTaskDatabaseImplFromJson(
-        Map<String, dynamic> json) =>
-    _$SelectedTaskDatabaseImpl(
+_$TaskDatabaseImpl _$$TaskDatabaseImplFromJson(Map<String, dynamic> json) =>
+    _$TaskDatabaseImpl(
       id: json['id'] as String,
       name: json['name'] as String,
       title: TaskTitleProperty.fromJson(json['title'] as Map<String, dynamic>),
@@ -17,8 +16,7 @@ _$SelectedTaskDatabaseImpl _$$SelectedTaskDatabaseImplFromJson(
       date: TaskDateProperty.fromJson(json['date'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$SelectedTaskDatabaseImplToJson(
-        _$SelectedTaskDatabaseImpl instance) =>
+Map<String, dynamic> _$$TaskDatabaseImplToJson(_$TaskDatabaseImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'name': instance.name,

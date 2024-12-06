@@ -5,6 +5,7 @@ import 'property.dart';
 part 'task_database.freezed.dart';
 part 'task_database.g.dart';
 
+// 決定されたタスクDB情報
 @freezed
 class TaskDatabase with _$TaskDatabase {
   const factory TaskDatabase({
@@ -13,7 +14,7 @@ class TaskDatabase with _$TaskDatabase {
     required TaskTitleProperty title,
     required TaskStatusProperty status,
     required TaskDateProperty date,
-  }) = _SelectedTaskDatabase;
+  }) = _TaskDatabase;
 
   factory TaskDatabase.fromJson(Map<String, dynamic> json) =>
       _$TaskDatabaseFromJson(json);
