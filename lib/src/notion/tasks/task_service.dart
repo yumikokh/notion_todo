@@ -101,15 +101,9 @@ class TaskService {
   String _title(Map<String, dynamic> data) {
     final titleProperty = data['properties']
         .entries
-        .firstWhereOrNull((e) => e.value['type'] == 'title')
-        ?.value['title'];
-
-    if (titleProperty == null) {
-      return '';
-    }
-    return titleProperty.isNotEmpty
-        ? titleProperty[0]['plain_text'] as String
-        : '';
+        .firstWhere((e) => e.value['type'] == 'title')
+        .value['title'];
+    return titleProperty?.length > 0 ? titleProperty[0]['plain_text'] : '';
   }
 
   TaskDate? _date(Map<String, dynamic> data) {
