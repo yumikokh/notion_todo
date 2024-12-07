@@ -48,14 +48,18 @@ class TaskDatabaseService {
     return databases;
   }
 
-  Future<List<Property>> createProperty(
+  Future<Property?> createProperty(
       String databaseId, CreatePropertyType type, String name) async {
     final data =
         await notionDatabaseRepository?.createProperty(databaseId, type, name);
     if (data == null) {
-      return [];
+      return null;
     }
-    return _getProperties(data["properties"]);
+    final properties = _getProperties(data["properties"]);
+    return properties
+        .where((property) =>
+            property.name == name && property.type.name == type.name)
+        .firstOrNull;
   }
 
   Database _getDatabase(Map<String, dynamic> e) {

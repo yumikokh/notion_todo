@@ -190,15 +190,20 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
     });
   }
 
-  Future<void> createProperty(CreatePropertyType type, String name) async {
+  Future<Property> createProperty(CreatePropertyType type, String name) async {
     final databaseId = state.value?.id;
     if (databaseId == null) {
-      return;
+      throw Exception('databaseId is null');
     }
-    await _taskDatabaseService.createProperty(databaseId, type, name);
+    final property =
+        await _taskDatabaseService.createProperty(databaseId, type, name);
+    if (property == null) {
+      throw Exception('property is null');
+    }
 
     // データベースの再取得
     ref.invalidate(accessibleDatabasesProvider);
+    return property;
   }
 
   void clear() {
