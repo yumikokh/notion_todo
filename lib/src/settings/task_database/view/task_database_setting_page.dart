@@ -248,6 +248,9 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
     required List<DropdownMenuItem<String>> items,
     required ValueChanged<String?> onChanged,
   }) {
+    print('buildDropdown');
+    print('value: $value');
+    print('items: $items');
     return Container(
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey.shade300),

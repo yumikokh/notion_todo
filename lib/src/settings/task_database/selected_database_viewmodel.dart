@@ -47,6 +47,9 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
         ref.watch(notionDatabaseRepositoryProvider);
     _taskDatabaseService =
         TaskDatabaseService(notionDatabaseRepository: notionDatabaseRepository);
+    if (state.value != null) {
+      return state.value;
+    }
 
     if (taskDatabase == null) {
       return null;
@@ -61,20 +64,9 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
     );
   }
 
-  List<Property> get properties {
-    final selectedId = state.value?.id;
-    if (selectedId == null) {
-      return [];
-    }
-    final accessibleDatabases = ref.watch(accessibleDatabasesProvider).value;
-    final selected =
-        accessibleDatabases?.where((db) => db.id == selectedId).firstOrNull;
-    return selected?.properties ?? [];
-  }
-
   void selectDatabase(String? databaseId) {
     state = state.whenData((value) {
-      final accessibleDatabases = ref.watch(accessibleDatabasesProvider).value;
+      final accessibleDatabases = ref.read(accessibleDatabasesProvider).value;
       final selected =
           accessibleDatabases?.where((db) => db.id == databaseId).firstOrNull;
       final title = selected?.properties
@@ -96,14 +88,28 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
     });
   }
 
-  List<Property> propertyOptions(SettingPropertyType type) {
-    final types = type == SettingPropertyType.status
-        ? [PropertyType.status, PropertyType.checkbox]
-        : [PropertyType.date];
-    return properties
-            .where((property) => types.contains(property.type))
-            .toList() ??
-        [];
+  List<Property> get properties {
+    final selectedId = state.value?.id;
+    if (selectedId == null) {
+      return [];
+    }
+    final selectedDatabase = ref
+        .read(accessibleDatabasesProvider)
+        .value
+        ?.where((db) => db.id == selectedId)
+        .firstOrNull;
+    return selectedDatabase?.properties ?? [];
+  }
+
+  List<Property> Function(SettingPropertyType) get propertyOptions {
+    return (SettingPropertyType type) {
+      final types = type == SettingPropertyType.status
+          ? [PropertyType.status, PropertyType.checkbox]
+          : [PropertyType.date];
+      return properties
+          .where((property) => types.contains(property.type))
+          .toList();
+    };
   }
 
   void selectProperty(String? propertyId, SettingPropertyType type) {
@@ -184,16 +190,18 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
     });
   }
 
-  void clear() {
-    state = const AsyncValue.data(null);
-  }
-
-  void createProperty(CreatePropertyType type, String name) async {
+  Future<void> createProperty(CreatePropertyType type, String name) async {
     final databaseId = state.value?.id;
     if (databaseId == null) {
       return;
     }
     await _taskDatabaseService.createProperty(databaseId, type, name);
-    ref.invalidate(taskDatabaseViewModelProvider);
+
+    // データベースの再取得
+    ref.invalidate(accessibleDatabasesProvider);
+  }
+
+  void clear() {
+    state = const AsyncValue.data(null);
   }
 }
