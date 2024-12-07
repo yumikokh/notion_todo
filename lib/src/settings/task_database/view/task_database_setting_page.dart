@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:tanzaku_todo/src/settings/task_database/view/property_create_button.dart';
 import '../../../notion/model/property.dart';
 import '../../../notion/oauth/notion_oauth_viewmodel.dart';
 import '../../../notion/repository/notion_database_repository.dart';
@@ -60,9 +61,24 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                     const SizedBox(height: 32),
 
                     if (selectedDatabase != null) ...[
-                      // ステータスプロパティセクション
-                      _buildSectionTitle(context, 'ステータスプロパティ',
-                          tooltip: '種類: Status, Checkbox'),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          // ステータスプロパティセクション
+                          _buildSectionTitle(context, 'ステータスプロパティ',
+                              tooltip: '種類: Status, Checkbox'),
+                          PropertyCreateButton(
+                            type: CreatePropertyType.checkbox,
+                            selectedDatabaseViewModel:
+                                selectedDatabaseViewModel,
+                            onDatabaseRefreshed: () async {
+                              await ref
+                                  .read(accessibleDatabasesProvider.future);
+                            },
+                          ),
+                        ],
+                      ),
+
                       const SizedBox(height: 8),
                       _buildDropdown(
                         value: selectedDatabase.status?.id,
@@ -108,57 +124,24 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                         const SizedBox(height: 24),
                       ],
 
-                      // 日付プロパティセクション
-                      _buildSectionTitle(context, '日付プロパティ',
-                          tooltip: '種類: Date'),
-                      const SizedBox(height: 8),
-                      ElevatedButton(
-                        onPressed: () async {
-                          final propertyName = await showDialog<String>(
-                            context: context,
-                            builder: (BuildContext context) {
-                              String tempName = '';
-                              return AlertDialog(
-                                title: const Text('プロパティ名を入力'),
-                                content: TextField(
-                                  onChanged: (value) {
-                                    tempName = value;
-                                  },
-                                  decoration: const InputDecoration(
-                                    hintText: 'プロパティ名',
-                                  ),
-                                ),
-                                actions: <Widget>[
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: const Text('キャンセル'),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pop(tempName);
-                                    },
-                                    child: const Text('確定'),
-                                  ),
-                                ],
-                              );
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          // 日付プロパティセクション
+                          _buildSectionTitle(context, '日付プロパティ',
+                              tooltip: '種類: Date'),
+                          PropertyCreateButton(
+                            type: CreatePropertyType.date,
+                            selectedDatabaseViewModel:
+                                selectedDatabaseViewModel,
+                            onDatabaseRefreshed: () async {
+                              await ref
+                                  .read(accessibleDatabasesProvider.future);
                             },
-                          );
-
-                          if (propertyName != null) {
-                            final property =
-                                await selectedDatabaseViewModel.createProperty(
-                                    CreatePropertyType.date, propertyName);
-
-                            // データベースが再取得されるまで待つ
-                            await ref.read(accessibleDatabasesProvider.future);
-                            selectedDatabaseViewModel.selectProperty(
-                                property.id, SettingPropertyType.date);
-                          }
-                        },
-                        child: const Text('日付プロパティを作成'),
+                          ),
+                        ],
                       ),
+                      const SizedBox(height: 8),
                       _buildDropdown(
                         value: selectedDatabase.date?.id,
                         items: selectedDatabaseViewModel
