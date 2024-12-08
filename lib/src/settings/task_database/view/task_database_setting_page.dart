@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:tanzaku_todo/src/settings/task_database/view/property_create_button.dart';
 import '../../../notion/model/property.dart';
 import '../../../notion/oauth/notion_oauth_viewmodel.dart';
 import '../../../notion/repository/notion_database_repository.dart';
 import '../../../notion/tasks/view/task_main_page.dart';
 import '../selected_database_viewmodel.dart';
 import '../task_database_viewmodel.dart';
+import 'property_create_button.dart';
 
 class TaskDatabaseSettingPage extends HookConsumerWidget {
   const TaskDatabaseSettingPage({super.key});
@@ -57,6 +57,7 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                           .toList(),
                       onChanged: (value) =>
                           selectedDatabaseViewModel.selectDatabase(value),
+                      context: context,
                     ),
                     const SizedBox(height: 32),
 
@@ -89,6 +90,7 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                             .toList(),
                         onChanged: (value) => selectedDatabaseViewModel
                             .selectProperty(value, SettingPropertyType.status),
+                        context: context,
                       ),
                       const SizedBox(height: 24),
 
@@ -106,6 +108,7 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                           items: _buildStatusOptions(selectedDatabase, 'To-do'),
                           onChanged: (value) => selectedDatabaseViewModel
                               .selectStatusOption(value, 'To-do'),
+                          context: context,
                         ),
                         const SizedBox(height: 24),
                         _buildSectionTitle(context, 'Completeオプション',
@@ -120,6 +123,7 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                               _buildStatusOptions(selectedDatabase, 'Complete'),
                           onChanged: (value) => selectedDatabaseViewModel
                               .selectStatusOption(value, 'Complete'),
+                          context: context,
                         ),
                         const SizedBox(height: 24),
                       ],
@@ -151,6 +155,7 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                             .toList(),
                         onChanged: (value) => selectedDatabaseViewModel
                             .selectProperty(value, SettingPropertyType.date),
+                        context: context,
                       ),
                       const SizedBox(height: 48),
                     ],
@@ -236,10 +241,11 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
     required String? value,
     required List<DropdownMenuItem<String>> items,
     required ValueChanged<String?> onChanged,
+    required BuildContext context,
   }) {
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade300),
+        border: Border.all(color: Theme.of(context).colorScheme.outline),
         borderRadius: BorderRadius.circular(8),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -251,6 +257,9 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
         onChanged: onChanged,
         isExpanded: true,
         underline: const SizedBox.shrink(),
+        dropdownColor: Theme.of(context).brightness == Brightness.dark
+            ? Theme.of(context).colorScheme.surfaceContainerHighest
+            : null,
       ),
     );
   }
