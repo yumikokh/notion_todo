@@ -270,4 +270,15 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
   void clear() {
     state = const AsyncValue.data(null);
   }
+
+  bool get submitDisabled =>
+      state.value == null ||
+      state.value?.status == null ||
+      state.value?.date == null ||
+      (state.value?.status is StatusTaskStatusProperty &&
+          ((state.value?.status as StatusTaskStatusProperty).todoOption ==
+                  null ||
+              (state.value?.status as StatusTaskStatusProperty)
+                      .completeOption ==
+                  null));
 }

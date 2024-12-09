@@ -25,16 +25,6 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
     final notionOAuthViewModel =
         ref.read(notionOAuthViewModelProvider.notifier);
 
-    final disabled = selectedDatabase == null ||
-        selectedDatabase.status == null ||
-        selectedDatabase.date == null ||
-        (selectedDatabase.status is StatusTaskStatusProperty &&
-            ((selectedDatabase.status as StatusTaskStatusProperty).todoOption ==
-                    null ||
-                (selectedDatabase.status as StatusTaskStatusProperty)
-                        .completeOption ==
-                    null));
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Task Database Settings'),
@@ -176,10 +166,10 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                     SizedBox(
                       width: double.infinity,
                       child: FilledButton(
-                        onPressed: disabled
+                        onPressed: selectedDatabaseViewModel.submitDisabled
                             ? null
                             : () {
-                                taskDatabaseViewModel.save(selectedDatabase);
+                                taskDatabaseViewModel.save(selectedDatabase!);
                                 Navigator.pushNamedAndRemoveUntil(
                                   context,
                                   TaskMainPage.routeName,
@@ -219,7 +209,7 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
   }
 
   Widget _buildSectionTitle(BuildContext context, String title,
-      {String? tooltip}) {
+      {String? tooltip, bool? isRequired = true}) {
     return Row(
       children: [
         Text(
@@ -229,6 +219,10 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
+        if (isRequired == true) ...[
+          const SizedBox(width: 4),
+          const Text('*', style: TextStyle(color: Colors.red)),
+        ],
         if (tooltip != null) ...[
           const SizedBox(width: 4),
           Tooltip(
