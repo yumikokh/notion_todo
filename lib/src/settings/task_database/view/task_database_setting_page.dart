@@ -81,17 +81,23 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                       ),
 
                       const SizedBox(height: 8),
-                      _buildDropdown(
-                        value: selectedDatabase.status?.id,
-                        items: selectedDatabaseViewModel
-                            .propertyOptions(SettingPropertyType.status)
-                            .map((prop) => DropdownMenuItem(
-                                value: prop.id, child: Text(prop.name)))
-                            .toList(),
-                        onChanged: (value) => selectedDatabaseViewModel
-                            .selectProperty(value, SettingPropertyType.status),
-                        context: context,
-                      ),
+                      ref
+                          .watch(propertiesProvider(SettingPropertyType.status))
+                          .when(
+                            data: (properties) => _buildDropdown(
+                              value: selectedDatabase.status?.id,
+                              items: properties
+                                  .map((prop) => DropdownMenuItem(
+                                      value: prop.id, child: Text(prop.name)))
+                                  .toList(),
+                              onChanged: (value) =>
+                                  selectedDatabaseViewModel.selectProperty(
+                                      value, SettingPropertyType.status),
+                              context: context,
+                            ),
+                            loading: () => const CircularProgressIndicator(),
+                            error: (error, stack) => Text(error.toString()),
+                          ),
                       const SizedBox(height: 24),
 
                       // StatusTaskStatusPropertyの場合のみ表示
@@ -146,17 +152,23 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                         ],
                       ),
                       const SizedBox(height: 8),
-                      _buildDropdown(
-                        value: selectedDatabase.date?.id,
-                        items: selectedDatabaseViewModel
-                            .propertyOptions(SettingPropertyType.date)
-                            .map((prop) => DropdownMenuItem(
-                                value: prop.id, child: Text(prop.name)))
-                            .toList(),
-                        onChanged: (value) => selectedDatabaseViewModel
-                            .selectProperty(value, SettingPropertyType.date),
-                        context: context,
-                      ),
+                      ref
+                          .watch(propertiesProvider(SettingPropertyType.date))
+                          .when(
+                            data: (properties) => _buildDropdown(
+                              value: selectedDatabase.date?.id,
+                              items: properties
+                                  .map((prop) => DropdownMenuItem(
+                                      value: prop.id, child: Text(prop.name)))
+                                  .toList(),
+                              onChanged: (value) =>
+                                  selectedDatabaseViewModel.selectProperty(
+                                      value, SettingPropertyType.date),
+                              context: context,
+                            ),
+                            loading: () => const CircularProgressIndicator(),
+                            error: (error, stack) => Text(error.toString()),
+                          ),
                       const SizedBox(height: 48),
                     ],
 

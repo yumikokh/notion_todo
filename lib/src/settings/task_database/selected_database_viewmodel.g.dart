@@ -25,8 +25,160 @@ final accessibleDatabasesProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef AccessibleDatabasesRef = AutoDisposeFutureProviderRef<List<Database>>;
+String _$propertiesHash() => r'2a1b274a1c616ab2d1f1299072c764bb250366b1';
+
+/// Copied from Dart SDK
+class _SystemHash {
+  _SystemHash._();
+
+  static int combine(int hash, int value) {
+    // ignore: parameter_assignments
+    hash = 0x1fffffff & (hash + value);
+    // ignore: parameter_assignments
+    hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
+    return hash ^ (hash >> 6);
+  }
+
+  static int finish(int hash) {
+    // ignore: parameter_assignments
+    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
+    // ignore: parameter_assignments
+    hash = hash ^ (hash >> 11);
+    return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
+  }
+}
+
+/// See also [properties].
+@ProviderFor(properties)
+const propertiesProvider = PropertiesFamily();
+
+/// See also [properties].
+class PropertiesFamily extends Family<AsyncValue<List<Property>>> {
+  /// See also [properties].
+  const PropertiesFamily();
+
+  /// See also [properties].
+  PropertiesProvider call(
+    SettingPropertyType type,
+  ) {
+    return PropertiesProvider(
+      type,
+    );
+  }
+
+  @override
+  PropertiesProvider getProviderOverride(
+    covariant PropertiesProvider provider,
+  ) {
+    return call(
+      provider.type,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'propertiesProvider';
+}
+
+/// See also [properties].
+class PropertiesProvider extends AutoDisposeFutureProvider<List<Property>> {
+  /// See also [properties].
+  PropertiesProvider(
+    SettingPropertyType type,
+  ) : this._internal(
+          (ref) => properties(
+            ref as PropertiesRef,
+            type,
+          ),
+          from: propertiesProvider,
+          name: r'propertiesProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$propertiesHash,
+          dependencies: PropertiesFamily._dependencies,
+          allTransitiveDependencies:
+              PropertiesFamily._allTransitiveDependencies,
+          type: type,
+        );
+
+  PropertiesProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.type,
+  }) : super.internal();
+
+  final SettingPropertyType type;
+
+  @override
+  Override overrideWith(
+    FutureOr<List<Property>> Function(PropertiesRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: PropertiesProvider._internal(
+        (ref) => create(ref as PropertiesRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        type: type,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<List<Property>> createElement() {
+    return _PropertiesProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is PropertiesProvider && other.type == type;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, type.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin PropertiesRef on AutoDisposeFutureProviderRef<List<Property>> {
+  /// The parameter `type` of this provider.
+  SettingPropertyType get type;
+}
+
+class _PropertiesProviderElement
+    extends AutoDisposeFutureProviderElement<List<Property>>
+    with PropertiesRef {
+  _PropertiesProviderElement(super.provider);
+
+  @override
+  SettingPropertyType get type => (origin as PropertiesProvider).type;
+}
+
 String _$selectedDatabaseViewModelHash() =>
-    r'3a2550d81d6fff40be0b66d8d978c437bb8e11a6';
+    r'e686df7a012aa2bf4704c2a6db7c73e7385a2a4d';
 
 /// See also [SelectedDatabaseViewModel].
 @ProviderFor(SelectedDatabaseViewModel)
