@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../notion/model/property.dart';
 import '../../../notion/oauth/notion_oauth_viewmodel.dart';
+import '../../../notion/repository/notion_database_repository.dart';
 import '../../../notion/tasks/view/task_main_page.dart';
-import '../task_database_setting_viewmodel.dart';
+import '../selected_database_viewmodel.dart';
 import '../task_database_viewmodel.dart';
+import 'property_create_button.dart';
 
 class TaskDatabaseSettingPage extends HookConsumerWidget {
   const TaskDatabaseSettingPage({super.key});
@@ -22,16 +24,6 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
         ref.watch(selectedDatabaseViewModelProvider.notifier);
     final notionOAuthViewModel =
         ref.read(notionOAuthViewModelProvider.notifier);
-
-    final disabled = selectedDatabase == null ||
-        selectedDatabase.status == null ||
-        selectedDatabase.date == null ||
-        (selectedDatabase.status is StatusTaskStatusProperty &&
-            ((selectedDatabase.status as StatusTaskStatusProperty).todoOption ==
-                    null ||
-                (selectedDatabase.status as StatusTaskStatusProperty)
-                        .completeOption ==
-                    null));
 
     return Scaffold(
       appBar: AppBar(
@@ -55,24 +47,47 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                           .toList(),
                       onChanged: (value) =>
                           selectedDatabaseViewModel.selectDatabase(value),
+                      context: context,
                     ),
                     const SizedBox(height: 32),
 
                     if (selectedDatabase != null) ...[
-                      // ステータスプロパティセクション
-                      _buildSectionTitle(context, 'ステータスプロパティ',
-                          tooltip: '種類: Status, Checkbox'),
-                      const SizedBox(height: 8),
-                      _buildDropdown(
-                        value: selectedDatabase.status?.id,
-                        items: selectedDatabaseViewModel
-                            .propertyOptions(SettingPropertyType.status)
-                            .map((prop) => DropdownMenuItem(
-                                value: prop.id, child: Text(prop.name)))
-                            .toList(),
-                        onChanged: (value) => selectedDatabaseViewModel
-                            .selectProperty(value, SettingPropertyType.status),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          // ステータスプロパティセクション
+                          _buildSectionTitle(context, 'ステータスプロパティ',
+                              tooltip: '種類: Status, Checkbox'),
+                          PropertyCreateButton(
+                            type: CreatePropertyType.checkbox,
+                            selectedDatabaseViewModel:
+                                selectedDatabaseViewModel,
+                            onDatabaseRefreshed: () async {
+                              await ref
+                                  .read(accessibleDatabasesProvider.future);
+                            },
+                          ),
+                        ],
                       ),
+
+                      const SizedBox(height: 8),
+                      ref
+                          .watch(propertiesProvider(SettingPropertyType.status))
+                          .when(
+                            data: (properties) => _buildDropdown(
+                              value: selectedDatabase.status?.id,
+                              items: properties
+                                  .map((prop) => DropdownMenuItem(
+                                      value: prop.id, child: Text(prop.name)))
+                                  .toList(),
+                              onChanged: (value) =>
+                                  selectedDatabaseViewModel.selectProperty(
+                                      value, SettingPropertyType.status),
+                              context: context,
+                            ),
+                            loading: () => const CircularProgressIndicator(),
+                            error: (error, stack) => Text(error.toString()),
+                          ),
                       const SizedBox(height: 24),
 
                       // StatusTaskStatusPropertyの場合のみ表示
@@ -89,6 +104,7 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                           items: _buildStatusOptions(selectedDatabase, 'To-do'),
                           onChanged: (value) => selectedDatabaseViewModel
                               .selectStatusOption(value, 'To-do'),
+                          context: context,
                         ),
                         const SizedBox(height: 24),
                         _buildSectionTitle(context, 'Completeオプション',
@@ -103,24 +119,46 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                               _buildStatusOptions(selectedDatabase, 'Complete'),
                           onChanged: (value) => selectedDatabaseViewModel
                               .selectStatusOption(value, 'Complete'),
+                          context: context,
                         ),
                         const SizedBox(height: 24),
                       ],
 
-                      // 日付プロパティセクション
-                      _buildSectionTitle(context, '日付プロパティ',
-                          tooltip: '種類: Date'),
-                      const SizedBox(height: 8),
-                      _buildDropdown(
-                        value: selectedDatabase.date?.id,
-                        items: selectedDatabaseViewModel
-                            .propertyOptions(SettingPropertyType.date)
-                            .map((prop) => DropdownMenuItem(
-                                value: prop.id, child: Text(prop.name)))
-                            .toList(),
-                        onChanged: (value) => selectedDatabaseViewModel
-                            .selectProperty(value, SettingPropertyType.date),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          // 日付プロパティセクション
+                          _buildSectionTitle(context, '日付プロパティ',
+                              tooltip: '種類: Date'),
+                          PropertyCreateButton(
+                            type: CreatePropertyType.date,
+                            selectedDatabaseViewModel:
+                                selectedDatabaseViewModel,
+                            onDatabaseRefreshed: () async {
+                              await ref
+                                  .read(accessibleDatabasesProvider.future);
+                            },
+                          ),
+                        ],
                       ),
+                      const SizedBox(height: 8),
+                      ref
+                          .watch(propertiesProvider(SettingPropertyType.date))
+                          .when(
+                            data: (properties) => _buildDropdown(
+                              value: selectedDatabase.date?.id,
+                              items: properties
+                                  .map((prop) => DropdownMenuItem(
+                                      value: prop.id, child: Text(prop.name)))
+                                  .toList(),
+                              onChanged: (value) =>
+                                  selectedDatabaseViewModel.selectProperty(
+                                      value, SettingPropertyType.date),
+                              context: context,
+                            ),
+                            loading: () => const CircularProgressIndicator(),
+                            error: (error, stack) => Text(error.toString()),
+                          ),
                       const SizedBox(height: 48),
                     ],
 
@@ -128,10 +166,10 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                     SizedBox(
                       width: double.infinity,
                       child: FilledButton(
-                        onPressed: disabled
+                        onPressed: selectedDatabaseViewModel.submitDisabled
                             ? null
                             : () {
-                                taskDatabaseViewModel.save(selectedDatabase);
+                                taskDatabaseViewModel.save(selectedDatabase!);
                                 Navigator.pushNamedAndRemoveUntil(
                                   context,
                                   TaskMainPage.routeName,
@@ -171,7 +209,7 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
   }
 
   Widget _buildSectionTitle(BuildContext context, String title,
-      {String? tooltip}) {
+      {String? tooltip, bool? isRequired = true}) {
     return Row(
       children: [
         Text(
@@ -181,6 +219,10 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
+        if (isRequired == true) ...[
+          const SizedBox(width: 4),
+          const Text('*', style: TextStyle(color: Colors.red)),
+        ],
         if (tooltip != null) ...[
           const SizedBox(width: 4),
           Tooltip(
@@ -205,10 +247,11 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
     required String? value,
     required List<DropdownMenuItem<String>> items,
     required ValueChanged<String?> onChanged,
+    required BuildContext context,
   }) {
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade300),
+        border: Border.all(color: Theme.of(context).colorScheme.outline),
         borderRadius: BorderRadius.circular(8),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -220,6 +263,9 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
         onChanged: onChanged,
         isExpanded: true,
         underline: const SizedBox.shrink(),
+        dropdownColor: Theme.of(context).brightness == Brightness.dark
+            ? Theme.of(context).colorScheme.surfaceContainerHighest
+            : null,
       ),
     );
   }

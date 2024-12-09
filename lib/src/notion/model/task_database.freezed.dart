@@ -15,7 +15,7 @@ final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 TaskDatabase _$TaskDatabaseFromJson(Map<String, dynamic> json) {
-  return _SelectedTaskDatabase.fromJson(json);
+  return _TaskDatabase.fromJson(json);
 }
 
 /// @nodoc
@@ -131,11 +131,11 @@ class _$TaskDatabaseCopyWithImpl<$Res, $Val extends TaskDatabase>
 }
 
 /// @nodoc
-abstract class _$$SelectedTaskDatabaseImplCopyWith<$Res>
+abstract class _$$TaskDatabaseImplCopyWith<$Res>
     implements $TaskDatabaseCopyWith<$Res> {
-  factory _$$SelectedTaskDatabaseImplCopyWith(_$SelectedTaskDatabaseImpl value,
-          $Res Function(_$SelectedTaskDatabaseImpl) then) =
-      __$$SelectedTaskDatabaseImplCopyWithImpl<$Res>;
+  factory _$$TaskDatabaseImplCopyWith(
+          _$TaskDatabaseImpl value, $Res Function(_$TaskDatabaseImpl) then) =
+      __$$TaskDatabaseImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -154,11 +154,11 @@ abstract class _$$SelectedTaskDatabaseImplCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$SelectedTaskDatabaseImplCopyWithImpl<$Res>
-    extends _$TaskDatabaseCopyWithImpl<$Res, _$SelectedTaskDatabaseImpl>
-    implements _$$SelectedTaskDatabaseImplCopyWith<$Res> {
-  __$$SelectedTaskDatabaseImplCopyWithImpl(_$SelectedTaskDatabaseImpl _value,
-      $Res Function(_$SelectedTaskDatabaseImpl) _then)
+class __$$TaskDatabaseImplCopyWithImpl<$Res>
+    extends _$TaskDatabaseCopyWithImpl<$Res, _$TaskDatabaseImpl>
+    implements _$$TaskDatabaseImplCopyWith<$Res> {
+  __$$TaskDatabaseImplCopyWithImpl(
+      _$TaskDatabaseImpl _value, $Res Function(_$TaskDatabaseImpl) _then)
       : super(_value, _then);
 
   /// Create a copy of TaskDatabase
@@ -172,7 +172,7 @@ class __$$SelectedTaskDatabaseImplCopyWithImpl<$Res>
     Object? status = null,
     Object? date = null,
   }) {
-    return _then(_$SelectedTaskDatabaseImpl(
+    return _then(_$TaskDatabaseImpl(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -199,16 +199,16 @@ class __$$SelectedTaskDatabaseImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$SelectedTaskDatabaseImpl implements _SelectedTaskDatabase {
-  const _$SelectedTaskDatabaseImpl(
+class _$TaskDatabaseImpl implements _TaskDatabase {
+  const _$TaskDatabaseImpl(
       {required this.id,
       required this.name,
       required this.title,
       required this.status,
       required this.date});
 
-  factory _$SelectedTaskDatabaseImpl.fromJson(Map<String, dynamic> json) =>
-      _$$SelectedTaskDatabaseImplFromJson(json);
+  factory _$TaskDatabaseImpl.fromJson(Map<String, dynamic> json) =>
+      _$$TaskDatabaseImplFromJson(json);
 
   @override
   final String id;
@@ -230,7 +230,7 @@ class _$SelectedTaskDatabaseImpl implements _SelectedTaskDatabase {
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$SelectedTaskDatabaseImpl &&
+            other is _$TaskDatabaseImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.title, title) || other.title == title) &&
@@ -247,29 +247,27 @@ class _$SelectedTaskDatabaseImpl implements _SelectedTaskDatabase {
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
-  _$$SelectedTaskDatabaseImplCopyWith<_$SelectedTaskDatabaseImpl>
-      get copyWith =>
-          __$$SelectedTaskDatabaseImplCopyWithImpl<_$SelectedTaskDatabaseImpl>(
-              this, _$identity);
+  _$$TaskDatabaseImplCopyWith<_$TaskDatabaseImpl> get copyWith =>
+      __$$TaskDatabaseImplCopyWithImpl<_$TaskDatabaseImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$SelectedTaskDatabaseImplToJson(
+    return _$$TaskDatabaseImplToJson(
       this,
     );
   }
 }
 
-abstract class _SelectedTaskDatabase implements TaskDatabase {
-  const factory _SelectedTaskDatabase(
+abstract class _TaskDatabase implements TaskDatabase {
+  const factory _TaskDatabase(
       {required final String id,
       required final String name,
       required final TaskTitleProperty title,
       required final TaskStatusProperty status,
-      required final TaskDateProperty date}) = _$SelectedTaskDatabaseImpl;
+      required final TaskDateProperty date}) = _$TaskDatabaseImpl;
 
-  factory _SelectedTaskDatabase.fromJson(Map<String, dynamic> json) =
-      _$SelectedTaskDatabaseImpl.fromJson;
+  factory _TaskDatabase.fromJson(Map<String, dynamic> json) =
+      _$TaskDatabaseImpl.fromJson;
 
   @override
   String get id;
@@ -286,6 +284,6 @@ abstract class _SelectedTaskDatabase implements TaskDatabase {
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$SelectedTaskDatabaseImplCopyWith<_$SelectedTaskDatabaseImpl>
-      get copyWith => throw _privateConstructorUsedError;
+  _$$TaskDatabaseImplCopyWith<_$TaskDatabaseImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }
