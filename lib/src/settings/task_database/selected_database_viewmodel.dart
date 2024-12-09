@@ -254,6 +254,19 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
     return property;
   }
 
+  Future<bool> checkPropertyExists(String propertyName) async {
+    final selectedId = state.value?.id;
+    if (selectedId == null) {
+      return false;
+    }
+    final accessibleDatabases =
+        await ref.watch(accessibleDatabasesProvider.future);
+    final selectedDatabase =
+        accessibleDatabases.where((db) => db.id == selectedId).firstOrNull;
+    final properties = selectedDatabase?.properties ?? [];
+    return properties.any((property) => property.name == propertyName.trim());
+  }
+
   void clear() {
     state = const AsyncValue.data(null);
   }

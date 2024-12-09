@@ -38,7 +38,32 @@ class PropertyCreateButton extends StatelessWidget {
                   child: const Text('キャンセル'),
                 ),
                 TextButton(
-                  onPressed: () {
+                  onPressed: () async {
+                    final errorMessage = tempName.trim().isEmpty
+                        ? 'プロパティ名を入力してください'
+                        : await selectedDatabaseViewModel
+                                .checkPropertyExists(tempName)
+                            ? 'すでに同じ名前のプロパティが存在します'
+                            : null;
+                    if (errorMessage != null) {
+                      showDialog(
+                        // ignore: use_build_context_synchronously
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text('エラー'),
+                            content: Text(errorMessage),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.of(context).pop(),
+                                child: const Text('OK'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                      return;
+                    }
                     Navigator.of(context).pop(tempName);
                   },
                   child: const Text('確定'),
