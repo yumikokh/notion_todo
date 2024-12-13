@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../notion/model/index.dart';
 import '../../notion/oauth/notion_oauth_viewmodel.dart';
@@ -27,7 +28,7 @@ class NotionSettingsView extends ConsumerWidget {
         padding: const EdgeInsets.all(16),
         child: ListView(
           children: [
-            Card(
+            Card.outlined(
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -82,9 +83,9 @@ class NotionSettingsView extends ConsumerWidget {
                 ),
               ),
             ),
-            if (isAuthenticated) ...[
-              const SizedBox(height: 16),
-              Card(
+            const SizedBox(height: 16),
+            if (isAuthenticated)
+              Card.outlined(
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
@@ -104,7 +105,7 @@ class NotionSettingsView extends ConsumerWidget {
                             message: '該当プロパティの名前や種類などが変わった場合は、再設定が必要です',
                             triggerMode: TooltipTriggerMode.tap,
                             preferBelow: false,
-                            showDuration: const Duration(seconds: 3),
+                            verticalOffset: 14,
                             margin: const EdgeInsets.symmetric(horizontal: 20),
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 20, vertical: 10),
@@ -155,7 +156,41 @@ class NotionSettingsView extends ConsumerWidget {
                   ),
                 ),
               ),
-            ],
+            const SizedBox(height: 16),
+            Card.outlined(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Row(
+                      children: [
+                        Icon(Icons.info_rounded),
+                        SizedBox(width: 4),
+                        Text('Notionにタスク用のデータベースがないときは？'),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    const Text('下記からNotionテンプレートを入手し、Notion接続時に連携するとスムーズです！'),
+                    const SizedBox(height: 8),
+                    InkWell(
+                      child: const Text(
+                        'Notionテンプレートページへ',
+                        style: TextStyle(
+                          color: Colors.blue,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                      onTap: () async {
+                        const url =
+                            'https://www.notion.so/templates/simple-gtd-planner';
+                        await launchUrl(Uri.parse(url));
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),

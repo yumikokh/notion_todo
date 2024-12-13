@@ -37,7 +37,8 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // データベース選択セクション
-                    _buildSectionTitle(context, 'データベース'),
+                    _buildSectionTitle(context, 'データベース',
+                        tooltip: '選択肢が見つからない場合は、Notion接続をやり直してください'),
                     const SizedBox(height: 8),
                     _buildDropdown(
                       value: selectedDatabase?.id,
@@ -229,7 +230,8 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
             message: tooltip,
             triggerMode: TooltipTriggerMode.tap,
             preferBelow: false,
-            showDuration: const Duration(seconds: 3),
+            showDuration: const Duration(seconds: 2),
+            verticalOffset: 14, // tooltipとchildの距離を近づける
             margin: const EdgeInsets.symmetric(horizontal: 20),
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             child: Icon(
