@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../notion/repository/notion_database_repository.dart';
 import '../selected_database_viewmodel.dart';
@@ -15,6 +16,7 @@ class PropertyCreateButton extends StatelessWidget {
   final Future<void> Function() onDatabaseRefreshed;
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return SizedBox(
       height: 30,
       child: FilledButton(
@@ -33,8 +35,8 @@ class PropertyCreateButton extends StatelessWidget {
                   onChanged: (value) {
                     tempName = value;
                   },
-                  decoration: const InputDecoration(
-                    hintText: 'プロパティ名',
+                  decoration: InputDecoration(
+                    hintText: l.property_name,
                   ),
                 ),
                 actions: <Widget>[
@@ -42,15 +44,15 @@ class PropertyCreateButton extends StatelessWidget {
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
-                    child: const Text('キャンセル'),
+                    child: Text(l.cancel),
                   ),
                   FilledButton(
                     onPressed: () async {
                       final errorMessage = tempName.trim().isEmpty
-                          ? 'プロパティ名を入力してください'
+                          ? l.property_name_input
                           : await selectedDatabaseViewModel
                                   .checkPropertyExists(tempName)
-                              ? 'すでに同じ名前のプロパティが存在します'
+                              ? l.property_name_error
                               : null;
                       if (errorMessage != null) {
                         showDialog(
@@ -58,12 +60,12 @@ class PropertyCreateButton extends StatelessWidget {
                           context: context,
                           builder: (BuildContext context) {
                             return AlertDialog(
-                              title: const Text('エラー'),
+                              title: Text(l.error),
                               content: Text(errorMessage),
                               actions: [
                                 FilledButton(
                                   onPressed: () => Navigator.of(context).pop(),
-                                  child: const Text('OK'),
+                                  child: Text(l.ok),
                                 ),
                               ],
                             );
@@ -74,7 +76,7 @@ class PropertyCreateButton extends StatelessWidget {
                       // ignore: use_build_context_synchronously
                       Navigator.of(context).pop(tempName);
                     },
-                    child: const Text('確定'),
+                    child: Text(l.confirm),
                   ),
                 ],
               );
@@ -96,7 +98,7 @@ class PropertyCreateButton extends StatelessWidget {
             selectedDatabaseViewModel.selectProperty(property.id, propertyType);
           }
         },
-        child: const Text('新規作成', style: TextStyle(fontSize: 12)),
+        child: Text(l.new_create, style: const TextStyle(fontSize: 12)),
       ),
     );
   }

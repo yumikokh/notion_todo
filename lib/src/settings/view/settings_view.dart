@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../task_database/task_database_viewmodel.dart';
 import 'notion_settings_view.dart';
@@ -24,10 +25,10 @@ class SettingsView extends ConsumerWidget {
   Widget build(BuildContext context, ref) {
     final themeMode = ref.watch(settingsViewModelProvider).themeMode;
     final database = ref.watch(taskDatabaseViewModelProvider).valueOrNull;
-
+    final l = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: Text(l.settings_view_title),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
@@ -35,10 +36,10 @@ class SettingsView extends ConsumerWidget {
           children: [
             _buildSection(
               context,
-              title: 'アプリ設定',
+              title: l.settings_view_app_settings_title,
               children: [
                 ListTile(
-                  title: const Text('Notion Settings'),
+                  title: Text(l.settings_view_notion_settings_title),
                   subtitle: database != null
                       ? Text(database.name)
                       : Row(
@@ -47,7 +48,7 @@ class SettingsView extends ConsumerWidget {
                                 size: 16,
                                 color: Theme.of(context).colorScheme.error),
                             const SizedBox(width: 8),
-                            const Text('データベース設定が必要です'),
+                            Text(l.settings_view_notion_settings_description),
                           ],
                         ),
                   trailing: const Icon(Icons.chevron_right),
@@ -57,7 +58,7 @@ class SettingsView extends ConsumerWidget {
                   },
                 ),
                 ListTile(
-                  title: const Text('Theme Settings'),
+                  title: Text(l.settings_view_theme_settings_title),
                   subtitle: Text(themeMode.name),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {
@@ -70,10 +71,10 @@ class SettingsView extends ConsumerWidget {
             const SizedBox(height: 16),
             _buildSection(
               context,
-              title: 'サポート',
+              title: l.settings_view_support_title,
               children: [
                 ListTile(
-                  title: const Text('よくある質問'),
+                  title: Text(l.settings_view_support_faq_title),
                   leading: const Icon(Icons.help_outline),
                   trailing: const Icon(Icons.open_in_new_rounded),
                   onTap: () async {
@@ -82,7 +83,7 @@ class SettingsView extends ConsumerWidget {
                   },
                 ),
                 ListTile(
-                  title: const Text('バグ報告・要望・問い合わせ'),
+                  title: Text(l.settings_view_support_feedback_title),
                   trailing: const Icon(Icons.open_in_new_rounded),
                   onTap: () async {
                     await launchUrl(Uri.parse(
@@ -90,7 +91,7 @@ class SettingsView extends ConsumerWidget {
                   },
                 ),
                 ListTile(
-                  title: const Text('プライバシーポリシー'),
+                  title: Text(l.settings_view_support_privacy_policy_title),
                   trailing: const Icon(Icons.open_in_new_rounded),
                   onTap: () async {
                     await launchUrl(Uri.parse(
@@ -104,14 +105,14 @@ class SettingsView extends ConsumerWidget {
                 Clipboard.setData(
                     ClipboardData(text: settingsViewModel.version));
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('バージョン情報をコピーしました'),
-                    duration: Duration(seconds: 2),
+                  SnackBar(
+                    content: Text(l.settings_view_version_copy),
+                    duration: const Duration(seconds: 2),
                   ),
                 );
               },
               child: ListTile(
-                title: const Text('バージョン'),
+                title: Text(l.settings_view_version_title),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [

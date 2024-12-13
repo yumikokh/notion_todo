@@ -47,7 +47,8 @@ class MyApp extends ConsumerWidget {
             GlobalCupertinoLocalizations.delegate,
           ],
           supportedLocales: const [
-            Locale('ja', ''), // English, no country code // TODO: 多言語対応
+            Locale('ja', ''),
+            Locale('en', ''),
           ],
 
           // Use AppLocalizations to configure the correct application title
