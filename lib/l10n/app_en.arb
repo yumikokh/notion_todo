@@ -45,5 +45,10 @@
   "ok": "OK",
   "cancel": "Cancel",
   "confirm": "Confirm",
-  "new_create": "Create"
+  "new_create": "Create",
+  "language_settings_title": "Language Settings",
+  "language_settings_description": "Set the language of the app",
+  "language_settings_language": "Language",
+  "language_settings_language_ja": "Japanese",
+  "language_settings_language_en": "Englishh"
 }
