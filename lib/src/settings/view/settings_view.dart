@@ -11,10 +11,6 @@ import 'notion_settings_view.dart';
 import '../settings_viewmodel.dart';
 import 'theme_settings_view.dart';
 
-/// Displays the various settings that can be customized by the user.
-///
-/// When a user changes a setting, the SettingsController is updated and
-/// Widgets that listen to the SettingsController are rebuilt.
 class SettingsView extends ConsumerWidget {
   static const routeName = '/settings';
 
@@ -24,8 +20,7 @@ class SettingsView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ref) {
-    final themeMode = ref.watch(settingsViewModelProvider).themeMode;
-    final database = ref.watch(taskDatabaseViewModelProvider).valueOrNull;
+    final database = ref.read(taskDatabaseViewModelProvider).valueOrNull;
     final l = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
@@ -60,7 +55,7 @@ class SettingsView extends ConsumerWidget {
                 ),
                 ListTile(
                   title: Text(l.settings_view_theme_settings_title),
-                  subtitle: Text(themeMode.name),
+                  subtitle: Text(settingsViewModel.themeMode.name),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {
                     Navigator.of(context)
@@ -69,6 +64,7 @@ class SettingsView extends ConsumerWidget {
                 ),
                 ListTile(
                   title: Text(l.language_settings_title),
+                  subtitle: Text(settingsViewModel.languageName(l)),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {
                     Navigator.of(context)

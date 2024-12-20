@@ -41,16 +41,9 @@ class MyApp extends ConsumerWidget {
           // Provide the generated AppLocalizations to the MaterialApp. This
           // allows descendant Widgets to display the correct translations
           // depending on the user's locale.
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: const [
-            Locale('ja', ''),
-            Locale('en', ''),
-          ],
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: settings.language,
 
           // Use AppLocalizations to configure the correct application title
           // depending on the user's locale.
