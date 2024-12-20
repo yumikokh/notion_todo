@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'common/snackbar/view/snackbar_listener.dart';
 import 'settings/task_database/view/task_database_setting_page.dart';
 import 'notion/tasks/view/task_main_page.dart';
+import 'settings/view/language_settings_view.dart';
 import 'settings/view/notion_settings_view.dart';
 import 'settings/settings_viewmodel.dart';
 import 'settings/view/settings_view.dart';
@@ -76,6 +77,8 @@ class MyApp extends ConsumerWidget {
                     return const NotionSettingsView();
                   case ThemeSettingsView.routeName:
                     return ThemeSettingsView(settingsViewModel);
+                  case LanguageSettingsView.routeName:
+                    return const LanguageSettingsView();
                   case TaskDatabaseSettingPage.routeName:
                     return const TaskDatabaseSettingPage();
                   case TaskMainPage.routeName:

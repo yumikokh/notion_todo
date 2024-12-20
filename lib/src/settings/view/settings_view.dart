@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../task_database/task_database_viewmodel.dart';
+import 'language_settings_view.dart';
 import 'notion_settings_view.dart';
 import '../settings_viewmodel.dart';
 import 'theme_settings_view.dart';
@@ -64,6 +65,14 @@ class SettingsView extends ConsumerWidget {
                   onTap: () {
                     Navigator.of(context)
                         .pushNamed(ThemeSettingsView.routeName);
+                  },
+                ),
+                ListTile(
+                  title: Text(l.language_settings_title),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () {
+                    Navigator.of(context)
+                        .pushNamed(LanguageSettingsView.routeName);
                   },
                 ),
               ],
