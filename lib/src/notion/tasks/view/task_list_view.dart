@@ -15,6 +15,8 @@ class TaskListView extends HookWidget {
   final bool showCompletedTasks;
   final String? title;
 
+  static final DateHelper d = DateHelper();
+
   const TaskListView({
     Key? key,
     required this.list,
@@ -85,7 +87,7 @@ class TaskListView extends HookWidget {
                         final newTask = task.copyWith(
                             dueDate: date == null
                                 ? null
-                                : TaskDate(start: dateString(date)));
+                                : TaskDate(start: d.dateString(date)));
                         await taskViewModel.updateTask(newTask);
                       },
                     );

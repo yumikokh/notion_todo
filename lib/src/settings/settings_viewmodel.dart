@@ -1,39 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'settings_service.dart';
 
 class SettingsViewModel with ChangeNotifier {
+  final SettingsService _settingsService;
+
   SettingsViewModel(this._settingsService) {
     _themeMode = ThemeMode.system;
     _language = const Locale('en');
     _version = '';
 
-    loadSettings();
+    _loadSettings();
   }
 
-  final SettingsService _settingsService;
-  late ThemeMode _themeMode;
-  ThemeMode get themeMode => _themeMode;
-
-  late Locale _language;
-
-  Locale get language => _language;
-  String languageName(AppLocalizations l) => switch (_language) {
-        Locale(languageCode: 'ja') => l.language_settings_language_ja,
-        Locale(languageCode: 'en') => l.language_settings_language_en,
-        _ => 'Unknown',
-      };
-
-  late String _version;
-  String get version => _version;
-
-  Future<void> loadSettings() async {
+  Future<void> _loadSettings() async {
     _themeMode = await _settingsService.themeMode();
     _language = await _settingsService.language();
     _version = (await _settingsService.packageInfo()).version;
     notifyListeners();
   }
+
+  /// ThemeMode
+  late ThemeMode _themeMode;
+  ThemeMode get themeMode => _themeMode;
 
   Future<void> updateThemeMode(ThemeMode? newThemeMode) async {
     if (newThemeMode == null) return;
@@ -45,6 +36,15 @@ class SettingsViewModel with ChangeNotifier {
     await _settingsService.updateThemeMode(newThemeMode);
   }
 
+  /// Language
+  late Locale _language;
+  Locale get language => _language;
+  String languageName(AppLocalizations l) => switch (_language) {
+        Locale(languageCode: 'en') => l.language_settings_language_en,
+        Locale(languageCode: 'ja') => l.language_settings_language_ja,
+        _ => 'Unknown',
+      };
+
   Future<void> updateLanguage(Locale language) async {
     if (language == _language) return;
 
@@ -53,6 +53,10 @@ class SettingsViewModel with ChangeNotifier {
 
     await _settingsService.updateLanguage(language);
   }
+
+  /// Version
+  late String _version;
+  String get version => _version;
 }
 
 // MEMO: code-generatorで生成されるProviderはデフォルトで自動破棄が有効なため、appでListenableに適用できない

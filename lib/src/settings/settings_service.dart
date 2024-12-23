@@ -24,6 +24,7 @@ class SettingsService {
     final systemLanguageCode =
         (await intl_standalone.findSystemLocale()).split('_').first;
     const supportedLocales = AppLocalizations.supportedLocales;
+    // 対応している言語の中で、 保存された言語 > システム言語 > 英語
     final languageCode = prefs.getString(_languageKey) ??
         (supportedLocales.any((l) => l.languageCode == systemLanguageCode)
             ? systemLanguageCode

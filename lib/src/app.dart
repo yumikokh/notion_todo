@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'common/snackbar/view/snackbar_listener.dart';
+import 'helpers/date.dart';
 import 'settings/task_database/view/task_database_setting_page.dart';
 import 'notion/tasks/view/task_main_page.dart';
 import 'settings/view/language_settings_view.dart';
@@ -28,6 +28,8 @@ class MyApp extends ConsumerWidget {
 
     final TextTheme textTheme = createTextTheme(context, "Roboto", "Roboto");
     final MaterialTheme theme = MaterialTheme(textTheme);
+
+    DateHelper().setup(settings.language.languageCode);
 
     return AnimatedBuilder(
       animation: settingsViewModel,

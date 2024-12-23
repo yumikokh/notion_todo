@@ -17,6 +17,7 @@ part 'task_viewmodel.g.dart';
 class TaskViewModel extends _$TaskViewModel {
   late TaskService _taskService;
   late FilterType _filterType;
+  static final DateHelper d = DateHelper();
 
   // 操作のキューを管理するための変数
   final _operationQueue = Queue<Future<void> Function()>();
@@ -100,7 +101,7 @@ class TaskViewModel extends _$TaskViewModel {
           title: title,
           isCompleted: false,
           dueDate:
-              dueDate != null ? TaskDate(start: dateString(dueDate)) : null);
+              dueDate != null ? TaskDate(start: d.dateString(dueDate)) : null);
 
       state = AsyncValue.data([...state.valueOrNull ?? [], newTask]);
 
@@ -276,8 +277,8 @@ class TaskViewModel extends _$TaskViewModel {
       final now = DateTime.now();
       final dueDateEnd = dueDate.end;
       if (dueDateEnd == null &&
-          isToday(DateTime.parse(dueDate.start)) &&
-          !hasTime(dueDate.start)) {
+          d.isToday(DateTime.parse(dueDate.start)) &&
+          !d.hasTime(dueDate.start)) {
         return Theme.of(context).colorScheme.tertiary; // 今日だったら青
       }
 
@@ -292,9 +293,9 @@ class TaskViewModel extends _$TaskViewModel {
     final c = determineColor(dueDate);
 
     List<String> dateStrings = [
-      formatDateTime(dueDate.start, showToday: _filterType == FilterType.all),
+      d.formatDateTime(dueDate.start, showToday: _filterType == FilterType.all),
       if (dueDateEnd != null)
-        formatDateTime(dueDateEnd, showToday: _filterType == FilterType.all),
+        d.formatDateTime(dueDateEnd, showToday: _filterType == FilterType.all),
     ].whereType<String>().toList();
 
     return (

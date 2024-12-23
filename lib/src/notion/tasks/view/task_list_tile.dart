@@ -17,10 +17,11 @@ class TaskListTile extends HookWidget {
   final Task task;
   final ValueNotifier<bool> loading;
   final TaskViewModel taskViewModel;
+  static final DateHelper d = DateHelper();
 
   @override
   Widget build(BuildContext context) {
-    final d = taskViewModel.getDisplayDate(task, context);
+    final date = taskViewModel.getDisplayDate(task, context);
 
     final checked = useState(task.isCompleted);
 
@@ -38,12 +39,12 @@ class TaskListTile extends HookWidget {
                   : DateTime.parse(task.dueDate!.start).toLocal(),
               initialTitle: task.title,
               onSubmitted: (title, dueDate) {
-                final d = dueDate == null
+                final due = dueDate == null
                     ? null
-                    : TaskDate(start: dateString(dueDate));
+                    : TaskDate(start: d.dateString(dueDate));
                 taskViewModel.updateTask(task.copyWith(
                   title: title,
-                  dueDate: d,
+                  dueDate: due,
                 ));
               },
               onDeleted: () {
@@ -78,7 +79,7 @@ class TaskListTile extends HookWidget {
             decoration: checked.value ? TextDecoration.lineThrough : null,
             decorationColor: Theme.of(context).colorScheme.outline,
           )),
-      subtitle: d != null && d.dateStrings.isNotEmpty
+      subtitle: date != null && date.dateStrings.isNotEmpty
           ? Padding(
               padding: const EdgeInsets.only(top: 2),
               child: Row(
@@ -87,23 +88,25 @@ class TaskListTile extends HookWidget {
                   // TODO: project表示
                   Row(
                     children: [
-                      Icon(d.icon, size: d.size, color: d.color),
+                      Icon(date.icon, size: date.size, color: date.color),
                       const SizedBox(width: 4),
-                      d.dateStrings.length == 1
-                          ? Text(d.dateStrings[0],
-                              style:
-                                  TextStyle(fontSize: d.size, color: d.color))
+                      date.dateStrings.length == 1
+                          ? Text(date.dateStrings[0],
+                              style: TextStyle(
+                                  fontSize: date.size, color: date.color))
                           : Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Text(d.dateStrings[0],
+                                Text(date.dateStrings[0],
                                     style: TextStyle(
-                                        fontSize: d.size, color: d.color)),
+                                        fontSize: date.size,
+                                        color: date.color)),
                                 Icon(Icons.arrow_right_alt_rounded,
-                                    size: d.size, color: d.color),
-                                Text(d.dateStrings[1],
+                                    size: date.size, color: date.color),
+                                Text(date.dateStrings[1],
                                     style: TextStyle(
-                                        fontSize: d.size, color: d.color)),
+                                        fontSize: date.size,
+                                        color: date.color)),
                               ],
                             ),
                     ],

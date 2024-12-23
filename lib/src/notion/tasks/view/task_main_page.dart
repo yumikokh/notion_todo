@@ -20,6 +20,8 @@ class TaskMainPage extends HookConsumerWidget {
 
   static const routeName = '/';
 
+  static final DateHelper d = DateHelper();
+
   @override
   Widget build(BuildContext context, ref) {
     final currentIndex = useState(0);
@@ -89,7 +91,7 @@ class TaskMainPage extends HookConsumerWidget {
                       list: tasks,
                       taskViewModel: taskViewModel,
                       showCompletedTasks: showCompletedTasks.value,
-                      title: formatDate(DateTime.now(), format: 'EE, MMM d'),
+                      title: d.formatDate(DateTime.now(), format: 'EE, MMM d'),
                     ),
                     loading: () =>
                         const Center(child: CircularProgressIndicator()),
