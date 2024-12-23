@@ -25,6 +25,11 @@ class TaskDateSheet extends HookWidget {
       selectedDate != null ? d.formatDate(selectedDate!) : null,
     );
 
+    final l = Localizations.localeOf(context);
+    final localeCode = "${l.languageCode}_${l.countryCode}";
+
+    print(localeCode);
+
     return Padding(
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -56,6 +61,7 @@ class TaskDateSheet extends HookWidget {
                       .toList(),
                 ),
                 TableCalendar(
+                  locale: localeCode,
                   firstDay: selectedDate == null
                       ? now
                       : selectedDate!.isBefore(now)

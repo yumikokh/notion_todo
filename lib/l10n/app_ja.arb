@@ -50,5 +50,14 @@
   "language_settings_description": "アプリの言語を設定してください",
   "language_settings_language": "言語",
   "language_settings_language_ja": "日本語",
-  "language_settings_language_en": "英語"
+  "language_settings_language_en": "英語",
+  "navigation_index": "インデックス",
+  "navigation_today": "今日",
+  "task_sheet_title_hint": "タスク名を入力",
+  "today": "今日",
+  "tomorrow": "明日",
+  "undetermined": "未定",
+  "select_date": "日付を選択",
+  "no_task": "タスクがありません",
+  "no_task_description": "よい1日をお過ごしください！"
 }

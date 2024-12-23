@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -31,13 +32,15 @@ class TaskListView extends HookWidget {
     final completedTasks = list.where((task) => task.isCompleted).toList();
     final loading = useState(false);
 
+    final l = AppLocalizations.of(context)!;
+
     if (notCompletedTasks.isEmpty && completedTasks.isEmpty) {
-      return const Center(child: Text('タスクがありません'));
+      return Center(child: Text(l.no_task));
     }
     if (notCompletedTasks.isEmpty &&
         completedTasks.isNotEmpty &&
         !showCompletedTasks) {
-      return const Center(child: Text('よい1日をお過ごしください！'));
+      return Center(child: Text(l.no_task_description));
     }
 
     final titleWidget = title;

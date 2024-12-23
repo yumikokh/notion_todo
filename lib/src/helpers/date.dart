@@ -42,6 +42,7 @@ class DateHelper {
     return dateTime.contains('T');
   }
 
+  // MEMO: 英語以外対応するときに修正が必要
   String get todayString {
     return locale == AppLocale.ja ? '今日' : 'Today';
   }
