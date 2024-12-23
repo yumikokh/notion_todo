@@ -14,8 +14,8 @@ class LanguageSettingsView extends ConsumerWidget {
     final l = AppLocalizations.of(context)!;
     final viewModel = ref.read(settingsViewModelProvider.notifier);
     final languages = [
-      (name: l.language_settings_language_ja, locale: const Locale('ja')),
-      (name: l.language_settings_language_en, locale: const Locale('en')),
+      (name: 'English', locale: const Locale('en')),
+      (name: '日本語', locale: const Locale('ja')),
     ];
 
     return Scaffold(

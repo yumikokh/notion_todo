@@ -1,14 +1,18 @@
 import 'package:intl/intl.dart';
 
+import '../common/locale.dart';
+
 class DateHelper {
   static final DateHelper _instance = DateHelper._();
-  late String languageCode;
+  late AppLocale locale;
 
-  DateHelper._() : languageCode = 'en';
+  DateHelper._() : locale = AppLocale.en;
   factory DateHelper() => _instance;
-
-  setup(String ln) {
-    languageCode = ln;
+  setup(String locale) {
+    this.locale = AppLocale.values.firstWhere(
+      (l) => l.name == locale,
+      orElse: () => AppLocale.en,
+    );
   }
 
   bool isThisDay(DateTime? a, DateTime? b) {
@@ -38,6 +42,18 @@ class DateHelper {
     return dateTime.contains('T');
   }
 
+  String get todayString {
+    return locale == AppLocale.ja ? '今日' : 'Today';
+  }
+
+  String get yesterdayString {
+    return locale == AppLocale.ja ? '昨日' : 'Yesterday';
+  }
+
+  String get tomorrowString {
+    return locale == AppLocale.ja ? '明日' : 'Tomorrow';
+  }
+
   String? formatDateTime(String dateTime, {bool showToday = false}) {
     final parsed = DateTime.parse(dateTime).toLocal();
     final date = DateTime(parsed.year, parsed.month, parsed.day);
@@ -51,13 +67,17 @@ class DateHelper {
         if (!showToday) {
           return hasTime(dateTime) ? "HH:mm" : null;
         }
-        return hasTime(dateTime) ? "'Today' HH:mm" : "'Today'";
+        return hasTime(dateTime) ? "$todayString HH:mm" : "'$todayString'";
       }
       if (date == yesterday) {
-        return hasTime(dateTime) ? "'Yesterday' HH:mm" : "'Yesterday'";
+        return hasTime(dateTime)
+            ? "$yesterdayString HH:mm"
+            : "'$yesterdayString'";
       }
       if (date == tomorrow) {
-        return hasTime(dateTime) ? "'Tomorrow' HH:mm" : "'Tomorrow'";
+        return hasTime(dateTime)
+            ? "$tomorrowString HH:mm"
+            : "'$tomorrowString'";
       }
       if (date.year == today.year) {
         if (date.month == today.month) {
@@ -71,11 +91,21 @@ class DateHelper {
     final format = formatText();
 
     return format != null
-        ? DateFormat(format, languageCode).format(parsed.toLocal())
+        ? DateFormat(format, locale.name).format(parsed.toLocal())
         : null;
   }
 
   String formatDate(DateTime date, {String format = 'yyyy-MM-dd'}) {
-    return DateFormat(format, languageCode).format(date);
+    return DateFormat(format, locale.name).format(date);
+  }
+
+  String formatDateForTitle(DateTime date) {
+    final today = DateTime.now();
+    final day = formatDate(today, format: 'EE');
+    final date = formatDate(today, format: 'MMMd');
+    if (locale == AppLocale.ja) {
+      return '$date ($day)';
+    }
+    return '$day, $date';
   }
 }

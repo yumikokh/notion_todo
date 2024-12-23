@@ -91,7 +91,7 @@ class TaskMainPage extends HookConsumerWidget {
                       list: tasks,
                       taskViewModel: taskViewModel,
                       showCompletedTasks: showCompletedTasks.value,
-                      title: d.formatDate(DateTime.now(), format: 'EE, MMM d'),
+                      title: d.formatDateForTitle(DateTime.now()),
                     ),
                     loading: () =>
                         const Center(child: CircularProgressIndicator()),
