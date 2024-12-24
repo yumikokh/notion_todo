@@ -20,13 +20,17 @@ class TaskMainPage extends HookConsumerWidget {
 
   static const routeName = '/';
 
+  static final DateHelper d = DateHelper();
+
   @override
   Widget build(BuildContext context, ref) {
     final currentIndex = useState(0);
     final showCompletedTasks = useState(false);
 
-    final todayProvider = taskViewModelProvider(filterType: FilterType.today);
-    final allProvider = taskViewModelProvider(filterType: FilterType.all);
+    final todayProvider =
+        taskViewModelProvider(filterType: FilterType.today, context: context);
+    final allProvider =
+        taskViewModelProvider(filterType: FilterType.all, context: context);
     final todayTasks = ref.watch(todayProvider);
     final allTasks = ref.watch(allProvider);
     final syncedNotion =
@@ -89,7 +93,7 @@ class TaskMainPage extends HookConsumerWidget {
                       list: tasks,
                       taskViewModel: taskViewModel,
                       showCompletedTasks: showCompletedTasks.value,
-                      title: formatDate(DateTime.now(), format: 'EE, MMM d'),
+                      title: d.formatDateForTitle(DateTime.now()),
                     ),
                     loading: () =>
                         const Center(child: CircularProgressIndicator()),

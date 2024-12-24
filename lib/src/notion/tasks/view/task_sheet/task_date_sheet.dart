@@ -9,6 +9,8 @@ class TaskDateSheet extends HookWidget {
   final DateTime? selectedDate;
   final Function(DateTime?) onSelected;
 
+  static final DateHelper d = DateHelper();
+
   const TaskDateSheet({
     super.key,
     required this.selectedDate,
@@ -20,8 +22,13 @@ class TaskDateSheet extends HookWidget {
     final now = DateTime.now();
     final options = dateStyleConfigs(context);
     final selected = useState<String?>(
-      selectedDate != null ? formatDate(selectedDate!) : null,
+      selectedDate != null ? d.formatDate(selectedDate!) : null,
     );
+
+    final l = Localizations.localeOf(context);
+    final localeCode = "${l.languageCode}_${l.countryCode}";
+
+    print(localeCode);
 
     return Padding(
       padding: EdgeInsets.only(
@@ -45,14 +52,16 @@ class TaskDateSheet extends HookWidget {
                         : null);
                   },
                   segments: options
-                      .map((d) => ButtonSegment(
-                          value: d.date != null ? formatDate(d.date!) : null,
-                          icon: Icon(d.icon, size: 16),
-                          label: Text(d.text,
+                      .map((dt) => ButtonSegment(
+                          value:
+                              dt.date != null ? d.formatDate(dt.date!) : null,
+                          icon: Icon(dt.icon, size: 16),
+                          label: Text(dt.text,
                               style: const TextStyle(fontSize: 14))))
                       .toList(),
                 ),
                 TableCalendar(
+                  locale: localeCode,
                   firstDay: selectedDate == null
                       ? now
                       : selectedDate!.isBefore(now)

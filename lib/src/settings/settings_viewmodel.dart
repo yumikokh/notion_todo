@@ -1,61 +1,62 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'settings_service.dart';
 
-/// A class that many Widgets can interact with to read user settings, update
-/// user settings, or listen to user settings changes.
-///
-/// Controllers glue Data Services to Flutter Widgets. The SettingsController
-/// uses the SettingsService to store and retrieve user settings.
-
 class SettingsViewModel with ChangeNotifier {
-  SettingsViewModel(this._settingsService) {
-    _themeMode = ThemeMode.system;
-    _version = '';
-    loadSettings();
-  }
-
-  // Make SettingsService a private variable so it is not used directly.
   final SettingsService _settingsService;
 
-  // Make ThemeMode a private variable so it is not updated directly without
-  // also persisting the changes with the SettingsService.
-  late ThemeMode _themeMode;
+  SettingsViewModel(this._settingsService) {
+    _themeMode = ThemeMode.system;
+    _language = const Locale('en');
+    _version = '';
 
-  // Allow Widgets to read the user's preferred ThemeMode.
+    _loadSettings();
+  }
+
+  Future<void> _loadSettings() async {
+    _themeMode = await _settingsService.themeMode();
+    _language = await _settingsService.language();
+    _version = (await _settingsService.packageInfo()).version;
+    notifyListeners();
+  }
+
+  /// ThemeMode
+  late ThemeMode _themeMode;
   ThemeMode get themeMode => _themeMode;
 
-  late String _version;
-  String get version => _version;
-
-  /// Load the user's settings from the SettingsService. It may load from a
-  /// local database or the internet. The controller only knows it can load the
-  /// settings from the service.
-  Future<void> loadSettings() async {
-    _themeMode = await _settingsService.themeMode();
-    _version = (await _settingsService.packageInfo()).version;
-    // Important! Inform listeners a change has occurred.
-    notifyListeners();
-  }
-
-  /// Update and persist the ThemeMode based on the user's selection.
   Future<void> updateThemeMode(ThemeMode? newThemeMode) async {
     if (newThemeMode == null) return;
-
-    // Do not perform any work if new and old ThemeMode are identical
     if (newThemeMode == _themeMode) return;
 
-    // Otherwise, store the new ThemeMode in memory
     _themeMode = newThemeMode;
-
-    // Important! Inform listeners a change has occurred.
     notifyListeners();
 
-    // Persist the changes to a local database or the internet using the
-    // SettingService.
     await _settingsService.updateThemeMode(newThemeMode);
   }
+
+  /// Language
+  late Locale _language;
+  Locale get language => _language;
+  String languageName(AppLocalizations l) => switch (_language) {
+        Locale(languageCode: 'en') => l.language_settings_language_en,
+        Locale(languageCode: 'ja') => l.language_settings_language_ja,
+        _ => 'Unknown',
+      };
+
+  Future<void> updateLanguage(Locale language) async {
+    if (language == _language) return;
+
+    _language = language;
+    notifyListeners();
+
+    await _settingsService.updateLanguage(language);
+  }
+
+  /// Version
+  late String _version;
+  String get version => _version;
 }
 
 // MEMO: code-generatorで生成されるProviderはデフォルトで自動破棄が有効なため、appでListenableに適用できない

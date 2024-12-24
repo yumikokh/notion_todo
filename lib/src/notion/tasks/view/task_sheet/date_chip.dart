@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../../helpers/date.dart';
 import '../../const/date.dart';
@@ -8,6 +9,9 @@ class DateChip extends StatelessWidget {
   final void Function(bool) onSelected;
   final void Function() onDeleted;
   final BuildContext context;
+
+  static final DateHelper d = DateHelper();
+
   const DateChip(
       {super.key,
       required this.date,
@@ -18,17 +22,18 @@ class DateChip extends StatelessWidget {
   bool get selected => date != null;
 
   DateChipData? get config {
-    final d = date;
-    if (d == null) return null;
+    final dt = date;
+    if (dt == null) return null;
     final configs = dateStyleConfigs(context);
-    return configs.where((c) => isThisDay(c.date, d)).firstOrNull;
+    return configs.where((c) => d.isThisDay(c.date, dt)).firstOrNull;
   }
 
-  String get label {
-    final d = date;
-    if (d == null) return '日付を選択';
-    final formatted = formatDateTime(d.toLocal().toString(), showToday: true);
-    return formatted ?? '';
+  String? get label {
+    final dt = date;
+    if (dt == null) return null;
+    final formatted =
+        d.formatDateTime(dt.toLocal().toString(), showToday: true);
+    return formatted;
   }
 
   Color? get color {
@@ -45,8 +50,9 @@ class DateChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return InputChip(
-        label: Text(label),
+        label: Text(label ?? l.select_date),
         selected: selected,
         onDeleted: selected ? onDeleted : null,
         onSelected: onSelected,

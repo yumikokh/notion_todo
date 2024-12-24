@@ -18,6 +18,7 @@ class NotionTaskRepository {
   final String accessToken;
   final TaskDatabase database;
   late final Map<String, String> headers;
+  static final DateHelper d = DateHelper();
 
   NotionTaskRepository(this.accessToken, this.database) {
     headers = {
@@ -37,8 +38,8 @@ class NotionTaskRepository {
     final dateProperty = db.date;
     final statusProperty = db.status;
     final now = DateTime.now();
-    final todayStart = startTimeOfDay(now).toUtc().toIso8601String();
-    final todayEnd = endTimeOfDay(now).toUtc().toIso8601String();
+    final todayStart = d.startTimeOfDay(now).toUtc().toIso8601String();
+    final todayEnd = d.endTimeOfDay(now).toUtc().toIso8601String();
     final filter = {
       "or": [
         // 今日のタスク
