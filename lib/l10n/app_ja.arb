@@ -59,5 +59,18 @@
   "undetermined": "未定",
   "select_date": "日付を選択",
   "no_task": "タスクがありません",
-  "no_task_description": "よい1日をお過ごしください！"
+  "no_task_description": "よい1日をお過ごしください！",
+  "add_task_success": "「{title}」を追加しました",
+  "task_add_failed": "「{title}」の追加に失敗しました",
+  "task_update_success": "「{title}」を変更しました",
+  "task_update_failed": "「{title}」の変更に失敗しました",
+  "task_update_status_success": "「{title}」を完了しました 🎉",
+  "task_update_status_undo": "「{title}」を未完了に戻しました",
+  "task_update_status_failed": "ステータスの更新に失敗しました",
+  "task_delete_success": "「{title}」を削除しました",
+  "task_delete_undo": "「{title}」を復元しました",
+  "task_delete_failed": "「{title}」の削除に失敗しました",
+  "task_delete_failed_undo": "復元に失敗しました",
+  "re_set_database": "再設定が必要です。",
+  "not_found_property": "適切なプロパティが見つかりませんでした。"
 }
