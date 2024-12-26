@@ -1,4 +1,6 @@
+import 'package:background_fetch/background_fetch.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -33,7 +35,15 @@ class TaskViewModel extends _$TaskViewModel {
     }
     _taskService = TaskService(repository, taskDatabase);
     _filterType = filterType;
-    return fetchTasks(filterType);
+
+    final tasks = await _fetchTasks(filterType);
+
+    if (filterType == FilterType.today) {
+      _updateBadge(tasks);
+      _initBackgroundFetch();
+    }
+
+    return tasks;
   }
 
   // 操作のキューを管理するための変数
@@ -61,7 +71,7 @@ class TaskViewModel extends _$TaskViewModel {
     await _processQueue();
   }
 
-  Future<List<Task>> fetchTasks(FilterType filterType) async {
+  Future<List<Task>> _fetchTasks(FilterType filterType) async {
     final taskDatabase = ref.read(taskDatabaseViewModelProvider).valueOrNull;
     if (taskDatabase == null) {
       return [];
@@ -327,5 +337,26 @@ class TaskViewModel extends _$TaskViewModel {
       size: size,
       dateStrings: dateStrings,
     );
+  }
+
+  Future<void> _updateBadge(List<Task> tasks) async {
+    final notCompletedCount = tasks.where((task) => !task.isCompleted).length;
+    await FlutterAppBadger.updateBadgeCount(notCompletedCount);
+  }
+
+  Future<void> _initBackgroundFetch() async {
+    BackgroundFetch.configure(
+        BackgroundFetchConfig(
+          minimumFetchInterval: 15, // 15分ごとに更新
+        ), (String taskId) async {
+      print("[BackgroundFetch] Event received $taskId");
+      // バッジ更新
+      final tasks = await _fetchTasks(_filterType);
+      await _updateBadge(tasks);
+      BackgroundFetch.finish(taskId);
+    }, (String taskId) {
+      print("[BackgroundFetch] TASK TIMEOUT taskId: $taskId");
+      BackgroundFetch.finish(taskId);
+    });
   }
 }

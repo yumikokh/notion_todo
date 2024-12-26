@@ -1,7 +1,5 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -40,12 +38,6 @@ class TaskMainPage extends HookConsumerWidget {
           : ref.read(allProvider.notifier);
     }, [currentIndex.value]);
 
-    final notTodaysCompletedCount = useMemoized(
-        () =>
-            todayTasks.valueOrNull?.where((task) => !task.isCompleted).length ??
-            0,
-        [todayTasks.valueOrNull]);
-
     final provider = useMemoized(
         () => currentIndex.value == 0 ? todayProvider : allProvider,
         [currentIndex.value]);
@@ -58,12 +50,6 @@ class TaskMainPage extends HookConsumerWidget {
           (timer) => ref.invalidate(provider));
       return () => timer.cancel();
     }, [currentIndex.value, provider]);
-
-    // バッジの更新
-    useEffect(() {
-      FlutterAppBadger.updateBadgeCount(notTodaysCompletedCount);
-      return null;
-    }, [notTodaysCompletedCount]);
 
     return TaskBasePage(
       taskViewModel: taskViewModel,
