@@ -32,10 +32,10 @@ class LanguageSettingsView extends ConsumerWidget {
                 title: Text(language.name),
                 leading: Radio<Locale>(
                   value: language.locale,
-                  groupValue: viewModel.language,
+                  groupValue: viewModel.locale,
                   onChanged: (Locale? newLocale) {
                     if (newLocale != null) {
-                      viewModel.updateLanguage(newLocale);
+                      viewModel.updateLocale(newLocale);
                     }
                   },
                 ),

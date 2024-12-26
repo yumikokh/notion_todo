@@ -29,7 +29,7 @@ class MyApp extends ConsumerWidget {
     final TextTheme textTheme = createTextTheme(context, "Roboto", "Roboto");
     final MaterialTheme theme = MaterialTheme(textTheme);
 
-    DateHelper().setup(settings.language.languageCode);
+    DateHelper().setup(settings.locale.languageCode);
 
     return AnimatedBuilder(
       animation: settingsViewModel,
@@ -45,7 +45,7 @@ class MyApp extends ConsumerWidget {
           // depending on the user's locale.
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          locale: settings.language,
+          locale: settings.locale,
 
           // Use AppLocalizations to configure the correct application title
           // depending on the user's locale.

@@ -6,7 +6,7 @@ part of 'task_viewmodel.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$taskViewModelHash() => r'49c967801b559cf35e9b5aa4126d5207358e46be';
+String _$taskViewModelHash() => r'5081cd290b6760516b8cf041da4a4a45fe5367da';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -32,11 +32,9 @@ class _SystemHash {
 abstract class _$TaskViewModel
     extends BuildlessAutoDisposeAsyncNotifier<List<Task>> {
   late final FilterType filterType;
-  late final BuildContext context;
 
   FutureOr<List<Task>> build({
     FilterType filterType = FilterType.all,
-    required BuildContext context,
   });
 }
 
@@ -52,11 +50,9 @@ class TaskViewModelFamily extends Family<AsyncValue<List<Task>>> {
   /// See also [TaskViewModel].
   TaskViewModelProvider call({
     FilterType filterType = FilterType.all,
-    required BuildContext context,
   }) {
     return TaskViewModelProvider(
       filterType: filterType,
-      context: context,
     );
   }
 
@@ -66,7 +62,6 @@ class TaskViewModelFamily extends Family<AsyncValue<List<Task>>> {
   ) {
     return call(
       filterType: provider.filterType,
-      context: provider.context,
     );
   }
 
@@ -91,11 +86,8 @@ class TaskViewModelProvider
   /// See also [TaskViewModel].
   TaskViewModelProvider({
     FilterType filterType = FilterType.all,
-    required BuildContext context,
   }) : this._internal(
-          () => TaskViewModel()
-            ..filterType = filterType
-            ..context = context,
+          () => TaskViewModel()..filterType = filterType,
           from: taskViewModelProvider,
           name: r'taskViewModelProvider',
           debugGetCreateSourceHash:
@@ -106,7 +98,6 @@ class TaskViewModelProvider
           allTransitiveDependencies:
               TaskViewModelFamily._allTransitiveDependencies,
           filterType: filterType,
-          context: context,
         );
 
   TaskViewModelProvider._internal(
@@ -117,11 +108,9 @@ class TaskViewModelProvider
     required super.debugGetCreateSourceHash,
     required super.from,
     required this.filterType,
-    required this.context,
   }) : super.internal();
 
   final FilterType filterType;
-  final BuildContext context;
 
   @override
   FutureOr<List<Task>> runNotifierBuild(
@@ -129,7 +118,6 @@ class TaskViewModelProvider
   ) {
     return notifier.build(
       filterType: filterType,
-      context: context,
     );
   }
 
@@ -138,16 +126,13 @@ class TaskViewModelProvider
     return ProviderOverride(
       origin: this,
       override: TaskViewModelProvider._internal(
-        () => create()
-          ..filterType = filterType
-          ..context = context,
+        () => create()..filterType = filterType,
         from: from,
         name: null,
         dependencies: null,
         allTransitiveDependencies: null,
         debugGetCreateSourceHash: null,
         filterType: filterType,
-        context: context,
       ),
     );
   }
@@ -160,16 +145,13 @@ class TaskViewModelProvider
 
   @override
   bool operator ==(Object other) {
-    return other is TaskViewModelProvider &&
-        other.filterType == filterType &&
-        other.context == context;
+    return other is TaskViewModelProvider && other.filterType == filterType;
   }
 
   @override
   int get hashCode {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
     hash = _SystemHash.combine(hash, filterType.hashCode);
-    hash = _SystemHash.combine(hash, context.hashCode);
 
     return _SystemHash.finish(hash);
   }
@@ -180,9 +162,6 @@ class TaskViewModelProvider
 mixin TaskViewModelRef on AutoDisposeAsyncNotifierProviderRef<List<Task>> {
   /// The parameter `filterType` of this provider.
   FilterType get filterType;
-
-  /// The parameter `context` of this provider.
-  BuildContext get context;
 }
 
 class _TaskViewModelProviderElement
@@ -192,8 +171,6 @@ class _TaskViewModelProviderElement
 
   @override
   FilterType get filterType => (origin as TaskViewModelProvider).filterType;
-  @override
-  BuildContext get context => (origin as TaskViewModelProvider).context;
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

@@ -1,7 +1,5 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -27,10 +25,8 @@ class TaskMainPage extends HookConsumerWidget {
     final currentIndex = useState(0);
     final showCompletedTasks = useState(false);
 
-    final todayProvider =
-        taskViewModelProvider(filterType: FilterType.today, context: context);
-    final allProvider =
-        taskViewModelProvider(filterType: FilterType.all, context: context);
+    final todayProvider = taskViewModelProvider(filterType: FilterType.today);
+    final allProvider = taskViewModelProvider(filterType: FilterType.all);
     final todayTasks = ref.watch(todayProvider);
     final allTasks = ref.watch(allProvider);
     final syncedNotion =
@@ -41,12 +37,6 @@ class TaskMainPage extends HookConsumerWidget {
           ? ref.read(todayProvider.notifier)
           : ref.read(allProvider.notifier);
     }, [currentIndex.value]);
-
-    final notTodaysCompletedCount = useMemoized(
-        () =>
-            todayTasks.valueOrNull?.where((task) => !task.isCompleted).length ??
-            0,
-        [todayTasks.valueOrNull]);
 
     final provider = useMemoized(
         () => currentIndex.value == 0 ? todayProvider : allProvider,
@@ -60,12 +50,6 @@ class TaskMainPage extends HookConsumerWidget {
           (timer) => ref.invalidate(provider));
       return () => timer.cancel();
     }, [currentIndex.value, provider]);
-
-    // バッジの更新
-    useEffect(() {
-      FlutterAppBadger.updateBadgeCount(notTodaysCompletedCount);
-      return null;
-    }, [notTodaysCompletedCount]);
 
     return TaskBasePage(
       taskViewModel: taskViewModel,

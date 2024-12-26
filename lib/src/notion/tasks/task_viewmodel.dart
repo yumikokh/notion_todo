@@ -1,4 +1,6 @@
+import 'package:background_fetch/background_fetch.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -8,6 +10,7 @@ import '../../common/error.dart';
 import '../../common/snackbar/model/snackbar_state.dart';
 import '../../common/snackbar/snackbar.dart';
 import '../../helpers/date.dart';
+import '../../settings/settings_viewmodel.dart';
 import '../../settings/task_database/task_database_viewmodel.dart';
 import '../model/task.dart';
 import '../repository/notion_task_repository.dart';
@@ -19,15 +22,12 @@ part 'task_viewmodel.g.dart';
 class TaskViewModel extends _$TaskViewModel {
   late TaskService _taskService;
   late FilterType _filterType;
-  late BuildContext _context;
   static final DateHelper d = DateHelper();
 
   @override
   Future<List<Task>> build({
     FilterType filterType = FilterType.all,
-    required BuildContext context,
   }) async {
-    _context = context;
     final repository = ref.watch(notionTaskRepositoryProvider);
     final taskDatabase = ref.read(taskDatabaseViewModelProvider).valueOrNull;
     if (repository == null || taskDatabase == null) {
@@ -35,7 +35,15 @@ class TaskViewModel extends _$TaskViewModel {
     }
     _taskService = TaskService(repository, taskDatabase);
     _filterType = filterType;
-    return _fetchTasks(filterType);
+
+    final tasks = await _fetchTasks(filterType);
+
+    if (filterType == FilterType.today) {
+      _updateBadge(tasks);
+      _initBackgroundFetch();
+    }
+
+    return tasks;
   }
 
   // 操作のキューを管理するための変数
@@ -68,7 +76,8 @@ class TaskViewModel extends _$TaskViewModel {
     if (taskDatabase == null) {
       return [];
     }
-    final l = AppLocalizations.of(_context)!;
+    final locale = ref.read(settingsViewModelProvider).locale;
+    final l = await AppLocalizations.delegate.load(locale);
     try {
       final tasks = await _taskService.fetchTasks(filterType);
       state = AsyncValue.data(tasks);
@@ -95,7 +104,8 @@ class TaskViewModel extends _$TaskViewModel {
   }
 
   Future<void> addTask(String title, DateTime? dueDate) async {
-    final l = AppLocalizations.of(_context)!;
+    final locale = ref.read(settingsViewModelProvider).locale;
+    final l = await AppLocalizations.delegate.load(locale);
     await _addOperation(() async {
       final taskDatabase = ref.read(taskDatabaseViewModelProvider).valueOrNull;
       if (taskDatabase == null || title.trim().isEmpty) {
@@ -157,7 +167,8 @@ class TaskViewModel extends _$TaskViewModel {
         return;
       }
       final snackbar = ref.read(snackbarProvider.notifier);
-      final l = AppLocalizations.of(_context)!;
+      final locale = ref.read(settingsViewModelProvider).locale;
+      final l = await AppLocalizations.delegate.load(locale);
 
       state = state.whenData((t) {
         return t.map((t) => t.id == updatedTask.id ? updatedTask : t).toList();
@@ -191,7 +202,8 @@ class TaskViewModel extends _$TaskViewModel {
       }
 
       final snackbar = ref.read(snackbarProvider.notifier);
-      final l = AppLocalizations.of(_context)!;
+      final locale = ref.read(settingsViewModelProvider).locale;
+      final l = await AppLocalizations.delegate.load(locale);
       snackbar.show(
           isCompleted
               ? l.task_update_status_success(task.title)
@@ -219,7 +231,8 @@ class TaskViewModel extends _$TaskViewModel {
 
       final prevState = state;
       final snackbar = ref.read(snackbarProvider.notifier);
-      final l = AppLocalizations.of(_context)!;
+      final locale = ref.read(settingsViewModelProvider).locale;
+      final l = await AppLocalizations.delegate.load(locale);
       // 最新のstateから該当タスクを削除
       state = AsyncValue.data([
         for (final t in state.valueOrNull ?? [])
@@ -247,7 +260,8 @@ class TaskViewModel extends _$TaskViewModel {
         return;
       }
       final snackbar = ref.read(snackbarProvider.notifier);
-      final l = AppLocalizations.of(_context)!;
+      final locale = ref.read(settingsViewModelProvider).locale;
+      final l = await AppLocalizations.delegate.load(locale);
       final prevState = state;
       state = state.whenData((tasks) {
         return [...tasks, prev];
@@ -323,5 +337,26 @@ class TaskViewModel extends _$TaskViewModel {
       size: size,
       dateStrings: dateStrings,
     );
+  }
+
+  Future<void> _updateBadge(List<Task> tasks) async {
+    final notCompletedCount = tasks.where((task) => !task.isCompleted).length;
+    await FlutterAppBadger.updateBadgeCount(notCompletedCount);
+  }
+
+  Future<void> _initBackgroundFetch() async {
+    BackgroundFetch.configure(
+        BackgroundFetchConfig(
+          minimumFetchInterval: 15, // 15分ごとに更新
+        ), (String taskId) async {
+      print("[BackgroundFetch] Event received $taskId");
+      // バッジ更新
+      final tasks = await _fetchTasks(_filterType);
+      await _updateBadge(tasks);
+      BackgroundFetch.finish(taskId);
+    }, (String taskId) {
+      print("[BackgroundFetch] TASK TIMEOUT taskId: $taskId");
+      BackgroundFetch.finish(taskId);
+    });
   }
 }

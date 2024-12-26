@@ -9,7 +9,7 @@ class SettingsViewModel with ChangeNotifier {
 
   SettingsViewModel(this._settingsService) {
     _themeMode = ThemeMode.system;
-    _language = const Locale('en');
+    _locale = const Locale('en');
     _version = '';
 
     _loadSettings();
@@ -17,7 +17,7 @@ class SettingsViewModel with ChangeNotifier {
 
   Future<void> _loadSettings() async {
     _themeMode = await _settingsService.themeMode();
-    _language = await _settingsService.language();
+    _locale = await _settingsService.locale();
     _version = (await _settingsService.packageInfo()).version;
     notifyListeners();
   }
@@ -37,21 +37,21 @@ class SettingsViewModel with ChangeNotifier {
   }
 
   /// Language
-  late Locale _language;
-  Locale get language => _language;
-  String languageName(AppLocalizations l) => switch (_language) {
+  late Locale _locale;
+  Locale get locale => _locale;
+  String languageName(AppLocalizations l) => switch (_locale) {
         Locale(languageCode: 'en') => l.language_settings_language_en,
         Locale(languageCode: 'ja') => l.language_settings_language_ja,
         _ => 'Unknown',
       };
 
-  Future<void> updateLanguage(Locale language) async {
-    if (language == _language) return;
+  Future<void> updateLocale(Locale locale) async {
+    if (locale == _locale) return;
 
-    _language = language;
+    _locale = locale;
     notifyListeners();
 
-    await _settingsService.updateLanguage(language);
+    await _settingsService.updateLocale(locale);
   }
 
   /// Version
