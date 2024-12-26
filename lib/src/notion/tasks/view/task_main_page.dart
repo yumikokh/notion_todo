@@ -27,10 +27,8 @@ class TaskMainPage extends HookConsumerWidget {
     final currentIndex = useState(0);
     final showCompletedTasks = useState(false);
 
-    final todayProvider =
-        taskViewModelProvider(filterType: FilterType.today, context: context);
-    final allProvider =
-        taskViewModelProvider(filterType: FilterType.all, context: context);
+    final todayProvider = taskViewModelProvider(filterType: FilterType.today);
+    final allProvider = taskViewModelProvider(filterType: FilterType.all);
     final todayTasks = ref.watch(todayProvider);
     final allTasks = ref.watch(allProvider);
     final syncedNotion =

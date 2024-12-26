@@ -19,7 +19,7 @@ class SettingsService {
     await prefs.setInt(_themeModeKey, theme.index);
   }
 
-  Future<Locale> language() async {
+  Future<Locale> locale() async {
     final prefs = await SharedPreferences.getInstance();
     final systemLanguageCode =
         (await intl_standalone.findSystemLocale()).split('_').first;
@@ -32,9 +32,9 @@ class SettingsService {
     return Locale(languageCode);
   }
 
-  Future<void> updateLanguage(Locale language) async {
+  Future<void> updateLocale(Locale locale) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_languageKey, language.languageCode);
+    await prefs.setString(_languageKey, locale.languageCode);
   }
 
   Future<PackageInfo> packageInfo() async {
