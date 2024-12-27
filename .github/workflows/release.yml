@@ -11,7 +11,7 @@ jobs:
   main:
     permissions:
       contents: write
-    if: github.event.pull_request.merged == true && contains(github.head_ref, 'version') # TODO: あとでreleaseにする
+    if: github.event.pull_request.merged == true && contains(github.head_ref, 'release')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
