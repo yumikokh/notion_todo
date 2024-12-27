@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../settings/view/settings_view.dart';
 import '../../repository/notion_task_repository.dart';
 import '../task_viewmodel.dart';
@@ -26,9 +27,10 @@ class TaskBasePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return Scaffold(
         appBar: AppBar(
-          title: currentIndex == 1 ? const Text('Index') : null,
+          title: currentIndex == 1 ? Text(l.navigation_index) : null,
           actions: [
             IconButton(
               icon: Icon(
@@ -64,16 +66,16 @@ class TaskBasePage extends StatelessWidget {
         bottomNavigationBar: NavigationBar(
           selectedIndex: currentIndex,
           onDestinationSelected: onIndexChanged,
-          destinations: const [
+          destinations: [
             NavigationDestination(
-              icon: Icon(Icons.today_outlined),
-              selectedIcon: Icon(Icons.today_rounded),
-              label: 'Today',
+              icon: const Icon(Icons.today_outlined),
+              selectedIcon: const Icon(Icons.today_rounded),
+              label: l.navigation_today,
             ),
             NavigationDestination(
-              icon: Icon(Icons.inbox_outlined),
-              selectedIcon: Icon(Icons.inbox_rounded),
-              label: 'Index',
+              icon: const Icon(Icons.inbox_outlined),
+              selectedIcon: const Icon(Icons.inbox_rounded),
+              label: l.navigation_index,
             ),
           ],
         ),

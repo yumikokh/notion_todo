@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'date_chip.dart';
 import 'task_date_sheet.dart';
@@ -23,6 +24,7 @@ class TaskSheet extends HookWidget {
     final titleController = useTextEditingController(text: initialTitle);
     final selectedDueDate = useState<DateTime?>(initialDueDate);
     final isValidTitle = useState<bool>(initialTitle?.isNotEmpty ?? false);
+    final l = AppLocalizations.of(context)!;
 
     useEffect(() {
       void listener() {
@@ -47,14 +49,15 @@ class TaskSheet extends HookWidget {
       child: Wrap(children: <Widget>[
         Padding(
           padding: const EdgeInsets.fromLTRB(40, 20, 40, 20),
-          // padding: const EdgeInsets.all(10),
           child: Column(
             children: [
               TextField(
                 controller: titleController,
                 autofocus: true,
                 textInputAction: TextInputAction.done,
-                decoration: const InputDecoration(hintText: 'タスク名を入力'),
+                decoration: InputDecoration(
+                  hintText: l.task_sheet_title_hint,
+                ),
                 onSubmitted: (value) {
                   if (value.trim().isNotEmpty) {
                     Navigator.pop(context);

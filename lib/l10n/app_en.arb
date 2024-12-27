@@ -1,0 +1,146 @@
+{
+  "@@locale": "en",
+  "appTitle": "notion_todo",
+  "settings_view_title": "Settings",
+  "settings_view_app_settings_title": "App Settings",
+  "settings_view_notion_settings_title": "Notion Settings",
+  "settings_view_notion_settings_description": "Database settings are required",
+  "settings_view_theme_settings_title": "Theme Settings",
+  "settings_view_support_title": "Support",
+  "settings_view_support_faq_title": "FAQ",
+  "settings_view_support_feedback_title": "Bug Report・Request・Contact",
+  "settings_view_support_privacy_policy_title": "Privacy Policy",
+  "settings_view_version_title": "Version",
+  "settings_view_version_copy": "Version information copied",
+  "notion_settings_view_title": "Notion Settings",
+  "notion_settings_view_auth_status": "Authentication Status",
+  "notion_settings_view_auth_status_connected": "Connected to Notion",
+  "notion_settings_view_auth_status_disconnected": "Disconnected from Notion",
+  "notion_settings_view_auth_status_disconnect": "Disconnect from Notion",
+  "notion_settings_view_auth_status_connect": "Connect to Notion",
+  "notion_settings_view_database_settings_title": "Database Settings",
+  "notion_settings_view_database_settings_description": "If the name or type of the corresponding property changes, re-setting is required",
+  "notion_settings_view_database_settings_database_name": "Database Name",
+  "notion_settings_view_database_settings_change_database_settings": "Change Database Settings",
+  "task_database_settings_title": "Task Database Settings",
+  "database": "Database",
+  "status_property": "Status Property",
+  "status_property_todo_option": "To-do Option",
+  "status_property_complete_option": "Complete Option",
+  "date_property": "Date Property",
+  "todo_option_description": "Option for not completed",
+  "complete_option_description": "Option for completed",
+  "status_property_description": "Type: Status, Checkbox",
+  "date_property_description": "Type: Date",
+  "save": "Save",
+  "not_found_database": "No accessible database found.",
+  "not_found_database_description": "Please reset the settings.",
+  "notion_reconnect": "Reconnect to Notion",
+  "select": "Select",
+  "create_property": "Create Property",
+  "property_name": "Property Name",
+  "property_name_input": "Enter the property name",
+  "property_name_error": "A property with the same name already exists",
+  "error": "Error",
+  "ok": "OK",
+  "cancel": "Cancel",
+  "confirm": "Confirm",
+  "new_create": "Create",
+  "language_settings_title": "Language Settings",
+  "language_settings_description": "Set the language of the app",
+  "language_settings_language": "Language",
+  "language_settings_language_ja": "Japanese",
+  "language_settings_language_en": "English",
+  "navigation_index": "Index",
+  "navigation_today": "Today",
+  "task_sheet_title_hint": "Enter the task name",
+  "today": "Today",
+  "tomorrow": "Tomorrow",
+  "undetermined": "Not set",
+  "select_date": "Select Date",
+  "no_task": "No task found",
+  "no_task_description": "Have a good day!",
+  "add_task_success": "\"{title}\" Added.",
+  "@add_task_success": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "task_add_failed": "Failed to add \"{title}\"",
+  "@task_add_failed": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "task_update_success": "\"{title}\" Updated.",
+  "@task_update_success": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "task_update_failed": "Failed to update \"{title}\"",
+  "@task_update_failed": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "task_update_status_success": "\"{title}\" Completed 🎉",
+  "@task_update_status_success": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "task_update_status_undo": "\"{title}\" Undone.",
+  "@task_update_status_undo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "task_update_status_failed": "Failed to update status",
+  "task_delete_success": "\"{title}\" Deleted.",
+  "@task_delete_success": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "task_delete_undo": "\"{title}\" Restored.",
+  "@task_delete_undo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "task_delete_failed": "Failed to delete \"{title}\"",
+  "@task_delete_failed": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "task_delete_failed_undo": "Failed to restore \"{title}\"",
+  "@task_delete_failed_undo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "re_set_database": "Re-setting is required.",
+  "not_found_property": "No appropriate property found."
+}

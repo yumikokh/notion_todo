@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../notion/model/property.dart';
 import '../../../notion/oauth/notion_oauth_viewmodel.dart';
 import '../../../notion/repository/notion_database_repository.dart';
@@ -24,10 +25,10 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
         ref.watch(selectedDatabaseViewModelProvider.notifier);
     final notionOAuthViewModel =
         ref.read(notionOAuthViewModelProvider.notifier);
-
+    final l = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Task Database Settings'),
+        title: Text(l.task_database_settings_title),
       ),
       body: accessibleDatabases.when(
         data: (accessibleDatabases) => accessibleDatabases.isNotEmpty
@@ -37,7 +38,7 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // データベース選択セクション
-                    _buildSectionTitle(context, 'データベース'),
+                    _buildSectionTitle(context, l.database),
                     const SizedBox(height: 8),
                     _buildDropdown(
                       value: selectedDatabase?.id,
@@ -56,8 +57,8 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           // ステータスプロパティセクション
-                          _buildSectionTitle(context, 'ステータスプロパティ',
-                              tooltip: '種類: Status, Checkbox'),
+                          _buildSectionTitle(context, l.status_property,
+                              tooltip: l.status_property_description),
                           PropertyCreateButton(
                             type: CreatePropertyType.checkbox,
                             selectedDatabaseViewModel:
@@ -93,8 +94,9 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                       // StatusTaskStatusPropertyの場合のみ表示
                       if (selectedDatabase.status?.type ==
                           PropertyType.status) ...[
-                        _buildSectionTitle(context, 'To-doオプション',
-                            tooltip: '未完了時に指定するオプション'),
+                        _buildSectionTitle(
+                            context, l.status_property_todo_option,
+                            tooltip: l.todo_option_description),
                         const SizedBox(height: 8),
                         _buildDropdown(
                           value: (selectedDatabase.status
@@ -107,8 +109,9 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                           context: context,
                         ),
                         const SizedBox(height: 24),
-                        _buildSectionTitle(context, 'Completeオプション',
-                            tooltip: '完了時に指定するオプション'),
+                        _buildSectionTitle(
+                            context, l.status_property_complete_option,
+                            tooltip: l.complete_option_description),
                         const SizedBox(height: 8),
                         _buildDropdown(
                           value: (selectedDatabase.status
@@ -128,8 +131,8 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           // 日付プロパティセクション
-                          _buildSectionTitle(context, '日付プロパティ',
-                              tooltip: '種類: Date'),
+                          _buildSectionTitle(context, l.date_property,
+                              tooltip: l.date_property_description),
                           PropertyCreateButton(
                             type: CreatePropertyType.date,
                             selectedDatabaseViewModel:
@@ -176,9 +179,9 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                                   (route) => false,
                                 );
                               },
-                        child: const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 16),
-                          child: Text('保存'),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          child: Text(l.save),
                         ),
                       ),
                     ),
@@ -189,15 +192,15 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text('アクセス可能なデータベースが見つかりませんでした。'),
+                    Text(l.not_found_database),
                     const SizedBox(height: 4),
-                    const Text('設定をやり直してください。'),
+                    Text(l.not_found_database_description),
                     const SizedBox(height: 16),
                     FilledButton(
                       onPressed: () {
                         notionOAuthViewModel.authenticate();
                       },
-                      child: const Text('Notionに再接続'),
+                      child: Text(l.notion_reconnect),
                     ),
                   ],
                 ),
@@ -249,6 +252,7 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
     required ValueChanged<String?> onChanged,
     required BuildContext context,
   }) {
+    final l = AppLocalizations.of(context)!;
     return Container(
       decoration: BoxDecoration(
         border: Border.all(color: Theme.of(context).colorScheme.outline),
@@ -256,8 +260,8 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: DropdownButton<String>(
-        hint: const Text('選択してください'),
-        disabledHint: const Text('プロパティを作成してください'),
+        hint: Text(l.select),
+        disabledHint: Text(l.create_property),
         value: value,
         items: items,
         onChanged: onChanged,

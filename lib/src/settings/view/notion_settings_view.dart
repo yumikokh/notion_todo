@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../notion/model/index.dart';
 import '../../notion/oauth/notion_oauth_viewmodel.dart';
@@ -18,10 +19,11 @@ class NotionSettingsView extends ConsumerWidget {
     final taskDatabaseViewModel =
         ref.watch(taskDatabaseViewModelProvider.notifier);
     final taskDatabase = ref.watch(taskDatabaseViewModelProvider).valueOrNull;
+    final l = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Notion Settings'),
+        title: Text(l.notion_settings_view_title),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -33,9 +35,9 @@ class NotionSettingsView extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      '認証状態',
-                      style: TextStyle(
+                    Text(
+                      l.notion_settings_view_auth_status,
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
@@ -47,7 +49,8 @@ class NotionSettingsView extends ConsumerWidget {
                           Icons.check_circle_rounded,
                           color: Theme.of(context).colorScheme.primary,
                         ),
-                        title: const Text('Notionに接続されています'),
+                        title:
+                            Text(l.notion_settings_view_auth_status_connected),
                         dense: true,
                       ),
                       const SizedBox(height: 8),
@@ -57,7 +60,8 @@ class NotionSettingsView extends ConsumerWidget {
                           taskDatabaseViewModel.clear();
                         },
                         icon: const Icon(Icons.link_off),
-                        label: const Text('Notionの接続を解除'),
+                        label:
+                            Text(l.notion_settings_view_auth_status_disconnect),
                       ),
                     ],
                     if (!isAuthenticated) ...[
@@ -66,7 +70,8 @@ class NotionSettingsView extends ConsumerWidget {
                           Icons.warning_rounded,
                           color: Theme.of(context).colorScheme.error,
                         ),
-                        title: const Text('Notionに接続されていません'),
+                        title: Text(
+                            l.notion_settings_view_auth_status_disconnected),
                         dense: true,
                       ),
                       const SizedBox(height: 8),
@@ -75,7 +80,7 @@ class NotionSettingsView extends ConsumerWidget {
                           await notionOAuth.authenticate();
                         },
                         icon: const Icon(Icons.link),
-                        label: const Text('Notionに接続'),
+                        label: Text(l.notion_settings_view_auth_status_connect),
                       )
                     ],
                   ],
@@ -92,16 +97,17 @@ class NotionSettingsView extends ConsumerWidget {
                     children: [
                       Row(
                         children: [
-                          const Text(
-                            'データベース設定',
-                            style: TextStyle(
+                          Text(
+                            l.notion_settings_view_database_settings_title,
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           const SizedBox(width: 4),
                           Tooltip(
-                            message: '該当プロパティの名前や種類などが変わった場合は、再設定が必要です',
+                            message: l
+                                .notion_settings_view_database_settings_description,
                             triggerMode: TooltipTriggerMode.tap,
                             preferBelow: false,
                             showDuration: const Duration(seconds: 3),
@@ -118,26 +124,29 @@ class NotionSettingsView extends ConsumerWidget {
                       ),
                       const SizedBox(height: 8),
                       if (taskDatabase != null) ...[
-                        _buildInfoTile('データベース名', taskDatabase.name),
-                        _buildInfoTile('ステータスプロパティ', taskDatabase.status.name),
+                        _buildInfoTile(
+                            l.notion_settings_view_database_settings_database_name,
+                            taskDatabase.name),
+                        _buildInfoTile(
+                            l.status_property, taskDatabase.status.name),
                         if (taskDatabase.status.type ==
                             PropertyType.status) ...[
                           _buildInfoTile(
-                            'To-doオプション',
+                            l.status_property_todo_option,
                             (taskDatabase.status as StatusTaskStatusProperty)
                                     .todoOption
                                     ?.name ??
                                 'None',
                           ),
                           _buildInfoTile(
-                            'Completeオプション',
+                            l.status_property_complete_option,
                             (taskDatabase.status as StatusTaskStatusProperty)
                                     .completeOption
                                     ?.name ??
                                 'None',
                           ),
                         ],
-                        _buildInfoTile('日付プロパティ', taskDatabase.date.name),
+                        _buildInfoTile(l.date_property, taskDatabase.date.name),
                         const SizedBox(height: 16),
                       ],
                       SizedBox(
@@ -148,7 +157,8 @@ class NotionSettingsView extends ConsumerWidget {
                                 .pushNamed(TaskDatabaseSettingPage.routeName);
                           },
                           icon: const Icon(Icons.settings),
-                          label: const Text('データベース設定を変更'),
+                          label: Text(l
+                              .notion_settings_view_database_settings_change_database_settings),
                         ),
                       ),
                     ],
