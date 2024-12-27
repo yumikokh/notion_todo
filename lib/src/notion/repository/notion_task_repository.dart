@@ -18,7 +18,9 @@ class NotionTaskRepository {
   final String accessToken;
   final TaskDatabase database;
   late final Map<String, String> headers;
+
   static final DateHelper d = DateHelper();
+  static const _pageSize = 3;
 
   NotionTaskRepository(this.accessToken, this.database) {
     headers = {
@@ -28,7 +30,7 @@ class NotionTaskRepository {
     };
   }
 
-  Future fetchPages(FilterType filterType) async {
+  Future fetchPages(FilterType filterType, {String? startCursor}) async {
     final db = database;
     if (db.id.isEmpty) {
       return;
@@ -89,15 +91,19 @@ class NotionTaskRepository {
           {"property": dateProperty.name, "direction": "ascending"},
           {"timestamp": "last_edited_time", "direction": "descending"}
         ],
-        "page_size": 100
-        // TODO: ページネーション
+        "page_size": _pageSize,
+        if (startCursor != null) "start_cursor": startCursor
       }),
     );
     final data = jsonDecode(res.body);
     if (data['object'] == 'error') {
       throw TaskException(data['message'], data['status']);
     }
-    return data['results'];
+    return {
+      'results': data['results'],
+      'has_more': data['has_more'],
+      'next_cursor': data['next_cursor']
+    };
   }
 
   Future addTask(String title, String? dueDate) async {

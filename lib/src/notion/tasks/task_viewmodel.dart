@@ -22,6 +22,11 @@ part 'task_viewmodel.g.dart';
 class TaskViewModel extends _$TaskViewModel {
   late TaskService _taskService;
   late FilterType _filterType;
+
+  bool _hasMore = false;
+  String? _nextCursor;
+  bool get hasMore => _hasMore;
+
   static final DateHelper d = DateHelper();
 
   @override
@@ -36,14 +41,32 @@ class TaskViewModel extends _$TaskViewModel {
     _taskService = TaskService(repository, taskDatabase);
     _filterType = filterType;
 
-    final tasks = await _fetchTasks(filterType);
+    try {
+      final result = await _fetchTasks(filterType);
 
-    if (filterType == FilterType.today) {
-      _updateBadge(tasks);
-      _initBackgroundFetch();
+      if (filterType == FilterType.today) {
+        _updateBadge(result.tasks);
+        _initBackgroundFetch();
+      }
+
+      return result.tasks;
+    } catch (e) {
+      return state.valueOrNull ?? [];
     }
+  }
 
-    return tasks;
+  Future<void> loadMore() async {
+    if (!_hasMore || _nextCursor == null || state.isLoading) return;
+
+    final currentTasks = state.valueOrNull ?? [];
+
+    try {
+      final result = await _fetchTasks(_filterType, startCursor: _nextCursor);
+
+      state = AsyncValue.data([...currentTasks, ...result.tasks]);
+    } catch (e, stack) {
+      state = AsyncValue.error(e, stack);
+    }
   }
 
   // 操作のキューを管理するための変数
@@ -71,16 +94,20 @@ class TaskViewModel extends _$TaskViewModel {
     await _processQueue();
   }
 
-  Future<List<Task>> _fetchTasks(FilterType filterType) async {
+  Future<TaskResult> _fetchTasks(FilterType filterType,
+      {String? startCursor}) async {
     final taskDatabase = ref.read(taskDatabaseViewModelProvider).valueOrNull;
     if (taskDatabase == null) {
-      return [];
+      return TaskResult(tasks: [], hasMore: false, nextCursor: null);
     }
     final locale = ref.read(settingsViewModelProvider).locale;
     final l = await AppLocalizations.delegate.load(locale);
     try {
-      final tasks = await _taskService.fetchTasks(filterType);
-      state = AsyncValue.data(tasks);
+      final tasks =
+          await _taskService.fetchTasks(filterType, startCursor: startCursor);
+      _hasMore = tasks.hasMore;
+      _nextCursor = tasks.nextCursor;
+      state = AsyncValue.data(tasks.tasks);
       return tasks;
     } catch (e) {
       if (e is TaskException && e.statusCode == 404) {
@@ -99,7 +126,7 @@ class TaskViewModel extends _$TaskViewModel {
         snackbar.show("${l.not_found_property} ${l.re_set_database}",
             type: SnackbarType.error);
       }
-      return [];
+      return TaskResult(tasks: [], hasMore: false, nextCursor: null);
     }
   }
 
@@ -352,7 +379,7 @@ class TaskViewModel extends _$TaskViewModel {
       print("[BackgroundFetch] Event received $taskId");
       // バッジ更新
       final tasks = await _fetchTasks(_filterType);
-      await _updateBadge(tasks);
+      await _updateBadge(tasks.tasks);
       BackgroundFetch.finish(taskId);
     }, (String taskId) {
       print("[BackgroundFetch] TASK TIMEOUT taskId: $taskId");

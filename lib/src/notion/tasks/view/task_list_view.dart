@@ -152,6 +152,16 @@ class TaskListView extends HookWidget {
             );
           }).toList(),
         const Divider(height: 0),
+        if (taskViewModel.hasMore)
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Center(
+              child: FilledButton(
+                onPressed: () => taskViewModel.loadMore(),
+                child: const Text('もっと見る'),
+              ),
+            ),
+          ),
       ],
     );
   }
