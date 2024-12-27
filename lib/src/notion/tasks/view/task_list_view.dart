@@ -156,10 +156,16 @@ class TaskListView extends HookWidget {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Center(
-              child: FilledButton(
-                onPressed: () => taskViewModel.loadMore(),
-                child: const Text('もっと見る'),
-              ),
+              child: loading.value
+                  ? const CircularProgressIndicator.adaptive()
+                  : FilledButton.tonal(
+                      onPressed: () async {
+                        loading.value = true;
+                        await taskViewModel.loadMore();
+                        loading.value = false;
+                      },
+                      child: Text(l.load_more),
+                    ),
             ),
           ),
       ],
