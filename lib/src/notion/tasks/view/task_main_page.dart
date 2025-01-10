@@ -51,6 +51,12 @@ class TaskMainPage extends HookConsumerWidget {
               )
             : null,
         [isToday, showCompleted]);
+    final key = useMemoized(
+        () => switch (isToday) {
+              true => const Key('todayTasks'),
+              false => const Key('allTasks'),
+            },
+        [isToday]);
 
     // ポーリングする
     // TODO: 前回の実行時間を記録して、余分にリクエストしないようにする
@@ -62,6 +68,7 @@ class TaskMainPage extends HookConsumerWidget {
     }, [isToday, provider]);
 
     return TaskBasePage(
+      key: key,
       taskViewModel: taskViewModel,
       showCompletedState: showCompletedState,
       syncedNotion: syncedNotion,
@@ -81,7 +88,7 @@ class TaskMainPage extends HookConsumerWidget {
                   color: Theme.of(context).colorScheme.inversePrimary,
                   child: todayTasks.when(
                     data: (tasks) => TaskListView(
-                      key: const Key('todayTasks'),
+                      key: key,
                       list: tasks,
                       taskViewModel: taskViewModel,
                       showCompleted: showCompleted,
@@ -100,11 +107,10 @@ class TaskMainPage extends HookConsumerWidget {
                   color: Theme.of(context).colorScheme.inversePrimary,
                   child: allTasks.when(
                     data: (tasks) => TaskListView(
-                      key: const Key('allTasks'),
+                      key: key,
                       list: tasks,
                       taskViewModel: taskViewModel,
                       showCompleted: false, // NOTE: Indexページでは常に未完了のみ表示対応
-                      title: null,
                     ),
                     loading: () => const Center(),
                     error: (error, stack) =>

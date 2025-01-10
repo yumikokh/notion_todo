@@ -23,7 +23,7 @@ class TaskListView extends HookWidget {
     required this.list,
     required this.taskViewModel,
     required this.showCompleted,
-    required this.title,
+    this.title,
   });
 
   @override
