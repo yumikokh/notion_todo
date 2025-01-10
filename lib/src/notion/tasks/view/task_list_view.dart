@@ -19,12 +19,12 @@ class TaskListView extends HookWidget {
   static final DateHelper d = DateHelper();
 
   const TaskListView({
-    Key? key,
+    required super.key,
     required this.list,
     required this.taskViewModel,
     required this.showCompleted,
     required this.title,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +35,7 @@ class TaskListView extends HookWidget {
     final l = AppLocalizations.of(context)!;
 
     return ListView(
+      key: key,
       children: [
         if (notCompletedTasks.isEmpty && completedTasks.isEmpty)
           SizedBox(

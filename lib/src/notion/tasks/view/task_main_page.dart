@@ -17,7 +17,6 @@ class TaskMainPage extends HookConsumerWidget {
   const TaskMainPage({Key? key}) : super(key: key);
 
   static const routeName = '/';
-
   static final DateHelper d = DateHelper();
 
   @override
@@ -82,6 +81,7 @@ class TaskMainPage extends HookConsumerWidget {
                   color: Theme.of(context).colorScheme.inversePrimary,
                   child: todayTasks.when(
                     data: (tasks) => TaskListView(
+                      key: const Key('todayTasks'),
                       list: tasks,
                       taskViewModel: taskViewModel,
                       showCompleted: showCompleted,
@@ -100,6 +100,7 @@ class TaskMainPage extends HookConsumerWidget {
                   color: Theme.of(context).colorScheme.inversePrimary,
                   child: allTasks.when(
                     data: (tasks) => TaskListView(
+                      key: const Key('allTasks'),
                       list: tasks,
                       taskViewModel: taskViewModel,
                       showCompleted: false, // NOTE: Indexページでは常に未完了のみ表示対応
