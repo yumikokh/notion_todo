@@ -35,7 +35,9 @@ class TaskViewModel extends _$TaskViewModel {
   }) async {
     final repository = ref.watch(notionTaskRepositoryProvider);
     final taskDatabase = ref.watch(taskDatabaseViewModelProvider).valueOrNull;
-    final showCompleted = ref.watch(showCompletedProvider);
+    final showCompleted = filterType == FilterType.today
+        ? ref.watch(showCompletedProvider)
+        : false; // すべて表示するときはshowCompletedは無視する
     if (repository == null || taskDatabase == null) {
       return [];
     }

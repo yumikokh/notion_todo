@@ -32,15 +32,26 @@ class TaskMainPage extends HookConsumerWidget {
     final syncedNotion =
         ref.watch(taskDatabaseViewModelProvider).valueOrNull != null;
 
+    final isToday = currentIndex.value == 0;
     final taskViewModel = useMemoized(() {
-      return currentIndex.value == 0
+      return isToday
           ? ref.read(todayProvider.notifier)
           : ref.read(allProvider.notifier);
-    }, [currentIndex.value]);
-
-    final provider = useMemoized(
-        () => currentIndex.value == 0 ? todayProvider : allProvider,
-        [currentIndex.value]);
+    }, [isToday]);
+    final provider =
+        useMemoized(() => isToday ? todayProvider : allProvider, [isToday]);
+    final showCompletedState = useMemoized(
+        () => isToday
+            ? (
+                showCompleted: showCompleted,
+                setShowCompleted: (value) {
+                  ref
+                      .read(showCompletedProvider.notifier)
+                      .setShowCompleted(value);
+                },
+              )
+            : null,
+        [currentIndex.value, showCompleted]);
 
     // ポーリングする
     // TODO: 前回の実行時間を記録して、余分にリクエストしないようにする
@@ -49,14 +60,11 @@ class TaskMainPage extends HookConsumerWidget {
       final timer = Timer.periodic(const Duration(seconds: updateIntervalSec),
           (timer) => ref.invalidate(provider));
       return () => timer.cancel();
-    }, [currentIndex.value, provider]);
+    }, [isToday, provider]);
 
     return TaskBasePage(
       taskViewModel: taskViewModel,
-      showCompleted: showCompleted,
-      setShowCompleted: (value) {
-        ref.read(showCompletedProvider.notifier).setShowCompleted(value);
-      },
+      showCompletedState: showCompletedState,
       syncedNotion: syncedNotion,
       currentIndex: currentIndex.value,
       onIndexChanged: (index) {
@@ -95,7 +103,7 @@ class TaskMainPage extends HookConsumerWidget {
                     data: (tasks) => TaskListView(
                       list: tasks,
                       taskViewModel: taskViewModel,
-                      showCompleted: showCompleted,
+                      showCompleted: false, // NOTE: Indexページでは常に未完了のみ表示対応
                       title: null,
                     ),
                     loading: () =>

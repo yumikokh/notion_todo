@@ -9,59 +9,62 @@ class TaskBasePage extends StatelessWidget {
   final Widget body;
   final int currentIndex;
   final ValueChanged<int> onIndexChanged;
-  final bool showCompleted;
-  final Function(bool) setShowCompleted;
+  final ({
+    bool showCompleted,
+    void Function(bool) setShowCompleted
+  })? showCompletedState;
   final bool syncedNotion;
   final TaskViewModel taskViewModel;
 
-  const TaskBasePage(
-      {Key? key,
-      required this.body,
-      required this.currentIndex,
-      required this.onIndexChanged,
-      required this.showCompleted,
-      required this.setShowCompleted,
-      required this.syncedNotion,
-      required this.taskViewModel})
-      : super(key: key);
+  const TaskBasePage({
+    Key? key,
+    required this.body,
+    required this.currentIndex,
+    required this.onIndexChanged,
+    this.showCompletedState,
+    required this.syncedNotion,
+    required this.taskViewModel,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
+    final state = showCompletedState;
     return Scaffold(
         appBar: AppBar(
-          title: currentIndex == 1 ? Text(l.navigation_index) : null,
-          actions: [
-            IconButton(
-              icon: Icon(
-                showCompleted
-                    ? Icons.visibility_rounded
-                    : Icons.visibility_off_outlined,
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
-              onPressed: () {
-                setShowCompleted(!showCompleted);
-              },
-            ),
-            Stack(
-              children: [
+            title: currentIndex == 1 ? Text(l.navigation_index) : null,
+            actions: [
+              if (state != null) ...[
                 IconButton(
-                  icon: syncedNotion
-                      ? Icon(Icons.settings_outlined,
-                          color: Theme.of(context).colorScheme.onSurface)
-                      : Badge(
-                          child: Icon(Icons.settings_outlined,
-                              color: Theme.of(context).colorScheme.onSurface),
-                        ),
+                  icon: Icon(
+                    state.showCompleted
+                        ? Icons.visibility_rounded
+                        : Icons.visibility_off_outlined,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
                   onPressed: () {
-                    Navigator.restorablePushNamed(
-                        context, SettingsView.routeName);
+                    state.setShowCompleted(!state.showCompleted);
                   },
-                ),
+                )
               ],
-            ),
-          ],
-        ),
+              Stack(
+                children: [
+                  IconButton(
+                    icon: syncedNotion
+                        ? Icon(Icons.settings_outlined,
+                            color: Theme.of(context).colorScheme.onSurface)
+                        : Badge(
+                            child: Icon(Icons.settings_outlined,
+                                color: Theme.of(context).colorScheme.onSurface),
+                          ),
+                    onPressed: () {
+                      Navigator.restorablePushNamed(
+                          context, SettingsView.routeName);
+                    },
+                  ),
+                ],
+              ),
+            ]),
         body: body,
         bottomNavigationBar: NavigationBar(
           selectedIndex: currentIndex,
