@@ -24,8 +24,10 @@ class TaskViewModel extends _$TaskViewModel {
   late FilterType _filterType;
   late bool _showCompleted;
   bool _hasMore = false;
-  String? _nextCursor;
   bool get hasMore => _hasMore;
+  String? _nextCursor;
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
 
   static final DateHelper d = DateHelper();
 
@@ -37,25 +39,27 @@ class TaskViewModel extends _$TaskViewModel {
     final taskDatabase = ref.watch(taskDatabaseViewModelProvider).valueOrNull;
     final showCompleted = filterType == FilterType.today
         ? ref.watch(showCompletedProvider)
-        : false; // すべて表示するときはshowCompletedは無視する
+        : false;
+
     if (repository == null || taskDatabase == null) {
       return [];
     }
+
+    // 初回読み込み時は同期的に取得
     _taskService = TaskService(repository, taskDatabase);
     _filterType = filterType;
     _showCompleted = showCompleted;
-    try {
-      final result = await _fetchTasks(filterType, showCompleted);
 
-      if (filterType == FilterType.today) {
-        _updateBadge(result.tasks);
-        _initBackgroundFetch();
-      }
+    // 前の値を保持
+    final previousTasks = state.valueOrNull;
 
-      return result.tasks;
-    } catch (e) {
-      return state.valueOrNull ?? [];
+    if (previousTasks == null && filterType == FilterType.today) {
+      _initBackgroundFetch();
     }
+
+    _fetchTasks(filterType, showCompleted);
+
+    return previousTasks ?? [];
   }
 
   Future<void> loadMore() async {
@@ -105,11 +109,16 @@ class TaskViewModel extends _$TaskViewModel {
     }
     final locale = ref.read(settingsViewModelProvider).locale;
     final l = await AppLocalizations.delegate.load(locale);
+    _isLoading = true;
     try {
       final tasks = await _taskService.fetchTasks(filterType, showCompleted,
           startCursor: startCursor);
       _hasMore = tasks.hasMore;
       _nextCursor = tasks.nextCursor;
+      state = AsyncValue.data(tasks.tasks);
+      if (filterType == FilterType.today) {
+        _updateBadge(tasks.tasks);
+      }
       return tasks;
     } catch (e) {
       if (e is TaskException && e.statusCode == 404) {
@@ -129,6 +138,8 @@ class TaskViewModel extends _$TaskViewModel {
             type: SnackbarType.error);
       }
       return TaskResult(tasks: [], hasMore: false, nextCursor: null);
+    } finally {
+      _isLoading = false;
     }
   }
 
@@ -241,6 +252,7 @@ class TaskViewModel extends _$TaskViewModel {
         updateStatus(task, !isCompleted);
       });
 
+      _isLoading = true;
       try {
         final res = await _taskService.updateStatus(task.id, isCompleted);
         state = state.whenData((t) {
@@ -249,6 +261,8 @@ class TaskViewModel extends _$TaskViewModel {
         ref.invalidateSelf();
       } catch (e) {
         snackbar.show(l.task_update_status_failed, type: SnackbarType.error);
+      } finally {
+        _isLoading = false;
       }
     });
   }

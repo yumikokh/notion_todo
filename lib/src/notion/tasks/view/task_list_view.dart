@@ -30,7 +30,7 @@ class TaskListView extends HookWidget {
   Widget build(BuildContext context) {
     final notCompletedTasks = list.where((task) => !task.isCompleted).toList();
     final completedTasks = list.where((task) => task.isCompleted).toList();
-    final loading = useState(false);
+    final loading = taskViewModel.isLoading;
 
     final l = AppLocalizations.of(context)!;
 
@@ -156,18 +156,18 @@ class TaskListView extends HookWidget {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Center(
-              child: loading.value
-                  ? const CircularProgressIndicator.adaptive()
-                  : FilledButton.tonal(
-                      onPressed: () async {
-                        loading.value = true;
-                        await taskViewModel.loadMore();
-                        loading.value = false;
-                      },
-                      child: Text(l.load_more),
-                    ),
+              child: FilledButton.tonal(
+                onPressed: () async {
+                  await taskViewModel.loadMore();
+                },
+                child: Text(l.load_more),
+              ),
             ),
           ),
+        if (loading)
+          const Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Center(child: CircularProgressIndicator.adaptive())),
       ],
     );
   }

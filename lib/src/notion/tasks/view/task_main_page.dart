@@ -87,8 +87,7 @@ class TaskMainPage extends HookConsumerWidget {
                       showCompleted: showCompleted,
                       title: d.formatDateForTitle(DateTime.now()),
                     ),
-                    loading: () =>
-                        const Center(child: CircularProgressIndicator()),
+                    loading: () => const Center(),
                     error: (error, stack) =>
                         Center(child: Text(error.toString())),
                   ),
@@ -106,8 +105,7 @@ class TaskMainPage extends HookConsumerWidget {
                       showCompleted: false, // NOTE: Indexページでは常に未完了のみ表示対応
                       title: null,
                     ),
-                    loading: () =>
-                        const Center(child: CircularProgressIndicator()),
+                    loading: () => const Center(),
                     error: (error, stack) =>
                         Center(child: Text(error.toString())),
                   ),
