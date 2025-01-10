@@ -9,8 +9,8 @@ class TaskBasePage extends StatelessWidget {
   final Widget body;
   final int currentIndex;
   final ValueChanged<int> onIndexChanged;
-  final bool showCompletedTasks;
-  final Function(bool) setShowCompletedTasks;
+  final bool showCompleted;
+  final Function(bool) setShowCompleted;
   final bool syncedNotion;
   final TaskViewModel taskViewModel;
 
@@ -19,8 +19,8 @@ class TaskBasePage extends StatelessWidget {
       required this.body,
       required this.currentIndex,
       required this.onIndexChanged,
-      required this.showCompletedTasks,
-      required this.setShowCompletedTasks,
+      required this.showCompleted,
+      required this.setShowCompleted,
       required this.syncedNotion,
       required this.taskViewModel})
       : super(key: key);
@@ -34,13 +34,13 @@ class TaskBasePage extends StatelessWidget {
           actions: [
             IconButton(
               icon: Icon(
-                showCompletedTasks
+                showCompleted
                     ? Icons.visibility_rounded
                     : Icons.visibility_off_outlined,
                 color: Theme.of(context).colorScheme.onSurface,
               ),
               onPressed: () {
-                setShowCompletedTasks(!showCompletedTasks);
+                setShowCompleted(!showCompleted);
               },
             ),
             Stack(

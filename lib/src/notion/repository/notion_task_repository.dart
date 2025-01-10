@@ -20,7 +20,7 @@ class NotionTaskRepository {
   late final Map<String, String> headers;
 
   static final DateHelper d = DateHelper();
-  static const _pageSize = 3;
+  static const _pageSize = 2;
 
   NotionTaskRepository(this.accessToken, this.database) {
     headers = {
@@ -30,7 +30,8 @@ class NotionTaskRepository {
     };
   }
 
-  Future fetchPages(FilterType filterType, {String? startCursor}) async {
+  Future fetchPages(FilterType filterType, bool showCompleted,
+      {String? startCursor}) async {
     final db = database;
     if (db.id.isEmpty) {
       return;
@@ -42,46 +43,49 @@ class NotionTaskRepository {
     final now = DateTime.now();
     final todayStart = d.startTimeOfDay(now).toUtc().toIso8601String();
     final todayEnd = d.endTimeOfDay(now).toUtc().toIso8601String();
-    final filter = {
-      "or": [
-        // 今日のタスク
-        {
-          "and": [
-            {
-              "property": dateProperty.name,
-              "date": {"on_or_after": todayStart}
-            },
-            {
-              "property": dateProperty.name,
-              "date": {"on_or_before": todayEnd}
-            }
-          ]
-        },
-        // 期限切れで未完了のタスク
-        {
-          "and": [
-            {
-              "property": dateProperty.name,
-              "date": {"before": todayStart}
-            },
-            if (statusProperty.type == PropertyType.status)
-              ...getNotCompleteStatusFilter(
-                  statusProperty as StatusTaskStatusProperty)
-            else
+    final Object? filter;
+    if (filterType == FilterType.today) {
+      filter = {
+        "or": [
+          // 今日のタスク
+          {
+            "and": [
               {
-                "property": statusProperty.name,
-                "checkbox": {"equals": false}
-              }
-          ]
-        }
-      ]
-    };
+                "property": dateProperty.name,
+                "date": {"on_or_after": todayStart}
+              },
+              {
+                "property": dateProperty.name,
+                "date": {"on_or_before": todayEnd}
+              },
+              if (!showCompleted) ...getNotCompleteStatusFilter(statusProperty)
+            ]
+          },
+          // 期限切れで未完了のタスク
+          {
+            "and": [
+              {
+                "property": dateProperty.name,
+                "date": {"before": todayStart}
+              },
+              ...getNotCompleteStatusFilter(statusProperty)
+            ]
+          }
+        ]
+      };
+    } else if (filterType == FilterType.all && !showCompleted) {
+      filter = {
+        "and": [...getNotCompleteStatusFilter(statusProperty)]
+      };
+    } else {
+      filter = null;
+    }
 
     final res = await http.post(
       Uri.parse('https://api.notion.com/v1/databases/$databaseId/query'),
       headers: headers,
       body: jsonEncode({
-        if (filterType == FilterType.today) "filter": filter,
+        if (filter != null) "filter": filter,
         "sorts": [
           {
             "property": statusProperty.name,
@@ -91,8 +95,8 @@ class NotionTaskRepository {
           {"property": dateProperty.name, "direction": "ascending"},
           {"timestamp": "last_edited_time", "direction": "descending"}
         ],
-        "page_size": _pageSize,
-        if (startCursor != null) "start_cursor": startCursor
+        if (startCursor != null) "start_cursor": startCursor,
+        "page_size": _pageSize
       }),
     );
     final data = jsonDecode(res.body);
@@ -240,26 +244,36 @@ class NotionTaskRepository {
   }
 }
 
-List<dynamic> getNotCompleteStatusFilter(
-    StatusTaskStatusProperty statusProperty) {
-  final optionIds = statusProperty.status.groups
-          .where((e) => e.name == 'Complete')
+List<dynamic> getNotCompleteStatusFilter(TaskStatusProperty property) {
+  if (property.type == PropertyType.status) {
+    final statusProperty = property as StatusTaskStatusProperty;
+    final optionIds = statusProperty.status.groups
+            .where((e) => e.name == 'Complete')
+            .firstOrNull
+            ?.option_ids ??
+        [];
+    return optionIds.map((id) {
+      final completeOptionName = statusProperty.status.options
+          .where((e) => e.id == id)
           .firstOrNull
-          ?.option_ids ??
-      [];
-  return optionIds.map((id) {
-    final completeOptionName = statusProperty.status.options
-        .where((e) => e.id == id)
-        .firstOrNull
-        ?.name;
-    if (completeOptionName == null) {
-      throw Exception('Complete option name not found');
-    }
-    return {
-      "property": statusProperty.name,
-      "status": {"does_not_equal": completeOptionName}
-    };
-  }).toList();
+          ?.name;
+      if (completeOptionName == null) {
+        throw Exception('Complete option name not found');
+      }
+      return {
+        "property": statusProperty.name,
+        "status": {"does_not_equal": completeOptionName}
+      };
+    }).toList();
+  } else if (property.type == PropertyType.checkbox) {
+    return [
+      {
+        "property": property.name,
+        "checkbox": {"equals": false}
+      }
+    ];
+  }
+  return [];
 }
 
 @riverpod

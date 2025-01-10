@@ -23,12 +23,12 @@ class TaskMainPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, ref) {
     final currentIndex = useState(0);
-    final showCompletedTasks = useState(false);
 
     final todayProvider = taskViewModelProvider(filterType: FilterType.today);
     final allProvider = taskViewModelProvider(filterType: FilterType.all);
     final todayTasks = ref.watch(todayProvider);
     final allTasks = ref.watch(allProvider);
+    final showCompleted = ref.watch(showCompletedProvider);
     final syncedNotion =
         ref.watch(taskDatabaseViewModelProvider).valueOrNull != null;
 
@@ -53,9 +53,9 @@ class TaskMainPage extends HookConsumerWidget {
 
     return TaskBasePage(
       taskViewModel: taskViewModel,
-      showCompletedTasks: showCompletedTasks.value,
-      setShowCompletedTasks: (value) {
-        showCompletedTasks.value = value;
+      showCompleted: showCompleted,
+      setShowCompleted: (value) {
+        ref.read(showCompletedProvider.notifier).setShowCompleted(value);
       },
       syncedNotion: syncedNotion,
       currentIndex: currentIndex.value,
@@ -76,7 +76,7 @@ class TaskMainPage extends HookConsumerWidget {
                     data: (tasks) => TaskListView(
                       list: tasks,
                       taskViewModel: taskViewModel,
-                      showCompletedTasks: showCompletedTasks.value,
+                      showCompleted: showCompleted,
                       title: d.formatDateForTitle(DateTime.now()),
                     ),
                     loading: () =>
@@ -95,7 +95,7 @@ class TaskMainPage extends HookConsumerWidget {
                     data: (tasks) => TaskListView(
                       list: tasks,
                       taskViewModel: taskViewModel,
-                      showCompletedTasks: showCompletedTasks.value,
+                      showCompleted: showCompleted,
                       title: null,
                     ),
                     loading: () =>

@@ -22,7 +22,7 @@ part 'task_viewmodel.g.dart';
 class TaskViewModel extends _$TaskViewModel {
   late TaskService _taskService;
   late FilterType _filterType;
-
+  late bool _showCompleted;
   bool _hasMore = false;
   String? _nextCursor;
   bool get hasMore => _hasMore;
@@ -34,15 +34,16 @@ class TaskViewModel extends _$TaskViewModel {
     FilterType filterType = FilterType.all,
   }) async {
     final repository = ref.watch(notionTaskRepositoryProvider);
-    final taskDatabase = ref.read(taskDatabaseViewModelProvider).valueOrNull;
+    final taskDatabase = ref.watch(taskDatabaseViewModelProvider).valueOrNull;
+    final showCompleted = ref.watch(showCompletedProvider);
     if (repository == null || taskDatabase == null) {
       return [];
     }
     _taskService = TaskService(repository, taskDatabase);
     _filterType = filterType;
-
+    _showCompleted = showCompleted;
     try {
-      final result = await _fetchTasks(filterType);
+      final result = await _fetchTasks(filterType, showCompleted);
 
       if (filterType == FilterType.today) {
         _updateBadge(result.tasks);
@@ -61,8 +62,8 @@ class TaskViewModel extends _$TaskViewModel {
     final currentTasks = state.valueOrNull ?? [];
 
     try {
-      final result = await _fetchTasks(_filterType, startCursor: _nextCursor);
-
+      final result = await _fetchTasks(_filterType, _showCompleted,
+          startCursor: _nextCursor);
       state = AsyncValue.data([...currentTasks, ...result.tasks]);
     } catch (e, stack) {
       state = AsyncValue.error(e, stack);
@@ -94,7 +95,7 @@ class TaskViewModel extends _$TaskViewModel {
     await _processQueue();
   }
 
-  Future<TaskResult> _fetchTasks(FilterType filterType,
+  Future<TaskResult> _fetchTasks(FilterType filterType, bool showCompleted,
       {String? startCursor}) async {
     final taskDatabase = ref.read(taskDatabaseViewModelProvider).valueOrNull;
     if (taskDatabase == null) {
@@ -103,8 +104,8 @@ class TaskViewModel extends _$TaskViewModel {
     final locale = ref.read(settingsViewModelProvider).locale;
     final l = await AppLocalizations.delegate.load(locale);
     try {
-      final tasks =
-          await _taskService.fetchTasks(filterType, startCursor: startCursor);
+      final tasks = await _taskService.fetchTasks(filterType, showCompleted,
+          startCursor: startCursor);
       _hasMore = tasks.hasMore;
       _nextCursor = tasks.nextCursor;
       state = AsyncValue.data(tasks.tasks);
@@ -378,12 +379,24 @@ class TaskViewModel extends _$TaskViewModel {
         ), (String taskId) async {
       print("[BackgroundFetch] Event received $taskId");
       // バッジ更新
-      final tasks = await _fetchTasks(_filterType);
+      final tasks = await _fetchTasks(_filterType, false);
       await _updateBadge(tasks.tasks);
       BackgroundFetch.finish(taskId);
     }, (String taskId) {
       print("[BackgroundFetch] TASK TIMEOUT taskId: $taskId");
       BackgroundFetch.finish(taskId);
     });
+  }
+}
+
+@riverpod
+class ShowCompleted extends _$ShowCompleted {
+  @override
+  bool build() {
+    return false;
+  }
+
+  void setShowCompleted(bool showCompleted) {
+    state = showCompleted;
   }
 }

@@ -23,11 +23,11 @@ class TaskService {
 
   TaskService(this.notionTaskRepository, this.taskDatabase);
 
-  Future<TaskResult> fetchTasks(FilterType filterType,
+  Future<TaskResult> fetchTasks(FilterType filterType, bool showCompleted,
       {String? startCursor}) async {
     try {
-      final data = await notionTaskRepository.fetchPages(filterType,
-          startCursor: startCursor);
+      final data = await notionTaskRepository
+          .fetchPages(filterType, showCompleted, startCursor: startCursor);
 
       final tasks = (data['results'] as List)
           .map((page) => Task(

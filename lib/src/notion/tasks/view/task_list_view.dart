@@ -13,7 +13,7 @@ import 'task_list_tile.dart';
 class TaskListView extends HookWidget {
   final List<Task> list;
   final TaskViewModel taskViewModel;
-  final bool showCompletedTasks;
+  final bool showCompleted;
   final String? title;
 
   static final DateHelper d = DateHelper();
@@ -22,7 +22,7 @@ class TaskListView extends HookWidget {
     Key? key,
     required this.list,
     required this.taskViewModel,
-    required this.showCompletedTasks,
+    required this.showCompleted,
     required this.title,
   }) : super(key: key);
 
@@ -39,7 +39,7 @@ class TaskListView extends HookWidget {
     }
     if (notCompletedTasks.isEmpty &&
         completedTasks.isNotEmpty &&
-        !showCompletedTasks) {
+        !showCompleted) {
       return Center(child: Text(l.no_task_description));
     }
 
@@ -137,7 +137,7 @@ class TaskListView extends HookWidget {
             ),
           );
         }).toList(),
-        if (showCompletedTasks && completedTasks.isNotEmpty)
+        if (showCompleted && completedTasks.isNotEmpty)
           ...completedTasks.map((task) {
             return Column(
               children: [
@@ -156,10 +156,16 @@ class TaskListView extends HookWidget {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Center(
-              child: FilledButton(
-                onPressed: () => taskViewModel.loadMore(),
-                child: const Text('もっと見る'),
-              ),
+              child: loading.value
+                  ? const CircularProgressIndicator.adaptive()
+                  : FilledButton.tonal(
+                      onPressed: () async {
+                        loading.value = true;
+                        await taskViewModel.loadMore();
+                        loading.value = false;
+                      },
+                      child: Text(l.load_more),
+                    ),
             ),
           ),
       ],
