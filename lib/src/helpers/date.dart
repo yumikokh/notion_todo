@@ -68,16 +68,16 @@ class DateHelper {
         if (!showToday) {
           return hasTime(dateTime) ? "HH:mm" : null;
         }
-        return hasTime(dateTime) ? "$todayString HH:mm" : "'$todayString'";
+        return hasTime(dateTime) ? "'$todayString' HH:mm" : "'$todayString'";
       }
       if (date == yesterday) {
         return hasTime(dateTime)
-            ? "$yesterdayString HH:mm"
+            ? "'$yesterdayString' HH:mm"
             : "'$yesterdayString'";
       }
       if (date == tomorrow) {
         return hasTime(dateTime)
-            ? "$tomorrowString HH:mm"
+            ? "'$tomorrowString' HH:mm"
             : "'$tomorrowString'";
       }
       if (date.year == today.year) {
