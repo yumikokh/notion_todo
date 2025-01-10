@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../../../helpers/date.dart';
 import '../../../settings/view/notion_settings_view.dart';
@@ -66,6 +67,15 @@ class TaskMainPage extends HookConsumerWidget {
           (timer) => ref.invalidate(provider));
       return () => timer.cancel();
     }, [isToday, provider]);
+
+    // スリープを防ぐ
+    useEffect(
+      () {
+        WakelockPlus.enable();
+        return WakelockPlus.disable;
+      },
+      [],
+    );
 
     return TaskBasePage(
       key: key,
