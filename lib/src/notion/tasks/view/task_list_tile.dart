@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:haptic_feedback/haptic_feedback.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../helpers/date.dart';
@@ -32,7 +33,11 @@ class TaskListTile extends HookWidget {
         if (taskUrl == null) return;
         final url = Uri.parse(taskUrl);
         if (await canLaunchUrl(url)) {
-          // TODO: バイブレーション
+          if (await Haptics.canVibrate()) {
+            await Haptics.vibrate(HapticsType.medium);
+            await Future.delayed(
+                const Duration(milliseconds: 100)); // 確実にvibrateするために少し待つ
+          }
           await launchUrl(url, mode: LaunchMode.externalApplication);
         }
       },
