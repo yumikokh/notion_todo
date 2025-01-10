@@ -87,11 +87,6 @@ class NotionTaskRepository {
       body: jsonEncode({
         if (filter != null) "filter": filter,
         "sorts": [
-          {
-            "property": statusProperty.name,
-            "direction":
-                FilterType.today == filterType ? "descending" : "ascending"
-          },
           {"property": dateProperty.name, "direction": "ascending"},
           {"timestamp": "last_edited_time", "direction": "descending"}
         ],
