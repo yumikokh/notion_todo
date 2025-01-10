@@ -51,7 +51,7 @@ class TaskMainPage extends HookConsumerWidget {
                 },
               )
             : null,
-        [currentIndex.value, showCompleted]);
+        [isToday, showCompleted]);
 
     // ポーリングする
     // TODO: 前回の実行時間を記録して、余分にリクエストしないようにする
