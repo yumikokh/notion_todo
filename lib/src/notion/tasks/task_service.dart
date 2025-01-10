@@ -5,28 +5,44 @@ import '../model/task.dart';
 import '../model/task_database.dart';
 import '../repository/notion_task_repository.dart';
 
+class TaskResult {
+  final List<Task> tasks;
+  final bool hasMore;
+  final String? nextCursor;
+
+  TaskResult({
+    required this.tasks,
+    required this.hasMore,
+    this.nextCursor,
+  });
+}
+
 class TaskService {
   final NotionTaskRepository notionTaskRepository;
   final TaskDatabase taskDatabase;
 
   TaskService(this.notionTaskRepository, this.taskDatabase);
 
-  FutureOr<List<Task>> fetchTasks(
-    FilterType filterType,
-  ) async {
+  Future<TaskResult> fetchTasks(FilterType filterType, bool showCompleted,
+      {String? startCursor}) async {
     try {
-      final results = await notionTaskRepository.fetchPages(filterType);
+      final data = await notionTaskRepository
+          .fetchPages(filterType, showCompleted, startCursor: startCursor);
 
-      if (results == null) {
-        return [];
-      }
-      return results
-          .map<Task>((data) => Task(
-              id: data['id'],
-              title: _title(data),
-              isCompleted: _isTaskCompleted(data),
-              dueDate: _date(data)))
+      final tasks = (data['results'] as List)
+          .map((page) => Task(
+                id: page['id'],
+                title: _title(page),
+                isCompleted: _isTaskCompleted(page),
+                dueDate: _date(page),
+              ))
           .toList();
+
+      return TaskResult(
+        tasks: tasks,
+        hasMore: data['has_more'] ?? false,
+        nextCursor: data['next_cursor'],
+      );
     } catch (e) {
       rethrow;
     }

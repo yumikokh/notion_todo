@@ -13,7 +13,7 @@ import 'task_list_tile.dart';
 class TaskListView extends HookWidget {
   final List<Task> list;
   final TaskViewModel taskViewModel;
-  final bool showCompletedTasks;
+  final bool showCompleted;
   final String? title;
 
   static final DateHelper d = DateHelper();
@@ -22,7 +22,7 @@ class TaskListView extends HookWidget {
     Key? key,
     required this.list,
     required this.taskViewModel,
-    required this.showCompletedTasks,
+    required this.showCompleted,
     required this.title,
   }) : super(key: key);
 
@@ -30,7 +30,7 @@ class TaskListView extends HookWidget {
   Widget build(BuildContext context) {
     final notCompletedTasks = list.where((task) => !task.isCompleted).toList();
     final completedTasks = list.where((task) => task.isCompleted).toList();
-    final loading = useState(false);
+    final loading = taskViewModel.isLoading;
 
     final l = AppLocalizations.of(context)!;
 
@@ -39,7 +39,7 @@ class TaskListView extends HookWidget {
     }
     if (notCompletedTasks.isEmpty &&
         completedTasks.isNotEmpty &&
-        !showCompletedTasks) {
+        !showCompleted) {
       return Center(child: Text(l.no_task_description));
     }
 
@@ -137,7 +137,7 @@ class TaskListView extends HookWidget {
             ),
           );
         }).toList(),
-        if (showCompletedTasks && completedTasks.isNotEmpty)
+        if (showCompleted && completedTasks.isNotEmpty)
           ...completedTasks.map((task) {
             return Column(
               children: [
@@ -152,6 +152,22 @@ class TaskListView extends HookWidget {
             );
           }).toList(),
         const Divider(height: 0),
+        if (taskViewModel.hasMore)
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Center(
+              child: FilledButton.tonal(
+                onPressed: () async {
+                  await taskViewModel.loadMore();
+                },
+                child: Text(l.load_more),
+              ),
+            ),
+          ),
+        if (loading)
+          const Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Center(child: CircularProgressIndicator.adaptive())),
       ],
     );
   }

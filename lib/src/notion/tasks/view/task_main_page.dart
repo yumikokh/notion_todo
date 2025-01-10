@@ -23,24 +23,35 @@ class TaskMainPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, ref) {
     final currentIndex = useState(0);
-    final showCompletedTasks = useState(false);
 
     final todayProvider = taskViewModelProvider(filterType: FilterType.today);
     final allProvider = taskViewModelProvider(filterType: FilterType.all);
     final todayTasks = ref.watch(todayProvider);
     final allTasks = ref.watch(allProvider);
+    final showCompleted = ref.watch(showCompletedProvider);
     final syncedNotion =
         ref.watch(taskDatabaseViewModelProvider).valueOrNull != null;
 
+    final isToday = currentIndex.value == 0;
     final taskViewModel = useMemoized(() {
-      return currentIndex.value == 0
+      return isToday
           ? ref.read(todayProvider.notifier)
           : ref.read(allProvider.notifier);
-    }, [currentIndex.value]);
-
-    final provider = useMemoized(
-        () => currentIndex.value == 0 ? todayProvider : allProvider,
-        [currentIndex.value]);
+    }, [isToday]);
+    final provider =
+        useMemoized(() => isToday ? todayProvider : allProvider, [isToday]);
+    final showCompletedState = useMemoized(
+        () => isToday
+            ? (
+                showCompleted: showCompleted,
+                setShowCompleted: (value) {
+                  ref
+                      .read(showCompletedProvider.notifier)
+                      .setShowCompleted(value);
+                },
+              )
+            : null,
+        [currentIndex.value, showCompleted]);
 
     // ポーリングする
     // TODO: 前回の実行時間を記録して、余分にリクエストしないようにする
@@ -49,14 +60,11 @@ class TaskMainPage extends HookConsumerWidget {
       final timer = Timer.periodic(const Duration(seconds: updateIntervalSec),
           (timer) => ref.invalidate(provider));
       return () => timer.cancel();
-    }, [currentIndex.value, provider]);
+    }, [isToday, provider]);
 
     return TaskBasePage(
       taskViewModel: taskViewModel,
-      showCompletedTasks: showCompletedTasks.value,
-      setShowCompletedTasks: (value) {
-        showCompletedTasks.value = value;
-      },
+      showCompletedState: showCompletedState,
       syncedNotion: syncedNotion,
       currentIndex: currentIndex.value,
       onIndexChanged: (index) {
@@ -76,11 +84,10 @@ class TaskMainPage extends HookConsumerWidget {
                     data: (tasks) => TaskListView(
                       list: tasks,
                       taskViewModel: taskViewModel,
-                      showCompletedTasks: showCompletedTasks.value,
+                      showCompleted: showCompleted,
                       title: d.formatDateForTitle(DateTime.now()),
                     ),
-                    loading: () =>
-                        const Center(child: CircularProgressIndicator()),
+                    loading: () => const Center(),
                     error: (error, stack) =>
                         Center(child: Text(error.toString())),
                   ),
@@ -95,11 +102,10 @@ class TaskMainPage extends HookConsumerWidget {
                     data: (tasks) => TaskListView(
                       list: tasks,
                       taskViewModel: taskViewModel,
-                      showCompletedTasks: showCompletedTasks.value,
+                      showCompleted: false, // NOTE: Indexページでは常に未完了のみ表示対応
                       title: null,
                     ),
-                    loading: () =>
-                        const Center(child: CircularProgressIndicator()),
+                    loading: () => const Center(),
                     error: (error, stack) =>
                         Center(child: Text(error.toString())),
                   ),

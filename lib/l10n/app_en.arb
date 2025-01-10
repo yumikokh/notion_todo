@@ -142,5 +142,6 @@
     }
   },
   "re_set_database": "Re-setting is required.",
-  "not_found_property": "No appropriate property found."
+  "not_found_property": "No appropriate property found.",
+  "load_more": "Load More"
 }

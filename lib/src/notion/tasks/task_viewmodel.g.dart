@@ -6,7 +6,7 @@ part of 'task_viewmodel.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$taskViewModelHash() => r'5081cd290b6760516b8cf041da4a4a45fe5367da';
+String _$taskViewModelHash() => r'522384acff5a654a190cad97d9137510f505a865';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -172,5 +172,22 @@ class _TaskViewModelProviderElement
   @override
   FilterType get filterType => (origin as TaskViewModelProvider).filterType;
 }
+
+String _$showCompletedHash() => r'6453a0e7ec2db59d0377f801537404e2841f123b';
+
+/// See also [ShowCompleted].
+@ProviderFor(ShowCompleted)
+final showCompletedProvider =
+    AutoDisposeNotifierProvider<ShowCompleted, bool>.internal(
+  ShowCompleted.new,
+  name: r'showCompletedProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$showCompletedHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$ShowCompleted = AutoDisposeNotifier<bool>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
