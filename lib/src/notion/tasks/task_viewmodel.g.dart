@@ -6,7 +6,7 @@ part of 'task_viewmodel.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$taskViewModelHash() => r'37993bff3e32d80b0df57322b7cd9ec3156cb7a0';
+String _$taskViewModelHash() => r'faa88e97901499be3c08dcb6404dae4ec8978b80';
 
 /// Copied from Dart SDK
 class _SystemHash {

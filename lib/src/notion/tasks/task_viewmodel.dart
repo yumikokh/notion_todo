@@ -110,7 +110,6 @@ class TaskViewModel extends _$TaskViewModel {
           startCursor: startCursor);
       _hasMore = tasks.hasMore;
       _nextCursor = tasks.nextCursor;
-      state = AsyncValue.data(tasks.tasks);
       return tasks;
     } catch (e) {
       if (e is TaskException && e.statusCode == 404) {

@@ -20,7 +20,7 @@ class NotionTaskRepository {
   late final Map<String, String> headers;
 
   static final DateHelper d = DateHelper();
-  static const _pageSize = 2;
+  static const _pageSize = 100; // NOTE: NotionAPIの最大許容サイズ
 
   NotionTaskRepository(this.accessToken, this.database) {
     headers = {
