@@ -166,6 +166,7 @@ class TaskListView extends HookWidget {
             const Padding(
                 padding: EdgeInsets.all(16.0),
                 child: Center(child: CircularProgressIndicator.adaptive())),
+          const SizedBox(height: 100) // ボタンとかぶらないように
         ],
       ],
     );

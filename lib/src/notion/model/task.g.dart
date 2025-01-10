@@ -25,6 +25,7 @@ _$TaskImpl _$$TaskImplFromJson(Map<String, dynamic> json) => _$TaskImpl(
       dueDate: json['dueDate'] == null
           ? null
           : TaskDate.fromJson(json['dueDate'] as Map<String, dynamic>),
+      url: json['url'] as String?,
     );
 
 Map<String, dynamic> _$$TaskImplToJson(_$TaskImpl instance) =>
@@ -33,4 +34,5 @@ Map<String, dynamic> _$$TaskImplToJson(_$TaskImpl instance) =>
       'title': instance.title,
       'isCompleted': instance.isCompleted,
       'dueDate': instance.dueDate,
+      'url': instance.url,
     };

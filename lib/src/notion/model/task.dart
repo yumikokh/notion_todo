@@ -21,12 +21,13 @@ class Task with _$Task {
     required String title,
     required bool isCompleted,
     required TaskDate? dueDate,
+    required String? url,
     // required String createdTime,
     // required String updatedTime,
   }) = _Task;
 
   factory Task.fromJson(Map<String, dynamic> json) => _$TaskFromJson(json);
 
-  factory Task.initial() =>
-      const Task(id: '', title: '', isCompleted: false, dueDate: null);
+  factory Task.initial() => const Task(
+      id: '', title: '', isCompleted: false, dueDate: null, url: null);
 }

@@ -35,6 +35,7 @@ class TaskService {
                 title: _title(page),
                 isCompleted: _isTaskCompleted(page),
                 dueDate: _date(page),
+                url: page['url'],
               ))
           .toList();
 
@@ -58,6 +59,7 @@ class TaskService {
       title: title,
       isCompleted: _isTaskCompleted(data),
       dueDate: _date(data),
+      url: data['url'],
     );
   }
 
@@ -71,6 +73,7 @@ class TaskService {
       title: title,
       isCompleted: _isTaskCompleted(data),
       dueDate: _date(data),
+      url: data['url'],
     );
   }
 
@@ -85,6 +88,7 @@ class TaskService {
       title: _title(data),
       isCompleted: _isTaskCompleted(data),
       dueDate: _date(data),
+      url: data['url'],
     );
   }
 
@@ -98,6 +102,7 @@ class TaskService {
       title: _title(data),
       isCompleted: _isTaskCompleted(data),
       dueDate: _date(data),
+      url: data['url'],
     );
   }
 
@@ -111,6 +116,7 @@ class TaskService {
       title: _title(data),
       isCompleted: _isTaskCompleted(data),
       dueDate: _date(data),
+      url: data['url'],
     );
   }
 
