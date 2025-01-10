@@ -161,18 +161,19 @@ class TaskViewModel extends _$TaskViewModel {
 
       final prevState = state;
       final tempId = DateTime.now().millisecondsSinceEpoch.toString();
-      final newTask = Task(
+      final tempTask = Task(
           id: tempId,
           title: title,
           isCompleted: false,
           dueDate:
-              dueDate != null ? TaskDate(start: d.dateString(dueDate)) : null);
+              dueDate != null ? TaskDate(start: d.dateString(dueDate)) : null,
+          url: null);
 
-      state = AsyncValue.data([...state.valueOrNull ?? [], newTask]);
+      state = AsyncValue.data([...state.valueOrNull ?? [], tempTask]);
 
       try {
         final t = await _taskService.addTask(
-            newTask.title, newTask.dueDate?.start); // TODO: endは未実装
+            tempTask.title, tempTask.dueDate?.start); // TODO: endは未実装
 
         // 最新のstateを使用して更新
         state = AsyncValue.data([

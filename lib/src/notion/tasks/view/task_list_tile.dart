@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:haptic_feedback/haptic_feedback.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../helpers/date.dart';
 import '../../model/task.dart';
@@ -26,6 +28,19 @@ class TaskListTile extends HookWidget {
     final checked = useState(task.isCompleted);
 
     return ListTile(
+      onLongPress: () async {
+        final taskUrl = task.url;
+        if (taskUrl == null) return;
+        final url = Uri.parse(taskUrl);
+        if (await canLaunchUrl(url)) {
+          if (await Haptics.canVibrate()) {
+            await Haptics.vibrate(HapticsType.medium);
+            await Future.delayed(
+                const Duration(milliseconds: 100)); // 確実にvibrateするために少し待つ
+          }
+          await launchUrl(url, mode: LaunchMode.externalApplication);
+        }
+      },
       onTap: () {
         showModalBottomSheet(
           shape: RoundedRectangleBorder(
@@ -82,34 +97,26 @@ class TaskListTile extends HookWidget {
           ? Padding(
               padding: const EdgeInsets.only(top: 2),
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // TODO: project表示
-                  Row(
-                    children: [
-                      Icon(date.icon, size: date.size, color: date.color),
-                      const SizedBox(width: 4),
-                      date.dateStrings.length == 1
-                          ? Text(date.dateStrings[0],
-                              style: TextStyle(
-                                  fontSize: date.size, color: date.color))
-                          : Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(date.dateStrings[0],
-                                    style: TextStyle(
-                                        fontSize: date.size,
-                                        color: date.color)),
-                                Icon(Icons.arrow_right_alt_rounded,
-                                    size: date.size, color: date.color),
-                                Text(date.dateStrings[1],
-                                    style: TextStyle(
-                                        fontSize: date.size,
-                                        color: date.color)),
-                              ],
-                            ),
-                    ],
-                  ),
+                  Icon(date.icon, size: date.size, color: date.color),
+                  const SizedBox(width: 4),
+                  date.dateStrings.length == 1
+                      ? Text(date.dateStrings[0],
+                          style:
+                              TextStyle(fontSize: date.size, color: date.color))
+                      : Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(date.dateStrings[0],
+                                style: TextStyle(
+                                    fontSize: date.size, color: date.color)),
+                            Icon(Icons.arrow_right_alt_rounded,
+                                size: date.size, color: date.color),
+                            Text(date.dateStrings[1],
+                                style: TextStyle(
+                                    fontSize: date.size, color: date.color)),
+                          ],
+                        ),
                 ],
               ),
             )

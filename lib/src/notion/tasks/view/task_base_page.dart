@@ -17,20 +17,21 @@ class TaskBasePage extends StatelessWidget {
   final TaskViewModel taskViewModel;
 
   const TaskBasePage({
-    Key? key,
+    required super.key,
     required this.body,
     required this.currentIndex,
     required this.onIndexChanged,
     this.showCompletedState,
     required this.syncedNotion,
     required this.taskViewModel,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final state = showCompletedState;
     return Scaffold(
+        key: key,
         appBar: AppBar(
             title: currentIndex == 1 ? Text(l.navigation_index) : null,
             actions: [
