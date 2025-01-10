@@ -26,6 +26,85 @@ class TaskListView extends HookWidget {
     this.title,
   });
 
+  Widget _buildDismissibleTask(Task task, bool loading, BuildContext context) {
+    return Dismissible(
+      key: Key(task.id),
+      direction: DismissDirection.horizontal,
+      dismissThresholds: const {
+        DismissDirection.endToStart: 0.5, // delete
+        DismissDirection.startToEnd: 0.2, // edit
+      },
+      resizeDuration: null,
+      onDismissed: (direction) {
+        if (direction == DismissDirection.endToStart) {
+          taskViewModel.deleteTask(task);
+        }
+      },
+      confirmDismiss: (direction) async {
+        if (direction == DismissDirection.startToEnd) {
+          showModalBottomSheet(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            context: context,
+            builder: (context) {
+              return TaskDateSheet(
+                selectedDate: task.dueDate?.start == null
+                    ? null
+                    : DateTime.parse(task.dueDate!.start).toLocal(),
+                onSelected: (DateTime? date) async {
+                  final newTask = task.copyWith(
+                      dueDate: date == null
+                          ? null
+                          : TaskDate(start: d.dateString(date)));
+                  await taskViewModel.updateTask(newTask);
+                },
+              );
+            },
+          );
+          return false;
+        }
+        if (direction == DismissDirection.endToStart) {
+          return true;
+        }
+        return false;
+      },
+      secondaryBackground: Container(
+        color: Theme.of(context).colorScheme.error,
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Icon(
+          Icons.delete,
+          color: Theme.of(context).colorScheme.onError,
+        ),
+      ),
+      background: Container(
+        color: MaterialTheme(Theme.of(context).textTheme)
+            .extendedColors[0]
+            .light
+            .colorContainer,
+        alignment: Alignment.centerLeft,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Icon(
+          Icons.edit_calendar,
+          color: Theme.of(context).colorScheme.onError,
+        ),
+      ),
+      child: Column(
+        children: [
+          const Divider(height: 0),
+          TaskListTile(
+            key: Key(
+                '${task.id}${task.isCompleted ? "completed" : "notCompleted"}'),
+            task: task,
+            loading: loading,
+            taskViewModel: taskViewModel,
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final notCompletedTasks = list.where((task) => !task.isCompleted).toList();
@@ -39,7 +118,8 @@ class TaskListView extends HookWidget {
       children: [
         if (notCompletedTasks.isEmpty && completedTasks.isEmpty)
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.8,
+            height: MediaQuery.of(context).size.height *
+                0.8, // NOTE: pullできるようにサイズ指定
             child: Center(child: Text(l.no_task)),
           )
         else if (notCompletedTasks.isEmpty &&
@@ -62,98 +142,13 @@ class TaskListView extends HookWidget {
                 ),
               ),
             ),
-          ...notCompletedTasks.map((task) {
-            return Dismissible(
-              key: Key(task.id),
-              direction: DismissDirection.horizontal,
-              dismissThresholds: const {
-                DismissDirection.endToStart: 0.5, // delete
-                DismissDirection.startToEnd: 0.2, // edit
-              },
-              resizeDuration: null,
-              onDismissed: (direction) {
-                if (direction == DismissDirection.endToStart) {
-                  taskViewModel.deleteTask(task);
-                }
-              },
-              confirmDismiss: (direction) async {
-                if (direction == DismissDirection.startToEnd) {
-                  // 日時編集の処理を追加
-                  showModalBottomSheet(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    context: context,
-                    builder: (context) {
-                      return TaskDateSheet(
-                        selectedDate: task.dueDate?.start == null
-                            ? null
-                            : DateTime.parse(task.dueDate!.start).toLocal(),
-                        onSelected: (DateTime? date) async {
-                          final newTask = task.copyWith(
-                              dueDate: date == null
-                                  ? null
-                                  : TaskDate(start: d.dateString(date)));
-                          await taskViewModel.updateTask(newTask);
-                        },
-                      );
-                    },
-                  );
-                  return false;
-                }
-                if (direction == DismissDirection.endToStart) {
-                  return true;
-                }
-                return false;
-              },
-              secondaryBackground: Container(
-                color: Theme.of(context).colorScheme.error,
-                alignment: Alignment.centerRight,
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Icon(
-                  Icons.delete,
-                  color: Theme.of(context).colorScheme.onError,
-                ),
-              ),
-              background: Container(
-                color: MaterialTheme(Theme.of(context).textTheme)
-                    .extendedColors[0]
-                    .light
-                    .colorContainer,
-                alignment: Alignment.centerLeft,
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Icon(
-                  Icons.edit_calendar,
-                  color: Theme.of(context).colorScheme.onError,
-                ),
-              ),
-              child: Column(
-                children: [
-                  const Divider(height: 0),
-                  TaskListTile(
-                    key: Key('${task.id}notCompleted'),
-                    task: task,
-                    loading: loading,
-                    taskViewModel: taskViewModel,
-                  ),
-                ],
-              ),
-            );
-          }).toList(),
+          ...notCompletedTasks
+              .map((task) => _buildDismissibleTask(task, loading, context))
+              .toList(),
           if (showCompleted && completedTasks.isNotEmpty)
-            ...completedTasks.map((task) {
-              return Column(
-                children: [
-                  const Divider(height: 0),
-                  TaskListTile(
-                    key: Key('${task.id}completed'),
-                    task: task,
-                    loading: loading,
-                    taskViewModel: taskViewModel,
-                  ),
-                ],
-              );
-            }).toList(),
+            ...completedTasks
+                .map((task) => _buildDismissibleTask(task, loading, context))
+                .toList(),
           const Divider(height: 0),
           if (taskViewModel.hasMore)
             Padding(
