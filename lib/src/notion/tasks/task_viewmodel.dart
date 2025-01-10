@@ -111,6 +111,12 @@ class TaskViewModel extends _$TaskViewModel {
     final l = await AppLocalizations.delegate.load(locale);
     _isLoading = true;
     try {
+      // MEMO: ユースケースを鑑みて読み込みは固定にする
+      // もしpageSize以上のタスクがあったとき、「showCompleted」と「Load more」の不整合がおきるがいったん無視
+      final showCompleted = switch (filterType) {
+        FilterType.today => true,
+        FilterType.all => false,
+      };
       final tasks = await _taskService.fetchTasks(filterType, showCompleted,
           startCursor: startCursor);
       _hasMore = tasks.hasMore;
