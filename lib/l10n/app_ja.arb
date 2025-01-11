@@ -74,6 +74,6 @@
   "re_set_database": "再設定が必要です。",
   "not_found_property": "適切なプロパティが見つかりませんでした。",
   "load_more": "もっと見る",
-  "wakelock_title": "一覧画面を開いているときスリープを防ぐ",
-  "wakelock_description": "スリープを防ぐと、バッテリーの消耗が速くなります。"
+  "wakelock_title": "アプリ起動中のスリープを防ぐ",
+  "wakelock_description": "バッテリーに影響を与える可能性があります。"
 }
