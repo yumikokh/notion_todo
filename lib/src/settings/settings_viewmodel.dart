@@ -11,7 +11,7 @@ class SettingsViewModel with ChangeNotifier {
     _themeMode = ThemeMode.system;
     _locale = const Locale('en');
     _version = '';
-
+    _wakelock = false;
     _loadSettings();
   }
 
@@ -19,6 +19,7 @@ class SettingsViewModel with ChangeNotifier {
     _themeMode = await _settingsService.themeMode();
     _locale = await _settingsService.locale();
     _version = (await _settingsService.packageInfo()).version;
+    _wakelock = await _settingsService.wakelock();
     notifyListeners();
   }
 
@@ -52,6 +53,18 @@ class SettingsViewModel with ChangeNotifier {
     notifyListeners();
 
     await _settingsService.updateLocale(locale);
+  }
+
+  /// Wakelock
+  late bool _wakelock;
+  bool get wakelock => _wakelock;
+  Future<void> updateWakelock(bool wakelock) async {
+    if (wakelock == _wakelock) return;
+
+    _wakelock = wakelock;
+    notifyListeners();
+
+    await _settingsService.updateWakelock(wakelock);
   }
 
   /// Version

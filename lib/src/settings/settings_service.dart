@@ -7,7 +7,9 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 class SettingsService {
   static const _themeModeKey = 'themeMode';
   static const _languageKey = 'language';
+  static const _wakelockKey = 'wakelock';
 
+  /* themeMode */
   Future<ThemeMode> themeMode() async {
     final prefs = await SharedPreferences.getInstance();
     final themeIndex = prefs.getInt(_themeModeKey) ?? ThemeMode.system.index;
@@ -19,6 +21,7 @@ class SettingsService {
     await prefs.setInt(_themeModeKey, theme.index);
   }
 
+  /* language */
   Future<Locale> locale() async {
     final prefs = await SharedPreferences.getInstance();
     final systemLanguageCode =
@@ -37,6 +40,18 @@ class SettingsService {
     await prefs.setString(_languageKey, locale.languageCode);
   }
 
+  /* wakelock */
+  Future<bool> wakelock() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_wakelockKey) ?? false;
+  }
+
+  Future<void> updateWakelock(bool wakelock) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_wakelockKey, wakelock);
+  }
+
+  /* packageInfo */
   Future<PackageInfo> packageInfo() async {
     return await PackageInfo.fromPlatform();
   }

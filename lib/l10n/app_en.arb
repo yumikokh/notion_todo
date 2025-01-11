@@ -143,5 +143,7 @@
   },
   "re_set_database": "Re-setting is required.",
   "not_found_property": "No appropriate property found.",
-  "load_more": "Load More"
+  "load_more": "Load More",
+  "wakelock_title": "Prevent sleep when the list is open",
+  "wakelock_description": "Preventing sleep will speed up battery consumption."
 }
