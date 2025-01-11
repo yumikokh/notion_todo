@@ -1,4 +1,3 @@
-import 'package:background_fetch/background_fetch.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -50,16 +49,11 @@ class TaskViewModel extends _$TaskViewModel {
     _filterType = filterType;
     _showCompleted = showCompleted;
 
+    // stateを更新
+    fetchTasks(filterType, showCompleted);
+
     // 前の値を保持
-    final previousTasks = state.valueOrNull;
-
-    if (previousTasks == null && filterType == FilterType.today) {
-      _initBackgroundFetch();
-    }
-
-    _fetchTasks(filterType, showCompleted);
-
-    return previousTasks ?? [];
+    return state.valueOrNull ?? [];
   }
 
   Future<void> loadMore() async {
@@ -68,7 +62,7 @@ class TaskViewModel extends _$TaskViewModel {
     final currentTasks = state.valueOrNull ?? [];
 
     try {
-      final result = await _fetchTasks(_filterType, _showCompleted,
+      final result = await fetchTasks(_filterType, _showCompleted,
           startCursor: _nextCursor);
       state = AsyncValue.data([...currentTasks, ...result.tasks]);
     } catch (e, stack) {
@@ -101,7 +95,7 @@ class TaskViewModel extends _$TaskViewModel {
     await _processQueue();
   }
 
-  Future<TaskResult> _fetchTasks(FilterType filterType, bool showCompleted,
+  Future<TaskResult> fetchTasks(FilterType filterType, bool showCompleted,
       {String? startCursor}) async {
     final taskDatabase = ref.read(taskDatabaseViewModelProvider).valueOrNull;
     if (taskDatabase == null) {
@@ -122,6 +116,7 @@ class TaskViewModel extends _$TaskViewModel {
       _hasMore = tasks.hasMore;
       _nextCursor = tasks.nextCursor;
       state = AsyncValue.data(tasks.tasks);
+      // バッジ更新
       if (filterType == FilterType.today) {
         _updateBadge(tasks.tasks);
       }
@@ -392,22 +387,6 @@ class TaskViewModel extends _$TaskViewModel {
   Future<void> _updateBadge(List<Task> tasks) async {
     final notCompletedCount = tasks.where((task) => !task.isCompleted).length;
     await FlutterAppBadger.updateBadgeCount(notCompletedCount);
-  }
-
-  Future<void> _initBackgroundFetch() async {
-    BackgroundFetch.configure(
-        BackgroundFetchConfig(
-          minimumFetchInterval: 15, // 15分ごとに更新
-        ), (String taskId) async {
-      print("[BackgroundFetch] Event received $taskId");
-      // バッジ更新
-      final tasks = await _fetchTasks(_filterType, false);
-      await _updateBadge(tasks.tasks);
-      BackgroundFetch.finish(taskId);
-    }, (String taskId) {
-      print("[BackgroundFetch] TASK TIMEOUT taskId: $taskId");
-      BackgroundFetch.finish(taskId);
-    });
   }
 }
 

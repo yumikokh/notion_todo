@@ -71,6 +71,25 @@ class SettingsView extends ConsumerWidget {
                         .pushNamed(LanguageSettingsView.routeName);
                   },
                 ),
+                ListTile(
+                  title: Text(l.wakelock_title),
+                  subtitle: Row(
+                    children: [
+                      const Icon(Icons.warning_rounded, size: 14),
+                      const SizedBox(width: 2),
+                      Flexible(
+                        child: Text(l.wakelock_description,
+                            style: const TextStyle(fontSize: 10)),
+                      ),
+                    ],
+                  ),
+                  trailing: Switch(
+                    value: settingsViewModel.wakelock,
+                    onChanged: (value) {
+                      settingsViewModel.updateWakelock(value);
+                    },
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 16),

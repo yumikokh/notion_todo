@@ -2,8 +2,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../../../helpers/date.dart';
+import '../../../settings/settings_viewmodel.dart';
 import '../../../settings/view/notion_settings_view.dart';
 import '../../repository/notion_task_repository.dart';
 import '../../../settings/task_database/task_database_viewmodel.dart';
@@ -30,6 +32,7 @@ class TaskMainPage extends HookConsumerWidget {
     final showCompleted = ref.watch(showCompletedProvider);
     final syncedNotion =
         ref.watch(taskDatabaseViewModelProvider).valueOrNull != null;
+    final wakelock = ref.watch(settingsViewModelProvider.notifier).wakelock;
 
     final isToday = currentIndex.value == 0;
     final taskViewModel = useMemoized(() {
@@ -66,6 +69,26 @@ class TaskMainPage extends HookConsumerWidget {
           (timer) => ref.invalidate(provider));
       return () => timer.cancel();
     }, [isToday, provider]);
+
+    // スリープを防ぐ
+    useEffect(() {
+      Future<void> initWakelock() async {
+        await WakelockPlus.enabled; // 確実に切り替えるために必要
+        switch (wakelock) {
+          case true:
+            await WakelockPlus.enable();
+            final enabled = await WakelockPlus.enabled;
+            print('Wakelock enabled: $enabled'); // true であることを確認
+          case false:
+            await WakelockPlus.disable();
+            final enabled = await WakelockPlus.enabled;
+            print('Wakelock disabled: $enabled'); // false であることを確認
+        }
+      }
+
+      initWakelock();
+      return WakelockPlus.disable;
+    }, [wakelock]);
 
     return TaskBasePage(
       key: key,
