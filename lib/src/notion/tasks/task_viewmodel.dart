@@ -36,35 +36,28 @@ class TaskViewModel extends _$TaskViewModel {
   }) async {
     final repository = ref.watch(notionTaskRepositoryProvider);
     final taskDatabase = ref.watch(taskDatabaseViewModelProvider).valueOrNull;
-    final showCompleted = filterType == FilterType.today
-        ? ref.watch(showCompletedProvider)
-        : false;
 
     if (repository == null || taskDatabase == null) {
       return [];
     }
 
-    // 初回読み込み時は同期的に取得
     _taskService = TaskService(repository, taskDatabase);
     _filterType = filterType;
-    _showCompleted = showCompleted;
+    // MEMO: ユースケースを鑑みて読み込みは固定にする
+    // もしpageSize以上のタスクがあったとき、「showCompleted」と「Load more」の不整合がおきるがいったん無視
+    _showCompleted = filterType == FilterType.today;
 
-    // stateを更新
-    fetchTasks(filterType, showCompleted);
-
-    // 前の値を保持
-    return state.valueOrNull ?? [];
+    return await _fetchTasks(isFirstFetch: true);
   }
 
   Future<void> loadMore() async {
-    if (!_hasMore || _nextCursor == null || state.isLoading) return;
+    if (!_hasMore || _nextCursor == null || _isLoading) return;
 
     final currentTasks = state.valueOrNull ?? [];
 
     try {
-      final result = await fetchTasks(_filterType, _showCompleted,
-          startCursor: _nextCursor);
-      state = AsyncValue.data([...currentTasks, ...result.tasks]);
+      final tasks = await _fetchTasks();
+      state = AsyncValue.data([...currentTasks, ...tasks]);
     } catch (e, stack) {
       state = AsyncValue.error(e, stack);
     }
@@ -95,32 +88,25 @@ class TaskViewModel extends _$TaskViewModel {
     await _processQueue();
   }
 
-  Future<TaskResult> fetchTasks(FilterType filterType, bool showCompleted,
-      {String? startCursor}) async {
+  Future<List<Task>> _fetchTasks({bool isFirstFetch = false}) async {
     final taskDatabase = ref.read(taskDatabaseViewModelProvider).valueOrNull;
     if (taskDatabase == null) {
-      return TaskResult(tasks: [], hasMore: false, nextCursor: null);
+      return [];
     }
     final locale = ref.read(settingsViewModelProvider).locale;
     final l = await AppLocalizations.delegate.load(locale);
     _isLoading = true;
     try {
-      // MEMO: ユースケースを鑑みて読み込みは固定にする
-      // もしpageSize以上のタスクがあったとき、「showCompleted」と「Load more」の不整合がおきるがいったん無視
-      final showCompleted = switch (filterType) {
-        FilterType.today => true,
-        FilterType.all => false,
-      };
-      final tasks = await _taskService.fetchTasks(filterType, showCompleted,
-          startCursor: startCursor);
-      _hasMore = tasks.hasMore;
-      _nextCursor = tasks.nextCursor;
-      state = AsyncValue.data(tasks.tasks);
+      final cursor = isFirstFetch ? null : _nextCursor;
+      final result = await _taskService.fetchTasks(_filterType, _showCompleted,
+          startCursor: cursor);
+      _hasMore = result.hasMore;
+      _nextCursor = result.nextCursor;
       // バッジ更新
       if (filterType == FilterType.today) {
-        _updateBadge(tasks.tasks);
+        _updateBadge(result.tasks);
       }
-      return tasks;
+      return result.tasks;
     } catch (e) {
       if (e is TaskException && e.statusCode == 404) {
         final snackbar = ref.read(snackbarProvider.notifier);
@@ -138,7 +124,7 @@ class TaskViewModel extends _$TaskViewModel {
         snackbar.show("${l.not_found_property} ${l.re_set_database}",
             type: SnackbarType.error);
       }
-      return TaskResult(tasks: [], hasMore: false, nextCursor: null);
+      return [];
     } finally {
       _isLoading = false;
     }
@@ -387,17 +373,5 @@ class TaskViewModel extends _$TaskViewModel {
   Future<void> _updateBadge(List<Task> tasks) async {
     final notCompletedCount = tasks.where((task) => !task.isCompleted).length;
     await FlutterAppBadger.updateBadgeCount(notCompletedCount);
-  }
-}
-
-@riverpod
-class ShowCompleted extends _$ShowCompleted {
-  @override
-  bool build() {
-    return false;
-  }
-
-  void setShowCompleted(bool showCompleted) {
-    state = showCompleted;
   }
 }

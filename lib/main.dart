@@ -79,9 +79,7 @@ class BackgroundFetchInitializer extends HookConsumerWidget {
           print("[BackgroundFetch] Event received $taskId");
           // fetchとバッジ更新
           await ref
-              .read(
-                  taskViewModelProvider(filterType: FilterType.today).notifier)
-              .fetchTasks(FilterType.today, false);
+              .read(taskViewModelProvider(filterType: FilterType.today).future);
           BackgroundFetch.finish(taskId);
         },
         (String taskId) {
