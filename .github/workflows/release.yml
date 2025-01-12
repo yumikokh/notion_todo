@@ -1,0 +1,22 @@
+name: Auto Release Tag
+run-name: Tag for ${{ github.head_ref }}
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+
+jobs:
+  main:
+    permissions:
+      contents: write
+    if: github.event.pull_request.merged == true && contains(github.head_ref, 'release')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Push tag
+        run: |
+          release_branch=${{ github.head_ref }}
+          version=$(echo $release_branch | awk -F/ '{print $2}')
+          git tag ${version} && git push origin ${version}

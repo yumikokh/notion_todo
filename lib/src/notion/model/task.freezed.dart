@@ -191,6 +191,7 @@ mixin _$Task {
   String get title => throw _privateConstructorUsedError;
   bool get isCompleted => throw _privateConstructorUsedError;
   TaskDate? get dueDate => throw _privateConstructorUsedError;
+  String? get url => throw _privateConstructorUsedError;
 
   /// Serializes this Task to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -206,7 +207,12 @@ abstract class $TaskCopyWith<$Res> {
   factory $TaskCopyWith(Task value, $Res Function(Task) then) =
       _$TaskCopyWithImpl<$Res, Task>;
   @useResult
-  $Res call({String id, String title, bool isCompleted, TaskDate? dueDate});
+  $Res call(
+      {String id,
+      String title,
+      bool isCompleted,
+      TaskDate? dueDate,
+      String? url});
 
   $TaskDateCopyWith<$Res>? get dueDate;
 }
@@ -230,6 +236,7 @@ class _$TaskCopyWithImpl<$Res, $Val extends Task>
     Object? title = null,
     Object? isCompleted = null,
     Object? dueDate = freezed,
+    Object? url = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -248,6 +255,10 @@ class _$TaskCopyWithImpl<$Res, $Val extends Task>
           ? _value.dueDate
           : dueDate // ignore: cast_nullable_to_non_nullable
               as TaskDate?,
+      url: freezed == url
+          ? _value.url
+          : url // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 
@@ -273,7 +284,12 @@ abstract class _$$TaskImplCopyWith<$Res> implements $TaskCopyWith<$Res> {
       __$$TaskImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String id, String title, bool isCompleted, TaskDate? dueDate});
+  $Res call(
+      {String id,
+      String title,
+      bool isCompleted,
+      TaskDate? dueDate,
+      String? url});
 
   @override
   $TaskDateCopyWith<$Res>? get dueDate;
@@ -295,6 +311,7 @@ class __$$TaskImplCopyWithImpl<$Res>
     Object? title = null,
     Object? isCompleted = null,
     Object? dueDate = freezed,
+    Object? url = freezed,
   }) {
     return _then(_$TaskImpl(
       id: null == id
@@ -313,6 +330,10 @@ class __$$TaskImplCopyWithImpl<$Res>
           ? _value.dueDate
           : dueDate // ignore: cast_nullable_to_non_nullable
               as TaskDate?,
+      url: freezed == url
+          ? _value.url
+          : url // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -324,7 +345,8 @@ class _$TaskImpl implements _Task {
       {required this.id,
       required this.title,
       required this.isCompleted,
-      required this.dueDate});
+      required this.dueDate,
+      required this.url});
 
   factory _$TaskImpl.fromJson(Map<String, dynamic> json) =>
       _$$TaskImplFromJson(json);
@@ -337,10 +359,12 @@ class _$TaskImpl implements _Task {
   final bool isCompleted;
   @override
   final TaskDate? dueDate;
+  @override
+  final String? url;
 
   @override
   String toString() {
-    return 'Task(id: $id, title: $title, isCompleted: $isCompleted, dueDate: $dueDate)';
+    return 'Task(id: $id, title: $title, isCompleted: $isCompleted, dueDate: $dueDate, url: $url)';
   }
 
   @override
@@ -352,12 +376,14 @@ class _$TaskImpl implements _Task {
             (identical(other.title, title) || other.title == title) &&
             (identical(other.isCompleted, isCompleted) ||
                 other.isCompleted == isCompleted) &&
-            (identical(other.dueDate, dueDate) || other.dueDate == dueDate));
+            (identical(other.dueDate, dueDate) || other.dueDate == dueDate) &&
+            (identical(other.url, url) || other.url == url));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, title, isCompleted, dueDate);
+  int get hashCode =>
+      Object.hash(runtimeType, id, title, isCompleted, dueDate, url);
 
   /// Create a copy of Task
   /// with the given fields replaced by the non-null parameter values.
@@ -380,7 +406,8 @@ abstract class _Task implements Task {
       {required final String id,
       required final String title,
       required final bool isCompleted,
-      required final TaskDate? dueDate}) = _$TaskImpl;
+      required final TaskDate? dueDate,
+      required final String? url}) = _$TaskImpl;
 
   factory _Task.fromJson(Map<String, dynamic> json) = _$TaskImpl.fromJson;
 
@@ -392,6 +419,8 @@ abstract class _Task implements Task {
   bool get isCompleted;
   @override
   TaskDate? get dueDate;
+  @override
+  String? get url;
 
   /// Create a copy of Task
   /// with the given fields replaced by the non-null parameter values.

@@ -1,83 +1,85 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../settings/view/settings_view.dart';
-import '../../repository/notion_task_repository.dart';
-import '../task_viewmodel.dart';
 import 'task_sheet/task_sheet.dart';
 
 class TaskBasePage extends StatelessWidget {
   final Widget body;
   final int currentIndex;
+  final ValueNotifier<bool>? showCompleted;
+  final bool showSettingBadge;
   final ValueChanged<int> onIndexChanged;
-  final bool showCompletedTasks;
-  final Function(bool) setShowCompletedTasks;
-  final bool syncedNotion;
-  final TaskViewModel taskViewModel;
+  final void Function(String title, DateTime? dueDate) onAddTask;
 
-  const TaskBasePage(
-      {Key? key,
-      required this.body,
-      required this.currentIndex,
-      required this.onIndexChanged,
-      required this.showCompletedTasks,
-      required this.setShowCompletedTasks,
-      required this.syncedNotion,
-      required this.taskViewModel})
-      : super(key: key);
+  const TaskBasePage({
+    required super.key,
+    required this.body,
+    required this.currentIndex,
+    required this.showSettingBadge,
+    required this.onIndexChanged,
+    required this.onAddTask,
+    this.showCompleted,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    final isToday = currentIndex == 0;
+    final showCompleted = this.showCompleted;
+
     return Scaffold(
-        appBar: AppBar(
-          title: currentIndex == 1 ? const Text('Index') : null,
-          actions: [
+        key: key,
+        appBar:
+            AppBar(title: !isToday ? Text(l.navigation_index) : null, actions: [
+          if (showCompleted != null) ...[
             IconButton(
               icon: Icon(
-                showCompletedTasks
+                showCompleted.value
                     ? Icons.visibility_rounded
                     : Icons.visibility_off_outlined,
                 color: Theme.of(context).colorScheme.onSurface,
               ),
               onPressed: () {
-                setShowCompletedTasks(!showCompletedTasks);
+                showCompleted.value = !showCompleted.value;
               },
-            ),
-            Stack(
-              children: [
-                IconButton(
-                  icon: syncedNotion
-                      ? Icon(Icons.settings_outlined,
-                          color: Theme.of(context).colorScheme.onSurface)
-                      : Badge(
-                          child: Icon(Icons.settings_outlined,
-                              color: Theme.of(context).colorScheme.onSurface),
-                        ),
-                  onPressed: () {
-                    Navigator.restorablePushNamed(
-                        context, SettingsView.routeName);
-                  },
-                ),
-              ],
-            ),
+            )
           ],
-        ),
+          Stack(
+            children: [
+              IconButton(
+                icon: showSettingBadge
+                    ? Icon(Icons.settings_outlined,
+                        color: Theme.of(context).colorScheme.onSurface)
+                    : Badge(
+                        child: Icon(Icons.settings_outlined,
+                            color: Theme.of(context).colorScheme.onSurface),
+                      ),
+                onPressed: () {
+                  Navigator.restorablePushNamed(
+                      context, SettingsView.routeName);
+                },
+              ),
+            ],
+          ),
+        ]),
         body: body,
         bottomNavigationBar: NavigationBar(
           selectedIndex: currentIndex,
           onDestinationSelected: onIndexChanged,
-          destinations: const [
+          destinations: [
             NavigationDestination(
-              icon: Icon(Icons.today_outlined),
-              selectedIcon: Icon(Icons.today_rounded),
-              label: 'Today',
+              icon: const Icon(Icons.today_outlined),
+              selectedIcon: const Icon(Icons.today_rounded),
+              label: l.navigation_today,
             ),
             NavigationDestination(
-              icon: Icon(Icons.inbox_outlined),
-              selectedIcon: Icon(Icons.inbox_rounded),
-              label: 'Index',
+              icon: const Icon(Icons.inbox_outlined),
+              selectedIcon: const Icon(Icons.inbox_rounded),
+              label: l.navigation_index,
             ),
           ],
         ),
-        floatingActionButton: !syncedNotion
+        floatingActionButton: !showSettingBadge
             ? null
             : FloatingActionButton(
                 onPressed: () {
@@ -88,13 +90,10 @@ class TaskBasePage extends StatelessWidget {
                     ),
                     context: context,
                     builder: (context) => TaskSheet(
-                      initialDueDate:
-                          taskViewModel.filterType == FilterType.today
-                              ? DateTime.now()
-                              : null,
+                      initialDueDate: isToday ? DateTime.now() : null,
                       initialTitle: null,
                       onSubmitted: (title, dueDate) {
-                        taskViewModel.addTask(title, dueDate);
+                        onAddTask(title, dueDate);
                       },
                     ),
                   );

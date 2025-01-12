@@ -1,11 +1,15 @@
 import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:background_fetch/background_fetch.dart';
 
 import 'src/app.dart';
 import 'src/env/env.dart';
+import 'src/notion/repository/notion_task_repository.dart';
+import 'src/notion/tasks/task_viewmodel.dart';
 
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -26,7 +30,9 @@ void main() async {
     appRunner: () => runApp(
       ProviderScope(
         observers: [SentryProviderObserver()],
-        child: const MyApp(),
+        child: const BackgroundFetchInitializer(
+          child: MyApp(),
+        ),
       ),
     ),
   );
@@ -57,5 +63,33 @@ Future<void> initATT() async {
       TrackingStatus.notDetermined) {
     await Future.delayed(const Duration(milliseconds: 200));
     await AppTrackingTransparency.requestTrackingAuthorization();
+  }
+}
+
+class BackgroundFetchInitializer extends HookConsumerWidget {
+  final Widget child;
+  const BackgroundFetchInitializer({super.key, required this.child});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    useEffect(() {
+      BackgroundFetch.configure(
+        BackgroundFetchConfig(minimumFetchInterval: 15),
+        (String taskId) async {
+          print("[BackgroundFetch] Event received $taskId");
+          // fetchとバッジ更新
+          await ref
+              .read(taskViewModelProvider(filterType: FilterType.today).future);
+          BackgroundFetch.finish(taskId);
+        },
+        (String taskId) {
+          print("[BackgroundFetch] TASK TIMEOUT taskId: $taskId");
+          BackgroundFetch.finish(taskId);
+        },
+      );
+      return null;
+    }, []);
+
+    return child;
   }
 }

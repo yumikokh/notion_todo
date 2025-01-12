@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'common/snackbar/view/snackbar_listener.dart';
+import 'helpers/date.dart';
 import 'settings/task_database/view/task_database_setting_page.dart';
 import 'notion/tasks/view/task_main_page.dart';
+import 'settings/view/language_settings_view.dart';
 import 'settings/view/notion_settings_view.dart';
 import 'settings/settings_viewmodel.dart';
 import 'settings/view/settings_view.dart';
@@ -28,6 +29,8 @@ class MyApp extends ConsumerWidget {
     final TextTheme textTheme = createTextTheme(context, "Roboto", "Roboto");
     final MaterialTheme theme = MaterialTheme(textTheme);
 
+    DateHelper().setup(settings.locale.languageCode);
+
     return AnimatedBuilder(
       animation: settingsViewModel,
       builder: (BuildContext context, Widget? child) => SnackbarListener(
@@ -40,15 +43,9 @@ class MyApp extends ConsumerWidget {
           // Provide the generated AppLocalizations to the MaterialApp. This
           // allows descendant Widgets to display the correct translations
           // depending on the user's locale.
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: const [
-            Locale('ja', ''), // English, no country code // TODO: 多言語対応
-          ],
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: settings.locale,
 
           // Use AppLocalizations to configure the correct application title
           // depending on the user's locale.
@@ -75,6 +72,8 @@ class MyApp extends ConsumerWidget {
                     return const NotionSettingsView();
                   case ThemeSettingsView.routeName:
                     return ThemeSettingsView(settingsViewModel);
+                  case LanguageSettingsView.routeName:
+                    return const LanguageSettingsView();
                   case TaskDatabaseSettingPage.routeName:
                     return const TaskDatabaseSettingPage();
                   case TaskMainPage.routeName:
