@@ -75,5 +75,8 @@
   "not_found_property": "適切なプロパティが見つかりませんでした。",
   "load_more": "もっと見る",
   "wakelock_title": "アプリ起動中のスリープを防ぐ",
-  "wakelock_description": "バッテリーに影響を与える可能性があります。"
+  "wakelock_description": "バッテリーに影響を与える可能性があります。",
+  "notion_settings_view_not_found_database_description": "タスク用のデータベースがまだないときは？",
+  "notion_settings_view_not_found_database_template": "テンプレート",
+  "notion_settings_view_not_found_database_template_description": "テンプレートを使えば、すぐにタスク管理を始められます！"
 }

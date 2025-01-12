@@ -173,29 +173,28 @@ class NotionSettingsView extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Row(
+                    Row(
                       children: [
-                        Icon(Icons.info_rounded),
-                        SizedBox(width: 4),
-                        Text('Notionにタスク用のデータベースがないときは？'),
+                        const Icon(Icons.info_rounded),
+                        const SizedBox(width: 4),
+                        Text(l
+                            .notion_settings_view_not_found_database_description),
                       ],
                     ),
                     const SizedBox(height: 8),
-                    const Text('下記からNotionテンプレートを入手し、Notion接続時に連携するとスムーズです！'),
+                    Text(
+                      l.notion_settings_view_not_found_database_template_description,
+                    ),
                     const SizedBox(height: 8),
-                    InkWell(
-                      child: const Text(
-                        'Notionテンプレートページへ',
-                        style: TextStyle(
-                          color: Colors.blue,
-                          decoration: TextDecoration.underline,
-                        ),
-                      ),
-                      onTap: () async {
+                    FilledButton.icon(
+                      onPressed: () async {
                         const url =
                             'https://www.notion.so/templates/simple-gtd-planner';
                         await launchUrl(Uri.parse(url));
                       },
+                      icon: const Icon(Icons.open_in_new),
+                      label: Text(
+                          l.notion_settings_view_not_found_database_template),
                     ),
                   ],
                 ),
