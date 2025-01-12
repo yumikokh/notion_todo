@@ -21,7 +21,7 @@ part 'task_viewmodel.g.dart';
 class TaskViewModel extends _$TaskViewModel {
   late TaskService _taskService;
   late FilterType _filterType;
-  late bool _showCompleted;
+  late bool _hasCompleted;
   bool _hasMore = false;
   bool get hasMore => _hasMore;
   String? _nextCursor;
@@ -45,7 +45,7 @@ class TaskViewModel extends _$TaskViewModel {
     _filterType = filterType;
     // MEMO: ユースケースを鑑みて読み込みは固定にする
     // もしpageSize以上のタスクがあったとき、「showCompleted」と「Load more」の不整合がおきるがいったん無視
-    _showCompleted = filterType == FilterType.today;
+    _hasCompleted = filterType == FilterType.today;
 
     return await _fetchTasks(isFirstFetch: true);
   }
@@ -99,7 +99,7 @@ class TaskViewModel extends _$TaskViewModel {
     ref.notifyListeners(); // ローディング状態が更新されるようにする
     try {
       final cursor = isFirstFetch ? null : _nextCursor;
-      final result = await _taskService.fetchTasks(_filterType, _showCompleted,
+      final result = await _taskService.fetchTasks(_filterType, _hasCompleted,
           startCursor: cursor);
       _hasMore = result.hasMore;
       _nextCursor = result.nextCursor;
