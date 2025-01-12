@@ -145,5 +145,8 @@
   "not_found_property": "No appropriate property found.",
   "load_more": "Load More",
   "wakelock_title": "Prevent sleep while the app is running",
-  "wakelock_description": "Battery consumption may be affected."
+  "wakelock_description": "Battery consumption may be affected.",
+  "notion_settings_view_not_found_database_description": "No task database found in Notion?",
+  "notion_settings_view_not_found_database_template": "Template",
+  "notion_settings_view_not_found_database_template_description": "Create a task database using the template"
 }

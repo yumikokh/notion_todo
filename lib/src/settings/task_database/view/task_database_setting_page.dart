@@ -232,7 +232,8 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
             message: tooltip,
             triggerMode: TooltipTriggerMode.tap,
             preferBelow: false,
-            showDuration: const Duration(seconds: 3),
+            showDuration: const Duration(seconds: 2),
+            verticalOffset: 14, // tooltipとchildの距離を近づける
             margin: const EdgeInsets.symmetric(horizontal: 20),
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             child: Icon(
