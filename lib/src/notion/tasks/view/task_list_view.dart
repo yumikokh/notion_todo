@@ -19,14 +19,14 @@ class TaskListView extends HookWidget {
   static final DateHelper d = DateHelper();
 
   const TaskListView({
-    required super.key,
+    super.key,
     required this.list,
     required this.taskViewModel,
     required this.showCompleted,
     this.title,
   });
 
-  Widget _buildDismissibleTask(Task task, bool loading, BuildContext context) {
+  Widget _buildDismissibleTask(Task task, BuildContext context) {
     return Dismissible(
       key: Key(task.id),
       direction: DismissDirection.horizontal,
@@ -97,7 +97,6 @@ class TaskListView extends HookWidget {
             key: Key(
                 '${task.id}${task.isCompleted ? "completed" : "notCompleted"}'),
             task: task,
-            loading: loading,
             taskViewModel: taskViewModel,
           ),
         ],
@@ -109,7 +108,6 @@ class TaskListView extends HookWidget {
   Widget build(BuildContext context) {
     final notCompletedTasks = list.where((task) => !task.isCompleted).toList();
     final completedTasks = list.where((task) => task.isCompleted).toList();
-    final loading = taskViewModel.isLoading;
 
     final l = AppLocalizations.of(context)!;
 
@@ -143,11 +141,11 @@ class TaskListView extends HookWidget {
               ),
             ),
           ...notCompletedTasks
-              .map((task) => _buildDismissibleTask(task, loading, context))
+              .map((task) => _buildDismissibleTask(task, context))
               .toList(),
           if (showCompleted && completedTasks.isNotEmpty)
             ...completedTasks
-                .map((task) => _buildDismissibleTask(task, loading, context))
+                .map((task) => _buildDismissibleTask(task, context))
                 .toList(),
           const Divider(height: 0),
           if (taskViewModel.hasMore)
@@ -162,7 +160,7 @@ class TaskListView extends HookWidget {
                 ),
               ),
             ),
-          if (loading)
+          if (taskViewModel.isLoading)
             const Padding(
                 padding: EdgeInsets.all(16.0),
                 child: Center(child: CircularProgressIndicator.adaptive())),

@@ -12,12 +12,10 @@ class TaskListTile extends HookWidget {
   const TaskListTile({
     super.key,
     required this.task,
-    required this.loading,
     required this.taskViewModel,
   });
 
   final Task task;
-  final bool loading;
   final TaskViewModel taskViewModel;
   static final DateHelper d = DateHelper();
 
@@ -78,7 +76,6 @@ class TaskListTile extends HookWidget {
           borderRadius: BorderRadius.circular(0),
         ),
         onChanged: (bool? willComplete) async {
-          if (loading) return;
           if (willComplete == null) return;
           checked.value = willComplete;
 

@@ -30,7 +30,7 @@ class NotionTaskRepository {
     };
   }
 
-  Future fetchPages(FilterType filterType, bool showCompleted,
+  Future fetchPages(FilterType filterType, bool hasCompleted,
       {String? startCursor}) async {
     final db = database;
     if (db.id.isEmpty) {
@@ -58,7 +58,7 @@ class NotionTaskRepository {
                 "property": dateProperty.name,
                 "date": {"on_or_before": todayEnd}
               },
-              if (!showCompleted) ...getNotCompleteStatusFilter(statusProperty)
+              if (!hasCompleted) ...getNotCompleteStatusFilter(statusProperty)
             ]
           },
           // 期限切れで未完了のタスク
@@ -73,7 +73,7 @@ class NotionTaskRepository {
           }
         ]
       };
-    } else if (filterType == FilterType.all && !showCompleted) {
+    } else if (filterType == FilterType.all && !hasCompleted) {
       filter = {
         "and": [...getNotCompleteStatusFilter(statusProperty)]
       };
