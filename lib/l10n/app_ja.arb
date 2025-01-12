@@ -78,5 +78,7 @@
   "wakelock_description": "バッテリーに影響を与える可能性があります。",
   "notion_settings_view_not_found_database_description": "タスク用のデータベースがまだないときは？",
   "notion_settings_view_not_found_database_template": "テンプレート",
-  "notion_settings_view_not_found_database_template_description": "テンプレートを使えば、すぐにタスク管理を始められます！"
+  "notion_settings_view_not_found_database_template_description": "テンプレートを使えば、すぐにタスク管理を始められます！",
+  "go_to_settings": "設定ページへ",
+  "notion_database_settings_required": "Notionのデータベース設定が必要です。"
 }

@@ -28,8 +28,6 @@ class TaskDateSheet extends HookWidget {
     final l = Localizations.localeOf(context);
     final localeCode = "${l.languageCode}_${l.countryCode}";
 
-    print(localeCode);
-
     return Padding(
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -37,7 +35,7 @@ class TaskDateSheet extends HookWidget {
       child: Wrap(
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.fromLTRB(40, 30, 40, 60),
+            padding: const EdgeInsets.fromLTRB(20, 30, 20, 60),
             child: Column(
               children: [
                 SegmentedButton(

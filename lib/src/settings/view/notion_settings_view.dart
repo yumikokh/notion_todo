@@ -23,6 +23,7 @@ class NotionSettingsView extends ConsumerWidget {
     final l = AppLocalizations.of(context)!;
 
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
       appBar: AppBar(
         title: Text(l.notion_settings_view_title),
       ),
@@ -31,6 +32,12 @@ class NotionSettingsView extends ConsumerWidget {
         child: ListView(
           children: [
             Card.outlined(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+                side: BorderSide(
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                ),
+              ),
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -45,14 +52,15 @@ class NotionSettingsView extends ConsumerWidget {
                     ),
                     const SizedBox(height: 8),
                     if (isAuthenticated) ...[
-                      ListTile(
-                        leading: Icon(
-                          Icons.check_circle_rounded,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                        title:
-                            Text(l.notion_settings_view_auth_status_connected),
-                        dense: true,
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.check_circle_rounded,
+                            color: Theme.of(context).colorScheme.tertiary,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(l.notion_settings_view_auth_status_connected),
+                        ],
                       ),
                       const SizedBox(height: 8),
                       OutlinedButton.icon(
@@ -66,16 +74,17 @@ class NotionSettingsView extends ConsumerWidget {
                       ),
                     ],
                     if (!isAuthenticated) ...[
-                      ListTile(
-                        leading: Icon(
-                          Icons.warning_rounded,
-                          color: Theme.of(context).colorScheme.error,
-                        ),
-                        title: Text(
-                            l.notion_settings_view_auth_status_disconnected),
-                        dense: true,
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.warning_rounded,
+                            color: Theme.of(context).colorScheme.error,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(l.notion_settings_view_auth_status_disconnected),
+                        ],
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 12),
                       FilledButton.icon(
                         onPressed: () async {
                           await notionOAuth.authenticate();
@@ -91,6 +100,13 @@ class NotionSettingsView extends ConsumerWidget {
             const SizedBox(height: 16),
             if (isAuthenticated)
               Card.outlined(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  side: BorderSide(
+                    color:
+                        Theme.of(context).colorScheme.surfaceContainerHighest,
+                  ),
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
@@ -168,6 +184,12 @@ class NotionSettingsView extends ConsumerWidget {
               ),
             const SizedBox(height: 16),
             Card.outlined(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+                side: BorderSide(
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                ),
+              ),
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -176,9 +198,13 @@ class NotionSettingsView extends ConsumerWidget {
                     Row(
                       children: [
                         const Icon(Icons.info_rounded),
-                        const SizedBox(width: 4),
-                        Text(l
-                            .notion_settings_view_not_found_database_description),
+                        const SizedBox(width: 8),
+                        Text(
+                          l.notion_settings_view_not_found_database_description,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 8),

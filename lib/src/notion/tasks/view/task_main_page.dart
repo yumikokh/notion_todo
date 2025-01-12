@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../helpers/date.dart';
 import '../../../settings/settings_viewmodel.dart';
@@ -35,6 +36,8 @@ class TaskMainPage extends HookConsumerWidget {
     final wakelock = ref.watch(settingsViewModelProvider).wakelock;
 
     final isToday = currentIndex.value == 0;
+
+    final l = AppLocalizations.of(context)!;
 
     // ポーリングする
     // TODO: 前回の実行時間を記録して、余分にリクエストしないようにする
@@ -142,7 +145,7 @@ class TaskMainPage extends HookConsumerWidget {
                         Icon(Icons.warning_rounded,
                             color: Theme.of(context).colorScheme.secondary),
                         const SizedBox(width: 8),
-                        const Text('Notionのデータベース設定が必要です'),
+                        Text(l.notion_database_settings_required),
                       ],
                     ),
                     const SizedBox(height: 16),
@@ -151,7 +154,7 @@ class TaskMainPage extends HookConsumerWidget {
                         Navigator.restorablePushNamed(
                             context, NotionSettingsView.routeName);
                       },
-                      child: const Text('設定ページへ'),
+                      child: Text(l.go_to_settings),
                     ),
                   ],
                 ),
