@@ -29,10 +29,10 @@ class TaskMainPage extends HookConsumerWidget {
     final allProvider = taskViewModelProvider(filterType: FilterType.all);
     final todayTasks = ref.watch(todayProvider);
     final allTasks = ref.watch(allProvider);
-    final todayViewModel = ref.watch(todayProvider.notifier);
-    final allViewModel = ref.watch(allProvider.notifier);
+    final todayViewModel = ref.read(todayProvider.notifier);
+    final allViewModel = ref.read(allProvider.notifier);
     final taskDatabase = ref.watch(taskDatabaseViewModelProvider);
-    final wakelock = ref.watch(settingsViewModelProvider.notifier).wakelock;
+    final wakelock = ref.watch(settingsViewModelProvider).wakelock;
 
     final isToday = currentIndex.value == 0;
 

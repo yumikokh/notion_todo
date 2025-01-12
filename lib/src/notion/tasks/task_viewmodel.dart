@@ -96,6 +96,7 @@ class TaskViewModel extends _$TaskViewModel {
     final locale = ref.read(settingsViewModelProvider).locale;
     final l = await AppLocalizations.delegate.load(locale);
     _isLoading = true;
+    ref.notifyListeners(); // ローディング状態が更新されるようにする
     try {
       final cursor = isFirstFetch ? null : _nextCursor;
       final result = await _taskService.fetchTasks(_filterType, _showCompleted,
