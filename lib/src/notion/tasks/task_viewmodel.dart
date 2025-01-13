@@ -1,4 +1,3 @@
-import 'package:background_fetch/background_fetch.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -22,6 +21,13 @@ part 'task_viewmodel.g.dart';
 class TaskViewModel extends _$TaskViewModel {
   late TaskService _taskService;
   late FilterType _filterType;
+  late bool _hasCompleted;
+  bool _hasMore = false;
+  bool get hasMore => _hasMore;
+  String? _nextCursor;
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
+
   static final DateHelper d = DateHelper();
 
   @override
@@ -29,21 +35,32 @@ class TaskViewModel extends _$TaskViewModel {
     FilterType filterType = FilterType.all,
   }) async {
     final repository = ref.watch(notionTaskRepositoryProvider);
-    final taskDatabase = ref.read(taskDatabaseViewModelProvider).valueOrNull;
+    final taskDatabase = ref.watch(taskDatabaseViewModelProvider).valueOrNull;
+
     if (repository == null || taskDatabase == null) {
       return [];
     }
+
     _taskService = TaskService(repository, taskDatabase);
     _filterType = filterType;
+    // MEMO: ユースケースを鑑みて読み込みは固定にする
+    // もしpageSize以上のタスクがあったとき、「showCompleted」と「Load more」の不整合がおきるがいったん無視
+    _hasCompleted = filterType == FilterType.today;
 
-    final tasks = await _fetchTasks(filterType);
+    return await _fetchTasks(isFirstFetch: true);
+  }
 
-    if (filterType == FilterType.today) {
-      _updateBadge(tasks);
-      _initBackgroundFetch();
+  Future<void> loadMore() async {
+    if (!_hasMore || _nextCursor == null || _isLoading) return;
+
+    final currentTasks = state.valueOrNull ?? [];
+
+    try {
+      final tasks = await _fetchTasks();
+      state = AsyncValue.data([...currentTasks, ...tasks]);
+    } catch (e, stack) {
+      state = AsyncValue.error(e, stack);
     }
-
-    return tasks;
   }
 
   // 操作のキューを管理するための変数
@@ -71,17 +88,26 @@ class TaskViewModel extends _$TaskViewModel {
     await _processQueue();
   }
 
-  Future<List<Task>> _fetchTasks(FilterType filterType) async {
+  Future<List<Task>> _fetchTasks({bool isFirstFetch = false}) async {
     final taskDatabase = ref.read(taskDatabaseViewModelProvider).valueOrNull;
     if (taskDatabase == null) {
       return [];
     }
     final locale = ref.read(settingsViewModelProvider).locale;
     final l = await AppLocalizations.delegate.load(locale);
+    _isLoading = true;
+    ref.notifyListeners(); // ローディング状態が更新されるようにする
     try {
-      final tasks = await _taskService.fetchTasks(filterType);
-      state = AsyncValue.data(tasks);
-      return tasks;
+      final cursor = isFirstFetch ? null : _nextCursor;
+      final result = await _taskService.fetchTasks(_filterType, _hasCompleted,
+          startCursor: cursor);
+      _hasMore = result.hasMore;
+      _nextCursor = result.nextCursor;
+      // バッジ更新
+      if (filterType == FilterType.today) {
+        _updateBadge(result.tasks);
+      }
+      return result.tasks;
     } catch (e) {
       if (e is TaskException && e.statusCode == 404) {
         final snackbar = ref.read(snackbarProvider.notifier);
@@ -100,6 +126,8 @@ class TaskViewModel extends _$TaskViewModel {
             type: SnackbarType.error);
       }
       return [];
+    } finally {
+      _isLoading = false;
     }
   }
 
@@ -115,18 +143,19 @@ class TaskViewModel extends _$TaskViewModel {
 
       final prevState = state;
       final tempId = DateTime.now().millisecondsSinceEpoch.toString();
-      final newTask = Task(
+      final tempTask = Task(
           id: tempId,
           title: title,
           isCompleted: false,
           dueDate:
-              dueDate != null ? TaskDate(start: d.dateString(dueDate)) : null);
+              dueDate != null ? TaskDate(start: d.dateString(dueDate)) : null,
+          url: null);
 
-      state = AsyncValue.data([...state.valueOrNull ?? [], newTask]);
+      state = AsyncValue.data([...state.valueOrNull ?? [], tempTask]);
 
       try {
         final t = await _taskService.addTask(
-            newTask.title, newTask.dueDate?.start); // TODO: endは未実装
+            tempTask.title, tempTask.dueDate?.start); // TODO: endは未実装
 
         // 最新のstateを使用して更新
         state = AsyncValue.data([
@@ -212,6 +241,7 @@ class TaskViewModel extends _$TaskViewModel {
         updateStatus(task, !isCompleted);
       });
 
+      _isLoading = true;
       try {
         final res = await _taskService.updateStatus(task.id, isCompleted);
         state = state.whenData((t) {
@@ -220,6 +250,8 @@ class TaskViewModel extends _$TaskViewModel {
         ref.invalidateSelf();
       } catch (e) {
         snackbar.show(l.task_update_status_failed, type: SnackbarType.error);
+      } finally {
+        _isLoading = false;
       }
     });
   }
@@ -342,21 +374,5 @@ class TaskViewModel extends _$TaskViewModel {
   Future<void> _updateBadge(List<Task> tasks) async {
     final notCompletedCount = tasks.where((task) => !task.isCompleted).length;
     await FlutterAppBadger.updateBadgeCount(notCompletedCount);
-  }
-
-  Future<void> _initBackgroundFetch() async {
-    BackgroundFetch.configure(
-        BackgroundFetchConfig(
-          minimumFetchInterval: 15, // 15分ごとに更新
-        ), (String taskId) async {
-      print("[BackgroundFetch] Event received $taskId");
-      // バッジ更新
-      final tasks = await _fetchTasks(_filterType);
-      await _updateBadge(tasks);
-      BackgroundFetch.finish(taskId);
-    }, (String taskId) {
-      print("[BackgroundFetch] TASK TIMEOUT taskId: $taskId");
-      BackgroundFetch.finish(taskId);
-    });
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../notion/model/index.dart';
@@ -22,6 +23,7 @@ class NotionSettingsView extends ConsumerWidget {
     final l = AppLocalizations.of(context)!;
 
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
       appBar: AppBar(
         title: Text(l.notion_settings_view_title),
       ),
@@ -29,7 +31,13 @@ class NotionSettingsView extends ConsumerWidget {
         padding: const EdgeInsets.all(16),
         child: ListView(
           children: [
-            Card(
+            Card.outlined(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+                side: BorderSide(
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                ),
+              ),
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -44,14 +52,15 @@ class NotionSettingsView extends ConsumerWidget {
                     ),
                     const SizedBox(height: 8),
                     if (isAuthenticated) ...[
-                      ListTile(
-                        leading: Icon(
-                          Icons.check_circle_rounded,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                        title:
-                            Text(l.notion_settings_view_auth_status_connected),
-                        dense: true,
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.check_circle_rounded,
+                            color: Theme.of(context).colorScheme.tertiary,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(l.notion_settings_view_auth_status_connected),
+                        ],
                       ),
                       const SizedBox(height: 8),
                       OutlinedButton.icon(
@@ -65,16 +74,17 @@ class NotionSettingsView extends ConsumerWidget {
                       ),
                     ],
                     if (!isAuthenticated) ...[
-                      ListTile(
-                        leading: Icon(
-                          Icons.warning_rounded,
-                          color: Theme.of(context).colorScheme.error,
-                        ),
-                        title: Text(
-                            l.notion_settings_view_auth_status_disconnected),
-                        dense: true,
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.warning_rounded,
+                            color: Theme.of(context).colorScheme.error,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(l.notion_settings_view_auth_status_disconnected),
+                        ],
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 12),
                       FilledButton.icon(
                         onPressed: () async {
                           await notionOAuth.authenticate();
@@ -87,9 +97,16 @@ class NotionSettingsView extends ConsumerWidget {
                 ),
               ),
             ),
-            if (isAuthenticated) ...[
-              const SizedBox(height: 16),
-              Card(
+            const SizedBox(height: 16),
+            if (isAuthenticated)
+              Card.outlined(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  side: BorderSide(
+                    color:
+                        Theme.of(context).colorScheme.surfaceContainerHighest,
+                  ),
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
@@ -110,7 +127,7 @@ class NotionSettingsView extends ConsumerWidget {
                                 .notion_settings_view_database_settings_description,
                             triggerMode: TooltipTriggerMode.tap,
                             preferBelow: false,
-                            showDuration: const Duration(seconds: 3),
+                            verticalOffset: 14,
                             margin: const EdgeInsets.symmetric(horizontal: 20),
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 20, vertical: 10),
@@ -165,7 +182,50 @@ class NotionSettingsView extends ConsumerWidget {
                   ),
                 ),
               ),
-            ],
+            const SizedBox(height: 16),
+            Card.outlined(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+                side: BorderSide(
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(Icons.info_rounded),
+                        const SizedBox(width: 8),
+                        Text(
+                          l.notion_settings_view_not_found_database_description,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      l.notion_settings_view_not_found_database_template_description,
+                    ),
+                    const SizedBox(height: 8),
+                    FilledButton.icon(
+                      onPressed: () async {
+                        const url =
+                            'https://www.notion.so/templates/simple-gtd-planner';
+                        await launchUrl(Uri.parse(url));
+                      },
+                      icon: const Icon(Icons.open_in_new),
+                      label: Text(
+                          l.notion_settings_view_not_found_database_template),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),
