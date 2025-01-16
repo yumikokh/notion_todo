@@ -92,10 +92,6 @@ class SettingsView extends ConsumerWidget {
                     value: settingsViewModel.wakelock,
                     onChanged: (value) {
                       settingsViewModel.updateWakelock(value);
-                      analytics.logSettingsChanged(
-                        settingName: 'wakelock',
-                        value: value.toString(),
-                      );
                     },
                   ),
                 ),
