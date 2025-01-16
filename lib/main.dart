@@ -18,14 +18,16 @@ void main() async {
 
   await initATT();
 
+  const sentryEnabled = kReleaseMode;
+
   final app = ProviderScope(
-    observers: kReleaseMode ? [SentryProviderObserver()] : [],
+    observers: sentryEnabled ? [SentryProviderObserver()] : [],
     child: const BackgroundFetchInitializer(
       child: MyApp(),
     ),
   );
 
-  if (kReleaseMode) {
+  if (sentryEnabled) {
     await SentryFlutter.init(
       (options) {
         options.dsn = Env.sentryDsn;
@@ -36,7 +38,8 @@ void main() async {
         // Setting to 1.0 will profile 100% of sampled transactions:
         options.profilesSampleRate = 1.0;
         // リプレイのサンプリング率を設定
-        options.experimental.replay.sessionSampleRate = 1.0;
+        options.experimental.replay.sessionSampleRate =
+            kReleaseMode ? 0.01 : 1.0; // すべてのセッションを記録、プロダクションでは低い数値にする
         options.experimental.replay.onErrorSampleRate = 1.0;
       },
       appRunner: () => runApp(app),
