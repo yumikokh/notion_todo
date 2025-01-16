@@ -1,4 +1,5 @@
 import 'package:app_tracking_transparency/app_tracking_transparency.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -17,25 +18,35 @@ void main() async {
 
   await initATT();
 
-  await SentryFlutter.init(
-    (options) {
-      options.dsn = Env.sentryDsn;
-      // Set tracesSampleRate to 1.0 to capture 100% of transactions for tracing.
-      // We recommend adjusting this value in production.
-      options.tracesSampleRate = 1.0;
-      // The sampling rate for profiling is relative to tracesSampleRate
-      // Setting to 1.0 will profile 100% of sampled transactions:
-      options.profilesSampleRate = 1.0;
-    },
-    appRunner: () => runApp(
-      ProviderScope(
-        observers: [SentryProviderObserver()],
-        child: const BackgroundFetchInitializer(
-          child: MyApp(),
-        ),
-      ),
+  const sentryEnabled = kReleaseMode;
+
+  final app = ProviderScope(
+    observers: sentryEnabled ? [SentryProviderObserver()] : [],
+    child: const BackgroundFetchInitializer(
+      child: MyApp(),
     ),
   );
+
+  if (sentryEnabled) {
+    await SentryFlutter.init(
+      (options) {
+        options.dsn = Env.sentryDsn;
+        // Set tracesSampleRate to 1.0 to capture 100% of transactions for tracing.
+        // We recommend adjusting this value in production.
+        options.tracesSampleRate = 1.0;
+        // The sampling rate for profiling is relative to tracesSampleRate
+        // Setting to 1.0 will profile 100% of sampled transactions:
+        options.profilesSampleRate = 1.0;
+        // リプレイのサンプリング率を設定
+        options.experimental.replay.sessionSampleRate =
+            kReleaseMode ? 0.01 : 1.0; // すべてのセッションを記録、プロダクションでは低い数値にする
+        options.experimental.replay.onErrorSampleRate = 1.0;
+      },
+      appRunner: () => runApp(app),
+    );
+  } else {
+    runApp(app);
+  }
 
   FlutterNativeSplash.remove();
 }
