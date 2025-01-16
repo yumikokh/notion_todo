@@ -53,13 +53,9 @@ class TaskDatabaseViewModel extends _$TaskDatabaseViewModel {
 
       try {
         final analytics = ref.read(analyticsServiceProvider);
-        await analytics.logSettingsChanged(
-          settingName: 'database',
-          value: 'saved',
-        );
-        await analytics.logSettingsChanged(
-          settingName: 'database_status_type',
-          value: taskDatabase.status.type == PropertyType.status
+        await analytics.logDatabaseOperation(
+          action: 'saved',
+          statusType: taskDatabase.status.type == PropertyType.status
               ? 'status'
               : 'checkbox',
         );
@@ -79,9 +75,8 @@ class TaskDatabaseViewModel extends _$TaskDatabaseViewModel {
 
       try {
         final analytics = ref.read(analyticsServiceProvider);
-        await analytics.logSettingsChanged(
-          settingName: 'database',
-          value: 'cleared',
+        await analytics.logDatabaseOperation(
+          action: 'cleared',
         );
       } catch (e) {
         print('Analytics error: $e');

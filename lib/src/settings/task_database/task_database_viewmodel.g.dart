@@ -7,7 +7,7 @@ part of 'task_database_viewmodel.dart';
 // **************************************************************************
 
 String _$taskDatabaseViewModelHash() =>
-    r'992cb833987751917ee9df65648c37e2c983ad7c';
+    r'4222a425765c3d5c138928cc394cde41f5477494';
 
 /// See also [TaskDatabaseViewModel].
 @ProviderFor(TaskDatabaseViewModel)

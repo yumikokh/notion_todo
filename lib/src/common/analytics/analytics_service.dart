@@ -45,12 +45,25 @@ class AnalyticsService {
     required String settingName,
     required String value,
   }) async {
-    final params = {
-      'setting_name': settingName,
-      'value': value,
-    };
     await _analytics.logEvent(
       name: 'settings_changed',
+      parameters: {
+        'setting_name': settingName,
+        'value': value,
+      },
+    );
+  }
+
+  Future<void> logDatabaseOperation({
+    required String action,
+    String? statusType,
+  }) async {
+    final params = {
+      'action': action,
+      if (statusType != null) 'status_type': statusType,
+    };
+    await _analytics.logEvent(
+      name: 'database_operation',
       parameters: params,
     );
   }
