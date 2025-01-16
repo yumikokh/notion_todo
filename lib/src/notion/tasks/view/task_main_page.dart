@@ -83,10 +83,22 @@ class TaskMainPage extends HookConsumerWidget {
     return TaskBasePage(
       key: Key('taskMainPage/${isToday ? 'Today' : 'All'}'),
       currentIndex: currentIndex.value,
-      showCompleted: isToday ? showTodayCompleted : null,
+      showCompleted: isToday ? showTodayCompleted.value : null,
       showSettingBadge: taskDatabase.valueOrNull != null,
       onIndexChanged: (index) {
         currentIndex.value = index;
+      },
+      onShowCompletedChanged: (value) async {
+        showTodayCompleted.value = value;
+        try {
+          final analytics = ref.read(analyticsServiceProvider);
+          await analytics.logCompletedTasksToggle(
+            isVisible: value,
+            screenName: isToday ? 'Today' : 'All',
+          );
+        } catch (e) {
+          print('Analytics error: $e');
+        }
       },
       onAddTask: (title, dueDate) {
         switch (isToday) {

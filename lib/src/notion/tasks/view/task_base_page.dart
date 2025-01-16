@@ -6,20 +6,22 @@ import 'task_sheet/task_sheet.dart';
 class TaskBasePage extends StatelessWidget {
   final Widget body;
   final int currentIndex;
-  final ValueNotifier<bool>? showCompleted;
+  final bool? showCompleted;
   final bool showSettingBadge;
-  final ValueChanged<int> onIndexChanged;
-  final void Function(String title, DateTime? dueDate) onAddTask;
+  final void Function(int) onIndexChanged;
+  final void Function(bool) onShowCompletedChanged;
+  final void Function(String, DateTime?) onAddTask;
 
   const TaskBasePage({
-    required super.key,
+    Key? key,
     required this.body,
     required this.currentIndex,
+    required this.showCompleted,
     required this.showSettingBadge,
     required this.onIndexChanged,
+    required this.onShowCompletedChanged,
     required this.onAddTask,
-    this.showCompleted,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -34,13 +36,13 @@ class TaskBasePage extends StatelessWidget {
           if (showCompleted != null) ...[
             IconButton(
               icon: Icon(
-                showCompleted.value
+                showCompleted
                     ? Icons.visibility_rounded
                     : Icons.visibility_off_outlined,
                 color: Theme.of(context).colorScheme.onSurface,
               ),
               onPressed: () {
-                showCompleted.value = !showCompleted.value;
+                onShowCompletedChanged(!showCompleted);
               },
             )
           ],

@@ -13,11 +13,15 @@ class AnalyticsService {
 
   // タスク関連のイベント
   Future<void> logTask(String eventName,
-      {bool? hasDueDate, bool? isCompleted, int? pageSize}) async {
+      {bool? hasDueDate,
+      bool? isCompleted,
+      int? pageSize,
+      bool? fromUndo}) async {
     final params = {
       if (hasDueDate != null) 'has_due_date': hasDueDate ? 'true' : 'false',
       if (isCompleted != null) 'is_completed': isCompleted ? 'true' : 'false',
       if (pageSize != null) 'page_size': pageSize,
+      if (fromUndo != null) 'is_undo': fromUndo ? 'true' : 'false',
     };
     await _analytics.logEvent(
       name: eventName,
@@ -47,6 +51,21 @@ class AnalyticsService {
     };
     await _analytics.logEvent(
       name: 'settings_changed',
+      parameters: params,
+    );
+  }
+
+  // 完了済みタスクの表示切り替え
+  Future<void> logCompletedTasksToggle({
+    required bool isVisible,
+    required String screenName,
+  }) async {
+    final params = {
+      'is_visible': isVisible ? 'true' : 'false',
+      'screen_name': screenName,
+    };
+    await _analytics.logEvent(
+      name: 'completed_tasks_toggle',
       parameters: params,
     );
   }

@@ -199,7 +199,7 @@ class TaskViewModel extends _$TaskViewModel {
     });
   }
 
-  Future<void> updateTask(Task task) async {
+  Future<void> updateTask(Task task, {bool fromUndo = false}) async {
     await _addOperation(() async {
       final db = ref.read(taskDatabaseViewModelProvider).valueOrNull;
       final prevState = state;
@@ -212,26 +212,23 @@ class TaskViewModel extends _$TaskViewModel {
         return;
       }
       final snackbar = ref.read(snackbarProvider.notifier);
-      final analytics = ref.read(analyticsServiceProvider);
       final locale = ref.read(settingsViewModelProvider).locale;
       final l = await AppLocalizations.delegate.load(locale);
 
-      // 最新のstateから該当タスクを更新
       state = AsyncValue.data([
         for (final t in state.valueOrNull ?? [])
           if (t.id == task.id) task else t
       ]);
 
       snackbar.show(l.task_update_success(task.title),
-          type: SnackbarType.success, onUndo: () {
-        updateTask(prevTask);
+          type: SnackbarType.success, onUndo: () async {
+        updateTask(prevTask, fromUndo: true);
       });
 
       try {
         final updatedTask = await _taskService.updateTask(
-            task.id, task.title, task.dueDate?.start); // TODO: endは未実装
+            task.id, task.title, task.dueDate?.start);
 
-        // APIからの応答で状態を更新
         state = AsyncValue.data([
           for (final Task t in state.valueOrNull ?? [])
             if (t.id == task.id) updatedTask else t
@@ -239,9 +236,12 @@ class TaskViewModel extends _$TaskViewModel {
         ref.invalidateSelf();
 
         try {
+          final analytics = ref.read(analyticsServiceProvider);
           await analytics.logTask(
             'task_updated',
             hasDueDate: updatedTask.dueDate?.start != null,
+            isCompleted: updatedTask.isCompleted,
+            fromUndo: fromUndo,
           );
         } catch (e) {
           print('Analytics error: $e');
@@ -254,7 +254,8 @@ class TaskViewModel extends _$TaskViewModel {
     });
   }
 
-  Future<void> updateStatus(Task task, bool isCompleted) async {
+  Future<void> updateStatus(Task task, bool isCompleted,
+      {bool fromUndo = false}) async {
     await _addOperation(() async {
       final taskDatabase = ref.read(taskDatabaseViewModelProvider).valueOrNull;
       if (taskDatabase == null) {
@@ -267,8 +268,8 @@ class TaskViewModel extends _$TaskViewModel {
           isCompleted
               ? l.task_update_status_success(task.title)
               : l.task_update_status_undo(task.title),
-          type: SnackbarType.success, onUndo: () {
-        updateStatus(task, !isCompleted);
+          type: SnackbarType.success, onUndo: () async {
+        updateStatus(task, !isCompleted, fromUndo: true);
       });
 
       _isLoading = true;
@@ -288,6 +289,7 @@ class TaskViewModel extends _$TaskViewModel {
             'task_completed',
             hasDueDate: task.dueDate?.start != null,
             isCompleted: isCompleted,
+            fromUndo: fromUndo,
           );
         } catch (e) {
           print('Analytics error: $e');
@@ -301,7 +303,7 @@ class TaskViewModel extends _$TaskViewModel {
     });
   }
 
-  Future<void> deleteTask(Task task) async {
+  Future<void> deleteTask(Task task, {bool fromUndo = false}) async {
     await _addOperation(() async {
       final taskDatabase = ref.read(taskDatabaseViewModelProvider).valueOrNull;
       if (taskDatabase == null) {
@@ -312,13 +314,12 @@ class TaskViewModel extends _$TaskViewModel {
       final snackbar = ref.read(snackbarProvider.notifier);
       final locale = ref.read(settingsViewModelProvider).locale;
       final l = await AppLocalizations.delegate.load(locale);
-      // 最新のstateから該当タスクを削除
       state = AsyncValue.data([
         for (final t in state.valueOrNull ?? [])
           if (t.id != task.id) t
       ]);
       snackbar.show(l.task_delete_success(task.title),
-          type: SnackbarType.success, onUndo: () {
+          type: SnackbarType.success, onUndo: () async {
         undoDeleteTask(task);
       });
 
@@ -330,6 +331,7 @@ class TaskViewModel extends _$TaskViewModel {
             'task_deleted',
             hasDueDate: task.dueDate?.start != null,
             isCompleted: task.isCompleted,
+            fromUndo: fromUndo,
           );
           print('Analytics logged');
         } catch (e) {
@@ -364,7 +366,6 @@ class TaskViewModel extends _$TaskViewModel {
           return;
         }
 
-        // APIからの応答で状態を更新
         state = state.whenData((tasks) {
           return tasks.map((task) {
             if (task.id == prev.id) {
@@ -382,12 +383,12 @@ class TaskViewModel extends _$TaskViewModel {
             'task_deleted',
             hasDueDate: prev.dueDate?.start != null,
             isCompleted: prev.isCompleted,
+            fromUndo: true,
           );
         } catch (e) {
           print('Analytics error: $e');
         }
       } catch (e) {
-        // エラーが発生した場合は元の状態に戻す
         state = prevState;
         snackbar.show(l.task_delete_failed_undo(prev.title),
             type: SnackbarType.error);
