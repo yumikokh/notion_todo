@@ -26,13 +26,12 @@ class TaskMainPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, ref) {
     final currentIndex = useState(0);
-    final showTodayCompleted = useState(false);
     final todayProvider = taskViewModelProvider(filterType: FilterType.today);
     final allProvider = taskViewModelProvider(filterType: FilterType.all);
     final todayTasks = ref.watch(todayProvider);
     final allTasks = ref.watch(allProvider);
-    final todayViewModel = ref.read(todayProvider.notifier);
-    final allViewModel = ref.read(allProvider.notifier);
+    final todayViewModel = ref.watch(todayProvider.notifier);
+    final allViewModel = ref.watch(allProvider.notifier);
     final taskDatabase = ref.watch(taskDatabaseViewModelProvider);
     final wakelock = ref.watch(settingsViewModelProvider).wakelock;
 
@@ -83,22 +82,13 @@ class TaskMainPage extends HookConsumerWidget {
     return TaskBasePage(
       key: Key('taskMainPage/${isToday ? 'Today' : 'All'}'),
       currentIndex: currentIndex.value,
-      showCompleted: isToday ? showTodayCompleted.value : null,
+      showCompleted: isToday ? todayViewModel.showCompleted : null,
       showSettingBadge: taskDatabase.valueOrNull != null,
       onIndexChanged: (index) {
         currentIndex.value = index;
       },
       onShowCompletedChanged: (value) async {
-        showTodayCompleted.value = value;
-        try {
-          final analytics = ref.read(analyticsServiceProvider);
-          await analytics.logCompletedTasksToggle(
-            isVisible: value,
-            screenName: isToday ? 'Today' : 'All',
-          );
-        } catch (e) {
-          print('Analytics error: $e');
-        }
+        todayViewModel.toggleShowCompleted();
       },
       onAddTask: (title, dueDate) {
         switch (isToday) {
@@ -123,7 +113,7 @@ class TaskMainPage extends HookConsumerWidget {
                       data: (tasks) => TaskListView(
                         list: tasks,
                         taskViewModel: todayViewModel,
-                        showCompleted: showTodayCompleted.value,
+                        showCompleted: todayViewModel.showCompleted,
                         title: d.formatDateForTitle(DateTime.now()),
                       ),
                       loading: () => const Center(

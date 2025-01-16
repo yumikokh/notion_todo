@@ -28,6 +28,8 @@ class TaskViewModel extends _$TaskViewModel {
   String? _nextCursor;
   bool _isLoading = false;
   bool get isLoading => _isLoading;
+  bool _showCompleted = false;
+  bool get showCompleted => _showCompleted;
 
   static final DateHelper d = DateHelper();
 
@@ -49,6 +51,20 @@ class TaskViewModel extends _$TaskViewModel {
     _hasCompleted = filterType == FilterType.today;
 
     return await _fetchTasks(isFirstFetch: true);
+  }
+
+  Future<void> toggleShowCompleted() async {
+    _showCompleted = !_showCompleted;
+    try {
+      final analytics = ref.read(analyticsServiceProvider);
+      await analytics.logCompletedTasksToggle(
+        isVisible: _showCompleted,
+        screenName: _filterType == FilterType.today ? 'Today' : 'All',
+      );
+    } catch (e) {
+      print('Analytics error: $e');
+    }
+    ref.notifyListeners();
   }
 
   Future<void> loadMore() async {
