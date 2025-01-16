@@ -24,8 +24,7 @@ class LanguageSettingsView extends ConsumerWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: ListView(
           children: [
             for (final language in languages)
               ListTile(
