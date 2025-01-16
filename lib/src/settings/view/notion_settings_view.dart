@@ -216,7 +216,9 @@ class NotionSettingsView extends ConsumerWidget {
                       onPressed: () async {
                         const url =
                             'https://www.notion.so/templates/simple-gtd-planner';
-                        await launchUrl(Uri.parse(url));
+                        if (await canLaunchUrl(Uri.parse(url))) {
+                          await launchUrl(Uri.parse(url));
+                        }
                       },
                       icon: const Icon(Icons.open_in_new),
                       label: Text(

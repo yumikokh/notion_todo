@@ -53,9 +53,9 @@ class TaskDateSheet extends HookWidget {
                       .map((dt) => ButtonSegment(
                           value:
                               dt.date != null ? d.formatDate(dt.date!) : null,
-                          icon: Icon(dt.icon, size: 16),
+                          icon: Icon(dt.icon, size: 14),
                           label: Text(dt.text,
-                              style: const TextStyle(fontSize: 14))))
+                              style: const TextStyle(fontSize: 12))))
                       .toList(),
                 ),
                 TableCalendar(
