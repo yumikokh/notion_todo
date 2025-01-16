@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "notion_todo",
+      "request": "launch",
+      "type": "dart",
+      "args": ["--dart-define=FIREBASE_ANALYTICS_DEBUG_MODE=true"]
+    },
+    {
+      "name": "notion_todo (profile mode)",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "profile"
+    },
+    {
+      "name": "notion_todo (release mode)",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "release"
+    }
+  ]
+}
