@@ -3,11 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'settings_service.dart';
+import '../common/analytics/analytics_service.dart';
 
 class SettingsViewModel with ChangeNotifier {
   final SettingsService _settingsService;
+  final AnalyticsService _analytics;
 
-  SettingsViewModel(this._settingsService) {
+  SettingsViewModel(this._settingsService, this._analytics) {
     _themeMode = ThemeMode.system;
     _locale = const Locale('en');
     _version = '';
@@ -35,6 +37,10 @@ class SettingsViewModel with ChangeNotifier {
     notifyListeners();
 
     await _settingsService.updateThemeMode(newThemeMode);
+    await _analytics.logSettingsChanged(
+      settingName: 'theme_mode',
+      value: newThemeMode.name,
+    );
   }
 
   /// Language
@@ -53,6 +59,10 @@ class SettingsViewModel with ChangeNotifier {
     notifyListeners();
 
     await _settingsService.updateLocale(locale);
+    await _analytics.logSettingsChanged(
+      settingName: 'locale',
+      value: locale.languageCode,
+    );
   }
 
   /// Wakelock
@@ -65,6 +75,10 @@ class SettingsViewModel with ChangeNotifier {
     notifyListeners();
 
     await _settingsService.updateWakelock(wakelock);
+    await _analytics.logSettingsChanged(
+      settingName: 'wakelock',
+      value: wakelock ? 'enabled' : 'disabled',
+    );
   }
 
   /// Version
@@ -77,5 +91,8 @@ class SettingsViewModel with ChangeNotifier {
 // see: https://stackoverflow.com/questions/69512241/how-to-get-a-listenable-from-a-riverpod-provider
 // see: https://riverpod.dev/ja/docs/concepts/about_code_generation#autodispose-%E3%81%AE%E6%9C%89%E5%8A%B9%E7%84%A1%E5%8A%B9%E5%8C%96
 final settingsViewModelProvider = ChangeNotifierProvider<SettingsViewModel>(
-  (ref) => SettingsViewModel(SettingsService()),
+  (ref) => SettingsViewModel(
+    SettingsService(),
+    ref.read(analyticsServiceProvider),
+  ),
 );
