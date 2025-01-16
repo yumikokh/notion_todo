@@ -10,6 +10,7 @@ import 'language_settings_view.dart';
 import 'notion_settings_view.dart';
 import '../settings_viewmodel.dart';
 import 'theme_settings_view.dart';
+import '../../common/analytics/analytics_service.dart';
 
 class SettingsView extends ConsumerWidget {
   static const routeName = '/settings';
@@ -21,6 +22,7 @@ class SettingsView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, ref) {
     final database = ref.read(taskDatabaseViewModelProvider).valueOrNull;
+    final analytics = ref.read(analyticsServiceProvider);
     final l = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
@@ -49,6 +51,7 @@ class SettingsView extends ConsumerWidget {
                         ),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {
+                    analytics.logScreenView(screenName: 'NotionSettings');
                     Navigator.of(context)
                         .pushNamed(NotionSettingsView.routeName);
                   },
@@ -58,6 +61,7 @@ class SettingsView extends ConsumerWidget {
                   subtitle: Text(settingsViewModel.themeMode.name),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {
+                    analytics.logScreenView(screenName: 'ThemeSettings');
                     Navigator.of(context)
                         .pushNamed(ThemeSettingsView.routeName);
                   },
@@ -67,6 +71,7 @@ class SettingsView extends ConsumerWidget {
                   subtitle: Text(settingsViewModel.languageName(l)),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {
+                    analytics.logScreenView(screenName: 'LanguageSettings');
                     Navigator.of(context)
                         .pushNamed(LanguageSettingsView.routeName);
                   },
@@ -87,6 +92,10 @@ class SettingsView extends ConsumerWidget {
                     value: settingsViewModel.wakelock,
                     onChanged: (value) {
                       settingsViewModel.updateWakelock(value);
+                      analytics.logSettingsChanged(
+                        settingName: 'wakelock',
+                        value: value.toString(),
+                      );
                     },
                   ),
                 ),
@@ -106,6 +115,10 @@ class SettingsView extends ConsumerWidget {
                         'https://yumikokh.notion.site/Tanzaku-Todo-11f54c37a54c800da12cf5162f5beada';
                     if (await canLaunchUrl(Uri.parse(url))) {
                       await launchUrl(Uri.parse(url));
+                      analytics.logSettingsChanged(
+                        settingName: 'open_faq',
+                        value: 'true',
+                      );
                     }
                   },
                 ),
@@ -117,6 +130,10 @@ class SettingsView extends ConsumerWidget {
                         'https://docs.google.com/forms/d/e/1FAIpQLSfIdMsEJVzbWHdxdvNzr_-OUPEVqe3AMOmafCYctaa7hzcQpQ/viewform';
                     if (await canLaunchUrl(Uri.parse(url))) {
                       await launchUrl(Uri.parse(url));
+                      analytics.logSettingsChanged(
+                        settingName: 'open_feedback',
+                        value: 'true',
+                      );
                     }
                   },
                 ),
@@ -128,6 +145,10 @@ class SettingsView extends ConsumerWidget {
                         'https://yumikokh.notion.site/Privacy-Policy-14b54c37a54c80e1b288c0097bb6c7bd';
                     if (await canLaunchUrl(Uri.parse(url))) {
                       await launchUrl(Uri.parse(url));
+                      analytics.logSettingsChanged(
+                        settingName: 'open_privacy_policy',
+                        value: 'true',
+                      );
                     }
                   },
                 ),
@@ -142,6 +163,10 @@ class SettingsView extends ConsumerWidget {
                     content: Text(l.settings_view_version_copy),
                     duration: const Duration(seconds: 2),
                   ),
+                );
+                analytics.logSettingsChanged(
+                  settingName: 'copy_version',
+                  value: settingsViewModel.version,
                 );
               },
               child: ListTile(

@@ -5,6 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../../common/analytics/analytics_service.dart';
 import '../../../helpers/date.dart';
 import '../../../settings/settings_viewmodel.dart';
 import '../../../settings/view/notion_settings_view.dart';
@@ -38,6 +39,13 @@ class TaskMainPage extends HookConsumerWidget {
     final isToday = currentIndex.value == 0;
 
     final l = AppLocalizations.of(context)!;
+
+    useEffect(() {
+      final analytics = ref.read(analyticsServiceProvider);
+      final screenName = isToday ? 'Today' : 'All';
+      analytics.logScreenView(screenName: screenName);
+      return null;
+    }, [isToday]);
 
     // ポーリングする
     // TODO: 前回の実行時間を記録して、余分にリクエストしないようにする
