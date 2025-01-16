@@ -102,24 +102,33 @@ class SettingsView extends ConsumerWidget {
                   leading: const Icon(Icons.help_outline),
                   trailing: const Icon(Icons.open_in_new_rounded),
                   onTap: () async {
-                    await launchUrl(Uri.parse(
-                        'https://yumikokh.notion.site/Tanzaku-Todo-11f54c37a54c800da12cf5162f5beada'));
+                    const url =
+                        'https://yumikokh.notion.site/Tanzaku-Todo-11f54c37a54c800da12cf5162f5beada';
+                    if (await canLaunchUrl(Uri.parse(url))) {
+                      await launchUrl(Uri.parse(url));
+                    }
                   },
                 ),
                 ListTile(
                   title: Text(l.settings_view_support_feedback_title),
                   trailing: const Icon(Icons.open_in_new_rounded),
                   onTap: () async {
-                    await launchUrl(Uri.parse(
-                        'https://docs.google.com/forms/d/e/1FAIpQLSfIdMsEJVzbWHdxdvNzr_-OUPEVqe3AMOmafCYctaa7hzcQpQ/viewform'));
+                    const url =
+                        'https://docs.google.com/forms/d/e/1FAIpQLSfIdMsEJVzbWHdxdvNzr_-OUPEVqe3AMOmafCYctaa7hzcQpQ/viewform';
+                    if (await canLaunchUrl(Uri.parse(url))) {
+                      await launchUrl(Uri.parse(url));
+                    }
                   },
                 ),
                 ListTile(
                   title: Text(l.settings_view_support_privacy_policy_title),
                   trailing: const Icon(Icons.open_in_new_rounded),
                   onTap: () async {
-                    await launchUrl(Uri.parse(
-                        'https://yumikokh.notion.site/Privacy-Policy-14b54c37a54c80e1b288c0097bb6c7bd'));
+                    const url =
+                        'https://yumikokh.notion.site/Privacy-Policy-14b54c37a54c80e1b288c0097bb6c7bd';
+                    if (await canLaunchUrl(Uri.parse(url))) {
+                      await launchUrl(Uri.parse(url));
+                    }
                   },
                 ),
               ],
