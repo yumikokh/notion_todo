@@ -18,7 +18,7 @@ import '../../common/analytics/analytics_service.dart';
 
 part 'task_viewmodel.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 class TaskViewModel extends _$TaskViewModel {
   late TaskService _taskService;
   late FilterType _filterType;
