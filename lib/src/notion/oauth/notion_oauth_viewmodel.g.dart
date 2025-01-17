@@ -24,7 +24,7 @@ final isAuthenticatedProvider = AutoDisposeProvider<bool>.internal(
 // ignore: unused_element
 typedef IsAuthenticatedRef = AutoDisposeProviderRef<bool>;
 String _$notionOAuthViewModelHash() =>
-    r'398095d7ea9b75fbfc98826648d830522edc64c2';
+    r'd106ad7d10168f5b14773b5f467a1ce0f524553a';
 
 /// See also [NotionOAuthViewModel].
 @ProviderFor(NotionOAuthViewModel)
