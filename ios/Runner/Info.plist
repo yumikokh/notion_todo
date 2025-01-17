@@ -55,5 +55,7 @@
 		<array>
 			<string>com.transistorsoft.fetch</string>
 		</array>
+		<key>FirebaseAppDelegateProxyEnabled</key>
+		<false/>
 	</dict>
 </plist>

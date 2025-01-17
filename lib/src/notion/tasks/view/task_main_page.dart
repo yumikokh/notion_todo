@@ -5,6 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../../common/analytics/analytics_service.dart';
 import '../../../helpers/date.dart';
 import '../../../settings/settings_viewmodel.dart';
 import '../../../settings/view/notion_settings_view.dart';
@@ -25,19 +26,25 @@ class TaskMainPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, ref) {
     final currentIndex = useState(0);
-    final showTodayCompleted = useState(false);
     final todayProvider = taskViewModelProvider(filterType: FilterType.today);
     final allProvider = taskViewModelProvider(filterType: FilterType.all);
     final todayTasks = ref.watch(todayProvider);
     final allTasks = ref.watch(allProvider);
-    final todayViewModel = ref.read(todayProvider.notifier);
-    final allViewModel = ref.read(allProvider.notifier);
+    final todayViewModel = ref.watch(todayProvider.notifier);
+    final allViewModel = ref.watch(allProvider.notifier);
     final taskDatabase = ref.watch(taskDatabaseViewModelProvider);
     final wakelock = ref.watch(settingsViewModelProvider).wakelock;
 
     final isToday = currentIndex.value == 0;
 
     final l = AppLocalizations.of(context)!;
+
+    useEffect(() {
+      final analytics = ref.read(analyticsServiceProvider);
+      final screenName = isToday ? 'Today' : 'All';
+      analytics.logScreenView(screenName: screenName);
+      return null;
+    }, [isToday]);
 
     // ポーリングする
     // TODO: 前回の実行時間を記録して、余分にリクエストしないようにする
@@ -75,10 +82,13 @@ class TaskMainPage extends HookConsumerWidget {
     return TaskBasePage(
       key: Key('taskMainPage/${isToday ? 'Today' : 'All'}'),
       currentIndex: currentIndex.value,
-      showCompleted: isToday ? showTodayCompleted : null,
+      showCompleted: isToday ? todayViewModel.showCompleted : null,
       showSettingBadge: taskDatabase.valueOrNull != null,
       onIndexChanged: (index) {
         currentIndex.value = index;
+      },
+      onShowCompletedChanged: (value) async {
+        todayViewModel.toggleShowCompleted();
       },
       onAddTask: (title, dueDate) {
         switch (isToday) {
@@ -103,7 +113,7 @@ class TaskMainPage extends HookConsumerWidget {
                       data: (tasks) => TaskListView(
                         list: tasks,
                         taskViewModel: todayViewModel,
-                        showCompleted: showTodayCompleted.value,
+                        showCompleted: todayViewModel.showCompleted,
                         title: d.formatDateForTitle(DateTime.now()),
                       ),
                       loading: () => const Center(

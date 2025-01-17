@@ -88,7 +88,7 @@ class NotionTaskRepository {
         if (filter != null) "filter": filter,
         "sorts": [
           {"property": dateProperty.name, "direction": "ascending"},
-          {"timestamp": "last_edited_time", "direction": "descending"}
+          {"timestamp": "created_time", "direction": "ascending"}
         ],
         if (startCursor != null) "start_cursor": startCursor,
         "page_size": _pageSize

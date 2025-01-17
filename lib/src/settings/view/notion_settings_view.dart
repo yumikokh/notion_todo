@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../notion/model/index.dart';
@@ -182,52 +181,56 @@ class NotionSettingsView extends ConsumerWidget {
                   ),
                 ),
               ),
-            const SizedBox(height: 16),
-            Card.outlined(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-                side: BorderSide(
-                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
+            if (!isAuthenticated) ...[
+              const SizedBox(height: 16),
+              Card.outlined(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  side: BorderSide(
+                    color:
+                        Theme.of(context).colorScheme.surfaceContainerHighest,
+                  ),
                 ),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        const Icon(Icons.info_rounded),
-                        const SizedBox(width: 8),
-                        Text(
-                          l.notion_settings_view_not_found_database_description,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(Icons.info_rounded),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              l.notion_settings_view_not_found_database_description,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        l.notion_settings_view_not_found_database_template_description,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        l.notion_settings_view_not_found_database_select_description,
+                      ),
+                      const SizedBox(height: 16),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.asset(
+                          'assets/images/database_select.jpg',
+                          fit: BoxFit.cover,
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      l.notion_settings_view_not_found_database_template_description,
-                    ),
-                    const SizedBox(height: 8),
-                    FilledButton.icon(
-                      onPressed: () async {
-                        const url =
-                            'https://www.notion.so/templates/simple-gtd-planner';
-                        if (await canLaunchUrl(Uri.parse(url))) {
-                          await launchUrl(Uri.parse(url));
-                        }
-                      },
-                      icon: const Icon(Icons.open_in_new),
-                      label: Text(
-                          l.notion_settings_view_not_found_database_template),
-                    ),
-                  ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
+            ],
           ],
         ),
       ),

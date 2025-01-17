@@ -6,28 +6,37 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:background_fetch/background_fetch.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 
 import 'src/app.dart';
 import 'src/env/env.dart';
 import 'src/notion/repository/notion_task_repository.dart';
 import 'src/notion/tasks/task_viewmodel.dart';
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
+  const trackingEnabled = kReleaseMode;
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  await FirebaseAnalytics.instance
+      .setAnalyticsCollectionEnabled(trackingEnabled);
+
   await initATT();
 
-  const sentryEnabled = kReleaseMode;
-
   final app = ProviderScope(
-    observers: sentryEnabled ? [SentryProviderObserver()] : [],
+    observers: trackingEnabled ? [SentryProviderObserver()] : [],
     child: const BackgroundFetchInitializer(
       child: MyApp(),
     ),
   );
 
-  if (sentryEnabled) {
+  if (trackingEnabled) {
     await SentryFlutter.init(
       (options) {
         options.dsn = Env.sentryDsn;

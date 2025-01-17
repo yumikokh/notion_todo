@@ -14,6 +14,7 @@ import '../../settings/task_database/task_database_viewmodel.dart';
 import '../model/task.dart';
 import '../repository/notion_task_repository.dart';
 import 'task_service.dart';
+import '../../common/analytics/analytics_service.dart';
 
 part 'task_viewmodel.g.dart';
 
@@ -27,6 +28,8 @@ class TaskViewModel extends _$TaskViewModel {
   String? _nextCursor;
   bool _isLoading = false;
   bool get isLoading => _isLoading;
+  bool _showCompleted = false;
+  bool get showCompleted => _showCompleted;
 
   static final DateHelper d = DateHelper();
 
@@ -50,6 +53,20 @@ class TaskViewModel extends _$TaskViewModel {
     return await _fetchTasks(isFirstFetch: true);
   }
 
+  Future<void> toggleShowCompleted() async {
+    _showCompleted = !_showCompleted;
+    try {
+      final analytics = ref.read(analyticsServiceProvider);
+      await analytics.logCompletedTasksToggle(
+        isVisible: _showCompleted,
+        screenName: _filterType == FilterType.today ? 'Today' : 'All',
+      );
+    } catch (e) {
+      print('Analytics error: $e');
+    }
+    ref.notifyListeners();
+  }
+
   Future<void> loadMore() async {
     if (!_hasMore || _nextCursor == null || _isLoading) return;
 
@@ -58,6 +75,13 @@ class TaskViewModel extends _$TaskViewModel {
     try {
       final tasks = await _fetchTasks();
       state = AsyncValue.data([...currentTasks, ...tasks]);
+
+      try {
+        final analytics = ref.read(analyticsServiceProvider);
+        analytics.logTask('load_more', pageSize: tasks.length);
+      } catch (e) {
+        print('Analytics error: $e');
+      }
     } catch (e, stack) {
       state = AsyncValue.error(e, stack);
     }
@@ -140,6 +164,7 @@ class TaskViewModel extends _$TaskViewModel {
         return;
       }
       final snackbar = ref.read(snackbarProvider.notifier);
+      final analytics = ref.read(analyticsServiceProvider);
 
       final prevState = state;
       final tempId = DateTime.now().millisecondsSinceEpoch.toString();
@@ -154,8 +179,8 @@ class TaskViewModel extends _$TaskViewModel {
       state = AsyncValue.data([...state.valueOrNull ?? [], tempTask]);
 
       try {
-        final t = await _taskService.addTask(
-            tempTask.title, tempTask.dueDate?.start); // TODO: endは未実装
+        final t =
+            await _taskService.addTask(tempTask.title, tempTask.dueDate?.start);
 
         // 最新のstateを使用して更新
         state = AsyncValue.data([
@@ -171,25 +196,32 @@ class TaskViewModel extends _$TaskViewModel {
           },
         );
         ref.invalidateSelf();
+
+        // アナリティクスを記録（エラーハンドリングを追加）
+        try {
+          await analytics.logTask(
+            'task_created',
+            hasDueDate: tempTask.dueDate != null,
+          );
+        } catch (analyticsError) {
+          // アナリティクスのエラーは無視して処理を続行
+          print('Analytics error: $analyticsError');
+        }
       } catch (e) {
         state = prevState;
-        snackbar.show(
-          l.task_add_failed(title),
-          type: SnackbarType.error,
-        );
+        snackbar.show(l.task_add_failed(tempTask.title),
+            type: SnackbarType.error);
       }
     });
   }
 
-  Future updateTask(Task updatedTask) async {
+  Future<void> updateTask(Task task, {bool fromUndo = false}) async {
     await _addOperation(() async {
       final db = ref.read(taskDatabaseViewModelProvider).valueOrNull;
-      final dueDate = updatedTask.dueDate;
       final prevState = state;
-      final prevTask = prevState.valueOrNull
-          ?.where((t) => t.id == updatedTask.id)
-          .firstOrNull;
-      if (prevTask == null || updatedTask.title.trim().isEmpty) {
+      final prevTask =
+          prevState.valueOrNull?.where((t) => t.id == task.id).firstOrNull;
+      if (prevTask == null || task.title.trim().isEmpty) {
         return;
       }
       if (db == null) {
@@ -199,37 +231,52 @@ class TaskViewModel extends _$TaskViewModel {
       final locale = ref.read(settingsViewModelProvider).locale;
       final l = await AppLocalizations.delegate.load(locale);
 
-      state = state.whenData((t) {
-        return t.map((t) => t.id == updatedTask.id ? updatedTask : t).toList();
-      });
-      snackbar.show(l.task_update_success(updatedTask.title),
-          type: SnackbarType.success, onUndo: () {
-        updateTask(prevTask);
+      state = AsyncValue.data([
+        for (final t in state.valueOrNull ?? [])
+          if (t.id == task.id) task else t
+      ]);
+
+      snackbar.show(l.task_update_success(task.title),
+          type: SnackbarType.success, onUndo: () async {
+        updateTask(prevTask, fromUndo: true);
       });
 
       try {
-        final res = await _taskService.updateTask(
-            updatedTask.id, updatedTask.title, dueDate?.start);
+        final updatedTask = await _taskService.updateTask(
+            task.id, task.title, task.dueDate?.start);
 
-        state = state.whenData((t) {
-          return t.map((t) => t.id == updatedTask.id ? res : t).toList();
-        });
+        state = AsyncValue.data([
+          for (final Task t in state.valueOrNull ?? [])
+            if (t.id == task.id) updatedTask else t
+        ]);
         ref.invalidateSelf();
+
+        try {
+          final analytics = ref.read(analyticsServiceProvider);
+          await analytics.logTask(
+            'task_updated',
+            hasDueDate: updatedTask.dueDate?.start != null,
+            isCompleted: updatedTask.isCompleted,
+            fromUndo: fromUndo,
+          );
+        } catch (e) {
+          print('Analytics error: $e');
+        }
       } catch (e) {
         state = prevState;
-        snackbar.show(l.task_update_failed(updatedTask.title),
+        snackbar.show(l.task_update_failed(task.title),
             type: SnackbarType.error);
       }
     });
   }
 
-  Future updateStatus(Task task, bool isCompleted) async {
+  Future<void> updateStatus(Task task, bool isCompleted,
+      {bool fromUndo = false}) async {
     await _addOperation(() async {
       final taskDatabase = ref.read(taskDatabaseViewModelProvider).valueOrNull;
       if (taskDatabase == null) {
         return;
       }
-
       final snackbar = ref.read(snackbarProvider.notifier);
       final locale = ref.read(settingsViewModelProvider).locale;
       final l = await AppLocalizations.delegate.load(locale);
@@ -237,18 +284,34 @@ class TaskViewModel extends _$TaskViewModel {
           isCompleted
               ? l.task_update_status_success(task.title)
               : l.task_update_status_undo(task.title),
-          type: SnackbarType.success, onUndo: () {
-        updateStatus(task, !isCompleted);
+          type: SnackbarType.success, onUndo: () async {
+        updateStatus(task, !isCompleted, fromUndo: true);
       });
 
       _isLoading = true;
+      final prevState = state;
       try {
-        final res = await _taskService.updateStatus(task.id, isCompleted);
-        state = state.whenData((t) {
-          return t.map((t) => t.id == res.id ? res : t).toList();
-        });
+        final updatedTask =
+            await _taskService.updateStatus(task.id, isCompleted);
+        state = AsyncValue.data([
+          for (final t in state.valueOrNull ?? [])
+            if (t.id == updatedTask.id) updatedTask else t
+        ]);
         ref.invalidateSelf();
+
+        try {
+          final analytics = ref.read(analyticsServiceProvider);
+          await analytics.logTask(
+            'task_completed',
+            hasDueDate: task.dueDate?.start != null,
+            isCompleted: isCompleted,
+            fromUndo: fromUndo,
+          );
+        } catch (e) {
+          print('Analytics error: $e');
+        }
       } catch (e) {
+        state = prevState;
         snackbar.show(l.task_update_status_failed, type: SnackbarType.error);
       } finally {
         _isLoading = false;
@@ -256,27 +319,40 @@ class TaskViewModel extends _$TaskViewModel {
     });
   }
 
-  Future<void> deleteTask(Task task) async {
+  Future<void> deleteTask(Task task, {bool fromUndo = false}) async {
     await _addOperation(() async {
       final taskDatabase = ref.read(taskDatabaseViewModelProvider).valueOrNull;
-      if (taskDatabase?.status == null) return;
+      if (taskDatabase == null) {
+        return;
+      }
 
       final prevState = state;
       final snackbar = ref.read(snackbarProvider.notifier);
       final locale = ref.read(settingsViewModelProvider).locale;
       final l = await AppLocalizations.delegate.load(locale);
-      // 最新のstateから該当タスクを削除
       state = AsyncValue.data([
         for (final t in state.valueOrNull ?? [])
           if (t.id != task.id) t
       ]);
       snackbar.show(l.task_delete_success(task.title),
-          type: SnackbarType.success, onUndo: () {
+          type: SnackbarType.success, onUndo: () async {
         undoDeleteTask(task);
       });
 
       try {
         await _taskService.deleteTask(task.id);
+        try {
+          final analytics = ref.read(analyticsServiceProvider);
+          await analytics.logTask(
+            'task_deleted',
+            hasDueDate: task.dueDate?.start != null,
+            isCompleted: task.isCompleted,
+            fromUndo: fromUndo,
+          );
+          print('Analytics logged');
+        } catch (e) {
+          print('Analytics error: $e');
+        }
       } catch (e) {
         state = prevState;
         snackbar.show(l.task_delete_failed(task.title),
@@ -306,7 +382,6 @@ class TaskViewModel extends _$TaskViewModel {
           return;
         }
 
-        // APIからの応答で状態を更新
         state = state.whenData((tasks) {
           return tasks.map((task) {
             if (task.id == prev.id) {
@@ -317,8 +392,19 @@ class TaskViewModel extends _$TaskViewModel {
         });
 
         ref.invalidateSelf();
+
+        try {
+          final analytics = ref.read(analyticsServiceProvider);
+          await analytics.logTask(
+            'task_deleted',
+            hasDueDate: prev.dueDate?.start != null,
+            isCompleted: prev.isCompleted,
+            fromUndo: true,
+          );
+        } catch (e) {
+          print('Analytics error: $e');
+        }
       } catch (e) {
-        // エラーが発生した場合は元の状態に戻す
         state = prevState;
         snackbar.show(l.task_delete_failed_undo(prev.title),
             type: SnackbarType.error);

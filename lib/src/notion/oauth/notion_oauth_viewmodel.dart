@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../env/env.dart';
+import '../../common/analytics/analytics_service.dart';
 import 'notion_oauth_service.dart';
 
 part 'notion_oauth_viewmodel.g.dart';
@@ -31,12 +32,32 @@ class NotionOAuthViewModel extends _$NotionOAuthViewModel {
     if (accessToken != null) {
       await _notionOAuthService.saveAccessToken(accessToken);
       state = NotionOAuth(accessToken: accessToken);
+
+      try {
+        final analytics = ref.read(analyticsServiceProvider);
+        await analytics.logSettingsChanged(
+          settingName: 'notion_auth',
+          value: 'authenticated',
+        );
+      } catch (e) {
+        print('Analytics error: $e');
+      }
     }
   }
 
   Future<void> deauthenticate() async {
     await _notionOAuthService.deleteAccessToken();
     state = NotionOAuth.initialState();
+
+    try {
+      final analytics = ref.read(analyticsServiceProvider);
+      await analytics.logSettingsChanged(
+        settingName: 'notion_auth',
+        value: 'deauthenticated',
+      );
+    } catch (e) {
+      print('Analytics error: $e');
+    }
   }
 }
 

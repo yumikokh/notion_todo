@@ -1,5 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../common/analytics/analytics_service.dart';
 import '../../notion/model/task_database.dart';
 import '../../notion/model/index.dart';
 import '../../notion/repository/notion_database_repository.dart';
@@ -38,19 +39,50 @@ class TaskDatabaseViewModel extends _$TaskDatabaseViewModel {
     );
   }
 
-  void save(SelectedDatabaseState selectedTaskDatabase) async {
+  Future<void> save(SelectedDatabaseState selectedTaskDatabase) async {
     final taskDatabase = TaskDatabase(
         id: selectedTaskDatabase.id,
         name: selectedTaskDatabase.name,
         status: selectedTaskDatabase.status as TaskStatusProperty,
         date: selectedTaskDatabase.date as TaskDateProperty,
         title: selectedTaskDatabase.title);
-    _taskDatabaseService.save(taskDatabase);
-    state = AsyncValue.data(taskDatabase);
+    state = const AsyncValue.loading();
+    try {
+      await _taskDatabaseService.save(taskDatabase);
+      state = AsyncValue.data(taskDatabase);
+
+      try {
+        final analytics = ref.read(analyticsServiceProvider);
+        await analytics.logDatabaseOperation(
+          action: 'saved',
+          statusType: taskDatabase.status.type == PropertyType.status
+              ? 'status'
+              : 'checkbox',
+        );
+      } catch (e) {
+        print('Analytics error: $e');
+      }
+    } catch (e, stack) {
+      state = AsyncValue.error(e, stack);
+    }
   }
 
-  void clear() {
-    _taskDatabaseService.clear();
-    state = const AsyncValue.data(null);
+  Future<void> clear() async {
+    state = const AsyncValue.loading();
+    try {
+      await _taskDatabaseService.clear();
+      state = const AsyncValue.data(null);
+
+      try {
+        final analytics = ref.read(analyticsServiceProvider);
+        await analytics.logDatabaseOperation(
+          action: 'cleared',
+        );
+      } catch (e) {
+        print('Analytics error: $e');
+      }
+    } catch (e, stack) {
+      state = AsyncValue.error(e, stack);
+    }
   }
 }
