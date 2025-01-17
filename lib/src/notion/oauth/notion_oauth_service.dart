@@ -44,7 +44,7 @@ class NotionOAuthService {
   }
 
   Future<String?> fetchAccessToken() async {
-    return _notionOAuthRepository.fetchAccessToken();
+    return await _notionOAuthRepository.fetchAccessToken();
   }
 
   Future<String?> _loadAccessToken() async {
