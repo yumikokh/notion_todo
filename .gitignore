@@ -49,7 +49,5 @@ app.*.map.json
 env.g.dart
 
 # Firebase configuration files
-lib/firebase_options.dart
 **/google-services.json
 **/GoogleService-Info.plist
-firebase.json
