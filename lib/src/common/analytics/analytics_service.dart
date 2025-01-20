@@ -33,10 +33,14 @@ class AnalyticsService {
   Future<void> logScreenView({
     required String screenName,
     String? screenClass,
+    String? value,
   }) async {
     await _analytics.logScreenView(
       screenName: screenName,
       screenClass: screenClass,
+      parameters: {
+        if (value != null) 'value': value,
+      },
     );
   }
 

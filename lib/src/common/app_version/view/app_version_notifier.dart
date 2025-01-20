@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../app_version_viewmodel.dart';
+import '../../analytics/analytics_service.dart';
 
 class AppVersionNotifier {
   static const _releaseNoteUrl =
@@ -11,6 +12,7 @@ class AppVersionNotifier {
 
   static Future<void> checkAndShow(BuildContext context, WidgetRef ref) async {
     final viewModel = ref.read(appVersionViewModelProvider);
+    final analytics = ref.read(analyticsServiceProvider);
     if (!await viewModel.shouldShowUpdateDialog()) return;
     if (!context.mounted) return;
 
@@ -24,6 +26,10 @@ class AppVersionNotifier {
           onPressed: () async {
             if (await canLaunchUrl(Uri.parse(_releaseNoteUrl))) {
               await launchUrl(Uri.parse(_releaseNoteUrl));
+              analytics.logScreenView(
+                screenName: 'ReleaseNotes',
+                value: 'snackbar',
+              );
             }
           },
         ),
