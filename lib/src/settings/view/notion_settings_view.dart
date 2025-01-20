@@ -222,7 +222,7 @@ class NotionSettingsView extends ConsumerWidget {
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
                         child: Image.asset(
-                          'assets/images/database_select.jpg',
+                          'assets/images/database_select.png',
                           fit: BoxFit.cover,
                         ),
                       ),
