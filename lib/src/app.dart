@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'common/snackbar/view/snackbar_listener.dart';
 import 'helpers/date.dart';
+import 'common/app_version/view/app_version_dialog.dart';
 import 'settings/task_database/view/task_database_setting_page.dart';
 import 'notion/tasks/view/task_main_page.dart';
 import 'settings/view/language_settings_view.dart';
@@ -84,6 +85,15 @@ class MyApp extends ConsumerWidget {
               },
             );
           },
+          home: Builder(
+            builder: (context) {
+              // アプリ起動時にアップデートチェックを実行
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                AppVersionDialog.checkAndShow(context, ref);
+              });
+              return const TaskMainPage();
+            },
+          ),
         ),
       ),
     );

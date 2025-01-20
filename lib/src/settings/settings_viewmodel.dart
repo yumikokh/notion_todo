@@ -12,7 +12,6 @@ class SettingsViewModel with ChangeNotifier {
   SettingsViewModel(this._settingsService, this._analytics) {
     _themeMode = ThemeMode.system;
     _locale = const Locale('en');
-    _version = '';
     _wakelock = false;
     _loadSettings();
   }
@@ -20,7 +19,6 @@ class SettingsViewModel with ChangeNotifier {
   Future<void> _loadSettings() async {
     _themeMode = await _settingsService.themeMode();
     _locale = await _settingsService.locale();
-    _version = (await _settingsService.packageInfo()).version;
     _wakelock = await _settingsService.wakelock();
     notifyListeners();
   }
@@ -80,10 +78,6 @@ class SettingsViewModel with ChangeNotifier {
       value: wakelock ? 'enabled' : 'disabled',
     );
   }
-
-  /// Version
-  late String _version;
-  String get version => _version;
 }
 
 // MEMO: code-generatorで生成されるProviderはデフォルトで自動破棄が有効なため、appでListenableに適用できない

@@ -11,6 +11,7 @@ import 'notion_settings_view.dart';
 import '../settings_viewmodel.dart';
 import 'theme_settings_view.dart';
 import '../../common/analytics/analytics_service.dart';
+import '../../common/app_version/app_version_viewmodel.dart';
 
 class SettingsView extends ConsumerWidget {
   static const routeName = '/settings';
@@ -23,6 +24,7 @@ class SettingsView extends ConsumerWidget {
   Widget build(BuildContext context, ref) {
     final database = ref.read(taskDatabaseViewModelProvider).valueOrNull;
     final analytics = ref.read(analyticsServiceProvider);
+    final appVersionViewModel = ref.read(appVersionViewModelProvider);
     final l = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
@@ -151,9 +153,10 @@ class SettingsView extends ConsumerWidget {
               ],
             ),
             GestureDetector(
-              onTap: () {
-                Clipboard.setData(
-                    ClipboardData(text: settingsViewModel.version));
+              onTap: () async {
+                final version = await appVersionViewModel.getCurrentVersion();
+                if (!context.mounted) return;
+                Clipboard.setData(ClipboardData(text: version));
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(l.settings_view_version_copy),
@@ -162,7 +165,7 @@ class SettingsView extends ConsumerWidget {
                 );
                 analytics.logSettingsChanged(
                   settingName: 'copy_version',
-                  value: settingsViewModel.version,
+                  value: version,
                 );
               },
               child: ListTile(
@@ -170,8 +173,14 @@ class SettingsView extends ConsumerWidget {
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(settingsViewModel.version,
-                        style: const TextStyle(fontSize: 14)),
+                    FutureBuilder<String>(
+                      future: appVersionViewModel.getCurrentVersion(),
+                      builder: (context, snapshot) {
+                        final version = snapshot.data ?? '';
+                        return Text(version,
+                            style: const TextStyle(fontSize: 14));
+                      },
+                    ),
                     const SizedBox(width: 8),
                     const Icon(Icons.copy, size: 14),
                   ],
