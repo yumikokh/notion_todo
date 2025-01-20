@@ -159,5 +159,6 @@
       }
     }
   },
-  "releaseNote": "Details"
+  "releaseNote": "Details",
+  "settings_view_support_release_notes_title": "Release Notes"
 }

@@ -89,5 +89,6 @@
       }
     }
   },
-  "releaseNote": "詳細"
+  "releaseNote": "詳細",
+  "settings_view_support_release_notes_title": "リリースノート"
 }

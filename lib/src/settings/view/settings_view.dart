@@ -136,6 +136,21 @@ class SettingsView extends ConsumerWidget {
                   },
                 ),
                 ListTile(
+                  title: Text(l.settings_view_support_release_notes_title),
+                  trailing: const Icon(Icons.open_in_new_rounded),
+                  onTap: () async {
+                    const url =
+                        'https://yumikokh.notion.site/Release-Note-18154c37a54c807b8ac6ef6612524378';
+                    if (await canLaunchUrl(Uri.parse(url))) {
+                      await launchUrl(Uri.parse(url));
+                      analytics.logSettingsChanged(
+                        settingName: 'open_release_notes',
+                        value: 'true',
+                      );
+                    }
+                  },
+                ),
+                ListTile(
                   title: Text(l.settings_view_support_privacy_policy_title),
                   trailing: const Icon(Icons.open_in_new_rounded),
                   onTap: () async {
