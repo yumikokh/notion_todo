@@ -151,8 +151,7 @@
   "notion_settings_view_not_found_database_select_description": "If you already have your own database, choose \"Select pages to share\" (button below) to use it.",
   "go_to_settings": "Go to Settings",
   "notion_database_settings_required": "Notion database settings are required.",
-  "updateTitle": "App Updated",
-  "updateMessage": "Updated to version {version}!",
+  "updateMessage": "Updated to v{version} ✨",
   "@updateMessage": {
     "placeholders": {
       "version": {
@@ -160,5 +159,5 @@
       }
     }
   },
-  "releaseNote": "See Details"
+  "releaseNote": "Details"
 }

@@ -11,35 +11,26 @@ class AppVersionNotifier {
 
   static Future<void> checkAndShow(BuildContext context, WidgetRef ref) async {
     final viewModel = ref.read(appVersionViewModelProvider);
-    if (await viewModel.shouldShowUpdateDialog()) {
-      if (context.mounted) {
-        final l10n = AppLocalizations.of(context)!;
-        final version = await viewModel.getCurrentVersion();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                Expanded(
-                  child: Text(l10n.updateMessage(version)),
-                ),
-                TextButton(
-                  onPressed: () async {
-                    if (await canLaunchUrl(Uri.parse(_releaseNoteUrl))) {
-                      await launchUrl(Uri.parse(_releaseNoteUrl));
-                    }
-                  },
-                  child: Text(
-                    l10n.releaseNote,
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                ),
-              ],
-            ),
-            duration: const Duration(seconds: 8),
-          ),
-        );
-        await viewModel.markUpdateAsSeen();
-      }
-    }
+    if (!await viewModel.shouldShowUpdateDialog()) return;
+    if (!context.mounted) return;
+
+    final l10n = AppLocalizations.of(context)!;
+    final version = await viewModel.getCurrentVersion();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(l10n.updateMessage(version)),
+        action: SnackBarAction(
+          label: l10n.releaseNote,
+          onPressed: () async {
+            if (await canLaunchUrl(Uri.parse(_releaseNoteUrl))) {
+              await launchUrl(Uri.parse(_releaseNoteUrl));
+            }
+          },
+        ),
+        duration: const Duration(seconds: 5),
+        showCloseIcon: true,
+      ),
+    );
+    await viewModel.markUpdateAsSeen();
   }
 }

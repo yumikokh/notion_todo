@@ -81,8 +81,7 @@
   "notion_settings_view_not_found_database_select_description": "もし既にお使いのデータベースがあれば、「共有するページの選択」（下のボタン）から選んでください。",
   "go_to_settings": "設定ページへ",
   "notion_database_settings_required": "Notionのデータベース設定が必要です。",
-  "updateTitle": "アプリがアップデートされました",
-  "updateMessage": "バージョン{version}に更新されました 🎉",
+  "updateMessage": "v{version} に更新されました ✨",
   "@updateMessage": {
     "placeholders": {
       "version": {
@@ -90,5 +89,5 @@
       }
     }
   },
-  "releaseNote": "詳細はこちら"
+  "releaseNote": "詳細"
 }
