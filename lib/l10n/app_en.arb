@@ -152,5 +152,13 @@
   "go_to_settings": "Go to Settings",
   "notion_database_settings_required": "Notion database settings are required.",
   "updateTitle": "App Updated",
-  "updateMessage": "The app has been updated to a new version. Please continue to enjoy using it."
+  "updateMessage": "Updated to version {version}!",
+  "@updateMessage": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "releaseNote": "See Details"
 }

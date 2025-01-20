@@ -6,6 +6,7 @@ class AppVersionService {
 
   Future<String?> _getLastVersion() async {
     final prefs = await SharedPreferences.getInstance();
+    // return null; // for dev
     return prefs.getString(_lastVersionKey);
   }
 
