@@ -28,7 +28,8 @@ class SettingsView extends ConsumerWidget {
     final l = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: Text(l.settings_view_title),
+        title:
+            Text(l.settings_view_title, style: const TextStyle(fontSize: 20)),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
@@ -107,7 +108,7 @@ class SettingsView extends ConsumerWidget {
                 ListTile(
                   title: Text(l.settings_view_support_faq_title),
                   leading: const Icon(Icons.help_outline),
-                  trailing: const Icon(Icons.open_in_new_rounded),
+                  trailing: const Icon(Icons.open_in_new_rounded, size: 16),
                   onTap: () async {
                     const url =
                         'https://yumikokh.notion.site/Tanzaku-Todo-11f54c37a54c800da12cf5162f5beada';
@@ -119,7 +120,7 @@ class SettingsView extends ConsumerWidget {
                 ),
                 ListTile(
                   title: Text(l.settings_view_support_feedback_title),
-                  trailing: const Icon(Icons.open_in_new_rounded),
+                  trailing: const Icon(Icons.open_in_new_rounded, size: 16),
                   onTap: () async {
                     const url =
                         'https://docs.google.com/forms/d/e/1FAIpQLSfIdMsEJVzbWHdxdvNzr_-OUPEVqe3AMOmafCYctaa7hzcQpQ/viewform';
@@ -131,7 +132,7 @@ class SettingsView extends ConsumerWidget {
                 ),
                 ListTile(
                   title: Text(l.settings_view_support_release_notes_title),
-                  trailing: const Icon(Icons.open_in_new_rounded),
+                  trailing: const Icon(Icons.open_in_new_rounded, size: 16),
                   onTap: () async {
                     const url =
                         'https://yumikokh.notion.site/Release-Note-18154c37a54c807b8ac6ef6612524378';
@@ -143,7 +144,7 @@ class SettingsView extends ConsumerWidget {
                 ),
                 ListTile(
                   title: Text(l.settings_view_support_privacy_policy_title),
-                  trailing: const Icon(Icons.open_in_new_rounded),
+                  trailing: const Icon(Icons.open_in_new_rounded, size: 16),
                   onTap: () async {
                     const url =
                         'https://yumikokh.notion.site/Privacy-Policy-14b54c37a54c80e1b288c0097bb6c7bd';

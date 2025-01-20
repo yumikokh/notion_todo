@@ -28,7 +28,8 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
     final l = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: Text(l.task_database_settings_title),
+        title: Text(l.task_database_settings_title,
+            style: const TextStyle(fontSize: 20)),
       ),
       body: accessibleDatabases.when(
         data: (accessibleDatabases) => accessibleDatabases.isNotEmpty
