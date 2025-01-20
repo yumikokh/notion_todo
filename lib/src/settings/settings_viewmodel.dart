@@ -26,6 +26,9 @@ class SettingsViewModel with ChangeNotifier {
   /// ThemeMode
   late ThemeMode _themeMode;
   ThemeMode get themeMode => _themeMode;
+  String get themeModeName =>
+      _themeMode.name[0].toUpperCase() +
+      _themeMode.name.substring(1).toLowerCase();
 
   Future<void> updateThemeMode(ThemeMode? newThemeMode) async {
     if (newThemeMode == null) return;

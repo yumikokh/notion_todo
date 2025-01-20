@@ -61,7 +61,7 @@ class SettingsView extends ConsumerWidget {
                 ),
                 ListTile(
                   title: Text(l.settings_view_theme_settings_title),
-                  subtitle: Text(settingsViewModel.themeMode.name),
+                  subtitle: Text(settingsViewModel.themeModeName),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {
                     analytics.logScreenView(screenName: 'ThemeSettings');
