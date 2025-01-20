@@ -10,7 +10,7 @@ class AppVersionService {
     return prefs.getString(_lastVersionKey);
   }
 
-  Future<void> saveCurrentVersion() async {
+  Future<void> _saveCurrentVersion() async {
     final prefs = await SharedPreferences.getInstance();
     final packageInfo = await PackageInfo.fromPlatform();
     await prefs.setString(_lastVersionKey, packageInfo.version);
@@ -23,7 +23,17 @@ class AppVersionService {
 
   Future<bool> shouldShowUpdateDialog() async {
     final lastVersion = await _getLastVersion();
+    // 初回起動時（lastVersionがnull）は表示しない
+    if (lastVersion == null) {
+      await _saveCurrentVersion();
+      return false;
+    }
+
     final currentVersion = await getCurrentVersion();
-    return lastVersion == null || lastVersion != currentVersion;
+    return lastVersion != currentVersion;
+  }
+
+  Future<void> markUpdateAsSeen() async {
+    await _saveCurrentVersion();
   }
 }

@@ -23,6 +23,6 @@ class AppVersionViewModel {
   }
 
   Future<void> markUpdateAsSeen() async {
-    await _service.saveCurrentVersion();
+    await _service.markUpdateAsSeen();
   }
 }
