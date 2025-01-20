@@ -150,5 +150,15 @@
   "notion_settings_view_not_found_database_template_description": "Select \"Use a template provided\" (button above) during authentication to get a ready-to-use task management database!",
   "notion_settings_view_not_found_database_select_description": "If you already have your own database, choose \"Select pages to share\" (button below) to use it.",
   "go_to_settings": "Go to Settings",
-  "notion_database_settings_required": "Notion database settings are required."
+  "notion_database_settings_required": "Notion database settings are required.",
+  "updateMessage": "Updated to v{version} ✨",
+  "@updateMessage": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "releaseNote": "Details",
+  "settings_view_support_release_notes_title": "Release Notes"
 }
