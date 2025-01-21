@@ -61,8 +61,8 @@ flutter:
   generate: true
 
   assets:
-    # Add assets from the images directory to the application.
     - assets/images/
+    - assets/google_fonts/
 
 flutter_launcher_icons:
   ios: true

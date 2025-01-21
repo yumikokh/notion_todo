@@ -12,6 +12,7 @@ import '../settings_viewmodel.dart';
 import 'theme_settings_view.dart';
 import '../../common/analytics/analytics_service.dart';
 import '../../common/app_version/app_version_viewmodel.dart';
+import '../font/view/font_settings_view.dart';
 
 class SettingsView extends ConsumerWidget {
   static const routeName = '/settings';
@@ -28,7 +29,8 @@ class SettingsView extends ConsumerWidget {
     final l = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: Text(l.settings_view_title),
+        title:
+            Text(l.settings_view_title, style: const TextStyle(fontSize: 20)),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
@@ -60,7 +62,7 @@ class SettingsView extends ConsumerWidget {
                 ),
                 ListTile(
                   title: Text(l.settings_view_theme_settings_title),
-                  subtitle: Text(settingsViewModel.themeMode.name),
+                  subtitle: Text(settingsViewModel.themeModeName),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {
                     analytics.logScreenView(screenName: 'ThemeSettings');
@@ -76,6 +78,18 @@ class SettingsView extends ConsumerWidget {
                     analytics.logScreenView(screenName: 'LanguageSettings');
                     Navigator.of(context)
                         .pushNamed(LanguageSettingsView.routeName);
+                  },
+                ),
+                ListTile(
+                  title: Text(l.font_settings),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const FontSettingsView(),
+                      ),
+                    );
                   },
                 ),
                 ListTile(
@@ -107,7 +121,7 @@ class SettingsView extends ConsumerWidget {
                 ListTile(
                   title: Text(l.settings_view_support_faq_title),
                   leading: const Icon(Icons.help_outline),
-                  trailing: const Icon(Icons.open_in_new_rounded),
+                  trailing: const Icon(Icons.open_in_new_rounded, size: 16),
                   onTap: () async {
                     const url =
                         'https://yumikokh.notion.site/Tanzaku-Todo-11f54c37a54c800da12cf5162f5beada';
@@ -119,7 +133,7 @@ class SettingsView extends ConsumerWidget {
                 ),
                 ListTile(
                   title: Text(l.settings_view_support_feedback_title),
-                  trailing: const Icon(Icons.open_in_new_rounded),
+                  trailing: const Icon(Icons.open_in_new_rounded, size: 16),
                   onTap: () async {
                     const url =
                         'https://docs.google.com/forms/d/e/1FAIpQLSfIdMsEJVzbWHdxdvNzr_-OUPEVqe3AMOmafCYctaa7hzcQpQ/viewform';
@@ -131,7 +145,7 @@ class SettingsView extends ConsumerWidget {
                 ),
                 ListTile(
                   title: Text(l.settings_view_support_release_notes_title),
-                  trailing: const Icon(Icons.open_in_new_rounded),
+                  trailing: const Icon(Icons.open_in_new_rounded, size: 16),
                   onTap: () async {
                     const url =
                         'https://yumikokh.notion.site/Release-Note-18154c37a54c807b8ac6ef6612524378';
@@ -143,7 +157,7 @@ class SettingsView extends ConsumerWidget {
                 ),
                 ListTile(
                   title: Text(l.settings_view_support_privacy_policy_title),
-                  trailing: const Icon(Icons.open_in_new_rounded),
+                  trailing: const Icon(Icons.open_in_new_rounded, size: 16),
                   onTap: () async {
                     const url =
                         'https://yumikokh.notion.site/Privacy-Policy-14b54c37a54c80e1b288c0097bb6c7bd';

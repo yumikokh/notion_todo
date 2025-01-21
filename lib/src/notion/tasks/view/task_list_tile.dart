@@ -89,6 +89,7 @@ class TaskListTile extends HookWidget {
                 : Theme.of(context).colorScheme.onSurface,
             decoration: checked.value ? TextDecoration.lineThrough : null,
             decorationColor: Theme.of(context).colorScheme.outline,
+            fontSize: 15,
           )),
       subtitle: date != null && date.dateStrings.isNotEmpty
           ? Padding(

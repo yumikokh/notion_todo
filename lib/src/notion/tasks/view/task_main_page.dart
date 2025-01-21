@@ -14,6 +14,7 @@ import '../../../settings/task_database/task_database_viewmodel.dart';
 import '../task_viewmodel.dart';
 import 'task_list_view.dart';
 import 'task_base_page.dart';
+import '../../../settings/font/font_settings_viewmodel.dart';
 
 const int updateIntervalSec = 60;
 
@@ -34,6 +35,7 @@ class TaskMainPage extends HookConsumerWidget {
     final allViewModel = ref.watch(allProvider.notifier);
     final taskDatabase = ref.watch(taskDatabaseViewModelProvider);
     final wakelock = ref.watch(settingsViewModelProvider).wakelock;
+    final fontSettings = ref.watch(fontSettingsViewModelProvider);
 
     final isToday = currentIndex.value == 0;
 
@@ -111,10 +113,11 @@ class TaskMainPage extends HookConsumerWidget {
                     color: Theme.of(context).colorScheme.inversePrimary,
                     child: todayTasks.when(
                       data: (tasks) => TaskListView(
+                        title: d.formatDateForTitle(DateTime.now(),
+                            locale: fontSettings.value?.languageCode),
                         list: tasks,
                         taskViewModel: todayViewModel,
                         showCompleted: todayViewModel.showCompleted,
-                        title: d.formatDateForTitle(DateTime.now()),
                       ),
                       loading: () => const Center(
                         child: CircularProgressIndicator(),
@@ -131,6 +134,8 @@ class TaskMainPage extends HookConsumerWidget {
                     color: Theme.of(context).colorScheme.inversePrimary,
                     child: allTasks.when(
                       data: (tasks) => TaskListView(
+                        title: d.formatDateForTitle(DateTime.now(),
+                            locale: fontSettings.value?.languageCode),
                         list: tasks,
                         taskViewModel: allViewModel,
                         showCompleted: false, // NOTE: Indexページでは常に未完了のみ表示対応

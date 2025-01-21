@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../helpers/date.dart';
+import '../../../settings/font/font_constants.dart';
+import '../../../settings/font/font_settings_viewmodel.dart';
 import '../../../settings/theme/theme.dart';
 import '../../model/task.dart';
 import '../task_viewmodel.dart';
 import 'task_sheet/task_date_sheet.dart';
 import 'task_list_tile.dart';
 
-class TaskListView extends HookWidget {
+class TaskListView extends HookConsumerWidget {
   final List<Task> list;
   final TaskViewModel taskViewModel;
   final bool showCompleted;
@@ -105,9 +106,10 @@ class TaskListView extends HookWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final notCompletedTasks = list.where((task) => !task.isCompleted).toList();
     final completedTasks = list.where((task) => task.isCompleted).toList();
+    final fontSettings = ref.watch(fontSettingsViewModelProvider);
 
     final l = AppLocalizations.of(context)!;
 
@@ -129,16 +131,22 @@ class TaskListView extends HookWidget {
           )
         else ...[
           if (title != null)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(32, 0, 32, 20),
-              child: Text(
-                title!,
-                style: GoogleFonts.bodoniModa(
-                  fontSize: 28,
-                  fontStyle: FontStyle.italic,
-                  letterSpacing: -.8,
+            fontSettings.when(
+              data: (settings) => Padding(
+                padding: const EdgeInsets.fromLTRB(32, 0, 32, 20),
+                child: Text(
+                  title!,
+                  style: FontConstants.getFont(settings.fontFamily).copyWith(
+                    fontSize: settings.fontSize,
+                    fontStyle:
+                        settings.isItalic ? FontStyle.italic : FontStyle.normal,
+                    letterSpacing: settings.letterSpacing,
+                    fontWeight: settings.isBold ? FontWeight.bold : null,
+                  ),
                 ),
               ),
+              loading: () => const SizedBox(),
+              error: (_, __) => const SizedBox(),
             ),
           ...notCompletedTasks
               .map((task) => _buildDismissibleTask(task, context))

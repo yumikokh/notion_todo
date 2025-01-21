@@ -90,5 +90,14 @@
     }
   },
   "releaseNote": "詳細",
-  "settings_view_support_release_notes_title": "リリースノート"
+  "settings_view_support_release_notes_title": "リリースノート",
+  "font_settings": "タイトルのフォント設定",
+  "font_language": "フォントの言語",
+  "font_family": "フォント",
+  "italic": "イタリック体",
+  "font_size": "サイズ",
+  "letter_spacing": "文字間隔",
+  "preview": "プレビュー",
+  "reset": "リセット",
+  "bold": "太字"
 }
