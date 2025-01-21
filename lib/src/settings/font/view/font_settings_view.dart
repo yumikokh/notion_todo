@@ -12,6 +12,10 @@ class FontSettingsView extends HookConsumerWidget {
 
   static final DateHelper d = DateHelper();
 
+  Widget _buildSettingTitle(String text) {
+    return Text(text, style: const TextStyle(fontSize: 14));
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final fontSettings = ref.watch(fontSettingsViewModelProvider);
@@ -20,7 +24,7 @@ class FontSettingsView extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l.font_settings, style: const TextStyle(fontSize: 20)),
+        title: Text(l.font_settings, style: const TextStyle(fontSize: 18)),
         actions: [
           IconButton(
             onPressed: () async {
@@ -38,8 +42,13 @@ class FontSettingsView extends HookConsumerWidget {
           return ListView(
             children: [
               ListTile(
-                title: Text(l.font_family),
-                subtitle: Text(settings.fontFamily),
+                title: SizedBox(
+                  width: double.maxFinite,
+                  height: 24,
+                  child: _buildSettingTitle(l.font_family),
+                ),
+                trailing: Text(settings.fontFamily,
+                    style: const TextStyle(fontSize: 14)),
                 onTap: () async {
                   final fonts = GoogleFonts.asMap().keys.toList();
                   final selectedFont = await showDialog<String>(
@@ -75,7 +84,7 @@ class FontSettingsView extends HookConsumerWidget {
                 },
               ),
               SwitchListTile(
-                title: Text(l.italic),
+                title: _buildSettingTitle(l.italic),
                 value: settings.isItalic,
                 onChanged: (value) async {
                   await ref
@@ -86,7 +95,7 @@ class FontSettingsView extends HookConsumerWidget {
                 },
               ),
               ListTile(
-                title: Text(l.font_size),
+                title: _buildSettingTitle(l.font_size),
                 subtitle: Slider(
                   min: 16,
                   max: 40,
@@ -101,7 +110,7 @@ class FontSettingsView extends HookConsumerWidget {
                 ),
               ),
               ListTile(
-                title: Text(l.letter_spacing),
+                title: _buildSettingTitle(l.letter_spacing),
                 subtitle: Slider(
                   min: -2,
                   max: 2,
@@ -117,7 +126,8 @@ class FontSettingsView extends HookConsumerWidget {
               ),
               const Divider(),
               Padding(
-                padding: const EdgeInsets.fromLTRB(32, 0, 32, 20),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                 child: Text(
                   today,
                   style: GoogleFonts.getFont(
