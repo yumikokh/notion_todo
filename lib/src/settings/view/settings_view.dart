@@ -12,7 +12,7 @@ import '../settings_viewmodel.dart';
 import 'theme_settings_view.dart';
 import '../../common/analytics/analytics_service.dart';
 import '../../common/app_version/app_version_viewmodel.dart';
-import '../font/view/font_settings_view.dart';
+import 'appearance_settings_view.dart';
 
 class SettingsView extends ConsumerWidget {
   static const routeName = '/settings';
@@ -30,7 +30,7 @@ class SettingsView extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title:
-            Text(l.settings_view_title, style: const TextStyle(fontSize: 20)),
+            Text(l.settings_view_title, style: const TextStyle(fontSize: 18)),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
@@ -81,14 +81,14 @@ class SettingsView extends ConsumerWidget {
                   },
                 ),
                 ListTile(
-                  title: Text(l.font_settings),
+                  title: Text(l.appearance_settings_title),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {
-                    analytics.logScreenView(screenName: 'FontSettings');
+                    analytics.logScreenView(screenName: 'AppearanceSettings');
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const FontSettingsView(),
+                        builder: (context) => const AppearanceSettingsView(),
                       ),
                     );
                   },

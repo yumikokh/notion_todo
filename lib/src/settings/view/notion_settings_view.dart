@@ -25,7 +25,7 @@ class NotionSettingsView extends ConsumerWidget {
       backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
       appBar: AppBar(
         title: Text(l.notion_settings_view_title,
-            style: const TextStyle(fontSize: 20)),
+            style: const TextStyle(fontSize: 18)),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),

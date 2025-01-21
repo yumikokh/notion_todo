@@ -169,5 +169,9 @@
   "letter_spacing": "Letter Spacing",
   "preview": "Preview",
   "reset": "Reset",
-  "bold": "Bold"
+  "bold": "Bold",
+  "appearance_settings_title": "Appearance",
+  "hide_navigation_label_title": "Hide Navigation Labels",
+  "hide_navigation_label_description": "Hide labels in the bottom navigation bar",
+  "font_settings_description": "Customize the date format of the today task list"
 }
