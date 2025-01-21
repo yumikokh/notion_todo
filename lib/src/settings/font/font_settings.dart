@@ -6,6 +6,7 @@ part 'font_settings.g.dart';
 @freezed
 class FontSettings with _$FontSettings {
   const factory FontSettings({
+    @Default('en') String languageCode,
     @Default('Bodoni Moda') String fontFamily,
     @Default(true) bool isItalic,
     @Default(28) double fontSize,

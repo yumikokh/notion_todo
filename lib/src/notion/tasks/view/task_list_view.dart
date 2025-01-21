@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../helpers/date.dart';
+import '../../../settings/font/font_constants.dart';
 import '../../../settings/font/font_settings_viewmodel.dart';
 import '../../../settings/theme/theme.dart';
 import '../../model/task.dart';
@@ -136,8 +136,7 @@ class TaskListView extends HookConsumerWidget {
                 padding: const EdgeInsets.fromLTRB(32, 0, 32, 20),
                 child: Text(
                   title!,
-                  style: GoogleFonts.getFont(
-                    settings.fontFamily,
+                  style: FontConstants.getFont(settings.fontFamily).copyWith(
                     fontSize: settings.fontSize,
                     fontStyle:
                         settings.isItalic ? FontStyle.italic : FontStyle.normal,

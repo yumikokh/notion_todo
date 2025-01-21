@@ -20,6 +20,7 @@ FontSettings _$FontSettingsFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$FontSettings {
+  String get languageCode => throw _privateConstructorUsedError;
   String get fontFamily => throw _privateConstructorUsedError;
   bool get isItalic => throw _privateConstructorUsedError;
   double get fontSize => throw _privateConstructorUsedError;
@@ -42,7 +43,8 @@ abstract class $FontSettingsCopyWith<$Res> {
       _$FontSettingsCopyWithImpl<$Res, FontSettings>;
   @useResult
   $Res call(
-      {String fontFamily,
+      {String languageCode,
+      String fontFamily,
       bool isItalic,
       double fontSize,
       double letterSpacing});
@@ -63,12 +65,17 @@ class _$FontSettingsCopyWithImpl<$Res, $Val extends FontSettings>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? languageCode = null,
     Object? fontFamily = null,
     Object? isItalic = null,
     Object? fontSize = null,
     Object? letterSpacing = null,
   }) {
     return _then(_value.copyWith(
+      languageCode: null == languageCode
+          ? _value.languageCode
+          : languageCode // ignore: cast_nullable_to_non_nullable
+              as String,
       fontFamily: null == fontFamily
           ? _value.fontFamily
           : fontFamily // ignore: cast_nullable_to_non_nullable
@@ -98,7 +105,8 @@ abstract class _$$FontSettingsImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String fontFamily,
+      {String languageCode,
+      String fontFamily,
       bool isItalic,
       double fontSize,
       double letterSpacing});
@@ -117,12 +125,17 @@ class __$$FontSettingsImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? languageCode = null,
     Object? fontFamily = null,
     Object? isItalic = null,
     Object? fontSize = null,
     Object? letterSpacing = null,
   }) {
     return _then(_$FontSettingsImpl(
+      languageCode: null == languageCode
+          ? _value.languageCode
+          : languageCode // ignore: cast_nullable_to_non_nullable
+              as String,
       fontFamily: null == fontFamily
           ? _value.fontFamily
           : fontFamily // ignore: cast_nullable_to_non_nullable
@@ -147,7 +160,8 @@ class __$$FontSettingsImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$FontSettingsImpl implements _FontSettings {
   const _$FontSettingsImpl(
-      {this.fontFamily = 'Bodoni Moda',
+      {this.languageCode = 'en',
+      this.fontFamily = 'Bodoni Moda',
       this.isItalic = true,
       this.fontSize = 28,
       this.letterSpacing = -0.8});
@@ -155,6 +169,9 @@ class _$FontSettingsImpl implements _FontSettings {
   factory _$FontSettingsImpl.fromJson(Map<String, dynamic> json) =>
       _$$FontSettingsImplFromJson(json);
 
+  @override
+  @JsonKey()
+  final String languageCode;
   @override
   @JsonKey()
   final String fontFamily;
@@ -170,7 +187,7 @@ class _$FontSettingsImpl implements _FontSettings {
 
   @override
   String toString() {
-    return 'FontSettings(fontFamily: $fontFamily, isItalic: $isItalic, fontSize: $fontSize, letterSpacing: $letterSpacing)';
+    return 'FontSettings(languageCode: $languageCode, fontFamily: $fontFamily, isItalic: $isItalic, fontSize: $fontSize, letterSpacing: $letterSpacing)';
   }
 
   @override
@@ -178,6 +195,8 @@ class _$FontSettingsImpl implements _FontSettings {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$FontSettingsImpl &&
+            (identical(other.languageCode, languageCode) ||
+                other.languageCode == languageCode) &&
             (identical(other.fontFamily, fontFamily) ||
                 other.fontFamily == fontFamily) &&
             (identical(other.isItalic, isItalic) ||
@@ -190,8 +209,8 @@ class _$FontSettingsImpl implements _FontSettings {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, fontFamily, isItalic, fontSize, letterSpacing);
+  int get hashCode => Object.hash(
+      runtimeType, languageCode, fontFamily, isItalic, fontSize, letterSpacing);
 
   /// Create a copy of FontSettings
   /// with the given fields replaced by the non-null parameter values.
@@ -211,7 +230,8 @@ class _$FontSettingsImpl implements _FontSettings {
 
 abstract class _FontSettings implements FontSettings {
   const factory _FontSettings(
-      {final String fontFamily,
+      {final String languageCode,
+      final String fontFamily,
       final bool isItalic,
       final double fontSize,
       final double letterSpacing}) = _$FontSettingsImpl;
@@ -219,6 +239,8 @@ abstract class _FontSettings implements FontSettings {
   factory _FontSettings.fromJson(Map<String, dynamic> json) =
       _$FontSettingsImpl.fromJson;
 
+  @override
+  String get languageCode;
   @override
   String get fontFamily;
   @override

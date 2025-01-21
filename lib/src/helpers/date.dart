@@ -35,7 +35,7 @@ class DateHelper {
   }
 
   String dateString(DateTime date) {
-    return date.toIso8601String().split('T').first;
+    return date.toIso8601String().split('T')[0];
   }
 
   bool hasTime(String dateTime) {
@@ -100,13 +100,12 @@ class DateHelper {
     return DateFormat(format, locale.name).format(date);
   }
 
-  String formatDateForTitle(DateTime date) {
-    final today = DateTime.now();
-    final day = formatDate(today, format: 'EE');
-    final date = formatDate(today, format: 'MMMd');
-    if (locale == AppLocale.ja) {
-      return '$date ($day)';
+  String formatDateForTitle(DateTime date, {String? locale}) {
+    final day = DateFormat.E(locale).format(date);
+    final dateStr = DateFormat.MMMd(locale).format(date);
+    if (locale == 'ja') {
+      return '$dateStr ($day)';
     }
-    return '$day, $date';
+    return '$day, $dateStr';
   }
 }

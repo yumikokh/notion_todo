@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../helpers/date.dart';
+import '../font_constants.dart';
 import '../font_settings.dart';
 import '../font_settings_viewmodel.dart';
 
@@ -20,7 +20,6 @@ class FontSettingsView extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final fontSettings = ref.watch(fontSettingsViewModelProvider);
     final l = AppLocalizations.of(context)!;
-    final today = d.formatDateForTitle(DateTime.now());
 
     return Scaffold(
       appBar: AppBar(
@@ -39,8 +38,53 @@ class FontSettingsView extends HookConsumerWidget {
       ),
       body: fontSettings.when(
         data: (settings) {
+          final today = d.formatDateForTitle(
+            DateTime.now(),
+            locale: settings.languageCode,
+          );
           return ListView(
             children: [
+              ListTile(
+                title: _buildSettingTitle(l.font_language),
+                trailing: Text(
+                  settings.languageCode == 'en'
+                      ? l.language_settings_language_en
+                      : l.language_settings_language_ja,
+                  style: const TextStyle(fontSize: 14),
+                ),
+                onTap: () async {
+                  final selectedLanguage = await showDialog<String>(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ListTile(
+                            title: Text(l.language_settings_language_en),
+                            onTap: () => Navigator.pop(context, 'en'),
+                          ),
+                          ListTile(
+                            title: Text(l.language_settings_language_ja),
+                            onTap: () => Navigator.pop(context, 'ja'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                  if (selectedLanguage != null) {
+                    final fonts =
+                        FontConstants.getFontsForLocale(selectedLanguage);
+                    await ref
+                        .read(fontSettingsViewModelProvider.notifier)
+                        .updateFontSettings(
+                          settings.copyWith(
+                            languageCode: selectedLanguage,
+                            fontFamily: fonts.first,
+                          ),
+                        );
+                  }
+                },
+              ),
               ListTile(
                 title: SizedBox(
                   width: double.maxFinite,
@@ -50,11 +94,11 @@ class FontSettingsView extends HookConsumerWidget {
                 trailing: Text(settings.fontFamily,
                     style: const TextStyle(fontSize: 14)),
                 onTap: () async {
-                  final fonts = GoogleFonts.asMap().keys.toList();
+                  final fonts =
+                      FontConstants.getFontsForLocale(settings.languageCode);
                   final selectedFont = await showDialog<String>(
                     context: context,
                     builder: (context) => AlertDialog(
-                      title: Text(l.select_font),
                       content: SizedBox(
                         width: double.maxFinite,
                         child: ListView.builder(
@@ -65,7 +109,7 @@ class FontSettingsView extends HookConsumerWidget {
                             return ListTile(
                               title: Text(
                                 font,
-                                style: GoogleFonts.getFont(font),
+                                style: FontConstants.getFont(font),
                               ),
                               onTap: () => Navigator.pop(context, font),
                             );
@@ -130,8 +174,7 @@ class FontSettingsView extends HookConsumerWidget {
                     const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                 child: Text(
                   today,
-                  style: GoogleFonts.getFont(
-                    settings.fontFamily,
+                  style: FontConstants.getFont(settings.fontFamily).copyWith(
                     fontSize: settings.fontSize,
                     fontStyle:
                         settings.isItalic ? FontStyle.italic : FontStyle.normal,
