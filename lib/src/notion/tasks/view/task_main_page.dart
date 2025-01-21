@@ -35,6 +35,8 @@ class TaskMainPage extends HookConsumerWidget {
     final allViewModel = ref.watch(allProvider.notifier);
     final taskDatabase = ref.watch(taskDatabaseViewModelProvider);
     final wakelock = ref.watch(settingsViewModelProvider).wakelock;
+    final hideNavigationLabel =
+        ref.watch(settingsViewModelProvider).hideNavigationLabel;
     final fontSettings = ref.watch(fontSettingsViewModelProvider);
 
     final isToday = currentIndex.value == 0;
@@ -86,6 +88,7 @@ class TaskMainPage extends HookConsumerWidget {
       currentIndex: currentIndex.value,
       showCompleted: isToday ? todayViewModel.showCompleted : null,
       showSettingBadge: taskDatabase.valueOrNull != null,
+      hideNavigationLabel: hideNavigationLabel,
       onIndexChanged: (index) {
         currentIndex.value = index;
       },
@@ -134,8 +137,6 @@ class TaskMainPage extends HookConsumerWidget {
                     color: Theme.of(context).colorScheme.inversePrimary,
                     child: allTasks.when(
                       data: (tasks) => TaskListView(
-                        title: d.formatDateForTitle(DateTime.now(),
-                            locale: fontSettings.value?.languageCode),
                         list: tasks,
                         taskViewModel: allViewModel,
                         showCompleted: false, // NOTE: Indexページでは常に未完了のみ表示対応

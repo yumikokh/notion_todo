@@ -21,7 +21,7 @@ class LanguageSettingsView extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(l.language_settings_title,
-            style: const TextStyle(fontSize: 20)),
+            style: const TextStyle(fontSize: 18)),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 20),

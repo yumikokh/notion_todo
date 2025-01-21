@@ -20,6 +20,7 @@ class SettingsViewModel with ChangeNotifier {
     _themeMode = await _settingsService.themeMode();
     _locale = await _settingsService.locale();
     _wakelock = await _settingsService.wakelock();
+    _hideNavigationLabel = await _settingsService.loadHideNavigationLabel();
     notifyListeners();
   }
 
@@ -79,6 +80,23 @@ class SettingsViewModel with ChangeNotifier {
     await _analytics.logSettingsChanged(
       settingName: 'wakelock',
       value: wakelock ? 'enabled' : 'disabled',
+    );
+  }
+
+  /// Navigation Label
+  late bool _hideNavigationLabel;
+  bool get hideNavigationLabel => _hideNavigationLabel;
+
+  Future<void> updateHideNavigationLabel(bool value) async {
+    if (value == _hideNavigationLabel) return;
+
+    _hideNavigationLabel = value;
+    notifyListeners();
+
+    await _settingsService.saveHideNavigationLabel(value);
+    await _analytics.logSettingsChanged(
+      settingName: 'hide_navigation_label',
+      value: value ? 'hidden' : 'shown',
     );
   }
 }

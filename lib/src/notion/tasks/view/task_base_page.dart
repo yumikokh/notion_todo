@@ -8,6 +8,7 @@ class TaskBasePage extends StatelessWidget {
   final int currentIndex;
   final bool? showCompleted;
   final bool showSettingBadge;
+  final bool hideNavigationLabel;
   final void Function(int) onIndexChanged;
   final void Function(bool) onShowCompletedChanged;
   final void Function(String, DateTime?) onAddTask;
@@ -18,6 +19,7 @@ class TaskBasePage extends StatelessWidget {
     required this.currentIndex,
     required this.showCompleted,
     required this.showSettingBadge,
+    required this.hideNavigationLabel,
     required this.onIndexChanged,
     required this.onShowCompletedChanged,
     required this.onAddTask,
@@ -71,6 +73,9 @@ class TaskBasePage extends StatelessWidget {
         bottomNavigationBar: NavigationBar(
           selectedIndex: currentIndex,
           onDestinationSelected: onIndexChanged,
+          labelBehavior: hideNavigationLabel
+              ? NavigationDestinationLabelBehavior.alwaysHide
+              : NavigationDestinationLabelBehavior.alwaysShow,
           destinations: [
             NavigationDestination(
               icon: const Icon(Icons.today_outlined),

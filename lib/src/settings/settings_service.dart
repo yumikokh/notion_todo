@@ -8,6 +8,7 @@ class SettingsService {
   static const _themeModeKey = 'themeMode';
   static const _languageKey = 'language';
   static const _wakelockKey = 'wakelock';
+  static const _hideNavigationLabelKey = 'hide_navigation_label';
 
   /* themeMode */
   Future<ThemeMode> themeMode() async {
@@ -54,5 +55,15 @@ class SettingsService {
   /* packageInfo */
   Future<PackageInfo> packageInfo() async {
     return await PackageInfo.fromPlatform();
+  }
+
+  Future<bool> loadHideNavigationLabel() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_hideNavigationLabelKey) ?? false;
+  }
+
+  Future<void> saveHideNavigationLabel(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_hideNavigationLabelKey, value);
   }
 }
