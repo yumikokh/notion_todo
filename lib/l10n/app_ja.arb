@@ -95,8 +95,9 @@
   "font_language": "フォントの言語",
   "font_family": "フォント",
   "italic": "イタリック体",
-  "font_size": "フォントサイズ",
+  "font_size": "サイズ",
   "letter_spacing": "文字間隔",
   "preview": "プレビュー",
-  "reset": "リセット"
+  "reset": "リセット",
+  "bold": "太字"
 }

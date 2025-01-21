@@ -23,6 +23,7 @@ mixin _$FontSettings {
   String get languageCode => throw _privateConstructorUsedError;
   String get fontFamily => throw _privateConstructorUsedError;
   bool get isItalic => throw _privateConstructorUsedError;
+  bool get isBold => throw _privateConstructorUsedError;
   double get fontSize => throw _privateConstructorUsedError;
   double get letterSpacing => throw _privateConstructorUsedError;
 
@@ -46,6 +47,7 @@ abstract class $FontSettingsCopyWith<$Res> {
       {String languageCode,
       String fontFamily,
       bool isItalic,
+      bool isBold,
       double fontSize,
       double letterSpacing});
 }
@@ -68,6 +70,7 @@ class _$FontSettingsCopyWithImpl<$Res, $Val extends FontSettings>
     Object? languageCode = null,
     Object? fontFamily = null,
     Object? isItalic = null,
+    Object? isBold = null,
     Object? fontSize = null,
     Object? letterSpacing = null,
   }) {
@@ -83,6 +86,10 @@ class _$FontSettingsCopyWithImpl<$Res, $Val extends FontSettings>
       isItalic: null == isItalic
           ? _value.isItalic
           : isItalic // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isBold: null == isBold
+          ? _value.isBold
+          : isBold // ignore: cast_nullable_to_non_nullable
               as bool,
       fontSize: null == fontSize
           ? _value.fontSize
@@ -108,6 +115,7 @@ abstract class _$$FontSettingsImplCopyWith<$Res>
       {String languageCode,
       String fontFamily,
       bool isItalic,
+      bool isBold,
       double fontSize,
       double letterSpacing});
 }
@@ -128,6 +136,7 @@ class __$$FontSettingsImplCopyWithImpl<$Res>
     Object? languageCode = null,
     Object? fontFamily = null,
     Object? isItalic = null,
+    Object? isBold = null,
     Object? fontSize = null,
     Object? letterSpacing = null,
   }) {
@@ -143,6 +152,10 @@ class __$$FontSettingsImplCopyWithImpl<$Res>
       isItalic: null == isItalic
           ? _value.isItalic
           : isItalic // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isBold: null == isBold
+          ? _value.isBold
+          : isBold // ignore: cast_nullable_to_non_nullable
               as bool,
       fontSize: null == fontSize
           ? _value.fontSize
@@ -163,6 +176,7 @@ class _$FontSettingsImpl implements _FontSettings {
       {this.languageCode = 'en',
       this.fontFamily = 'Bodoni Moda',
       this.isItalic = true,
+      this.isBold = false,
       this.fontSize = 28,
       this.letterSpacing = -0.8});
 
@@ -180,6 +194,9 @@ class _$FontSettingsImpl implements _FontSettings {
   final bool isItalic;
   @override
   @JsonKey()
+  final bool isBold;
+  @override
+  @JsonKey()
   final double fontSize;
   @override
   @JsonKey()
@@ -187,7 +204,7 @@ class _$FontSettingsImpl implements _FontSettings {
 
   @override
   String toString() {
-    return 'FontSettings(languageCode: $languageCode, fontFamily: $fontFamily, isItalic: $isItalic, fontSize: $fontSize, letterSpacing: $letterSpacing)';
+    return 'FontSettings(languageCode: $languageCode, fontFamily: $fontFamily, isItalic: $isItalic, isBold: $isBold, fontSize: $fontSize, letterSpacing: $letterSpacing)';
   }
 
   @override
@@ -201,6 +218,7 @@ class _$FontSettingsImpl implements _FontSettings {
                 other.fontFamily == fontFamily) &&
             (identical(other.isItalic, isItalic) ||
                 other.isItalic == isItalic) &&
+            (identical(other.isBold, isBold) || other.isBold == isBold) &&
             (identical(other.fontSize, fontSize) ||
                 other.fontSize == fontSize) &&
             (identical(other.letterSpacing, letterSpacing) ||
@@ -209,8 +227,8 @@ class _$FontSettingsImpl implements _FontSettings {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
-      runtimeType, languageCode, fontFamily, isItalic, fontSize, letterSpacing);
+  int get hashCode => Object.hash(runtimeType, languageCode, fontFamily,
+      isItalic, isBold, fontSize, letterSpacing);
 
   /// Create a copy of FontSettings
   /// with the given fields replaced by the non-null parameter values.
@@ -233,6 +251,7 @@ abstract class _FontSettings implements FontSettings {
       {final String languageCode,
       final String fontFamily,
       final bool isItalic,
+      final bool isBold,
       final double fontSize,
       final double letterSpacing}) = _$FontSettingsImpl;
 
@@ -245,6 +264,8 @@ abstract class _FontSettings implements FontSettings {
   String get fontFamily;
   @override
   bool get isItalic;
+  @override
+  bool get isBold;
   @override
   double get fontSize;
   @override

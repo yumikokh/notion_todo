@@ -138,6 +138,17 @@ class FontSettingsView extends HookConsumerWidget {
                       );
                 },
               ),
+              SwitchListTile(
+                title: _buildSettingTitle(l.bold),
+                value: settings.isBold,
+                onChanged: (value) async {
+                  await ref
+                      .read(fontSettingsViewModelProvider.notifier)
+                      .updateFontSettings(
+                        settings.copyWith(isBold: value),
+                      );
+                },
+              ),
               ListTile(
                 title: _buildSettingTitle(l.font_size),
                 subtitle: Slider(
@@ -168,6 +179,7 @@ class FontSettingsView extends HookConsumerWidget {
                   },
                 ),
               ),
+              const SizedBox(height: 12),
               const Divider(),
               Padding(
                 padding:
@@ -179,6 +191,7 @@ class FontSettingsView extends HookConsumerWidget {
                     fontStyle:
                         settings.isItalic ? FontStyle.italic : FontStyle.normal,
                     letterSpacing: settings.letterSpacing,
+                    fontWeight: settings.isBold ? FontWeight.bold : null,
                   ),
                 ),
               ),

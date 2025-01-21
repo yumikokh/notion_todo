@@ -141,6 +141,7 @@ class TaskListView extends HookConsumerWidget {
                     fontStyle:
                         settings.isItalic ? FontStyle.italic : FontStyle.normal,
                     letterSpacing: settings.letterSpacing,
+                    fontWeight: settings.isBold ? FontWeight.bold : null,
                   ),
                 ),
               ),

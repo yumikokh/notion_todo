@@ -168,5 +168,6 @@
   "font_size": "Font Size",
   "letter_spacing": "Letter Spacing",
   "preview": "Preview",
-  "reset": "Reset"
+  "reset": "Reset",
+  "bold": "Bold"
 }

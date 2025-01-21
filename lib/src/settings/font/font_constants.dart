@@ -2,18 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class FontConstants {
-  static const Map<String, List<String>> fontsByLanguage = {
+  static final Map<String, List<String>> fontsByLanguage = {
     'en': [
       'Bodoni Moda',
-      'Playfair Display',
-      'Cormorant Garamond',
-      'Libre Baskerville',
-      'Crimson Text',
+      'Roboto Condensed',
+      'M PLUS 1p',
+      'Ubuntu',
+      'Amatic SC',
     ],
     'ja': [
-      'Bodoni Moda',
-      // 'Noto Serif JP',
-      // 'Shippori Mincho B1',
+      'Noto Sans JP',
+      'Zen Old Mincho',
     ],
   };
 
