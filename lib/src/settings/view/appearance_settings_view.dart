@@ -4,6 +4,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../common/analytics/analytics_service.dart';
 import '../font/view/font_settings_view.dart';
 import '../settings_viewmodel.dart';
+import 'theme_settings_view.dart';
 
 class AppearanceSettingsView extends ConsumerWidget {
   static const routeName = '/settings/appearance';
@@ -23,6 +24,16 @@ class AppearanceSettingsView extends ConsumerWidget {
       ),
       body: ListView(
         children: [
+          ListTile(
+            title: Text(l.settings_view_theme_settings_title),
+            subtitle: Text(l.current_setting(settingsViewModel.themeModeName),
+                style: const TextStyle(fontSize: 11)),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {
+              analytics.logScreenView(screenName: 'ThemeSettings');
+              Navigator.of(context).pushNamed(ThemeSettingsView.routeName);
+            },
+          ),
           ListTile(
             title: Text(l.font_settings),
             subtitle: Text(l.font_settings_description,

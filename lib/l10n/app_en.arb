@@ -173,5 +173,13 @@
   "appearance_settings_title": "Appearance",
   "hide_navigation_label_title": "Hide Navigation Labels",
   "hide_navigation_label_description": "Hide labels in the bottom navigation bar",
-  "font_settings_description": "Customize the date format of the today task list"
+  "font_settings_description": "Customize the date format of the today task list",
+  "current_setting": "Current: {setting}",
+  "@current_setting": {
+    "placeholders": {
+      "setting": {
+        "type": "String"
+      }
+    }
+  }
 }

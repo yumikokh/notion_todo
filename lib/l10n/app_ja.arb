@@ -103,5 +103,13 @@
   "appearance_settings_title": "見た目のカスタマイズ",
   "hide_navigation_label_title": "ナビゲーションラベルを非表示",
   "font_settings_description": "今日のタスク一覧の日付をカスタマイズします",
-  "hide_navigation_label_description": "下部のナビゲーションバーのラベルを非表示にします"
+  "hide_navigation_label_description": "下部のナビゲーションバーのラベルを非表示にします",
+  "current_setting": "現在の設定: {setting}",
+  "@current_setting": {
+    "placeholders": {
+      "setting": {
+        "type": "String"
+      }
+    }
+  }
 }

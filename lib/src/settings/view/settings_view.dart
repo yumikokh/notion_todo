@@ -9,13 +9,14 @@ import '../task_database/task_database_viewmodel.dart';
 import 'language_settings_view.dart';
 import 'notion_settings_view.dart';
 import '../settings_viewmodel.dart';
-import 'theme_settings_view.dart';
 import '../../common/analytics/analytics_service.dart';
 import '../../common/app_version/app_version_viewmodel.dart';
 import 'appearance_settings_view.dart';
 
 class SettingsView extends ConsumerWidget {
   static const routeName = '/settings';
+
+  static const TextStyle _supportFontStyle = TextStyle(fontSize: 13);
 
   final SettingsViewModel settingsViewModel;
 
@@ -58,16 +59,6 @@ class SettingsView extends ConsumerWidget {
                     analytics.logScreenView(screenName: 'NotionSettings');
                     Navigator.of(context)
                         .pushNamed(NotionSettingsView.routeName);
-                  },
-                ),
-                ListTile(
-                  title: Text(l.settings_view_theme_settings_title),
-                  subtitle: Text(settingsViewModel.themeModeName),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () {
-                    analytics.logScreenView(screenName: 'ThemeSettings');
-                    Navigator.of(context)
-                        .pushNamed(ThemeSettingsView.routeName);
                   },
                 ),
                 ListTile(
@@ -120,8 +111,9 @@ class SettingsView extends ConsumerWidget {
               title: l.settings_view_support_title,
               children: [
                 ListTile(
-                  title: Text(l.settings_view_support_faq_title),
-                  leading: const Icon(Icons.help_outline),
+                  dense: true,
+                  title: Text(l.settings_view_support_faq_title,
+                      style: _supportFontStyle),
                   trailing: const Icon(Icons.open_in_new_rounded, size: 16),
                   onTap: () async {
                     const url =
@@ -133,19 +125,9 @@ class SettingsView extends ConsumerWidget {
                   },
                 ),
                 ListTile(
-                  title: Text(l.settings_view_support_feedback_title),
-                  trailing: const Icon(Icons.open_in_new_rounded, size: 16),
-                  onTap: () async {
-                    const url =
-                        'https://docs.google.com/forms/d/e/1FAIpQLSfIdMsEJVzbWHdxdvNzr_-OUPEVqe3AMOmafCYctaa7hzcQpQ/viewform';
-                    if (await canLaunchUrl(Uri.parse(url))) {
-                      await launchUrl(Uri.parse(url));
-                      analytics.logScreenView(screenName: 'Feedback');
-                    }
-                  },
-                ),
-                ListTile(
-                  title: Text(l.settings_view_support_release_notes_title),
+                  dense: true,
+                  title: Text(l.settings_view_support_release_notes_title,
+                      style: _supportFontStyle),
                   trailing: const Icon(Icons.open_in_new_rounded, size: 16),
                   onTap: () async {
                     const url =
@@ -157,7 +139,23 @@ class SettingsView extends ConsumerWidget {
                   },
                 ),
                 ListTile(
-                  title: Text(l.settings_view_support_privacy_policy_title),
+                  dense: true,
+                  title: Text(l.settings_view_support_feedback_title,
+                      style: _supportFontStyle),
+                  trailing: const Icon(Icons.open_in_new_rounded, size: 16),
+                  onTap: () async {
+                    const url =
+                        'https://docs.google.com/forms/d/e/1FAIpQLSfIdMsEJVzbWHdxdvNzr_-OUPEVqe3AMOmafCYctaa7hzcQpQ/viewform';
+                    if (await canLaunchUrl(Uri.parse(url))) {
+                      await launchUrl(Uri.parse(url));
+                      analytics.logScreenView(screenName: 'Feedback');
+                    }
+                  },
+                ),
+                ListTile(
+                  dense: true,
+                  title: Text(l.settings_view_support_privacy_policy_title,
+                      style: _supportFontStyle),
                   trailing: const Icon(Icons.open_in_new_rounded, size: 16),
                   onTap: () async {
                     const url =
@@ -170,6 +168,7 @@ class SettingsView extends ConsumerWidget {
                 ),
               ],
             ),
+            const SizedBox(height: 16),
             GestureDetector(
               onTap: () async {
                 final version = await appVersionViewModel.getCurrentVersion();
@@ -187,7 +186,9 @@ class SettingsView extends ConsumerWidget {
                 );
               },
               child: ListTile(
-                title: Text(l.settings_view_version_title),
+                dense: true,
+                title: Text(l.settings_view_version_title,
+                    style: _supportFontStyle),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
