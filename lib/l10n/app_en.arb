@@ -10,6 +10,7 @@
   "settings_view_support_faq_title": "FAQ",
   "settings_view_support_feedback_title": "Bug Report・Request・Contact",
   "settings_view_support_privacy_policy_title": "Privacy Policy",
+  "settings_view_support_review_title": "Support with a Review",
   "settings_view_version_title": "Version",
   "settings_view_version_copy": "Version information copied",
   "notion_settings_view_title": "Notion Settings",
@@ -160,7 +161,7 @@
     }
   },
   "releaseNote": "Details",
-  "settings_view_support_release_notes_title": "Release Notes",
+  "settings_view_support_release_notes_title": "Release Note",
   "font_settings": "Title Font Settings",
   "font_language": "Font Language",
   "font_family": "Font Family",
@@ -173,5 +174,13 @@
   "appearance_settings_title": "Appearance",
   "hide_navigation_label_title": "Hide Navigation Labels",
   "hide_navigation_label_description": "Hide labels in the bottom navigation bar",
-  "font_settings_description": "Customize the date format of the today task list"
+  "font_settings_description": "Customize the date format of the today task list",
+  "current_setting": "Current: {setting}",
+  "@current_setting": {
+    "placeholders": {
+      "setting": {
+        "type": "String"
+      }
+    }
+  }
 }

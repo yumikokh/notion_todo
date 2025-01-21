@@ -7,7 +7,7 @@ part of 'font_settings_viewmodel.dart';
 // **************************************************************************
 
 String _$fontSettingsViewModelHash() =>
-    r'22e98b1e92e8911fb0f1ef7a81b572fb9d7d29e1';
+    r'e782d66a8dfaec5042a8af3a2d24a05780bcb5da';
 
 /// See also [FontSettingsViewModel].
 @ProviderFor(FontSettingsViewModel)
