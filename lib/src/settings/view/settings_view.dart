@@ -114,7 +114,7 @@ class SettingsView extends ConsumerWidget {
                   dense: true,
                   title: Text(l.settings_view_support_faq_title,
                       style: _supportFontStyle),
-                  trailing: const Icon(Icons.open_in_new_rounded, size: 16),
+                  trailing: const Icon(Icons.question_mark_rounded, size: 16),
                   onTap: () async {
                     const url =
                         'https://yumikokh.notion.site/Tanzaku-Todo-11f54c37a54c800da12cf5162f5beada';
@@ -128,7 +128,7 @@ class SettingsView extends ConsumerWidget {
                   dense: true,
                   title: Text(l.settings_view_support_release_notes_title,
                       style: _supportFontStyle),
-                  trailing: const Icon(Icons.open_in_new_rounded, size: 16),
+                  trailing: const Icon(Icons.new_releases_outlined, size: 16),
                   onTap: () async {
                     const url =
                         'https://yumikokh.notion.site/Release-Note-18154c37a54c807b8ac6ef6612524378';
@@ -140,9 +140,24 @@ class SettingsView extends ConsumerWidget {
                 ),
                 ListTile(
                   dense: true,
+                  title: Text(l.settings_view_support_review_title,
+                      style: _supportFontStyle),
+                  trailing: const Icon(Icons.favorite_rounded, size: 16),
+                  onTap: () async {
+                    const url =
+                        'https://apps.apple.com/jp/app/tanzaku-todo-for-notion/id6738761486';
+                    if (await canLaunchUrl(Uri.parse(url))) {
+                      await launchUrl(Uri.parse(url),
+                          mode: LaunchMode.externalApplication);
+                      analytics.logScreenView(screenName: 'Review');
+                    }
+                  },
+                ),
+                ListTile(
+                  dense: true,
                   title: Text(l.settings_view_support_feedback_title,
                       style: _supportFontStyle),
-                  trailing: const Icon(Icons.open_in_new_rounded, size: 16),
+                  trailing: const Icon(Icons.feedback_outlined, size: 16),
                   onTap: () async {
                     const url =
                         'https://docs.google.com/forms/d/e/1FAIpQLSfIdMsEJVzbWHdxdvNzr_-OUPEVqe3AMOmafCYctaa7hzcQpQ/viewform';
@@ -156,7 +171,7 @@ class SettingsView extends ConsumerWidget {
                   dense: true,
                   title: Text(l.settings_view_support_privacy_policy_title,
                       style: _supportFontStyle),
-                  trailing: const Icon(Icons.open_in_new_rounded, size: 16),
+                  trailing: const Icon(Icons.privacy_tip_outlined, size: 16),
                   onTap: () async {
                     const url =
                         'https://yumikokh.notion.site/Privacy-Policy-14b54c37a54c80e1b288c0097bb6c7bd';
