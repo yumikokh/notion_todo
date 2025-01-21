@@ -134,8 +134,6 @@ class TaskMainPage extends HookConsumerWidget {
                     color: Theme.of(context).colorScheme.inversePrimary,
                     child: allTasks.when(
                       data: (tasks) => TaskListView(
-                        title: d.formatDateForTitle(DateTime.now(),
-                            locale: fontSettings.value?.languageCode),
                         list: tasks,
                         taskViewModel: allViewModel,
                         showCompleted: false, // NOTE: Indexページでは常に未完了のみ表示対応
