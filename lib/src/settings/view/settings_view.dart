@@ -84,6 +84,7 @@ class SettingsView extends ConsumerWidget {
                   title: Text(l.font_settings),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {
+                    analytics.logScreenView(screenName: 'FontSettings');
                     Navigator.push(
                       context,
                       MaterialPageRoute(
