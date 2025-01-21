@@ -5,9 +5,7 @@ class FontConstants {
   static final Map<String, List<String>> fontsByLanguage = {
     'en': [
       'Bodoni Moda',
-      'Roboto Condensed',
       'M PLUS 1p',
-      'Ubuntu',
       'Amatic SC',
     ],
     'ja': [

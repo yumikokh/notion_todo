@@ -1,6 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../common/analytics/analytics_service.dart';
 import 'font_settings.dart';
 import 'font_settings_service.dart';
 
@@ -18,9 +17,5 @@ class FontSettingsViewModel extends _$FontSettingsViewModel {
   Future<void> updateFontSettings(FontSettings settings) async {
     await _service.updateFontSettings(settings);
     state = AsyncData(settings);
-
-    final analytics = ref.read(analyticsServiceProvider);
-    analytics.logSettingsChanged(
-        settingName: 'font', value: settings.toString());
   }
 }
