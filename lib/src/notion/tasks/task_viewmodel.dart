@@ -15,6 +15,7 @@ import '../model/task.dart';
 import '../repository/notion_task_repository.dart';
 import 'task_service.dart';
 import '../../common/analytics/analytics_service.dart';
+import '../../common/app_review/app_review_service.dart';
 
 part 'task_viewmodel.g.dart';
 
@@ -298,6 +299,16 @@ class TaskViewModel extends _$TaskViewModel {
             if (t.id == updatedTask.id) updatedTask else t
         ]);
         ref.invalidateSelf();
+
+        // タスクが完了状態に変更された場合、レビュー要求を検討
+        if (!fromUndo && isCompleted) {
+          final reviewService = AppReviewService.instance;
+          await reviewService.incrementCompletedTaskCount();
+
+          if (await reviewService.shouldRequestReview()) {
+            await reviewService.requestReview();
+          }
+        }
 
         try {
           final analytics = ref.read(analyticsServiceProvider);

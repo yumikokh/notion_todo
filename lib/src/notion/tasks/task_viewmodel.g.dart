@@ -6,7 +6,7 @@ part of 'task_viewmodel.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$taskViewModelHash() => r'80fe52a30c1418c5f97e266c25bb017f3fceaa55';
+String _$taskViewModelHash() => r'e2e818a28c3709d2b4145666534dc908c20b8c54';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -29,7 +29,8 @@ class _SystemHash {
   }
 }
 
-abstract class _$TaskViewModel extends BuildlessAsyncNotifier<List<Task>> {
+abstract class _$TaskViewModel
+    extends BuildlessAutoDisposeAsyncNotifier<List<Task>> {
   late final FilterType filterType;
 
   FutureOr<List<Task>> build({
@@ -81,7 +82,7 @@ class TaskViewModelFamily extends Family<AsyncValue<List<Task>>> {
 
 /// See also [TaskViewModel].
 class TaskViewModelProvider
-    extends AsyncNotifierProviderImpl<TaskViewModel, List<Task>> {
+    extends AutoDisposeAsyncNotifierProviderImpl<TaskViewModel, List<Task>> {
   /// See also [TaskViewModel].
   TaskViewModelProvider({
     FilterType filterType = FilterType.all,
@@ -137,7 +138,8 @@ class TaskViewModelProvider
   }
 
   @override
-  AsyncNotifierProviderElement<TaskViewModel, List<Task>> createElement() {
+  AutoDisposeAsyncNotifierProviderElement<TaskViewModel, List<Task>>
+      createElement() {
     return _TaskViewModelProviderElement(this);
   }
 
@@ -157,13 +159,13 @@ class TaskViewModelProvider
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-mixin TaskViewModelRef on AsyncNotifierProviderRef<List<Task>> {
+mixin TaskViewModelRef on AutoDisposeAsyncNotifierProviderRef<List<Task>> {
   /// The parameter `filterType` of this provider.
   FilterType get filterType;
 }
 
 class _TaskViewModelProviderElement
-    extends AsyncNotifierProviderElement<TaskViewModel, List<Task>>
+    extends AutoDisposeAsyncNotifierProviderElement<TaskViewModel, List<Task>>
     with TaskViewModelRef {
   _TaskViewModelProviderElement(super.provider);
 
