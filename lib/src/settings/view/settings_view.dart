@@ -12,6 +12,7 @@ import '../settings_viewmodel.dart';
 import 'theme_settings_view.dart';
 import '../../common/analytics/analytics_service.dart';
 import '../../common/app_version/app_version_viewmodel.dart';
+import '../font/view/font_settings_view.dart';
 
 class SettingsView extends ConsumerWidget {
   static const routeName = '/settings';
@@ -77,6 +78,18 @@ class SettingsView extends ConsumerWidget {
                     analytics.logScreenView(screenName: 'LanguageSettings');
                     Navigator.of(context)
                         .pushNamed(LanguageSettingsView.routeName);
+                  },
+                ),
+                ListTile(
+                  title: Text(l.font_settings),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const FontSettingsView(),
+                      ),
+                    );
                   },
                 ),
                 ListTile(

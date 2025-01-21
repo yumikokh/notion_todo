@@ -160,5 +160,13 @@
     }
   },
   "releaseNote": "Details",
-  "settings_view_support_release_notes_title": "Release Notes"
+  "settings_view_support_release_notes_title": "Release Notes",
+  "font_settings": "Title Font Settings",
+  "font_family": "Font Family",
+  "select_font": "Select Font",
+  "italic": "Italic",
+  "font_size": "Font Size",
+  "letter_spacing": "Letter Spacing",
+  "preview": "Preview",
+  "reset": "Reset"
 }
