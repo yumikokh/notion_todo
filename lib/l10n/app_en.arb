@@ -170,6 +170,7 @@
   "letter_spacing": "Letter Spacing",
   "preview": "Preview",
   "reset": "Reset",
+  "reset_to_default": "Reset to Default",
   "bold": "Bold",
   "appearance_settings_title": "Appearance",
   "hide_navigation_label_title": "Hide Navigation Labels",
