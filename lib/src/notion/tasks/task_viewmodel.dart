@@ -300,13 +300,18 @@ class TaskViewModel extends _$TaskViewModel {
         ]);
         ref.invalidateSelf();
 
-        // タスクが完了状態に変更された場合、レビュー要求を検討
-        if (!fromUndo && isCompleted) {
-          final reviewService = AppReviewService.instance;
-          await reviewService.incrementCompletedTaskCount();
+        // 今日のタスクが全て完了したかチェック
+        if (!fromUndo && isCompleted && _filterType == FilterType.today) {
+          final tasks = state.valueOrNull ?? [];
+          final allTasksCompleted = tasks.every((t) => t.isCompleted);
 
-          if (await reviewService.shouldRequestReview()) {
-            await reviewService.requestReview();
+          if (allTasksCompleted && tasks.isNotEmpty) {
+            final reviewService = AppReviewService.instance;
+            await reviewService.incrementCompletedDaysCount();
+
+            if (await reviewService.shouldRequestReview()) {
+              await reviewService.requestReview();
+            }
           }
         }
 

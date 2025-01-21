@@ -10,14 +10,14 @@ class AppReviewService {
       SharedPreferences.getInstance();
 
   static const _keyLastReviewRequestDate = 'last_review_request_date';
-  static const _keyCompletedTaskCount = 'completed_task_count';
+  static const _keyCompletedDaysCount = 'completed_days_count';
   static const _minDaysBetweenRequests = 60; // 次のレビュー要求までの最小日数
-  static const _minCompletedTasksForRequest = 15; // レビュー要求に必要な最小タスク完了数
+  static const _requiredCompletedDays = 3; // レビュー要求に必要な達成回数
 
-  Future<void> incrementCompletedTaskCount() async {
+  Future<void> incrementCompletedDaysCount() async {
     final prefs = await _prefsFuture;
-    final currentCount = prefs.getInt(_keyCompletedTaskCount) ?? 0;
-    await prefs.setInt(_keyCompletedTaskCount, currentCount + 1);
+    final currentCount = prefs.getInt(_keyCompletedDaysCount) ?? 0;
+    await prefs.setInt(_keyCompletedDaysCount, currentCount + 1);
   }
 
   Future<bool> shouldRequestReview() async {
@@ -36,15 +36,21 @@ class AppReviewService {
       return false;
     }
 
-    final completedTasks = prefs.getInt(_keyCompletedTaskCount) ?? 0;
-    return completedTasks >= _minCompletedTasksForRequest;
+    final completedDays = prefs.getInt(_keyCompletedDaysCount) ?? 0;
+    return completedDays >= _requiredCompletedDays;
   }
 
   Future<void> requestReview() async {
     final prefs = await _prefsFuture;
     await prefs.setInt(
         _keyLastReviewRequestDate, DateTime.now().millisecondsSinceEpoch);
-    await prefs.setInt(_keyCompletedTaskCount, 0); // カウントをリセット
+    await prefs.setInt(_keyCompletedDaysCount, 0); // カウントをリセット
     await _inAppReview.requestReview();
+  }
+
+  Future<void> clearLastReviewRequestDate() async {
+    final prefs = await _prefsFuture;
+    await prefs.remove(_keyLastReviewRequestDate);
+    await prefs.remove(_keyCompletedDaysCount);
   }
 }
