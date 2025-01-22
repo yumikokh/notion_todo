@@ -24,7 +24,8 @@ class NotionSettingsView extends ConsumerWidget {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
       appBar: AppBar(
-        title: Text(l.notion_settings_view_title),
+        title: Text(l.notion_settings_view_title,
+            style: const TextStyle(fontSize: 18)),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -182,7 +183,6 @@ class NotionSettingsView extends ConsumerWidget {
                 ),
               ),
             if (!isAuthenticated) ...[
-              const SizedBox(height: 16),
               Card.outlined(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
@@ -222,7 +222,7 @@ class NotionSettingsView extends ConsumerWidget {
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
                         child: Image.asset(
-                          'assets/images/database_select.jpg',
+                          'assets/images/database_select.png',
                           fit: BoxFit.cover,
                         ),
                       ),

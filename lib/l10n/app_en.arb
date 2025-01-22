@@ -5,11 +5,12 @@
   "settings_view_app_settings_title": "App Settings",
   "settings_view_notion_settings_title": "Notion Settings",
   "settings_view_notion_settings_description": "Database settings are required",
-  "settings_view_theme_settings_title": "Theme Settings",
+  "settings_view_theme_settings_title": "Theme",
   "settings_view_support_title": "Support",
   "settings_view_support_faq_title": "FAQ",
   "settings_view_support_feedback_title": "Bug Report・Request・Contact",
   "settings_view_support_privacy_policy_title": "Privacy Policy",
+  "settings_view_support_review_title": "Support with a Review",
   "settings_view_version_title": "Version",
   "settings_view_version_copy": "Version information copied",
   "notion_settings_view_title": "Notion Settings",
@@ -150,5 +151,37 @@
   "notion_settings_view_not_found_database_template_description": "Select \"Use a template provided\" (button above) during authentication to get a ready-to-use task management database!",
   "notion_settings_view_not_found_database_select_description": "If you already have your own database, choose \"Select pages to share\" (button below) to use it.",
   "go_to_settings": "Go to Settings",
-  "notion_database_settings_required": "Notion database settings are required."
+  "notion_database_settings_required": "Notion database settings are required.",
+  "updateMessage": "Updated to v{version} ✨",
+  "@updateMessage": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "releaseNote": "Details",
+  "settings_view_support_release_notes_title": "Release Note",
+  "font_settings": "Title Font Style",
+  "font_language": "Font Language",
+  "font_family": "Font Family",
+  "italic": "Italic",
+  "font_size": "Font Size",
+  "letter_spacing": "Letter Spacing",
+  "preview": "Preview",
+  "reset": "Reset",
+  "reset_to_default": "Reset to Default",
+  "bold": "Bold",
+  "appearance_settings_title": "Appearance",
+  "hide_navigation_label_title": "Hide Navigation Labels",
+  "hide_navigation_label_description": "Hide labels in the bottom navigation bar",
+  "font_settings_description": "Customize the date title of the today task list",
+  "current_setting": "Current: {setting}",
+  "@current_setting": {
+    "placeholders": {
+      "setting": {
+        "type": "String"
+      }
+    }
+  }
 }

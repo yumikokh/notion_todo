@@ -12,7 +12,6 @@ class SettingsViewModel with ChangeNotifier {
   SettingsViewModel(this._settingsService, this._analytics) {
     _themeMode = ThemeMode.system;
     _locale = const Locale('en');
-    _version = '';
     _wakelock = false;
     _loadSettings();
   }
@@ -20,14 +19,17 @@ class SettingsViewModel with ChangeNotifier {
   Future<void> _loadSettings() async {
     _themeMode = await _settingsService.themeMode();
     _locale = await _settingsService.locale();
-    _version = (await _settingsService.packageInfo()).version;
     _wakelock = await _settingsService.wakelock();
+    _hideNavigationLabel = await _settingsService.loadHideNavigationLabel();
     notifyListeners();
   }
 
   /// ThemeMode
   late ThemeMode _themeMode;
   ThemeMode get themeMode => _themeMode;
+  String get themeModeName =>
+      _themeMode.name[0].toUpperCase() +
+      _themeMode.name.substring(1).toLowerCase();
 
   Future<void> updateThemeMode(ThemeMode? newThemeMode) async {
     if (newThemeMode == null) return;
@@ -81,9 +83,22 @@ class SettingsViewModel with ChangeNotifier {
     );
   }
 
-  /// Version
-  late String _version;
-  String get version => _version;
+  /// Navigation Label
+  late bool _hideNavigationLabel;
+  bool get hideNavigationLabel => _hideNavigationLabel;
+
+  Future<void> updateHideNavigationLabel(bool value) async {
+    if (value == _hideNavigationLabel) return;
+
+    _hideNavigationLabel = value;
+    notifyListeners();
+
+    await _settingsService.saveHideNavigationLabel(value);
+    await _analytics.logSettingsChanged(
+      settingName: 'hide_navigation_label',
+      value: value ? 'hidden' : 'shown',
+    );
+  }
 }
 
 // MEMO: code-generatorで生成されるProviderはデフォルトで自動破棄が有効なため、appでListenableに適用できない

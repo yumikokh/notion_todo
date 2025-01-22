@@ -15,7 +15,8 @@ class ThemeSettingsView extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l.settings_view_theme_settings_title),
+        title: Text(l.settings_view_theme_settings_title,
+            style: const TextStyle(fontSize: 18)),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 20),

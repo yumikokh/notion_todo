@@ -15,10 +15,11 @@ import '../model/task.dart';
 import '../repository/notion_task_repository.dart';
 import 'task_service.dart';
 import '../../common/analytics/analytics_service.dart';
+import '../../common/app_review/app_review_service.dart';
 
 part 'task_viewmodel.g.dart';
 
-@Riverpod(keepAlive: true)
+@riverpod
 class TaskViewModel extends _$TaskViewModel {
   late TaskService _taskService;
   late FilterType _filterType;
@@ -298,6 +299,21 @@ class TaskViewModel extends _$TaskViewModel {
             if (t.id == updatedTask.id) updatedTask else t
         ]);
         ref.invalidateSelf();
+
+        // 今日のタスクが全て完了したかチェック
+        if (!fromUndo && isCompleted && _filterType == FilterType.today) {
+          final tasks = state.valueOrNull ?? [];
+          final allTasksCompleted = tasks.every((t) => t.isCompleted);
+
+          if (allTasksCompleted && tasks.isNotEmpty) {
+            final reviewService = AppReviewService.instance;
+            await reviewService.incrementCompletedDaysCount();
+
+            if (await reviewService.shouldRequestReview()) {
+              await reviewService.requestReview();
+            }
+          }
+        }
 
         try {
           final analytics = ref.read(analyticsServiceProvider);

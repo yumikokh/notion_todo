@@ -5,11 +5,12 @@
   "settings_view_app_settings_title": "アプリ設定",
   "settings_view_notion_settings_title": "Notion設定",
   "settings_view_notion_settings_description": "データベース設定が必要です",
-  "settings_view_theme_settings_title": "テーマ設定",
+  "settings_view_theme_settings_title": "テーマ",
   "settings_view_support_title": "サポート",
   "settings_view_support_faq_title": "よくある質問",
   "settings_view_support_feedback_title": "バグ報告・要望・問い合わせ",
   "settings_view_support_privacy_policy_title": "プライバシーポリシー",
+  "settings_view_support_review_title": "レビューで応援する",
   "settings_view_version_title": "バージョン",
   "settings_view_version_copy": "バージョン情報をコピーしました",
   "notion_settings_view_title": "Notion設定",
@@ -80,5 +81,37 @@
   "notion_settings_view_not_found_database_template_description": "認証時に「提供されたテンプレートを使う」（上のボタン）を選ぶと、すぐに使えるタスク管理用のデータベースが追加されます！",
   "notion_settings_view_not_found_database_select_description": "もし既にお使いのデータベースがあれば、「共有するページの選択」（下のボタン）から選んでください。",
   "go_to_settings": "設定ページへ",
-  "notion_database_settings_required": "Notionのデータベース設定が必要です。"
+  "notion_database_settings_required": "Notionのデータベース設定が必要です。",
+  "updateMessage": "v{version} に更新されました ✨",
+  "@updateMessage": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "releaseNote": "詳細",
+  "settings_view_support_release_notes_title": "リリースノート",
+  "font_settings": "タイトルのフォントスタイル",
+  "font_language": "フォントの言語",
+  "font_family": "フォント",
+  "italic": "イタリック体",
+  "font_size": "サイズ",
+  "letter_spacing": "文字間隔",
+  "preview": "プレビュー",
+  "reset": "リセット",
+  "reset_to_default": "デフォルトに戻す",
+  "bold": "太字",
+  "appearance_settings_title": "外観",
+  "hide_navigation_label_title": "ナビゲーションラベルを非表示",
+  "font_settings_description": "今日のタスク一覧の日付タイトルをカスタマイズします",
+  "hide_navigation_label_description": "下部のナビゲーションバーのラベルを非表示にします",
+  "current_setting": "現在の設定: {setting}",
+  "@current_setting": {
+    "placeholders": {
+      "setting": {
+        "type": "String"
+      }
+    }
+  }
 }

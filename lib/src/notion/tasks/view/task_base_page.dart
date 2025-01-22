@@ -8,6 +8,7 @@ class TaskBasePage extends StatelessWidget {
   final int currentIndex;
   final bool? showCompleted;
   final bool showSettingBadge;
+  final bool hideNavigationLabel;
   final void Function(int) onIndexChanged;
   final void Function(bool) onShowCompletedChanged;
   final void Function(String, DateTime?) onAddTask;
@@ -18,6 +19,7 @@ class TaskBasePage extends StatelessWidget {
     required this.currentIndex,
     required this.showCompleted,
     required this.showSettingBadge,
+    required this.hideNavigationLabel,
     required this.onIndexChanged,
     required this.onShowCompletedChanged,
     required this.onAddTask,
@@ -31,43 +33,49 @@ class TaskBasePage extends StatelessWidget {
 
     return Scaffold(
         key: key,
-        appBar:
-            AppBar(title: !isToday ? Text(l.navigation_index) : null, actions: [
-          if (showCompleted != null) ...[
-            IconButton(
-              icon: Icon(
-                showCompleted
-                    ? Icons.visibility_rounded
-                    : Icons.visibility_off_outlined,
-                color: Theme.of(context).colorScheme.onSurface,
+        appBar: AppBar(
+            title: !isToday
+                ? Text(l.navigation_index, style: const TextStyle(fontSize: 20))
+                : null,
+            actions: [
+              if (showCompleted != null) ...[
+                IconButton(
+                  icon: Icon(
+                    showCompleted
+                        ? Icons.visibility_rounded
+                        : Icons.visibility_off_outlined,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                  onPressed: () {
+                    onShowCompletedChanged(!showCompleted);
+                  },
+                )
+              ],
+              Stack(
+                children: [
+                  IconButton(
+                    icon: showSettingBadge
+                        ? Icon(Icons.settings_outlined,
+                            color: Theme.of(context).colorScheme.onSurface)
+                        : Badge(
+                            child: Icon(Icons.settings_outlined,
+                                color: Theme.of(context).colorScheme.onSurface),
+                          ),
+                    onPressed: () {
+                      Navigator.restorablePushNamed(
+                          context, SettingsView.routeName);
+                    },
+                  ),
+                ],
               ),
-              onPressed: () {
-                onShowCompletedChanged(!showCompleted);
-              },
-            )
-          ],
-          Stack(
-            children: [
-              IconButton(
-                icon: showSettingBadge
-                    ? Icon(Icons.settings_outlined,
-                        color: Theme.of(context).colorScheme.onSurface)
-                    : Badge(
-                        child: Icon(Icons.settings_outlined,
-                            color: Theme.of(context).colorScheme.onSurface),
-                      ),
-                onPressed: () {
-                  Navigator.restorablePushNamed(
-                      context, SettingsView.routeName);
-                },
-              ),
-            ],
-          ),
-        ]),
+            ]),
         body: body,
         bottomNavigationBar: NavigationBar(
           selectedIndex: currentIndex,
           onDestinationSelected: onIndexChanged,
+          labelBehavior: hideNavigationLabel
+              ? NavigationDestinationLabelBehavior.alwaysHide
+              : NavigationDestinationLabelBehavior.alwaysShow,
           destinations: [
             NavigationDestination(
               icon: const Icon(Icons.today_outlined),
