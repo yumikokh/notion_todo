@@ -253,6 +253,30 @@ class TaskViewModel extends _$TaskViewModel {
       if (db == null) {
         return;
       }
+
+      String? updatedDueDate;
+      final inputDueDateStart = task.dueDate?.start;
+      final prevDueDateStart = prevTask.dueDate?.start;
+      // 入力された日付がある場合のみ
+      if (inputDueDateStart != null) {
+        updatedDueDate = inputDueDateStart;
+        // もともとのタスクに日付がある場合
+        if (prevDueDateStart != null) {
+          final inputDateTime = DateTime.parse(inputDueDateStart);
+          final prevDateTime = DateTime.parse(prevDueDateStart);
+
+          // 日付が変更されている場合は時間情報を削除
+          if (!d.isThisDay(prevDateTime, inputDateTime)) {
+            updatedDueDate = d.dateString(inputDateTime);
+          } else {
+            updatedDueDate = inputDueDateStart;
+          }
+        } else {
+          // もともとのタスクに日付がなかった場合
+          updatedDueDate = inputDueDateStart;
+        }
+      }
+
       final snackbar = ref.read(snackbarProvider.notifier);
       final locale = ref.read(settingsViewModelProvider).locale;
       final l = await AppLocalizations.delegate.load(locale);
@@ -268,8 +292,8 @@ class TaskViewModel extends _$TaskViewModel {
       });
 
       try {
-        final updatedTask = await _taskService.updateTask(
-            task.id, task.title, task.dueDate?.start);
+        final updatedTask =
+            await _taskService.updateTask(task.id, task.title, updatedDueDate);
 
         state = AsyncValue.data([
           for (final Task t in state.valueOrNull ?? [])
