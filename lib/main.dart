@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -47,8 +48,9 @@ void main() async {
         options.profilesSampleRate = 1.0;
         // リプレイのサンプリング率を設定
         options.experimental.replay.sessionSampleRate =
-            kReleaseMode ? 0.01 : 1.0; // すべてのセッションを記録、プロダクションでは低い数値にする
-        options.experimental.replay.onErrorSampleRate = 1.0;
+            kReleaseMode ? 0.01 : 0.0;
+        options.experimental.replay.onErrorSampleRate =
+            kReleaseMode ? 1.0 : 0.0;
       },
       appRunner: () => runApp(app),
     );
@@ -66,6 +68,9 @@ class SentryProviderObserver extends ProviderObserver {
     StackTrace? stackTrace,
     ProviderContainer container,
   ) {
+    // 特定のエラーを除外
+    if (_shouldIgnoreError(error, provider)) return;
+
     Sentry.captureException(
       error,
       stackTrace: stackTrace,
@@ -74,6 +79,20 @@ class SentryProviderObserver extends ProviderObserver {
             'provider', provider.name ?? provider.runtimeType.toString());
       },
     );
+  }
+
+  bool _shouldIgnoreError(Object error, ProviderBase provider) {
+    // Provider破棄時のStateErrorを無視
+    if (error is StateError) {
+      return true;
+    }
+
+    // BackgroundFetchのPlatformExceptionを無視
+    if (error is PlatformException && error.code == '1') {
+      return true;
+    }
+
+    return false;
   }
 }
 

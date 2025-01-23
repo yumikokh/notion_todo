@@ -7,7 +7,7 @@ part of 'notion_database_repository.dart';
 // **************************************************************************
 
 String _$notionDatabaseRepositoryHash() =>
-    r'd10de4d31de9518bdc993576ada677e33b73181c';
+    r'611da7c3ccf898dea5b65e495e0161e0fcd54f37';
 
 /// See also [notionDatabaseRepository].
 @ProviderFor(notionDatabaseRepository)

@@ -273,7 +273,8 @@ List<dynamic> getNotCompleteStatusFilter(TaskStatusProperty property) {
 
 @riverpod
 NotionTaskRepository? notionTaskRepository(Ref ref) {
-  final accessToken = ref.watch(notionOAuthViewModelProvider).accessToken;
+  final accessToken =
+      ref.watch(notionOAuthViewModelProvider).valueOrNull?.accessToken;
   final taskDatabase = ref.watch(taskDatabaseViewModelProvider).valueOrNull;
   if (accessToken == null || taskDatabase == null) {
     return null;

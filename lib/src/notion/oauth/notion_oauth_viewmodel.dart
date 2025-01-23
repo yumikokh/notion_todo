@@ -1,4 +1,3 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../env/env.dart';
@@ -15,23 +14,17 @@ class NotionOAuthViewModel extends _$NotionOAuthViewModel {
       Env.oAuthClientSecret,
       Env.redirectUri);
 
-  NotionOAuthViewModel() {
-    _initialize();
-  }
-
   @override
-  NotionOAuth build() => NotionOAuth.initialState();
-
-  Future<void> _initialize() async {
+  Future<NotionOAuth> build() async {
     final accessToken = await _notionOAuthService.initialize();
-    state = NotionOAuth(accessToken: accessToken);
+    return NotionOAuth(accessToken: accessToken);
   }
 
   Future<void> authenticate() async {
     final accessToken = await _notionOAuthService.fetchAccessToken();
     if (accessToken != null) {
       await _notionOAuthService.saveAccessToken(accessToken);
-      state = NotionOAuth(accessToken: accessToken);
+      state = AsyncValue.data(NotionOAuth(accessToken: accessToken));
 
       try {
         final analytics = ref.read(analyticsServiceProvider);
@@ -47,7 +40,7 @@ class NotionOAuthViewModel extends _$NotionOAuthViewModel {
 
   Future<void> deauthenticate() async {
     await _notionOAuthService.deleteAccessToken();
-    state = NotionOAuth.initialState();
+    state = AsyncValue.data(NotionOAuth.initialState());
 
     try {
       final analytics = ref.read(analyticsServiceProvider);
@@ -59,10 +52,4 @@ class NotionOAuthViewModel extends _$NotionOAuthViewModel {
       print('Analytics error: $e');
     }
   }
-}
-
-@riverpod
-bool isAuthenticated(Ref ref) {
-  final viewModel = ref.watch(notionOAuthViewModelProvider);
-  return viewModel.accessToken != null;
 }
