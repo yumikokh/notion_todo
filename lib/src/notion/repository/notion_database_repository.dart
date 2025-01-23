@@ -57,7 +57,8 @@ class NotionDatabaseRepository {
 
 @riverpod
 NotionDatabaseRepository? notionDatabaseRepository(Ref ref) {
-  final accessToken = ref.watch(notionOAuthViewModelProvider).accessToken;
+  final accessToken =
+      ref.watch(notionOAuthViewModelProvider).valueOrNull?.accessToken;
   if (accessToken == null) {
     return null;
   }
