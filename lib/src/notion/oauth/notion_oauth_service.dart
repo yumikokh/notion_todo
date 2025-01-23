@@ -10,6 +10,8 @@ class NotionOAuth {
     required this.accessToken,
   });
 
+  bool get isAuthenticated => accessToken != null;
+
   NotionOAuth.initialState() : accessToken = null;
 }
 

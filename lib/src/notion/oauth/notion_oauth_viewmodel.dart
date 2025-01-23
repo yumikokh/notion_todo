@@ -1,4 +1,3 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../env/env.dart';
@@ -57,10 +56,4 @@ class NotionOAuthViewModel extends _$NotionOAuthViewModel {
       print('Analytics error: $e');
     }
   }
-}
-
-@riverpod
-bool isAuthenticated(Ref ref) {
-  final viewModel = ref.watch(notionOAuthViewModelProvider);
-  return viewModel.valueOrNull?.accessToken != null;
 }
