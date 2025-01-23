@@ -1,4 +1,3 @@
-import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -28,8 +27,6 @@ void main() async {
   );
   await FirebaseAnalytics.instance
       .setAnalyticsCollectionEnabled(trackingEnabled);
-
-  await initATT();
 
   final app = ProviderScope(
     observers: trackingEnabled ? [SentryProviderObserver()] : [],
@@ -77,14 +74,6 @@ class SentryProviderObserver extends ProviderObserver {
             'provider', provider.name ?? provider.runtimeType.toString());
       },
     );
-  }
-}
-
-Future<void> initATT() async {
-  if (await AppTrackingTransparency.trackingAuthorizationStatus ==
-      TrackingStatus.notDetermined) {
-    await Future.delayed(const Duration(milliseconds: 200));
-    await AppTrackingTransparency.requestTrackingAuthorization();
   }
 }
 
