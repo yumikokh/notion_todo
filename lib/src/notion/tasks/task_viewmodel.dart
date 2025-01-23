@@ -138,17 +138,41 @@ class TaskViewModel extends _$TaskViewModel {
         final snackbar = ref.read(snackbarProvider.notifier);
         final taskDatabaseViewModel =
             ref.read(taskDatabaseViewModelProvider.notifier);
+        final analytics = ref.read(analyticsServiceProvider);
+
         taskDatabaseViewModel.clear();
         snackbar.show("${l.not_found_database} ${l.re_set_database}",
             type: SnackbarType.error);
+
+        try {
+          await analytics.logError(
+            'database_not_found',
+            error: e,
+            parameters: {'status_code': 404},
+          );
+        } catch (trackingError) {
+          print('Analytics error: $trackingError');
+        }
       }
       if (e is TaskException && e.statusCode == 400) {
         final snackbar = ref.read(snackbarProvider.notifier);
         final taskDatabaseViewModel =
             ref.read(taskDatabaseViewModelProvider.notifier);
+        final analytics = ref.read(analyticsServiceProvider);
+
         taskDatabaseViewModel.clear();
         snackbar.show("${l.not_found_property} ${l.re_set_database}",
             type: SnackbarType.error);
+
+        try {
+          await analytics.logError(
+            'property_not_found',
+            error: e,
+            parameters: {'status_code': 400},
+          );
+        } catch (trackingError) {
+          print('Analytics error: $trackingError');
+        }
       }
       return [];
     } finally {
