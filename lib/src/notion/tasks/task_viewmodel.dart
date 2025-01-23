@@ -42,6 +42,7 @@ class TaskViewModel extends _$TaskViewModel {
     final taskDatabase = ref.watch(taskDatabaseViewModelProvider).valueOrNull;
 
     if (repository == null || taskDatabase == null) {
+      await FlutterAppBadger.removeBadge();
       return [];
     }
 
