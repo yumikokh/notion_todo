@@ -42,6 +42,7 @@ class TaskViewModel extends _$TaskViewModel {
     final taskDatabase = ref.watch(taskDatabaseViewModelProvider).valueOrNull;
 
     if (repository == null || taskDatabase == null) {
+      await FlutterAppBadger.removeBadge();
       return [];
     }
 
@@ -138,17 +139,41 @@ class TaskViewModel extends _$TaskViewModel {
         final snackbar = ref.read(snackbarProvider.notifier);
         final taskDatabaseViewModel =
             ref.read(taskDatabaseViewModelProvider.notifier);
+        final analytics = ref.read(analyticsServiceProvider);
+
         taskDatabaseViewModel.clear();
         snackbar.show("${l.not_found_database} ${l.re_set_database}",
             type: SnackbarType.error);
+
+        try {
+          await analytics.logError(
+            'database_not_found',
+            error: e,
+            parameters: {'status_code': 404},
+          );
+        } catch (trackingError) {
+          print('Analytics error: $trackingError');
+        }
       }
       if (e is TaskException && e.statusCode == 400) {
         final snackbar = ref.read(snackbarProvider.notifier);
         final taskDatabaseViewModel =
             ref.read(taskDatabaseViewModelProvider.notifier);
+        final analytics = ref.read(analyticsServiceProvider);
+
         taskDatabaseViewModel.clear();
         snackbar.show("${l.not_found_property} ${l.re_set_database}",
             type: SnackbarType.error);
+
+        try {
+          await analytics.logError(
+            'property_not_found',
+            error: e,
+            parameters: {'status_code': 400},
+          );
+        } catch (trackingError) {
+          print('Analytics error: $trackingError');
+        }
       }
       return [];
     } finally {
@@ -228,6 +253,30 @@ class TaskViewModel extends _$TaskViewModel {
       if (db == null) {
         return;
       }
+
+      String? updatedDueDate;
+      final inputDueDateStart = task.dueDate?.start;
+      final prevDueDateStart = prevTask.dueDate?.start;
+      // 入力された日付がある場合のみ
+      if (inputDueDateStart != null) {
+        updatedDueDate = inputDueDateStart;
+        // もともとのタスクに日付がある場合
+        if (prevDueDateStart != null) {
+          final inputDateTime = DateTime.parse(inputDueDateStart);
+          final prevDateTime = DateTime.parse(prevDueDateStart);
+
+          // 日付が変更されている場合は時間情報を削除
+          if (!d.isThisDay(prevDateTime, inputDateTime)) {
+            updatedDueDate = d.dateString(inputDateTime);
+          } else {
+            updatedDueDate = inputDueDateStart;
+          }
+        } else {
+          // もともとのタスクに日付がなかった場合
+          updatedDueDate = inputDueDateStart;
+        }
+      }
+
       final snackbar = ref.read(snackbarProvider.notifier);
       final locale = ref.read(settingsViewModelProvider).locale;
       final l = await AppLocalizations.delegate.load(locale);
@@ -243,8 +292,8 @@ class TaskViewModel extends _$TaskViewModel {
       });
 
       try {
-        final updatedTask = await _taskService.updateTask(
-            task.id, task.title, task.dueDate?.start);
+        final updatedTask =
+            await _taskService.updateTask(task.id, task.title, updatedDueDate);
 
         state = AsyncValue.data([
           for (final Task t in state.valueOrNull ?? [])

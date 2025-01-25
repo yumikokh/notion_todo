@@ -58,6 +58,21 @@ class AnalyticsService {
     );
   }
 
+  Future<void> logError(
+    String errorName, {
+    dynamic error,
+    Map<String, dynamic>? parameters,
+  }) async {
+    await _analytics.logEvent(
+      name: 'error',
+      parameters: {
+        'error_name': errorName,
+        'error_message': error?.toString(),
+        ...?parameters,
+      },
+    );
+  }
+
   Future<void> logDatabaseOperation({
     required String action,
     String? statusType,

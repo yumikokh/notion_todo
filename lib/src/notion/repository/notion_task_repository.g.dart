@@ -7,7 +7,7 @@ part of 'notion_task_repository.dart';
 // **************************************************************************
 
 String _$notionTaskRepositoryHash() =>
-    r'5275ab9ccd5a19936ec89b860ff8606eac625305';
+    r'3766e577ec44a9d27997bf4a33510bc6a1008b9e';
 
 /// See also [notionTaskRepository].
 @ProviderFor(notionTaskRepository)

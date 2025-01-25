@@ -15,7 +15,9 @@ class NotionSettingsView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, ref) {
     final notionOAuth = ref.read(notionOAuthViewModelProvider.notifier);
-    final isAuthenticated = ref.watch(isAuthenticatedProvider);
+    final isAuthenticated =
+        ref.watch(notionOAuthViewModelProvider).valueOrNull?.isAuthenticated ??
+            false;
     final taskDatabaseViewModel =
         ref.watch(taskDatabaseViewModelProvider.notifier);
     final taskDatabase = ref.watch(taskDatabaseViewModelProvider).valueOrNull;

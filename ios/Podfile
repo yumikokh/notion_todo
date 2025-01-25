@@ -47,7 +47,6 @@ post_install do |installer|
         '$(inherited)',
         'PERMISSION_NOTIFICATIONS=1',
         'COCOAPODS=1',
-        'PERMISSION_APP_TRACKING_TRANSPARENCY=1'
       ]
     end
   end

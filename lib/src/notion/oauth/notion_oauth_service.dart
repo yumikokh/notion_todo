@@ -10,6 +10,8 @@ class NotionOAuth {
     required this.accessToken,
   });
 
+  bool get isAuthenticated => accessToken != null;
+
   NotionOAuth.initialState() : accessToken = null;
 }
 
@@ -20,6 +22,7 @@ class NotionOAuthService {
   final String redirectUri;
 
   static const _accessTokenKey = 'accessToken';
+  static const _isFirstLaunchKey = 'isFirstLaunch';
   late final NotionOAuthRepository _notionOAuthRepository;
   late final FlutterSecureStorage _secureStorage;
 
@@ -32,12 +35,12 @@ class NotionOAuthService {
 
   Future<String?> initialize() async {
     final prefs = await SharedPreferences.getInstance();
-    final isFirstLaunch = prefs.getBool('isFirstLaunch') ?? true;
+    final isFirstLaunch = prefs.getBool(_isFirstLaunchKey) ?? true;
 
     // 再インストール時に残っていたアクセストークンを削除
     if (isFirstLaunch) {
       await deleteAccessToken();
-      await prefs.setBool('isFirstLaunch', false);
+      await prefs.setBool(_isFirstLaunchKey, false);
     }
 
     return await _loadAccessToken();
