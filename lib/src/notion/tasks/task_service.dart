@@ -145,29 +145,27 @@ class TaskService {
   }
 
   bool _isTaskCompleted(Map<String, dynamic> data) {
-    final status = taskDatabase.status;
-    if (status.type == PropertyType.checkbox) {
-      return data['properties'][status.name]['checkbox'];
+    final property = taskDatabase.status;
+    switch (property) {
+      case CheckboxCompleteStatusProperty():
+        return data['properties'][property.name]['checkbox'];
+      case StatusCompleteStatusProperty(status: var status):
+        final completeGroupIds = status.groups
+            .where(
+              (group) => group.name == 'Complete',
+            )
+            .firstOrNull
+            ?.optionIds;
+        if (completeGroupIds == null) {
+          throw Exception('Complete group not found');
+        }
+        // statusが未指定の場合がある
+        if (data['properties'][property.name]['status'] == null) {
+          return false;
+        }
+        return completeGroupIds.contains(
+          data['properties'][property.name]['status']['id'],
+        );
     }
-    if (status.type == PropertyType.status &&
-        status is StatusTaskStatusProperty) {
-      final completeGroupIds = status.status.groups
-          .where(
-            (group) => group.name == 'Complete',
-          )
-          .firstOrNull
-          ?.option_ids;
-      if (completeGroupIds == null) {
-        throw Exception('Complete group not found');
-      }
-      // statusが未指定の場合がある
-      if (data['properties'][status.name]['status'] == null) {
-        return false;
-      }
-      return completeGroupIds.contains(
-        data['properties'][status.name]['status']['id'],
-      );
-    }
-    return false;
   }
 }

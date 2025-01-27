@@ -55,9 +55,9 @@ class SelectedDatabaseState with _$SelectedDatabaseState {
   const factory SelectedDatabaseState({
     required String id,
     required String name,
-    required TaskTitleProperty title,
-    required TaskStatusProperty? status,
-    required TaskDateProperty? date,
+    required TitleProperty title,
+    required CompleteStatusProperty? status,
+    required DateProperty? date,
   }) = _SelectedDatabaseState;
 }
 
@@ -97,10 +97,7 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
       final accessibleDatabases = ref.read(accessibleDatabasesProvider).value;
       final selected =
           accessibleDatabases?.where((db) => db.id == databaseId).firstOrNull;
-      final title = selected?.properties
-          .where((property) => property.type == PropertyType.title)
-          .firstOrNull
-          ?.toJson();
+      final title = selected?.properties.whereType<TitleProperty>().firstOrNull;
 
       if (selected == null || title == null) {
         return value;
@@ -109,7 +106,7 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
       return SelectedDatabaseState(
         id: selected.id,
         name: selected.name,
-        title: TaskTitleProperty.fromJson(title),
+        title: title,
         status: null,
         date: null,
       );
@@ -134,16 +131,15 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
     if (properties
         .where((p) =>
             p.id == s.status?.id &&
-            [PropertyType.status, PropertyType.checkbox].contains(p.type) &&
-            p.name == s.status?.name)
+            p.name == s.status?.name &&
+            (p is StatusCompleteStatusProperty ||
+                p is CheckboxCompleteStatusProperty))
         .isEmpty) {
       noStatus = true;
     }
     if (properties
         .where((p) =>
-            p.id == s.date?.id &&
-            p.type == PropertyType.date &&
-            p.name == s.date?.name)
+            p is DateProperty && p.id == s.date?.id && p.name == s.date?.name)
         .isEmpty) {
       noDate = true;
     }
@@ -162,43 +158,55 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
       return;
     }
 
+    switch ((type, property)) {
+      case (SettingPropertyType.status, StatusCompleteStatusProperty()):
+        break;
+      case (SettingPropertyType.status, CheckboxCompleteStatusProperty()):
+        break;
+      case (SettingPropertyType.date, DateProperty()):
+        break;
+      case (SettingPropertyType.status, TitleProperty()):
+        break;
+      default:
+        return;
+    }
+
     state = state.whenData((value) {
       if (value == null) {
         return null;
       }
-      // Status
-      if (type == SettingPropertyType.status) {
-        if (property.type == PropertyType.status) {
+      switch ((type, property)) {
+        case (SettingPropertyType.status, var p)
+            when p is StatusCompleteStatusProperty:
           return value.copyWith(
-            status: TaskStatusProperty.status(
-                id: property.id,
-                name: property.name,
-                type: property.type,
-                status: (property as StatusProperty).status,
-                todoOption: null,
-                completeOption: null),
+            status: StatusCompleteStatusProperty(
+              id: p.id,
+              name: p.name,
+              status: p.status,
+              todoOption: null,
+              completeOption: null,
+            ),
           );
-        }
-        // Checkbox
-        if (property.type == PropertyType.checkbox) {
+        case (SettingPropertyType.status, var p)
+            when p is CheckboxCompleteStatusProperty:
           return value.copyWith(
-              status: TaskStatusProperty.checkbox(
-            id: property.id,
-            name: property.name,
-            type: property.type,
-            checked: (property as CheckboxProperty).checked,
-          ));
-        }
+            status: CheckboxCompleteStatusProperty(
+              id: p.id,
+              name: p.name,
+              checked: p.checked,
+            ),
+          );
+        case (SettingPropertyType.date, var p) when p is DateProperty:
+          return value.copyWith(
+            date: DateProperty(
+              id: p.id,
+              name: p.name,
+              date: p.date,
+            ),
+          );
+        default:
+          return value;
       }
-
-      // Date
-      return value.copyWith(
-          date: TaskDateProperty(
-        id: property.id,
-        name: property.name,
-        type: property.type,
-        date: (property as DateProperty).date,
-      ));
     });
   }
 
@@ -213,8 +221,11 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
           (optionType != 'To-do' && optionType != 'Complete')) {
         return value;
       }
+      final status = value.status;
+      if (status is! StatusCompleteStatusProperty) {
+        return value;
+      }
 
-      final status = value.status as StatusTaskStatusProperty;
       final option =
           status.status.options.firstWhere((option) => option.id == optionId);
 
@@ -271,14 +282,16 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
     state = const AsyncValue.data(null);
   }
 
-  bool get submitDisabled =>
-      state.value == null ||
-      state.value?.status == null ||
-      state.value?.date == null ||
-      (state.value?.status is StatusTaskStatusProperty &&
-          ((state.value?.status as StatusTaskStatusProperty).todoOption ==
-                  null ||
-              (state.value?.status as StatusTaskStatusProperty)
-                      .completeOption ==
-                  null));
+  bool get submitDisabled {
+    final status = state.value?.status;
+    if (status == null) {
+      return true;
+    }
+    switch (status) {
+      case StatusCompleteStatusProperty():
+        return status.todoOption == null || status.completeOption == null;
+      case CheckboxCompleteStatusProperty():
+        return false;
+    }
+  }
 }

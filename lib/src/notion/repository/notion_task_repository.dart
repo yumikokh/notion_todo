@@ -107,6 +107,14 @@ class NotionTaskRepository {
 
   Future addTask(String title, String? dueDate) async {
     final db = database;
+    final status = db.status;
+    final statusReady = switch (status) {
+      StatusCompleteStatusProperty() => {
+          "status": {"name": status.todoOption?.name}
+        },
+      CheckboxCompleteStatusProperty() => {"checkbox": false},
+    };
+
     if (db.id.isEmpty) {
       return;
     }
@@ -119,14 +127,7 @@ class NotionTaskRepository {
           }
         ]
       },
-      if (db.status.type == PropertyType.status)
-        db.status.name: {
-          "status": {
-            "name": (db.status as StatusTaskStatusProperty).todoOption?.name
-          }
-        }
-      else
-        db.status.name: {"checkbox": false},
+      db.status.name: statusReady,
       if (dueDate != null)
         db.date.name: {
           "date": {"start": dueDate}
@@ -190,30 +191,24 @@ class NotionTaskRepository {
     }
 
     final status = db.status;
+    final statusProperties = switch ((status, isCompleted)) {
+      (
+        StatusCompleteStatusProperty(completeOption: var completeOption),
+        true
+      ) =>
+        {
+          "status": {"name": completeOption?.name ?? 'Done'}
+        },
+      (StatusCompleteStatusProperty(todoOption: var todoOption), false) => {
+          "status": {"name": todoOption?.name ?? 'To-do'}
+        },
+      (CheckboxCompleteStatusProperty(), _) => {"checkbox": isCompleted},
+    };
+
     final res = await http.patch(
       Uri.parse('https://api.notion.com/v1/pages/$taskId'),
       headers: headers,
-      body: jsonEncode({
-        "properties": status.type == PropertyType.status
-            ? {
-                status.name: {
-                  "status": {
-                    "name": isCompleted
-                        ? (status as StatusTaskStatusProperty)
-                                .completeOption
-                                ?.name ??
-                            'Done'
-                        : (status as StatusTaskStatusProperty)
-                                .todoOption
-                                ?.name ??
-                            'To-do'
-                  }
-                }
-              }
-            : {
-                status.name: {"checkbox": isCompleted}
-              }
-      }),
+      body: jsonEncode({"properties": statusProperties}),
     );
     return jsonDecode(res.body);
   }
@@ -239,36 +234,33 @@ class NotionTaskRepository {
   }
 }
 
-List<dynamic> getNotCompleteStatusFilter(TaskStatusProperty property) {
-  if (property.type == PropertyType.status) {
-    final statusProperty = property as StatusTaskStatusProperty;
-    final optionIds = statusProperty.status.groups
-            .where((e) => e.name == 'Complete')
-            .firstOrNull
-            ?.option_ids ??
-        [];
-    return optionIds.map((id) {
-      final completeOptionName = statusProperty.status.options
-          .where((e) => e.id == id)
-          .firstOrNull
-          ?.name;
-      if (completeOptionName == null) {
-        throw Exception('Complete option name not found');
-      }
-      return {
-        "property": statusProperty.name,
-        "status": {"does_not_equal": completeOptionName}
-      };
-    }).toList();
-  } else if (property.type == PropertyType.checkbox) {
-    return [
-      {
-        "property": property.name,
-        "checkbox": {"equals": false}
-      }
-    ];
+List<dynamic> getNotCompleteStatusFilter(CompleteStatusProperty property) {
+  switch (property) {
+    case StatusCompleteStatusProperty(status: var status):
+      final optionIds = status.groups
+              .where((e) => e.name == 'Complete')
+              .firstOrNull
+              ?.optionIds ??
+          [];
+      return optionIds.map((id) {
+        final completeOptionName =
+            status.options.where((e) => e.id == id).firstOrNull?.name;
+        if (completeOptionName == null) {
+          throw Exception('Complete option name not found');
+        }
+        return {
+          "property": property.name,
+          "status": {"does_not_equal": completeOptionName}
+        };
+      }).toList();
+    case CheckboxCompleteStatusProperty():
+      return [
+        {
+          "property": property.name,
+          "checkbox": {"equals": false}
+        }
+      ];
   }
-  return [];
 }
 
 @riverpod

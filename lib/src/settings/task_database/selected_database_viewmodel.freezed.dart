@@ -18,9 +18,9 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$SelectedDatabaseState {
   String get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
-  TaskTitleProperty get title => throw _privateConstructorUsedError;
-  TaskStatusProperty? get status => throw _privateConstructorUsedError;
-  TaskDateProperty? get date => throw _privateConstructorUsedError;
+  TitleProperty get title => throw _privateConstructorUsedError;
+  CompleteStatusProperty? get status => throw _privateConstructorUsedError;
+  DateProperty? get date => throw _privateConstructorUsedError;
 
   /// Create a copy of SelectedDatabaseState
   /// with the given fields replaced by the non-null parameter values.
@@ -38,13 +38,9 @@ abstract class $SelectedDatabaseStateCopyWith<$Res> {
   $Res call(
       {String id,
       String name,
-      TaskTitleProperty title,
-      TaskStatusProperty? status,
-      TaskDateProperty? date});
-
-  $TaskTitlePropertyCopyWith<$Res> get title;
-  $TaskStatusPropertyCopyWith<$Res>? get status;
-  $TaskDatePropertyCopyWith<$Res>? get date;
+      TitleProperty title,
+      CompleteStatusProperty? status,
+      DateProperty? date});
 }
 
 /// @nodoc
@@ -81,54 +77,16 @@ class _$SelectedDatabaseStateCopyWithImpl<$Res,
       title: null == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
-              as TaskTitleProperty,
+              as TitleProperty,
       status: freezed == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
-              as TaskStatusProperty?,
+              as CompleteStatusProperty?,
       date: freezed == date
           ? _value.date
           : date // ignore: cast_nullable_to_non_nullable
-              as TaskDateProperty?,
+              as DateProperty?,
     ) as $Val);
-  }
-
-  /// Create a copy of SelectedDatabaseState
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $TaskTitlePropertyCopyWith<$Res> get title {
-    return $TaskTitlePropertyCopyWith<$Res>(_value.title, (value) {
-      return _then(_value.copyWith(title: value) as $Val);
-    });
-  }
-
-  /// Create a copy of SelectedDatabaseState
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $TaskStatusPropertyCopyWith<$Res>? get status {
-    if (_value.status == null) {
-      return null;
-    }
-
-    return $TaskStatusPropertyCopyWith<$Res>(_value.status!, (value) {
-      return _then(_value.copyWith(status: value) as $Val);
-    });
-  }
-
-  /// Create a copy of SelectedDatabaseState
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $TaskDatePropertyCopyWith<$Res>? get date {
-    if (_value.date == null) {
-      return null;
-    }
-
-    return $TaskDatePropertyCopyWith<$Res>(_value.date!, (value) {
-      return _then(_value.copyWith(date: value) as $Val);
-    });
   }
 }
 
@@ -144,16 +102,9 @@ abstract class _$$SelectedDatabaseStateImplCopyWith<$Res>
   $Res call(
       {String id,
       String name,
-      TaskTitleProperty title,
-      TaskStatusProperty? status,
-      TaskDateProperty? date});
-
-  @override
-  $TaskTitlePropertyCopyWith<$Res> get title;
-  @override
-  $TaskStatusPropertyCopyWith<$Res>? get status;
-  @override
-  $TaskDatePropertyCopyWith<$Res>? get date;
+      TitleProperty title,
+      CompleteStatusProperty? status,
+      DateProperty? date});
 }
 
 /// @nodoc
@@ -188,15 +139,15 @@ class __$$SelectedDatabaseStateImplCopyWithImpl<$Res>
       title: null == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
-              as TaskTitleProperty,
+              as TitleProperty,
       status: freezed == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
-              as TaskStatusProperty?,
+              as CompleteStatusProperty?,
       date: freezed == date
           ? _value.date
           : date // ignore: cast_nullable_to_non_nullable
-              as TaskDateProperty?,
+              as DateProperty?,
     ));
   }
 }
@@ -218,11 +169,11 @@ class _$SelectedDatabaseStateImpl
   @override
   final String name;
   @override
-  final TaskTitleProperty title;
+  final TitleProperty title;
   @override
-  final TaskStatusProperty? status;
+  final CompleteStatusProperty? status;
   @override
-  final TaskDateProperty? date;
+  final DateProperty? date;
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
@@ -270,20 +221,20 @@ abstract class _SelectedDatabaseState implements SelectedDatabaseState {
   const factory _SelectedDatabaseState(
       {required final String id,
       required final String name,
-      required final TaskTitleProperty title,
-      required final TaskStatusProperty? status,
-      required final TaskDateProperty? date}) = _$SelectedDatabaseStateImpl;
+      required final TitleProperty title,
+      required final CompleteStatusProperty? status,
+      required final DateProperty? date}) = _$SelectedDatabaseStateImpl;
 
   @override
   String get id;
   @override
   String get name;
   @override
-  TaskTitleProperty get title;
+  TitleProperty get title;
   @override
-  TaskStatusProperty? get status;
+  CompleteStatusProperty? get status;
   @override
-  TaskDateProperty? get date;
+  DateProperty? get date;
 
   /// Create a copy of SelectedDatabaseState
   /// with the given fields replaced by the non-null parameter values.
