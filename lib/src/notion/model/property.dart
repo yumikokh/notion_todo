@@ -1,4 +1,4 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:json_annotation/json_annotation.dart';
 
 part 'property.g.dart';
 
@@ -9,14 +9,14 @@ enum PropertyType {
   status,
 }
 
+/// プロパティの基底クラス
 sealed class Property {
   String get id;
   String get name;
   PropertyType get type;
 
   Map<String, dynamic> toJson();
-
-  static Property fromJson(Map<String, dynamic> json) {
+  factory Property.fromJson(Map<String, dynamic> json) {
     final type = json['type'] as PropertyType;
     switch (type) {
       case PropertyType.title:
@@ -79,6 +79,7 @@ class DateProperty implements Property {
   Map<String, dynamic> toJson() => _$DatePropertyToJson(this);
 }
 
+/// 完了ステータスプロパティの基底クラス
 sealed class CompleteStatusProperty implements Property {
   static CompleteStatusProperty fromJson(Map<String, dynamic> json) {
     final type = json['type'] as PropertyType;
@@ -91,6 +92,14 @@ sealed class CompleteStatusProperty implements Property {
         throw ArgumentError('Unknown type: $type');
     }
   }
+
+  @override
+  Map<String, dynamic> toJson() {
+    return switch (this) {
+      CheckboxCompleteStatusProperty status => status.toJson(),
+      StatusCompleteStatusProperty status => status.toJson(),
+    };
+  }
 }
 
 @JsonSerializable()
@@ -101,6 +110,7 @@ class CheckboxCompleteStatusProperty implements CompleteStatusProperty {
   final String name;
   @override
   final PropertyType type = PropertyType.checkbox;
+
   final bool checked;
 
   CheckboxCompleteStatusProperty({
@@ -124,6 +134,7 @@ class StatusCompleteStatusProperty implements CompleteStatusProperty {
   final String name;
   @override
   final PropertyType type = PropertyType.status;
+
   final ({List<StatusOption> options, List<StatusGroup> groups}) status;
   final StatusOption? todoOption;
   final StatusOption? completeOption;
@@ -156,6 +167,7 @@ class StatusCompleteStatusProperty implements CompleteStatusProperty {
   Map<String, dynamic> toJson() => _$StatusCompleteStatusPropertyToJson(this);
 }
 
+/// ステータスプロパティの基底クラス
 abstract interface class StatusPropertyBase {
   String get id;
   String get name;
