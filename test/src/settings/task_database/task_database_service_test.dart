@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tanzaku_todo/src/settings/task_database/task_database_service.dart';
@@ -19,30 +20,36 @@ void main() {
     });
 
     test('保存したデータを読み込める', () async {
-      const taskDatabase = TaskDatabase(
+      var taskDatabase = TaskDatabase(
         id: 'test-id',
         name: 'Test Database',
-        title: TaskTitleProperty(
+        title: TitleProperty(
           id: 'title-id',
           name: 'Title',
-          type: PropertyType.title,
           title: '',
         ),
-        status: TaskStatusProperty.checkbox(
+        status: CheckboxCompleteStatusProperty(
           id: 'status-id',
           name: 'Status',
-          type: PropertyType.checkbox,
           checked: false,
         ),
-        date: TaskDateProperty(
+        date: DateProperty(
           id: 'date-id',
           name: 'Date',
-          type: PropertyType.date,
           date: null,
         ),
       );
 
       await service.save(taskDatabase);
+
+      // 保存されたJSONデータを確認
+      final pref = await SharedPreferences.getInstance();
+      final savedJson = pref.getString('taskDatabase');
+      print('Saved JSON: $savedJson');
+      if (savedJson != null) {
+        print('Decoded JSON: ${jsonDecode(savedJson)}');
+      }
+
       final result = await service.loadSetting();
 
       expect(result, isNotNull);
@@ -54,25 +61,22 @@ void main() {
     });
 
     test('clear で保存したデータを削除できる', () async {
-      const taskDatabase = TaskDatabase(
+      var taskDatabase = TaskDatabase(
         id: 'test-id',
         name: 'Test Database',
-        title: TaskTitleProperty(
+        title: TitleProperty(
           id: 'title-id',
           name: 'Title',
-          type: PropertyType.title,
           title: '',
         ),
-        status: TaskStatusProperty.checkbox(
+        status: CheckboxCompleteStatusProperty(
           id: 'status-id',
           name: 'Status',
-          type: PropertyType.checkbox,
           checked: false,
         ),
-        date: TaskDateProperty(
+        date: DateProperty(
           id: 'date-id',
           name: 'Date',
-          type: PropertyType.date,
           date: null,
         ),
       );
@@ -81,6 +85,14 @@ void main() {
       await service.clear();
       final result = await service.loadSetting();
 
+      expect(result, isNull);
+    });
+
+    test('不正なJSONデータが保存されている場合はnullを返す', () async {
+      final pref = await SharedPreferences.getInstance();
+      await pref.setString('taskDatabase', '{"invalid": "json"}');
+
+      final result = await service.loadSetting();
       expect(result, isNull);
     });
   });

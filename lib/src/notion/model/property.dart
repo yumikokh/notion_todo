@@ -29,7 +29,8 @@ sealed class Property {
       };
 
   factory Property.fromJson(Map<String, dynamic> json) {
-    final type = json['type'] as PropertyType;
+    final typeStr = json['type'] as String;
+    final type = $enumDecode(_$PropertyTypeEnumMap, typeStr);
     switch (type) {
       case PropertyType.title:
         return TitleProperty.fromJson(json);
@@ -86,7 +87,8 @@ sealed class CompleteStatusProperty extends Property {
   }) : super(id: id, name: name, type: type);
 
   static CompleteStatusProperty fromJson(Map<String, dynamic> json) {
-    final type = json['type'] as PropertyType;
+    final typeStr = json['type'] as String;
+    final type = $enumDecode(_$PropertyTypeEnumMap, typeStr);
     switch (type) {
       case PropertyType.checkbox:
         return CheckboxCompleteStatusProperty.fromJson(json);
