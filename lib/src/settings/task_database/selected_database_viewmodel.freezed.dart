@@ -41,8 +41,6 @@ abstract class $SelectedDatabaseStateCopyWith<$Res> {
       TitleProperty title,
       CompleteStatusProperty? status,
       DateProperty? date});
-
-  $CompleteStatusPropertyCopyWith<$Res>? get status;
 }
 
 /// @nodoc
@@ -63,7 +61,7 @@ class _$SelectedDatabaseStateCopyWithImpl<$Res,
   $Res call({
     Object? id = null,
     Object? name = null,
-    Object? title = freezed,
+    Object? title = null,
     Object? status = freezed,
     Object? date = freezed,
   }) {
@@ -76,7 +74,7 @@ class _$SelectedDatabaseStateCopyWithImpl<$Res,
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      title: freezed == title
+      title: null == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
               as TitleProperty,
@@ -89,20 +87,6 @@ class _$SelectedDatabaseStateCopyWithImpl<$Res,
           : date // ignore: cast_nullable_to_non_nullable
               as DateProperty?,
     ) as $Val);
-  }
-
-  /// Create a copy of SelectedDatabaseState
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $CompleteStatusPropertyCopyWith<$Res>? get status {
-    if (_value.status == null) {
-      return null;
-    }
-
-    return $CompleteStatusPropertyCopyWith<$Res>(_value.status!, (value) {
-      return _then(_value.copyWith(status: value) as $Val);
-    });
   }
 }
 
@@ -121,9 +105,6 @@ abstract class _$$SelectedDatabaseStateImplCopyWith<$Res>
       TitleProperty title,
       CompleteStatusProperty? status,
       DateProperty? date});
-
-  @override
-  $CompleteStatusPropertyCopyWith<$Res>? get status;
 }
 
 /// @nodoc
@@ -142,7 +123,7 @@ class __$$SelectedDatabaseStateImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? name = null,
-    Object? title = freezed,
+    Object? title = null,
     Object? status = freezed,
     Object? date = freezed,
   }) {
@@ -155,7 +136,7 @@ class __$$SelectedDatabaseStateImplCopyWithImpl<$Res>
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      title: freezed == title
+      title: null == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
               as TitleProperty,
@@ -218,19 +199,13 @@ class _$SelectedDatabaseStateImpl
             other is _$SelectedDatabaseStateImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
-            const DeepCollectionEquality().equals(other.title, title) &&
+            (identical(other.title, title) || other.title == title) &&
             (identical(other.status, status) || other.status == status) &&
-            const DeepCollectionEquality().equals(other.date, date));
+            (identical(other.date, date) || other.date == date));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      id,
-      name,
-      const DeepCollectionEquality().hash(title),
-      status,
-      const DeepCollectionEquality().hash(date));
+  int get hashCode => Object.hash(runtimeType, id, name, title, status, date);
 
   /// Create a copy of SelectedDatabaseState
   /// with the given fields replaced by the non-null parameter values.

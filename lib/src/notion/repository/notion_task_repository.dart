@@ -240,7 +240,7 @@ List<dynamic> getNotCompleteStatusFilter(CompleteStatusProperty property) {
       final optionIds = status.groups
               .where((e) => e.name == 'Complete')
               .firstOrNull
-              ?.option_ids ??
+              ?.optionIds ??
           [];
       return optionIds.map((id) {
         final completeOptionName =

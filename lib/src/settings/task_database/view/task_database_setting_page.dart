@@ -289,7 +289,7 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
     return property.status.groups
             .where((group) => group.name == groupName)
             .firstOrNull
-            ?.option_ids
+            ?.optionIds
             .map((id) => DropdownMenuItem<String>(
                   value: id,
                   child: Text(property.status.options

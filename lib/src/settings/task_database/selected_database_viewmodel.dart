@@ -133,7 +133,8 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
         .where((p) =>
             p.id == s.status?.id &&
             p.name == s.status?.name &&
-            (p is StatusProperty || p is CheckboxProperty))
+            (p is StatusCompleteStatusProperty ||
+                p is CheckboxCompleteStatusProperty))
         .isEmpty) {
       noStatus = true;
     }
@@ -166,9 +167,9 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
       if (type == SettingPropertyType.status) {
         final statusProperty = property;
         switch (statusProperty) {
-          case StatusProperty():
+          case StatusCompleteStatusProperty():
             return value.copyWith(
-              status: CompleteStatusProperty.status(
+              status: StatusCompleteStatusProperty(
                 id: property.id,
                 name: property.name,
                 status: statusProperty.status,
@@ -176,9 +177,9 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
                 completeOption: null,
               ),
             );
-          case CheckboxProperty():
+          case CheckboxCompleteStatusProperty():
             return value.copyWith(
-                status: CompleteStatusProperty.checkbox(
+                status: CheckboxCompleteStatusProperty(
               id: property.id,
               name: property.name,
               checked: statusProperty.checked,

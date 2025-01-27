@@ -155,7 +155,7 @@ class TaskService {
               (group) => group.name == 'Complete',
             )
             .firstOrNull
-            ?.option_ids;
+            ?.optionIds;
         if (completeGroupIds == null) {
           throw Exception('Complete group not found');
         }

@@ -48,8 +48,6 @@ abstract class $TaskDatabaseCopyWith<$Res> {
       TitleProperty title,
       CompleteStatusProperty status,
       DateProperty date});
-
-  $CompleteStatusPropertyCopyWith<$Res> get status;
 }
 
 /// @nodoc
@@ -69,9 +67,9 @@ class _$TaskDatabaseCopyWithImpl<$Res, $Val extends TaskDatabase>
   $Res call({
     Object? id = null,
     Object? name = null,
-    Object? title = freezed,
+    Object? title = null,
     Object? status = null,
-    Object? date = freezed,
+    Object? date = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -82,7 +80,7 @@ class _$TaskDatabaseCopyWithImpl<$Res, $Val extends TaskDatabase>
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      title: freezed == title
+      title: null == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
               as TitleProperty,
@@ -90,21 +88,11 @@ class _$TaskDatabaseCopyWithImpl<$Res, $Val extends TaskDatabase>
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
               as CompleteStatusProperty,
-      date: freezed == date
+      date: null == date
           ? _value.date
           : date // ignore: cast_nullable_to_non_nullable
               as DateProperty,
     ) as $Val);
-  }
-
-  /// Create a copy of TaskDatabase
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $CompleteStatusPropertyCopyWith<$Res> get status {
-    return $CompleteStatusPropertyCopyWith<$Res>(_value.status, (value) {
-      return _then(_value.copyWith(status: value) as $Val);
-    });
   }
 }
 
@@ -122,9 +110,6 @@ abstract class _$$TaskDatabaseImplCopyWith<$Res>
       TitleProperty title,
       CompleteStatusProperty status,
       DateProperty date});
-
-  @override
-  $CompleteStatusPropertyCopyWith<$Res> get status;
 }
 
 /// @nodoc
@@ -142,9 +127,9 @@ class __$$TaskDatabaseImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? name = null,
-    Object? title = freezed,
+    Object? title = null,
     Object? status = null,
-    Object? date = freezed,
+    Object? date = null,
   }) {
     return _then(_$TaskDatabaseImpl(
       id: null == id
@@ -155,7 +140,7 @@ class __$$TaskDatabaseImplCopyWithImpl<$Res>
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      title: freezed == title
+      title: null == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
               as TitleProperty,
@@ -163,7 +148,7 @@ class __$$TaskDatabaseImplCopyWithImpl<$Res>
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
               as CompleteStatusProperty,
-      date: freezed == date
+      date: null == date
           ? _value.date
           : date // ignore: cast_nullable_to_non_nullable
               as DateProperty,
@@ -207,20 +192,14 @@ class _$TaskDatabaseImpl implements _TaskDatabase {
             other is _$TaskDatabaseImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
-            const DeepCollectionEquality().equals(other.title, title) &&
+            (identical(other.title, title) || other.title == title) &&
             (identical(other.status, status) || other.status == status) &&
-            const DeepCollectionEquality().equals(other.date, date));
+            (identical(other.date, date) || other.date == date));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      id,
-      name,
-      const DeepCollectionEquality().hash(title),
-      status,
-      const DeepCollectionEquality().hash(date));
+  int get hashCode => Object.hash(runtimeType, id, name, title, status, date);
 
   /// Create a copy of TaskDatabase
   /// with the given fields replaced by the non-null parameter values.

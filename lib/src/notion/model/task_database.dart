@@ -3,7 +3,6 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'property.dart';
 
 part 'task_database.freezed.dart';
-part 'task_database.g.dart';
 
 // 決定されたタスクDB情報
 @freezed

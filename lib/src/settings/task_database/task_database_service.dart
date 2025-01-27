@@ -87,28 +87,25 @@ class TaskDatabaseService {
 
         switch (type) {
           case 'title':
-            return Property.title(
+            return TitleProperty(
               id: id,
               name: name,
-              type: PropertyType.title,
               title: property['title'].isEmpty
                   ? ''
                   : property['title'][0]['plain_text'],
             );
           case 'date':
-            return Property.date(
+            return DateProperty(
               id: id,
               name: name,
-              type: PropertyType.date,
               date: property['date'].isEmpty
                   ? null
                   : DateTime.parse(property['date']['start']),
             );
           case 'checkbox':
-            return Property.checkbox(
+            return CheckboxCompleteStatusProperty(
               id: id,
               name: name,
-              type: PropertyType.checkbox,
               checked: property['checkbox'].isEmpty
                   ? false
                   : property['checkbox']['checked'],
@@ -120,10 +117,9 @@ class TaskDatabaseService {
             final groups = (property['status']['groups'] as List<dynamic>)
                 .map((group) => StatusGroup.fromJson(group))
                 .toList();
-            return Property.status(
+            return StatusCompleteStatusProperty(
               id: id,
               name: name,
-              type: PropertyType.status,
               status: (
                 options: options,
                 groups: groups,
