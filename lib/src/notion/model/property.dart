@@ -11,13 +11,26 @@ enum PropertyType {
 
 /// プロパティの基底クラス
 sealed class Property {
-  String get id;
-  String get name;
-  PropertyType get type;
+  String id;
+  String name;
+  PropertyType type;
 
-  Map<String, dynamic> toJson();
+  Property({
+    required this.id,
+    required this.name,
+    required this.type,
+  });
+
+  Map<String, dynamic> toJson() => switch (this) {
+        TitleProperty title => title.toJson(),
+        DateProperty date => date.toJson(),
+        CheckboxCompleteStatusProperty checkbox => checkbox.toJson(),
+        StatusCompleteStatusProperty status => status.toJson(),
+      };
+
   factory Property.fromJson(Map<String, dynamic> json) {
-    final type = json['type'] as PropertyType;
+    final typeStr = json['type'] as String;
+    final type = $enumDecode(_$PropertyTypeEnumMap, typeStr);
     switch (type) {
       case PropertyType.title:
         return TitleProperty.fromJson(json);
@@ -32,21 +45,14 @@ sealed class Property {
 }
 
 @JsonSerializable()
-class TitleProperty implements Property {
-  @override
-  final String id;
-  @override
-  final String name;
-  @override
-  final PropertyType type = PropertyType.title;
-
+class TitleProperty extends Property {
   final String title;
 
   TitleProperty({
-    required this.id,
-    required this.name,
+    required String id,
+    required String name,
     required this.title,
-  });
+  }) : super(id: id, name: name, type: PropertyType.title);
 
   factory TitleProperty.fromJson(Map<String, dynamic> json) =>
       _$TitlePropertyFromJson(json);
@@ -56,21 +62,14 @@ class TitleProperty implements Property {
 }
 
 @JsonSerializable()
-class DateProperty implements Property {
-  @override
-  final String id;
-  @override
-  final String name;
-  @override
-  final PropertyType type = PropertyType.date;
-
+class DateProperty extends Property {
   final DateTime? date;
 
   DateProperty({
-    required this.id,
-    required this.name,
+    required String id,
+    required String name,
     required this.date,
-  });
+  }) : super(id: id, name: name, type: PropertyType.date);
 
   factory DateProperty.fromJson(Map<String, dynamic> json) =>
       _$DatePropertyFromJson(json);
@@ -80,9 +79,16 @@ class DateProperty implements Property {
 }
 
 /// 完了ステータスプロパティの基底クラス
-sealed class CompleteStatusProperty implements Property {
+sealed class CompleteStatusProperty extends Property {
+  CompleteStatusProperty({
+    required String id,
+    required String name,
+    required PropertyType type,
+  }) : super(id: id, name: name, type: type);
+
   static CompleteStatusProperty fromJson(Map<String, dynamic> json) {
-    final type = json['type'] as PropertyType;
+    final typeStr = json['type'] as String;
+    final type = $enumDecode(_$PropertyTypeEnumMap, typeStr);
     switch (type) {
       case PropertyType.checkbox:
         return CheckboxCompleteStatusProperty.fromJson(json);
@@ -94,30 +100,21 @@ sealed class CompleteStatusProperty implements Property {
   }
 
   @override
-  Map<String, dynamic> toJson() {
-    return switch (this) {
-      CheckboxCompleteStatusProperty status => status.toJson(),
-      StatusCompleteStatusProperty status => status.toJson(),
-    };
-  }
+  Map<String, dynamic> toJson() => switch (this) {
+        CheckboxCompleteStatusProperty status => status.toJson(),
+        StatusCompleteStatusProperty status => status.toJson(),
+      };
 }
 
 @JsonSerializable()
-class CheckboxCompleteStatusProperty implements CompleteStatusProperty {
-  @override
-  final String id;
-  @override
-  final String name;
-  @override
-  final PropertyType type = PropertyType.checkbox;
-
+class CheckboxCompleteStatusProperty extends CompleteStatusProperty {
   final bool checked;
 
   CheckboxCompleteStatusProperty({
-    required this.id,
-    required this.name,
+    required String id,
+    required String name,
     required this.checked,
-  });
+  }) : super(id: id, name: name, type: PropertyType.checkbox);
 
   factory CheckboxCompleteStatusProperty.fromJson(Map<String, dynamic> json) =>
       _$CheckboxCompleteStatusPropertyFromJson(json);
@@ -127,25 +124,18 @@ class CheckboxCompleteStatusProperty implements CompleteStatusProperty {
 }
 
 @JsonSerializable()
-class StatusCompleteStatusProperty implements CompleteStatusProperty {
-  @override
-  final String id;
-  @override
-  final String name;
-  @override
-  final PropertyType type = PropertyType.status;
-
+class StatusCompleteStatusProperty extends CompleteStatusProperty {
   final ({List<StatusOption> options, List<StatusGroup> groups}) status;
   final StatusOption? todoOption;
   final StatusOption? completeOption;
 
   StatusCompleteStatusProperty({
-    required this.id,
-    required this.name,
+    required String id,
+    required String name,
     required this.status,
     required this.todoOption,
     required this.completeOption,
-  });
+  }) : super(id: id, name: name, type: PropertyType.status);
 
   StatusCompleteStatusProperty copyWith({
     StatusOption? todoOption,
@@ -169,25 +159,24 @@ class StatusCompleteStatusProperty implements CompleteStatusProperty {
 
 /// ステータスプロパティの基底クラス
 abstract interface class StatusPropertyBase {
-  String get id;
-  String get name;
-  String? get color;
-}
+  String id;
+  String name;
+  String? color;
 
-@JsonSerializable()
-class StatusOption implements StatusPropertyBase {
-  @override
-  final String id;
-  @override
-  final String name;
-  @override
-  final String? color;
-
-  StatusOption({
+  StatusPropertyBase({
     required this.id,
     required this.name,
     required this.color,
   });
+}
+
+@JsonSerializable()
+class StatusOption extends StatusPropertyBase {
+  StatusOption({
+    required String id,
+    required String name,
+    required String? color,
+  }) : super(id: id, name: name, color: color);
 
   factory StatusOption.fromJson(Map<String, dynamic> json) =>
       _$StatusOptionFromJson(json);
@@ -196,23 +185,16 @@ class StatusOption implements StatusPropertyBase {
 }
 
 @JsonSerializable()
-class StatusGroup implements StatusPropertyBase {
-  @override
-  final String id;
-  @override
-  final String name;
-  @override
-  final String? color;
-
+class StatusGroup extends StatusPropertyBase {
   @JsonKey(name: 'option_ids')
   final List<String> optionIds;
 
   StatusGroup({
-    required this.id,
-    required this.name,
-    required this.color,
+    required String id,
+    required String name,
+    required String? color,
     required this.optionIds,
-  });
+  }) : super(id: id, name: name, color: color);
 
   factory StatusGroup.fromJson(Map<String, dynamic> json) =>
       _$StatusGroupFromJson(json);

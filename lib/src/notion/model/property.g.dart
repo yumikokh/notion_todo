@@ -11,26 +11,35 @@ TitleProperty _$TitlePropertyFromJson(Map<String, dynamic> json) =>
       id: json['id'] as String,
       name: json['name'] as String,
       title: json['title'] as String,
-    );
+    )..type = $enumDecode(_$PropertyTypeEnumMap, json['type']);
 
 Map<String, dynamic> _$TitlePropertyToJson(TitleProperty instance) =>
     <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
+      'type': _$PropertyTypeEnumMap[instance.type]!,
       'title': instance.title,
     };
+
+const _$PropertyTypeEnumMap = {
+  PropertyType.title: 'title',
+  PropertyType.date: 'date',
+  PropertyType.checkbox: 'checkbox',
+  PropertyType.status: 'status',
+};
 
 DateProperty _$DatePropertyFromJson(Map<String, dynamic> json) => DateProperty(
       id: json['id'] as String,
       name: json['name'] as String,
       date:
           json['date'] == null ? null : DateTime.parse(json['date'] as String),
-    );
+    )..type = $enumDecode(_$PropertyTypeEnumMap, json['type']);
 
 Map<String, dynamic> _$DatePropertyToJson(DateProperty instance) =>
     <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
+      'type': _$PropertyTypeEnumMap[instance.type]!,
       'date': instance.date?.toIso8601String(),
     };
 
@@ -40,13 +49,14 @@ CheckboxCompleteStatusProperty _$CheckboxCompleteStatusPropertyFromJson(
       id: json['id'] as String,
       name: json['name'] as String,
       checked: json['checked'] as bool,
-    );
+    )..type = $enumDecode(_$PropertyTypeEnumMap, json['type']);
 
 Map<String, dynamic> _$CheckboxCompleteStatusPropertyToJson(
         CheckboxCompleteStatusProperty instance) =>
     <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
+      'type': _$PropertyTypeEnumMap[instance.type]!,
       'checked': instance.checked,
     };
 
@@ -73,13 +83,14 @@ StatusCompleteStatusProperty _$StatusCompleteStatusPropertyFromJson(
           ? null
           : StatusOption.fromJson(
               json['completeOption'] as Map<String, dynamic>),
-    );
+    )..type = $enumDecode(_$PropertyTypeEnumMap, json['type']);
 
 Map<String, dynamic> _$StatusCompleteStatusPropertyToJson(
         StatusCompleteStatusProperty instance) =>
     <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
+      'type': _$PropertyTypeEnumMap[instance.type]!,
       'status': <String, dynamic>{
         'groups': instance.status.groups,
         'options': instance.status.options,
