@@ -47,7 +47,6 @@ Future<List<Property>> properties(
       ? [PropertyType.status, PropertyType.checkbox]
       : [PropertyType.date];
 
-  // ignore: invalid_use_of_protected_member
   return properties.where((property) => types.contains(property.type)).toList();
 }
 
@@ -159,43 +158,55 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
       return;
     }
 
+    switch ((type, property)) {
+      case (SettingPropertyType.status, StatusCompleteStatusProperty()):
+        break;
+      case (SettingPropertyType.status, CheckboxCompleteStatusProperty()):
+        break;
+      case (SettingPropertyType.date, DateProperty()):
+        break;
+      case (SettingPropertyType.status, TitleProperty()):
+        break;
+      default:
+        return;
+    }
+
     state = state.whenData((value) {
       if (value == null) {
         return null;
       }
-      // Status
-      if (type == SettingPropertyType.status) {
-        final statusProperty = property;
-        switch (statusProperty) {
-          case StatusCompleteStatusProperty():
-            return value.copyWith(
-              status: StatusCompleteStatusProperty(
-                id: property.id,
-                name: property.name,
-                status: statusProperty.status,
-                todoOption: null,
-                completeOption: null,
-              ),
-            );
-          case CheckboxCompleteStatusProperty():
-            return value.copyWith(
-                status: CheckboxCompleteStatusProperty(
-              id: property.id,
-              name: property.name,
-              checked: statusProperty.checked,
-            ));
-          default:
-            return value;
-        }
+      switch ((type, property)) {
+        case (SettingPropertyType.status, var p)
+            when p is StatusCompleteStatusProperty:
+          return value.copyWith(
+            status: StatusCompleteStatusProperty(
+              id: p.id,
+              name: p.name,
+              status: p.status,
+              todoOption: null,
+              completeOption: null,
+            ),
+          );
+        case (SettingPropertyType.status, var p)
+            when p is CheckboxCompleteStatusProperty:
+          return value.copyWith(
+            status: CheckboxCompleteStatusProperty(
+              id: p.id,
+              name: p.name,
+              checked: p.checked,
+            ),
+          );
+        case (SettingPropertyType.date, var p) when p is DateProperty:
+          return value.copyWith(
+            date: DateProperty(
+              id: p.id,
+              name: p.name,
+              date: p.date,
+            ),
+          );
+        default:
+          return value;
       }
-
-      // Date
-      return value.copyWith(
-          date: DateProperty(
-        id: property.id,
-        name: property.name,
-        date: (property as DateProperty).date,
-      ));
     });
   }
 

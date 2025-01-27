@@ -25,6 +25,8 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
         ref.watch(selectedDatabaseViewModelProvider.notifier);
     final notionOAuthViewModel =
         ref.read(notionOAuthViewModelProvider.notifier);
+    final selectedStatus = selectedDatabase?.status;
+
     final l = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
@@ -95,17 +97,13 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                         const SizedBox(height: 24),
 
                         // StatusTaskStatusPropertyの場合のみ表示
-                        if (selectedDatabase.status
-                            is StatusCompleteStatusProperty) ...[
+                        if (selectedStatus is StatusCompleteStatusProperty) ...[
                           _buildSectionTitle(
                               context, l.status_property_todo_option,
                               tooltip: l.todo_option_description),
                           const SizedBox(height: 8),
                           _buildDropdown(
-                            value: (selectedDatabase.status
-                                    as StatusCompleteStatusProperty)
-                                .todoOption
-                                ?.id,
+                            value: selectedStatus.todoOption?.id,
                             items:
                                 _buildStatusOptions(selectedDatabase, 'To-do'),
                             onChanged: (value) => selectedDatabaseViewModel
@@ -118,10 +116,7 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                               tooltip: l.complete_option_description),
                           const SizedBox(height: 8),
                           _buildDropdown(
-                            value: (selectedDatabase.status
-                                    as StatusCompleteStatusProperty)
-                                .completeOption
-                                ?.id,
+                            value: selectedStatus.completeOption?.id,
                             items: _buildStatusOptions(
                                 selectedDatabase, 'Complete'),
                             onChanged: (value) => selectedDatabaseViewModel
