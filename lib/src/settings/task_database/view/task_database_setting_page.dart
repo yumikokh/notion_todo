@@ -95,15 +95,15 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                         const SizedBox(height: 24),
 
                         // StatusTaskStatusPropertyの場合のみ表示
-                        if (selectedDatabase.status?.type ==
-                            PropertyType.status) ...[
+                        if (selectedDatabase.status
+                            is StatusCompleteStatusProperty) ...[
                           _buildSectionTitle(
                               context, l.status_property_todo_option,
                               tooltip: l.todo_option_description),
                           const SizedBox(height: 8),
                           _buildDropdown(
                             value: (selectedDatabase.status
-                                    as StatusTaskStatusProperty)
+                                    as StatusCompleteStatusProperty)
                                 .todoOption
                                 ?.id,
                             items:
@@ -119,7 +119,7 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                           const SizedBox(height: 8),
                           _buildDropdown(
                             value: (selectedDatabase.status
-                                    as StatusTaskStatusProperty)
+                                    as StatusCompleteStatusProperty)
                                 .completeOption
                                 ?.id,
                             items: _buildStatusOptions(
@@ -281,18 +281,18 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
   }
 
   List<DropdownMenuItem<String>> _buildStatusOptions(
-      SelectedDatabaseState state, String groupName) {
-    return (state.status as StatusTaskStatusProperty)
-            .status
-            .groups
+      SelectedDatabaseState db, String groupName) {
+    final property = db.status;
+    if (property is! StatusCompleteStatusProperty) {
+      return [];
+    }
+    return property.status.groups
             .where((group) => group.name == groupName)
             .firstOrNull
             ?.option_ids
             .map((id) => DropdownMenuItem<String>(
                   value: id,
-                  child: Text((state.status as StatusTaskStatusProperty)
-                      .status
-                      .options
+                  child: Text(property.status.options
                       .firstWhere((option) => option.id == id)
                       .name),
                 ))

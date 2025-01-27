@@ -22,9 +22,9 @@ TaskDatabase _$TaskDatabaseFromJson(Map<String, dynamic> json) {
 mixin _$TaskDatabase {
   String get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
-  TaskTitleProperty get title => throw _privateConstructorUsedError;
-  TaskStatusProperty get status => throw _privateConstructorUsedError;
-  TaskDateProperty get date => throw _privateConstructorUsedError;
+  TitleProperty get title => throw _privateConstructorUsedError;
+  CompleteStatusProperty get status => throw _privateConstructorUsedError;
+  DateProperty get date => throw _privateConstructorUsedError;
 
   /// Serializes this TaskDatabase to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -45,13 +45,11 @@ abstract class $TaskDatabaseCopyWith<$Res> {
   $Res call(
       {String id,
       String name,
-      TaskTitleProperty title,
-      TaskStatusProperty status,
-      TaskDateProperty date});
+      TitleProperty title,
+      CompleteStatusProperty status,
+      DateProperty date});
 
-  $TaskTitlePropertyCopyWith<$Res> get title;
-  $TaskStatusPropertyCopyWith<$Res> get status;
-  $TaskDatePropertyCopyWith<$Res> get date;
+  $CompleteStatusPropertyCopyWith<$Res> get status;
 }
 
 /// @nodoc
@@ -71,9 +69,9 @@ class _$TaskDatabaseCopyWithImpl<$Res, $Val extends TaskDatabase>
   $Res call({
     Object? id = null,
     Object? name = null,
-    Object? title = null,
+    Object? title = freezed,
     Object? status = null,
-    Object? date = null,
+    Object? date = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -84,18 +82,18 @@ class _$TaskDatabaseCopyWithImpl<$Res, $Val extends TaskDatabase>
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      title: null == title
+      title: freezed == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
-              as TaskTitleProperty,
+              as TitleProperty,
       status: null == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
-              as TaskStatusProperty,
-      date: null == date
+              as CompleteStatusProperty,
+      date: freezed == date
           ? _value.date
           : date // ignore: cast_nullable_to_non_nullable
-              as TaskDateProperty,
+              as DateProperty,
     ) as $Val);
   }
 
@@ -103,29 +101,9 @@ class _$TaskDatabaseCopyWithImpl<$Res, $Val extends TaskDatabase>
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
-  $TaskTitlePropertyCopyWith<$Res> get title {
-    return $TaskTitlePropertyCopyWith<$Res>(_value.title, (value) {
-      return _then(_value.copyWith(title: value) as $Val);
-    });
-  }
-
-  /// Create a copy of TaskDatabase
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $TaskStatusPropertyCopyWith<$Res> get status {
-    return $TaskStatusPropertyCopyWith<$Res>(_value.status, (value) {
+  $CompleteStatusPropertyCopyWith<$Res> get status {
+    return $CompleteStatusPropertyCopyWith<$Res>(_value.status, (value) {
       return _then(_value.copyWith(status: value) as $Val);
-    });
-  }
-
-  /// Create a copy of TaskDatabase
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $TaskDatePropertyCopyWith<$Res> get date {
-    return $TaskDatePropertyCopyWith<$Res>(_value.date, (value) {
-      return _then(_value.copyWith(date: value) as $Val);
     });
   }
 }
@@ -141,16 +119,12 @@ abstract class _$$TaskDatabaseImplCopyWith<$Res>
   $Res call(
       {String id,
       String name,
-      TaskTitleProperty title,
-      TaskStatusProperty status,
-      TaskDateProperty date});
+      TitleProperty title,
+      CompleteStatusProperty status,
+      DateProperty date});
 
   @override
-  $TaskTitlePropertyCopyWith<$Res> get title;
-  @override
-  $TaskStatusPropertyCopyWith<$Res> get status;
-  @override
-  $TaskDatePropertyCopyWith<$Res> get date;
+  $CompleteStatusPropertyCopyWith<$Res> get status;
 }
 
 /// @nodoc
@@ -168,9 +142,9 @@ class __$$TaskDatabaseImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? name = null,
-    Object? title = null,
+    Object? title = freezed,
     Object? status = null,
-    Object? date = null,
+    Object? date = freezed,
   }) {
     return _then(_$TaskDatabaseImpl(
       id: null == id
@@ -181,18 +155,18 @@ class __$$TaskDatabaseImplCopyWithImpl<$Res>
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      title: null == title
+      title: freezed == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
-              as TaskTitleProperty,
+              as TitleProperty,
       status: null == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
-              as TaskStatusProperty,
-      date: null == date
+              as CompleteStatusProperty,
+      date: freezed == date
           ? _value.date
           : date // ignore: cast_nullable_to_non_nullable
-              as TaskDateProperty,
+              as DateProperty,
     ));
   }
 }
@@ -215,11 +189,11 @@ class _$TaskDatabaseImpl implements _TaskDatabase {
   @override
   final String name;
   @override
-  final TaskTitleProperty title;
+  final TitleProperty title;
   @override
-  final TaskStatusProperty status;
+  final CompleteStatusProperty status;
   @override
-  final TaskDateProperty date;
+  final DateProperty date;
 
   @override
   String toString() {
@@ -233,14 +207,20 @@ class _$TaskDatabaseImpl implements _TaskDatabase {
             other is _$TaskDatabaseImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
-            (identical(other.title, title) || other.title == title) &&
+            const DeepCollectionEquality().equals(other.title, title) &&
             (identical(other.status, status) || other.status == status) &&
-            (identical(other.date, date) || other.date == date));
+            const DeepCollectionEquality().equals(other.date, date));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, name, title, status, date);
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      name,
+      const DeepCollectionEquality().hash(title),
+      status,
+      const DeepCollectionEquality().hash(date));
 
   /// Create a copy of TaskDatabase
   /// with the given fields replaced by the non-null parameter values.
@@ -262,9 +242,9 @@ abstract class _TaskDatabase implements TaskDatabase {
   const factory _TaskDatabase(
       {required final String id,
       required final String name,
-      required final TaskTitleProperty title,
-      required final TaskStatusProperty status,
-      required final TaskDateProperty date}) = _$TaskDatabaseImpl;
+      required final TitleProperty title,
+      required final CompleteStatusProperty status,
+      required final DateProperty date}) = _$TaskDatabaseImpl;
 
   factory _TaskDatabase.fromJson(Map<String, dynamic> json) =
       _$TaskDatabaseImpl.fromJson;
@@ -274,11 +254,11 @@ abstract class _TaskDatabase implements TaskDatabase {
   @override
   String get name;
   @override
-  TaskTitleProperty get title;
+  TitleProperty get title;
   @override
-  TaskStatusProperty get status;
+  CompleteStatusProperty get status;
   @override
-  TaskDateProperty get date;
+  DateProperty get date;
 
   /// Create a copy of TaskDatabase
   /// with the given fields replaced by the non-null parameter values.

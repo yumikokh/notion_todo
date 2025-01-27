@@ -18,9 +18,9 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$SelectedDatabaseState {
   String get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
-  TaskTitleProperty get title => throw _privateConstructorUsedError;
-  TaskStatusProperty? get status => throw _privateConstructorUsedError;
-  TaskDateProperty? get date => throw _privateConstructorUsedError;
+  TitleProperty get title => throw _privateConstructorUsedError;
+  CompleteStatusProperty? get status => throw _privateConstructorUsedError;
+  DateProperty? get date => throw _privateConstructorUsedError;
 
   /// Create a copy of SelectedDatabaseState
   /// with the given fields replaced by the non-null parameter values.
@@ -38,13 +38,11 @@ abstract class $SelectedDatabaseStateCopyWith<$Res> {
   $Res call(
       {String id,
       String name,
-      TaskTitleProperty title,
-      TaskStatusProperty? status,
-      TaskDateProperty? date});
+      TitleProperty title,
+      CompleteStatusProperty? status,
+      DateProperty? date});
 
-  $TaskTitlePropertyCopyWith<$Res> get title;
-  $TaskStatusPropertyCopyWith<$Res>? get status;
-  $TaskDatePropertyCopyWith<$Res>? get date;
+  $CompleteStatusPropertyCopyWith<$Res>? get status;
 }
 
 /// @nodoc
@@ -65,7 +63,7 @@ class _$SelectedDatabaseStateCopyWithImpl<$Res,
   $Res call({
     Object? id = null,
     Object? name = null,
-    Object? title = null,
+    Object? title = freezed,
     Object? status = freezed,
     Object? date = freezed,
   }) {
@@ -78,18 +76,18 @@ class _$SelectedDatabaseStateCopyWithImpl<$Res,
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      title: null == title
+      title: freezed == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
-              as TaskTitleProperty,
+              as TitleProperty,
       status: freezed == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
-              as TaskStatusProperty?,
+              as CompleteStatusProperty?,
       date: freezed == date
           ? _value.date
           : date // ignore: cast_nullable_to_non_nullable
-              as TaskDateProperty?,
+              as DateProperty?,
     ) as $Val);
   }
 
@@ -97,37 +95,13 @@ class _$SelectedDatabaseStateCopyWithImpl<$Res,
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
-  $TaskTitlePropertyCopyWith<$Res> get title {
-    return $TaskTitlePropertyCopyWith<$Res>(_value.title, (value) {
-      return _then(_value.copyWith(title: value) as $Val);
-    });
-  }
-
-  /// Create a copy of SelectedDatabaseState
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $TaskStatusPropertyCopyWith<$Res>? get status {
+  $CompleteStatusPropertyCopyWith<$Res>? get status {
     if (_value.status == null) {
       return null;
     }
 
-    return $TaskStatusPropertyCopyWith<$Res>(_value.status!, (value) {
+    return $CompleteStatusPropertyCopyWith<$Res>(_value.status!, (value) {
       return _then(_value.copyWith(status: value) as $Val);
-    });
-  }
-
-  /// Create a copy of SelectedDatabaseState
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $TaskDatePropertyCopyWith<$Res>? get date {
-    if (_value.date == null) {
-      return null;
-    }
-
-    return $TaskDatePropertyCopyWith<$Res>(_value.date!, (value) {
-      return _then(_value.copyWith(date: value) as $Val);
     });
   }
 }
@@ -144,16 +118,12 @@ abstract class _$$SelectedDatabaseStateImplCopyWith<$Res>
   $Res call(
       {String id,
       String name,
-      TaskTitleProperty title,
-      TaskStatusProperty? status,
-      TaskDateProperty? date});
+      TitleProperty title,
+      CompleteStatusProperty? status,
+      DateProperty? date});
 
   @override
-  $TaskTitlePropertyCopyWith<$Res> get title;
-  @override
-  $TaskStatusPropertyCopyWith<$Res>? get status;
-  @override
-  $TaskDatePropertyCopyWith<$Res>? get date;
+  $CompleteStatusPropertyCopyWith<$Res>? get status;
 }
 
 /// @nodoc
@@ -172,7 +142,7 @@ class __$$SelectedDatabaseStateImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? name = null,
-    Object? title = null,
+    Object? title = freezed,
     Object? status = freezed,
     Object? date = freezed,
   }) {
@@ -185,18 +155,18 @@ class __$$SelectedDatabaseStateImplCopyWithImpl<$Res>
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      title: null == title
+      title: freezed == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
-              as TaskTitleProperty,
+              as TitleProperty,
       status: freezed == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
-              as TaskStatusProperty?,
+              as CompleteStatusProperty?,
       date: freezed == date
           ? _value.date
           : date // ignore: cast_nullable_to_non_nullable
-              as TaskDateProperty?,
+              as DateProperty?,
     ));
   }
 }
@@ -218,11 +188,11 @@ class _$SelectedDatabaseStateImpl
   @override
   final String name;
   @override
-  final TaskTitleProperty title;
+  final TitleProperty title;
   @override
-  final TaskStatusProperty? status;
+  final CompleteStatusProperty? status;
   @override
-  final TaskDateProperty? date;
+  final DateProperty? date;
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
@@ -248,13 +218,19 @@ class _$SelectedDatabaseStateImpl
             other is _$SelectedDatabaseStateImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
-            (identical(other.title, title) || other.title == title) &&
+            const DeepCollectionEquality().equals(other.title, title) &&
             (identical(other.status, status) || other.status == status) &&
-            (identical(other.date, date) || other.date == date));
+            const DeepCollectionEquality().equals(other.date, date));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, id, name, title, status, date);
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      name,
+      const DeepCollectionEquality().hash(title),
+      status,
+      const DeepCollectionEquality().hash(date));
 
   /// Create a copy of SelectedDatabaseState
   /// with the given fields replaced by the non-null parameter values.
@@ -270,20 +246,20 @@ abstract class _SelectedDatabaseState implements SelectedDatabaseState {
   const factory _SelectedDatabaseState(
       {required final String id,
       required final String name,
-      required final TaskTitleProperty title,
-      required final TaskStatusProperty? status,
-      required final TaskDateProperty? date}) = _$SelectedDatabaseStateImpl;
+      required final TitleProperty title,
+      required final CompleteStatusProperty? status,
+      required final DateProperty? date}) = _$SelectedDatabaseStateImpl;
 
   @override
   String get id;
   @override
   String get name;
   @override
-  TaskTitleProperty get title;
+  TitleProperty get title;
   @override
-  TaskStatusProperty? get status;
+  CompleteStatusProperty? get status;
   @override
-  TaskDateProperty? get date;
+  DateProperty? get date;
 
   /// Create a copy of SelectedDatabaseState
   /// with the given fields replaced by the non-null parameter values.

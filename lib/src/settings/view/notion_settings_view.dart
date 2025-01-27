@@ -21,6 +21,7 @@ class NotionSettingsView extends ConsumerWidget {
     final taskDatabaseViewModel =
         ref.watch(taskDatabaseViewModelProvider.notifier);
     final taskDatabase = ref.watch(taskDatabaseViewModelProvider).valueOrNull;
+    final statusProperty = taskDatabase?.status;
     final l = AppLocalizations.of(context)!;
 
     return Scaffold(
@@ -148,21 +149,14 @@ class NotionSettingsView extends ConsumerWidget {
                             taskDatabase.name),
                         _buildInfoTile(
                             l.status_property, taskDatabase.status.name),
-                        if (taskDatabase.status.type ==
-                            PropertyType.status) ...[
+                        if (statusProperty is StatusCompleteStatusProperty) ...[
                           _buildInfoTile(
                             l.status_property_todo_option,
-                            (taskDatabase.status as StatusTaskStatusProperty)
-                                    .todoOption
-                                    ?.name ??
-                                'None',
+                            statusProperty.todoOption?.name ?? 'None',
                           ),
                           _buildInfoTile(
                             l.status_property_complete_option,
-                            (taskDatabase.status as StatusTaskStatusProperty)
-                                    .completeOption
-                                    ?.name ??
-                                'None',
+                            statusProperty.completeOption?.name ?? 'None',
                           ),
                         ],
                         _buildInfoTile(l.date_property, taskDatabase.date.name),
