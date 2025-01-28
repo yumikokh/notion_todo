@@ -1,27 +1,30 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'notion_oauth_viewmodel.dart';
+part of 'notion_oauth_service.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$notionOAuthViewModelHash() =>
-    r'a0584bf1f683492aad5c7d31ab630bef3d247139';
+String _$notionOAuthServiceHash() =>
+    r'e619860d7689dba2672939e611bb42ca1dc4c489';
 
-/// See also [NotionOAuthViewModel].
-@ProviderFor(NotionOAuthViewModel)
-final notionOAuthViewModelProvider = AutoDisposeAsyncNotifierProvider<
-    NotionOAuthViewModel, NotionOAuth>.internal(
-  NotionOAuthViewModel.new,
-  name: r'notionOAuthViewModelProvider',
+/// See also [notionOAuthService].
+@ProviderFor(notionOAuthService)
+final notionOAuthServiceProvider =
+    AutoDisposeFutureProvider<NotionOAuthService>.internal(
+  notionOAuthService,
+  name: r'notionOAuthServiceProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$notionOAuthViewModelHash,
+      : _$notionOAuthServiceHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$NotionOAuthViewModel = AutoDisposeAsyncNotifier<NotionOAuth>;
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef NotionOAuthServiceRef
+    = AutoDisposeFutureProviderRef<NotionOAuthService>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
