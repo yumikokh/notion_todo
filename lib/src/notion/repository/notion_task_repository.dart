@@ -208,7 +208,9 @@ class NotionTaskRepository {
     final res = await http.patch(
       Uri.parse('https://api.notion.com/v1/pages/$taskId'),
       headers: headers,
-      body: jsonEncode({"properties": statusProperties}),
+      body: jsonEncode({
+        "properties": {status.name: statusProperties},
+      }),
     );
     return jsonDecode(res.body);
   }
