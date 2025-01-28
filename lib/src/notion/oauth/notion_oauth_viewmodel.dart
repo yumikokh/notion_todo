@@ -23,6 +23,9 @@ class NotionOAuthViewModel extends _$NotionOAuthViewModel {
 
   @override
   Future<NotionOAuth> build() async {
+    if (state.valueOrNull?.accessToken != null) {
+      return NotionOAuth(accessToken: state.valueOrNull?.accessToken);
+    }
     _notionOAuthService = await ref.read(notionOAuthServiceProvider.future);
     final accessToken = await _notionOAuthService.initialize();
     return NotionOAuth(accessToken: accessToken);

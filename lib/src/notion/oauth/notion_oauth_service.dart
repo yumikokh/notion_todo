@@ -28,6 +28,7 @@ Future<NotionOAuthService> notionOAuthService(Ref ref) async {
 class NotionOAuthService {
   final NotionOAuthRepository _notionOAuthRepository;
   final AnalyticsService _analyticsService;
+
   NotionOAuthService(
     this._notionOAuthRepository,
     this._analyticsService,
