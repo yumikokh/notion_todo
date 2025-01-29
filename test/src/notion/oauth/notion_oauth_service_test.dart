@@ -3,21 +3,24 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:tanzaku_todo/src/notion/oauth/notion_oauth_service.dart';
 import 'package:tanzaku_todo/src/notion/repository/notion_oauth_repository.dart';
+import 'package:tanzaku_todo/src/common/analytics/analytics_service.dart';
 
 @GenerateNiceMocks([
   MockSpec<NotionOAuthRepository>(),
+  MockSpec<AnalyticsService>(),
 ])
 import 'notion_oauth_service_test.mocks.dart';
 
 void main() {
   late NotionOAuthService service;
-  late MockNotionOAuthRepository mockRepository;
-
+  late NotionOAuthRepository mockRepository;
+  late AnalyticsService mockAnalyticsService;
   const testToken = 'test_token';
 
   setUp(() async {
     mockRepository = MockNotionOAuthRepository();
-    service = NotionOAuthService(mockRepository);
+    mockAnalyticsService = MockAnalyticsService();
+    service = NotionOAuthService(mockRepository, mockAnalyticsService);
   });
 
   group('initialize', () {
@@ -49,8 +52,9 @@ void main() {
 
       final result = await service.initialize();
 
+      verifyNever(mockRepository.setIsFirstLaunch(false));
       verifyNever(mockRepository.deleteAccessToken());
-      verifyNever(mockRepository.setIsFirstLaunch(any));
+
       expect(result, testToken);
     });
   });
@@ -71,7 +75,8 @@ void main() {
 
       final result = await service.authenticate();
 
-      verifyNever(mockRepository.saveAccessToken(any));
+      verify(mockRepository.fetchAccessToken()).called(1);
+      verifyNever(mockRepository.saveAccessToken(testToken));
       expect(result, null);
     });
   });

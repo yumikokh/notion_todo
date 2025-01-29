@@ -9,6 +9,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart' as _i2;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:mockito/src/dummies.dart' as _i5;
 import 'package:shared_preferences/shared_preferences.dart' as _i3;
+import 'package:tanzaku_todo/src/common/analytics/analytics_service.dart'
+    as _i7;
 import 'package:tanzaku_todo/src/notion/repository/notion_oauth_repository.dart'
     as _i4;
 
@@ -190,4 +192,137 @@ class MockNotionOAuthRepository extends _i1.Mock
         returnValue: _i6.Future<String?>.value(),
         returnValueForMissingStub: _i6.Future<String?>.value(),
       ) as _i6.Future<String?>);
+}
+
+/// A class which mocks [AnalyticsService].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockAnalyticsService extends _i1.Mock implements _i7.AnalyticsService {
+  @override
+  _i6.Future<void> logTask(
+    String? eventName, {
+    bool? hasDueDate,
+    bool? isCompleted,
+    int? pageSize,
+    bool? fromUndo,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #logTask,
+          [eventName],
+          {
+            #hasDueDate: hasDueDate,
+            #isCompleted: isCompleted,
+            #pageSize: pageSize,
+            #fromUndo: fromUndo,
+          },
+        ),
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
+
+  @override
+  _i6.Future<void> logScreenView({
+    required String? screenName,
+    String? screenClass,
+    String? value,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #logScreenView,
+          [],
+          {
+            #screenName: screenName,
+            #screenClass: screenClass,
+            #value: value,
+          },
+        ),
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
+
+  @override
+  _i6.Future<void> logSettingsChanged({
+    required String? settingName,
+    required String? value,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #logSettingsChanged,
+          [],
+          {
+            #settingName: settingName,
+            #value: value,
+          },
+        ),
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
+
+  @override
+  _i6.Future<void> logError(
+    String? errorName, {
+    dynamic error,
+    Map<String, dynamic>? parameters,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #logError,
+          [errorName],
+          {
+            #error: error,
+            #parameters: parameters,
+          },
+        ),
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
+
+  @override
+  _i6.Future<void> logDatabaseOperation({
+    required String? action,
+    String? statusType,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #logDatabaseOperation,
+          [],
+          {
+            #action: action,
+            #statusType: statusType,
+          },
+        ),
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
+
+  @override
+  _i6.Future<void> logCompletedTasksToggle({
+    required bool? isVisible,
+    required String? screenName,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #logCompletedTasksToggle,
+          [],
+          {
+            #isVisible: isVisible,
+            #screenName: screenName,
+          },
+        ),
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
+
+  @override
+  _i6.Future<void> logNotionAuth({required String? action}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #logNotionAuth,
+          [],
+          {#action: action},
+        ),
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
 }
