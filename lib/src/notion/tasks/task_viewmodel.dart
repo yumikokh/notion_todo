@@ -50,7 +50,10 @@ class TaskViewModel extends _$TaskViewModel {
     // もしpageSize以上のタスクがあったとき、「showCompleted」と「Load more」の不整合がおきるがいったん無視
     _hasCompleted = filterType == FilterType.today;
 
-    return await _fetchTasks(isFirstFetch: true);
+    final tasks = await _fetchTasks(isFirstFetch: true)
+      ..sort((a, b) => a.isInProgress ? -1 : 1);
+
+    return tasks;
   }
 
   Future<void> toggleShowCompleted() async {
@@ -195,7 +198,7 @@ class TaskViewModel extends _$TaskViewModel {
       final tempTask = Task(
           id: tempId,
           title: title,
-          isCompleted: false,
+          status: const TaskStatus.checkbox(checked: false),
           dueDate:
               dueDate != null ? TaskDate(start: d.dateString(dueDate)) : null,
           url: null);
@@ -318,7 +321,7 @@ class TaskViewModel extends _$TaskViewModel {
     });
   }
 
-  Future<void> updateStatus(Task task, bool isCompleted,
+  Future<void> updateCompleteStatus(Task task, bool isCompleted,
       {bool fromUndo = false}) async {
     await _addOperation(() async {
       final taskService = _taskService;
@@ -333,7 +336,7 @@ class TaskViewModel extends _$TaskViewModel {
               ? l.task_update_status_success(task.title)
               : l.task_update_status_undo(task.title),
           type: SnackbarType.success, onUndo: () async {
-        updateStatus(task, !isCompleted, fromUndo: true);
+        updateCompleteStatus(task, !isCompleted, fromUndo: true);
       });
 
       _isLoading = true;
@@ -347,7 +350,7 @@ class TaskViewModel extends _$TaskViewModel {
         ]);
         ref.invalidateSelf();
 
-        // 今日のタスクが全て完了したかチェック
+        // [レビューポップアップ] 今日のタスクが全て完了したかチェック
         if (!fromUndo && isCompleted && _filterType == FilterType.today) {
           final tasks = state.valueOrNull ?? [];
           final allTasksCompleted = tasks.every((t) => t.isCompleted);

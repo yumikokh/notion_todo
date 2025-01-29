@@ -78,16 +78,22 @@ class TaskListTile extends HookWidget {
         onChanged: (bool? willComplete) async {
           if (willComplete == null) return;
           checked.value = willComplete;
-
-          await taskViewModel.updateStatus(task, willComplete);
+          await taskViewModel.updateCompleteStatus(task, willComplete);
         },
       ),
+      // TODO: Statusのときだけ表示
+      // TODO: タップでInProgress切り替え
+      trailing: task.isInProgress
+          ? Icon(Icons.star_rounded,
+              size: 24, color: Theme.of(context).colorScheme.secondary)
+          : Icon(Icons.star_border_rounded,
+              size: 24, color: Theme.of(context).colorScheme.inversePrimary),
       title: Text(task.title,
           style: TextStyle(
-            color: checked.value
+            color: task.isCompleted
                 ? Theme.of(context).colorScheme.outline
                 : Theme.of(context).colorScheme.onSurface,
-            decoration: checked.value ? TextDecoration.lineThrough : null,
+            decoration: task.isCompleted ? TextDecoration.lineThrough : null,
             decorationColor: Theme.of(context).colorScheme.outline,
             fontSize: 15,
           )),
