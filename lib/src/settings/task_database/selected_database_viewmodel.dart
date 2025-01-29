@@ -7,7 +7,6 @@ import '../../common/snackbar/model/snackbar_state.dart';
 import '../../common/snackbar/snackbar.dart';
 import '../../notion/model/index.dart';
 import '../../notion/repository/notion_database_repository.dart';
-import '../../notion/repository/notion_task_repository.dart';
 import 'task_database_service.dart';
 import 'task_database_viewmodel.dart';
 
@@ -159,19 +158,6 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
       return;
     }
 
-    switch ((type, property)) {
-      case (SettingPropertyType.status, StatusCompleteStatusProperty()):
-        break;
-      case (SettingPropertyType.status, CheckboxCompleteStatusProperty()):
-        break;
-      case (SettingPropertyType.date, DateProperty()):
-        break;
-      case (SettingPropertyType.status, TitleProperty()):
-        break;
-      default:
-        return;
-    }
-
     state = state.whenData((value) {
       if (value == null) {
         return null;
@@ -184,9 +170,9 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
               id: p.id,
               name: p.name,
               status: p.status,
-              todoOption: null,
-              inProgressOption: null,
-              completeOption: null,
+              todoOption: p.todoOption,
+              inProgressOption: p.inProgressOption,
+              completeOption: p.completeOption,
             ),
           );
         case (SettingPropertyType.status, var p)
@@ -212,41 +198,39 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
     });
   }
 
-  // optionType: 'To-do' or 'Complete' or 'In Progress'
+  List<StatusOption> getStatusOptionsByGroup(StatusGroupType groupType) {
+    final property = state.value?.status;
+    if (property == null || property is! StatusCompleteStatusProperty) {
+      return [];
+    }
+    return property.status.groups
+            .where((group) => group.name == groupType.value)
+            .firstOrNull
+            ?.optionIds
+            .map((id) =>
+                property.status.options.firstWhere((option) => option.id == id))
+            .toList() ??
+        [];
+  }
+
   void selectStatusOption(String? optionId, StatusGroupType optionType) {
     if (optionId == null) {
       return;
     }
     state = state.whenData((value) {
-      if (value == null ||
-          value.status == null ||
-          (optionType != StatusGroupType.todo &&
-              optionType != StatusGroupType.complete &&
-              optionType != StatusGroupType.inProgress)) {
-        return value;
-      }
-      final status = value.status;
-      if (status is! StatusCompleteStatusProperty) {
-        return value;
-      }
+      final p = value?.status;
+      if (value == null || p is! StatusCompleteStatusProperty) return value;
 
       final option =
-          status.status.options.firstWhere((option) => option.id == optionId);
+          p.status.options.firstWhere((option) => option.id == optionId);
 
-      switch (optionType) {
-        case StatusGroupType.todo:
-          return value.copyWith(
-            status: status.copyWith(todoOption: option),
-          );
-        case StatusGroupType.complete:
-          return value.copyWith(
-            status: status.copyWith(completeOption: option),
-          );
-        case StatusGroupType.inProgress:
-          return value.copyWith(
-            status: status.copyWith(inProgressOption: option),
-          );
-      }
+      return value.copyWith(
+        status: switch (optionType) {
+          StatusGroupType.todo => p.copyWith(todoOption: option),
+          StatusGroupType.complete => p.copyWith(completeOption: option),
+          StatusGroupType.inProgress => p.copyWith(inProgressOption: option),
+        },
+      );
     });
   }
 
@@ -296,11 +280,12 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
     if (status == null) {
       return true;
     }
-    switch (status) {
-      case StatusCompleteStatusProperty():
-        return status.todoOption == null || status.completeOption == null;
-      case CheckboxCompleteStatusProperty():
-        return false;
-    }
+    final statusDisabled = switch (status) {
+      StatusCompleteStatusProperty() =>
+        status.todoOption == null || status.completeOption == null,
+      CheckboxCompleteStatusProperty() => false,
+    };
+    final dateDisabled = state.value?.date == null;
+    return statusDisabled || dateDisabled;
   }
 }

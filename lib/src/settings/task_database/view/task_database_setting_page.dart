@@ -4,7 +4,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../notion/model/property.dart';
 import '../../../notion/oauth/notion_oauth_viewmodel.dart';
 import '../../../notion/repository/notion_database_repository.dart';
-import '../../../notion/repository/notion_task_repository.dart';
 import '../../../notion/tasks/view/task_main_page.dart';
 import '../selected_database_viewmodel.dart';
 import '../task_database_viewmodel.dart';
@@ -105,8 +104,8 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                           const SizedBox(height: 8),
                           _buildDropdown(
                             value: selectedStatus.todoOption?.id,
-                            items: _buildStatusOptions(
-                                selectedDatabase, StatusGroupType.todo),
+                            items: _buildStatusOptions(selectedDatabaseViewModel
+                                .getStatusOptionsByGroup(StatusGroupType.todo)),
                             onChanged: (value) =>
                                 selectedDatabaseViewModel.selectStatusOption(
                                     value, StatusGroupType.todo),
@@ -115,12 +114,14 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                           const SizedBox(height: 24),
                           _buildSectionTitle(
                               context, l.status_property_in_progress_option,
-                              tooltip: l.in_progress_option_description),
+                              tooltip: l.in_progress_option_description,
+                              isRequired: false),
                           const SizedBox(height: 8),
                           _buildDropdown(
                             value: selectedStatus.inProgressOption?.id,
-                            items: _buildStatusOptions(
-                                selectedDatabase, StatusGroupType.inProgress),
+                            items: _buildStatusOptions(selectedDatabaseViewModel
+                                .getStatusOptionsByGroup(
+                                    StatusGroupType.inProgress)),
                             onChanged: (value) =>
                                 selectedDatabaseViewModel.selectStatusOption(
                                     value, StatusGroupType.inProgress),
@@ -133,8 +134,9 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                           const SizedBox(height: 8),
                           _buildDropdown(
                             value: selectedStatus.completeOption?.id,
-                            items: _buildStatusOptions(
-                                selectedDatabase, StatusGroupType.complete),
+                            items: _buildStatusOptions(selectedDatabaseViewModel
+                                .getStatusOptionsByGroup(
+                                    StatusGroupType.complete)),
                             onChanged: (value) =>
                                 selectedDatabaseViewModel.selectStatusOption(
                                     value, StatusGroupType.complete),
@@ -293,22 +295,12 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
   }
 
   List<DropdownMenuItem<String>> _buildStatusOptions(
-      SelectedDatabaseState db, StatusGroupType groupType) {
-    final property = db.status;
-    if (property is! StatusCompleteStatusProperty) {
-      return [];
-    }
-    return property.status.groups
-            .where((group) => group.name == groupType.value)
-            .firstOrNull
-            ?.optionIds
-            .map((id) => DropdownMenuItem<String>(
-                  value: id,
-                  child: Text(property.status.options
-                      .firstWhere((option) => option.id == id)
-                      .name),
-                ))
-            .toList() ??
-        [];
+      List<StatusOption> options) {
+    return options
+        .map((option) => DropdownMenuItem<String>(
+              value: option.id,
+              child: Text(option.name),
+            ))
+        .toList();
   }
 }
