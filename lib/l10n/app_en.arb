@@ -95,7 +95,7 @@
       }
     }
   },
-  "task_update_status_success": "\"{title}\" Completed 🎉",
+  "task_update_status_success": "\"{title}\" completed 🎉",
   "@task_update_status_success": {
     "placeholders": {
       "title": {
@@ -103,7 +103,7 @@
       }
     }
   },
-  "task_update_status_undo": "\"{title}\" Undone.",
+  "task_update_status_undo": "\"{title}\" marked as incomplete",
   "@task_update_status_undo": {
     "placeholders": {
       "title": {
@@ -112,7 +112,7 @@
     }
   },
   "task_update_status_failed": "Failed to update status",
-  "task_delete_success": "\"{title}\" Deleted.",
+  "task_delete_success": "\"{title}\" deleted",
   "@task_delete_success": {
     "placeholders": {
       "title": {
@@ -182,6 +182,22 @@
   "@current_setting": {
     "placeholders": {
       "setting": {
+        "type": "String"
+      }
+    }
+  },
+  "task_update_status_in_progress": "\"{title}\" marked as in progress",
+  "@task_update_status_in_progress": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "task_update_status_todo": "\"{title}\" marked as to-do",
+  "@task_update_status_todo": {
+    "placeholders": {
+      "title": {
         "type": "String"
       }
     }

@@ -70,6 +70,8 @@
   "task_update_status_success": "「{title}」を完了しました 🎉",
   "task_update_status_undo": "「{title}」を未完了に戻しました",
   "task_update_status_failed": "ステータスの更新に失敗しました",
+  "task_update_status_in_progress": "「{title}」を進行中にしました",
+  "task_update_status_todo": "「{title}」を未完了に戻しました",
   "task_delete_success": "「{title}」を削除しました",
   "task_delete_undo": "「{title}」を復元しました",
   "task_delete_failed": "「{title}」の削除に失敗しました",

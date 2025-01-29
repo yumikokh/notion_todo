@@ -24,6 +24,7 @@ class TaskListTile extends HookWidget {
     final date = taskViewModel.getDisplayDate(task, context);
 
     final checked = useState(task.isCompleted);
+    final stared = useState(task.isInProgress);
 
     return ListTile(
       onLongPress: () async {
@@ -82,12 +83,21 @@ class TaskListTile extends HookWidget {
         },
       ),
       // TODO: Statusのときだけ表示
-      // TODO: タップでInProgress切り替え
-      trailing: task.isInProgress
-          ? Icon(Icons.star_rounded,
-              size: 24, color: Theme.of(context).colorScheme.secondary)
-          : Icon(Icons.star_border_rounded,
-              size: 24, color: Theme.of(context).colorScheme.inversePrimary),
+      trailing: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () async {
+          if (await Haptics.canVibrate()) {
+            await Haptics.vibrate(HapticsType.light);
+          }
+          stared.value = !stared.value;
+          taskViewModel.updateInProgressStatus(task);
+        },
+        child: stared.value
+            ? Icon(Icons.star_rounded,
+                size: 24, color: Theme.of(context).colorScheme.secondary)
+            : Icon(Icons.star_border_rounded,
+                size: 24, color: Theme.of(context).colorScheme.inversePrimary),
+      ),
       title: Text(task.title,
           style: TextStyle(
             color: task.isCompleted

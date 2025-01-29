@@ -138,16 +138,33 @@ class MockNotionTaskRepository extends _i1.Mock
       ) as _i5.Future<dynamic>);
 
   @override
-  _i5.Future<dynamic> updateStatus(
+  _i5.Future<dynamic> updateCompleteStatus(
     String? taskId,
     bool? isCompleted,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
-          #updateStatus,
+          #updateCompleteStatus,
           [
             taskId,
             isCompleted,
+          ],
+        ),
+        returnValue: _i5.Future<dynamic>.value(),
+        returnValueForMissingStub: _i5.Future<dynamic>.value(),
+      ) as _i5.Future<dynamic>);
+
+  @override
+  _i5.Future<dynamic> updateInProgressStatus(
+    String? taskId,
+    bool? isInProgress,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #updateInProgressStatus,
+          [
+            taskId,
+            isInProgress,
           ],
         ),
         returnValue: _i5.Future<dynamic>.value(),

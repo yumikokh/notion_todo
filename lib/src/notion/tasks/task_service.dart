@@ -93,12 +93,28 @@ class TaskService {
     );
   }
 
-  Future<Task> updateStatus(String taskId, bool isCompleted) async {
-    final data = await notionTaskRepository.updateStatus(taskId, isCompleted);
+  Future<Task> updateCompleteStatus(String taskId, bool isCompleted) async {
+    final data =
+        await notionTaskRepository.updateCompleteStatus(taskId, isCompleted);
     if (data == null || data.isEmpty) {
       throw Exception('Failed to update task');
     }
     // TODO: すでに存在しないIDだった場合のエラーハンドリング
+    return Task(
+      id: data['id'],
+      title: _title(data),
+      status: _status(data),
+      dueDate: _date(data),
+      url: data['url'],
+    );
+  }
+
+  Future<Task> updateInProgressStatus(String taskId, bool isInProgress) async {
+    final data =
+        await notionTaskRepository.updateInProgressStatus(taskId, isInProgress);
+    if (data == null || data.isEmpty) {
+      throw Exception('Failed to update task');
+    }
     return Task(
       id: data['id'],
       title: _title(data),

@@ -163,10 +163,10 @@ void main() {
     };
 
     test('タスクのステータスを更新できる', () async {
-      when(mockRepository.updateStatus(any, any))
+      when(mockRepository.updateCompleteStatus(any, any))
           .thenAnswer((_) async => mockResponse);
 
-      final result = await service.updateStatus('task1', true);
+      final result = await service.updateCompleteStatus('task1', true);
 
       expect(result.id, 'task1');
       expect(result.title, 'Test Task');

@@ -11,6 +11,7 @@ import '../../common/snackbar/snackbar.dart';
 import '../../helpers/date.dart';
 import '../../settings/settings_viewmodel.dart';
 import '../../settings/task_database/task_database_viewmodel.dart';
+import '../model/property.dart';
 import '../model/task.dart';
 import '../repository/notion_task_repository.dart';
 import 'task_service.dart';
@@ -343,7 +344,7 @@ class TaskViewModel extends _$TaskViewModel {
       final prevState = state;
       try {
         final updatedTask =
-            await taskService.updateStatus(task.id, isCompleted);
+            await taskService.updateCompleteStatus(task.id, isCompleted);
         state = AsyncValue.data([
           for (final t in state.valueOrNull ?? [])
             if (t.id == updatedTask.id) updatedTask else t
@@ -371,6 +372,61 @@ class TaskViewModel extends _$TaskViewModel {
             'task_completed',
             hasDueDate: task.dueDate?.start != null,
             isCompleted: isCompleted,
+            fromUndo: fromUndo,
+          );
+        } catch (e) {
+          print('Analytics error: $e');
+        }
+      } catch (e) {
+        state = prevState;
+        snackbar.show(l.task_update_status_failed, type: SnackbarType.error);
+      } finally {
+        _isLoading = false;
+      }
+    });
+  }
+
+  Future<void> updateInProgressStatus(Task task,
+      {bool fromUndo = false}) async {
+    // checkboxは更新できない
+    if (task.status is CheckboxCompleteStatusProperty) {
+      return;
+    }
+    await _addOperation(() async {
+      final taskService = _taskService;
+      if (taskService == null) {
+        return;
+      }
+      final snackbar = ref.read(snackbarProvider.notifier);
+      final locale = ref.read(settingsViewModelProvider).locale;
+      final l = await AppLocalizations.delegate.load(locale);
+      final willBeInProgress = !task.isInProgress;
+      final prevState = state;
+
+      snackbar.show(
+          willBeInProgress
+              ? l.task_update_status_in_progress(task.title)
+              : l.task_update_status_todo(task.title),
+          type: SnackbarType.success, onUndo: () async {
+        updateInProgressStatus(task, fromUndo: true);
+      });
+
+      _isLoading = true;
+
+      try {
+        final updatedTask =
+            await taskService.updateInProgressStatus(task.id, willBeInProgress);
+        state = AsyncValue.data([
+          for (final t in state.valueOrNull ?? [])
+            if (t.id == updatedTask.id) updatedTask else t
+        ]);
+        ref.invalidateSelf();
+
+        try {
+          final analytics = ref.read(analyticsServiceProvider);
+          await analytics.logTask(
+            'task_in_progress_updated',
+            hasDueDate: task.dueDate?.start != null,
             fromUndo: fromUndo,
           );
         } catch (e) {
