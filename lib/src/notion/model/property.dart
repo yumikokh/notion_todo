@@ -1,6 +1,5 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:json_annotation/json_annotation.dart';
 
-part 'property.freezed.dart';
 part 'property.g.dart';
 
 enum PropertyType {
@@ -10,133 +9,195 @@ enum PropertyType {
   status,
 }
 
-/// Property
-@freezed
-class Property with _$Property {
-  const factory Property.title({
-    required String id,
-    required String name,
-    required PropertyType type, // 省略したい: title固定
-    required String title,
-  }) = TitleProperty;
+/// プロパティの基底クラス
+sealed class Property {
+  String id;
+  String name;
+  PropertyType type;
 
-  const factory Property.date({
-    required String id,
-    required String name,
-    required PropertyType type, // 省略したい: date固定
-    required DateTime? date,
-  }) = DateProperty;
+  Property({
+    required this.id,
+    required this.name,
+    required this.type,
+  });
 
-  const factory Property.checkbox({
-    required String id,
-    required String name,
-    required PropertyType type, // checkbox固定
-    required bool checked,
-  }) = CheckboxProperty;
+  Map<String, dynamic> toJson() => switch (this) {
+        TitleProperty title => title.toJson(),
+        DateProperty date => date.toJson(),
+        CheckboxCompleteStatusProperty checkbox => checkbox.toJson(),
+        StatusCompleteStatusProperty status => status.toJson(),
+      };
 
-  const factory Property.status({
-    required String id,
-    required String name,
-    required PropertyType type, // status固定
-    required ({List<StatusOption> options, List<StatusGroup> groups}) status,
-    required StatusOption? todoOption,
-    required StatusOption? completeOption,
-  }) = StatusProperty;
-
-  factory Property.fromJson(Map<String, dynamic> json) =>
-      _$PropertyFromJson(json);
+  factory Property.fromJson(Map<String, dynamic> json) {
+    final typeStr = json['type'] as String;
+    final type = $enumDecode(_$PropertyTypeEnumMap, typeStr);
+    switch (type) {
+      case PropertyType.title:
+        return TitleProperty.fromJson(json);
+      case PropertyType.date:
+        return DateProperty.fromJson(json);
+      case PropertyType.checkbox:
+        return CheckboxCompleteStatusProperty.fromJson(json);
+      case PropertyType.status:
+        return StatusCompleteStatusProperty.fromJson(json);
+    }
+  }
 }
 
-@freezed
-class TaskTitleProperty with _$TaskTitleProperty {
-  const factory TaskTitleProperty({
+@JsonSerializable()
+class TitleProperty extends Property {
+  final String title;
+
+  TitleProperty({
     required String id,
     required String name,
-    required PropertyType type, // 省略したい: title固定
-    required String title,
-  }) = _TaskTitleProperty;
+    required this.title,
+  }) : super(id: id, name: name, type: PropertyType.title);
 
-  factory TaskTitleProperty.initial() => const TaskTitleProperty(
-        id: '',
-        name: '',
-        type: PropertyType.checkbox,
-        title: '',
-      );
+  factory TitleProperty.fromJson(Map<String, dynamic> json) =>
+      _$TitlePropertyFromJson(json);
 
-  factory TaskTitleProperty.fromJson(Map<String, dynamic> json) =>
-      _$TaskTitlePropertyFromJson(json);
+  @override
+  Map<String, dynamic> toJson() => _$TitlePropertyToJson(this);
 }
 
-@freezed
-class TaskDateProperty with _$TaskDateProperty {
-  const factory TaskDateProperty({
+@JsonSerializable()
+class DateProperty extends Property {
+  final DateTime? date;
+
+  DateProperty({
     required String id,
     required String name,
-    required PropertyType type, // date固定
-    required DateTime? date,
-  }) = _TaskDateProperty;
+    required this.date,
+  }) : super(id: id, name: name, type: PropertyType.date);
 
-  factory TaskDateProperty.initial() => const TaskDateProperty(
-        id: '',
-        name: '',
-        type: PropertyType.date,
-        date: null,
-      );
+  factory DateProperty.fromJson(Map<String, dynamic> json) =>
+      _$DatePropertyFromJson(json);
 
-  factory TaskDateProperty.fromJson(Map<String, dynamic> json) =>
-      _$TaskDatePropertyFromJson(json);
+  @override
+  Map<String, dynamic> toJson() => _$DatePropertyToJson(this);
 }
 
-@freezed
-class TaskStatusProperty with _$TaskStatusProperty {
-  const factory TaskStatusProperty.checkbox({
+/// 完了ステータスプロパティの基底クラス
+sealed class CompleteStatusProperty extends Property {
+  CompleteStatusProperty({
     required String id,
     required String name,
-    required PropertyType type, // checkbox固定
-    required bool checked,
-  }) = CheckboxTaskStatusProperty;
+    required PropertyType type,
+  }) : super(id: id, name: name, type: type);
 
-  const factory TaskStatusProperty.status({
-    required String id,
-    required String name,
-    required PropertyType type, // status固定
-    required ({List<StatusOption> options, List<StatusGroup> groups}) status,
-    required StatusOption? todoOption, // ほんとはnon-nullにしたい
-    required StatusOption? completeOption,
-  }) = StatusTaskStatusProperty;
+  static CompleteStatusProperty fromJson(Map<String, dynamic> json) {
+    final typeStr = json['type'] as String;
+    final type = $enumDecode(_$PropertyTypeEnumMap, typeStr);
+    switch (type) {
+      case PropertyType.checkbox:
+        return CheckboxCompleteStatusProperty.fromJson(json);
+      case PropertyType.status:
+        return StatusCompleteStatusProperty.fromJson(json);
+      default:
+        throw ArgumentError('Unknown type: $type');
+    }
+  }
 
-  factory TaskStatusProperty.initial() => const CheckboxTaskStatusProperty(
-        id: '',
-        name: '',
-        type: PropertyType.checkbox,
-        checked: false,
-      );
-
-  factory TaskStatusProperty.fromJson(Map<String, dynamic> json) =>
-      _$TaskStatusPropertyFromJson(json);
+  @override
+  Map<String, dynamic> toJson() => switch (this) {
+        CheckboxCompleteStatusProperty status => status.toJson(),
+        StatusCompleteStatusProperty status => status.toJson(),
+      };
 }
 
-@freezed
-class StatusOption with _$StatusOption {
-  const factory StatusOption({
+@JsonSerializable()
+class CheckboxCompleteStatusProperty extends CompleteStatusProperty {
+  final bool checked;
+
+  CheckboxCompleteStatusProperty({
+    required String id,
+    required String name,
+    required this.checked,
+  }) : super(id: id, name: name, type: PropertyType.checkbox);
+
+  factory CheckboxCompleteStatusProperty.fromJson(Map<String, dynamic> json) =>
+      _$CheckboxCompleteStatusPropertyFromJson(json);
+
+  @override
+  Map<String, dynamic> toJson() => _$CheckboxCompleteStatusPropertyToJson(this);
+}
+
+@JsonSerializable()
+class StatusCompleteStatusProperty extends CompleteStatusProperty {
+  final ({List<StatusOption> options, List<StatusGroup> groups}) status;
+  final StatusOption? todoOption;
+  final StatusOption? completeOption;
+
+  StatusCompleteStatusProperty({
+    required String id,
+    required String name,
+    required this.status,
+    required this.todoOption,
+    required this.completeOption,
+  }) : super(id: id, name: name, type: PropertyType.status);
+
+  StatusCompleteStatusProperty copyWith({
+    StatusOption? todoOption,
+    StatusOption? completeOption,
+  }) {
+    return StatusCompleteStatusProperty(
+      id: id,
+      name: name,
+      status: status,
+      todoOption: todoOption ?? this.todoOption,
+      completeOption: completeOption ?? this.completeOption,
+    );
+  }
+
+  factory StatusCompleteStatusProperty.fromJson(Map<String, dynamic> json) =>
+      _$StatusCompleteStatusPropertyFromJson(json);
+
+  @override
+  Map<String, dynamic> toJson() => _$StatusCompleteStatusPropertyToJson(this);
+}
+
+/// ステータスプロパティの基底クラス
+abstract interface class StatusPropertyBase {
+  String id;
+  String name;
+  String? color;
+
+  StatusPropertyBase({
+    required this.id,
+    required this.name,
+    required this.color,
+  });
+}
+
+@JsonSerializable()
+class StatusOption extends StatusPropertyBase {
+  StatusOption({
     required String id,
     required String name,
     required String? color,
-  }) = _StatusOption;
+  }) : super(id: id, name: name, color: color);
 
   factory StatusOption.fromJson(Map<String, dynamic> json) =>
       _$StatusOptionFromJson(json);
+
+  Map<String, dynamic> toJson() => _$StatusOptionToJson(this);
 }
 
-@freezed
-class StatusGroup with _$StatusGroup {
-  const factory StatusGroup(
-      {required String id,
-      required String name,
-      required String? color,
-      // ignore: non_constant_identifier_names
-      required List<String> option_ids}) = _StatusGroup;
+@JsonSerializable()
+class StatusGroup extends StatusPropertyBase {
+  @JsonKey(name: 'option_ids')
+  final List<String> optionIds;
+
+  StatusGroup({
+    required String id,
+    required String name,
+    required String? color,
+    required this.optionIds,
+  }) : super(id: id, name: name, color: color);
 
   factory StatusGroup.fromJson(Map<String, dynamic> json) =>
       _$StatusGroupFromJson(json);
+
+  Map<String, dynamic> toJson() => _$StatusGroupToJson(this);
 }

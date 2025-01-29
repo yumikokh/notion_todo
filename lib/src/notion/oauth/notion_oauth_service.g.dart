@@ -1,27 +1,30 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'task_database_viewmodel.dart';
+part of 'notion_oauth_service.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$taskDatabaseViewModelHash() =>
-    r'779c72c7a84bf3d2a7051f0113dfc4afd0344a31';
+String _$notionOAuthServiceHash() =>
+    r'e619860d7689dba2672939e611bb42ca1dc4c489';
 
-/// See also [TaskDatabaseViewModel].
-@ProviderFor(TaskDatabaseViewModel)
-final taskDatabaseViewModelProvider = AutoDisposeAsyncNotifierProvider<
-    TaskDatabaseViewModel, TaskDatabase?>.internal(
-  TaskDatabaseViewModel.new,
-  name: r'taskDatabaseViewModelProvider',
+/// See also [notionOAuthService].
+@ProviderFor(notionOAuthService)
+final notionOAuthServiceProvider =
+    AutoDisposeFutureProvider<NotionOAuthService>.internal(
+  notionOAuthService,
+  name: r'notionOAuthServiceProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$taskDatabaseViewModelHash,
+      : _$notionOAuthServiceHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$TaskDatabaseViewModel = AutoDisposeAsyncNotifier<TaskDatabase?>;
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef NotionOAuthServiceRef
+    = AutoDisposeFutureProviderRef<NotionOAuthService>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

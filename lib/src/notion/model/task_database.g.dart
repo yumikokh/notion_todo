@@ -10,10 +10,9 @@ _$TaskDatabaseImpl _$$TaskDatabaseImplFromJson(Map<String, dynamic> json) =>
     _$TaskDatabaseImpl(
       id: json['id'] as String,
       name: json['name'] as String,
-      title: TaskTitleProperty.fromJson(json['title'] as Map<String, dynamic>),
-      status:
-          TaskStatusProperty.fromJson(json['status'] as Map<String, dynamic>),
-      date: TaskDateProperty.fromJson(json['date'] as Map<String, dynamic>),
+      title: TitleProperty.fromJson(json['title'] as Map<String, dynamic>),
+      status: _fromJson(json['status'] as Map<String, dynamic>),
+      date: DateProperty.fromJson(json['date'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$$TaskDatabaseImplToJson(_$TaskDatabaseImpl instance) =>
@@ -21,6 +20,6 @@ Map<String, dynamic> _$$TaskDatabaseImplToJson(_$TaskDatabaseImpl instance) =>
       'id': instance.id,
       'name': instance.name,
       'title': instance.title,
-      'status': instance.status,
+      'status': _toJson(instance.status),
       'date': instance.date,
     };

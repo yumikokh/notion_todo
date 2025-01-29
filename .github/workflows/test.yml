@@ -1,0 +1,45 @@
+name: Run Tests
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      OAUTH_CLIENT_ID: ${{ secrets.OAUTH_CLIENT_ID }}
+      OAUTH_CLIENT_SECRET: ${{ secrets.OAUTH_CLIENT_SECRET }}
+      NOTION_AUTH_URL: ${{ secrets.NOTION_AUTH_URL }}
+      REDIRECT_URI: ${{ secrets.REDIRECT_URI }}
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          cache: true
+
+      - name: Flutter version
+        run: flutter --version
+
+      - name: Cache Pub packages
+        uses: actions/cache@v3
+        with:
+          path: |
+            ${{ env.FLUTTER_HOME }}/.pub-cache
+            ~/.pub-cache
+            ${{ github.workspace }}/.dart_tool
+          key: pub-cache-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: |
+            pub-cache-
+
+      - name: Install dependencies
+        if: steps.cache-pub.outputs.cache-hit != 'true'
+        run: flutter pub get
+
+      - name: Generate files
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Run tests
+        run: flutter test

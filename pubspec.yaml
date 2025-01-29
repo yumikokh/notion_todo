@@ -4,7 +4,7 @@ description: Simple Task manager made for Notion
 # Prevent accidental publishing to pub.dev.
 publish_to: "none"
 
-version: 1.4.1+1
+version: 1.4.2+1
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
@@ -53,6 +53,7 @@ dev_dependencies:
   riverpod_lint: ^2.6.2
   freezed: ^2.5.7
   json_serializable: ^6.8.0
+  mockito: ^5.4.4
 
 flutter:
   uses-material-design: true

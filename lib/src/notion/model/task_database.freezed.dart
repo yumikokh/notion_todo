@@ -22,9 +22,10 @@ TaskDatabase _$TaskDatabaseFromJson(Map<String, dynamic> json) {
 mixin _$TaskDatabase {
   String get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
-  TaskTitleProperty get title => throw _privateConstructorUsedError;
-  TaskStatusProperty get status => throw _privateConstructorUsedError;
-  TaskDateProperty get date => throw _privateConstructorUsedError;
+  TitleProperty get title => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: _fromJson, toJson: _toJson)
+  CompleteStatusProperty get status => throw _privateConstructorUsedError;
+  DateProperty get date => throw _privateConstructorUsedError;
 
   /// Serializes this TaskDatabase to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -45,13 +46,10 @@ abstract class $TaskDatabaseCopyWith<$Res> {
   $Res call(
       {String id,
       String name,
-      TaskTitleProperty title,
-      TaskStatusProperty status,
-      TaskDateProperty date});
-
-  $TaskTitlePropertyCopyWith<$Res> get title;
-  $TaskStatusPropertyCopyWith<$Res> get status;
-  $TaskDatePropertyCopyWith<$Res> get date;
+      TitleProperty title,
+      @JsonKey(fromJson: _fromJson, toJson: _toJson)
+      CompleteStatusProperty status,
+      DateProperty date});
 }
 
 /// @nodoc
@@ -87,46 +85,16 @@ class _$TaskDatabaseCopyWithImpl<$Res, $Val extends TaskDatabase>
       title: null == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
-              as TaskTitleProperty,
+              as TitleProperty,
       status: null == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
-              as TaskStatusProperty,
+              as CompleteStatusProperty,
       date: null == date
           ? _value.date
           : date // ignore: cast_nullable_to_non_nullable
-              as TaskDateProperty,
+              as DateProperty,
     ) as $Val);
-  }
-
-  /// Create a copy of TaskDatabase
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $TaskTitlePropertyCopyWith<$Res> get title {
-    return $TaskTitlePropertyCopyWith<$Res>(_value.title, (value) {
-      return _then(_value.copyWith(title: value) as $Val);
-    });
-  }
-
-  /// Create a copy of TaskDatabase
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $TaskStatusPropertyCopyWith<$Res> get status {
-    return $TaskStatusPropertyCopyWith<$Res>(_value.status, (value) {
-      return _then(_value.copyWith(status: value) as $Val);
-    });
-  }
-
-  /// Create a copy of TaskDatabase
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $TaskDatePropertyCopyWith<$Res> get date {
-    return $TaskDatePropertyCopyWith<$Res>(_value.date, (value) {
-      return _then(_value.copyWith(date: value) as $Val);
-    });
   }
 }
 
@@ -141,16 +109,10 @@ abstract class _$$TaskDatabaseImplCopyWith<$Res>
   $Res call(
       {String id,
       String name,
-      TaskTitleProperty title,
-      TaskStatusProperty status,
-      TaskDateProperty date});
-
-  @override
-  $TaskTitlePropertyCopyWith<$Res> get title;
-  @override
-  $TaskStatusPropertyCopyWith<$Res> get status;
-  @override
-  $TaskDatePropertyCopyWith<$Res> get date;
+      TitleProperty title,
+      @JsonKey(fromJson: _fromJson, toJson: _toJson)
+      CompleteStatusProperty status,
+      DateProperty date});
 }
 
 /// @nodoc
@@ -184,15 +146,15 @@ class __$$TaskDatabaseImplCopyWithImpl<$Res>
       title: null == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
-              as TaskTitleProperty,
+              as TitleProperty,
       status: null == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
-              as TaskStatusProperty,
+              as CompleteStatusProperty,
       date: null == date
           ? _value.date
           : date // ignore: cast_nullable_to_non_nullable
-              as TaskDateProperty,
+              as DateProperty,
     ));
   }
 }
@@ -204,7 +166,7 @@ class _$TaskDatabaseImpl implements _TaskDatabase {
       {required this.id,
       required this.name,
       required this.title,
-      required this.status,
+      @JsonKey(fromJson: _fromJson, toJson: _toJson) required this.status,
       required this.date});
 
   factory _$TaskDatabaseImpl.fromJson(Map<String, dynamic> json) =>
@@ -215,11 +177,12 @@ class _$TaskDatabaseImpl implements _TaskDatabase {
   @override
   final String name;
   @override
-  final TaskTitleProperty title;
+  final TitleProperty title;
   @override
-  final TaskStatusProperty status;
+  @JsonKey(fromJson: _fromJson, toJson: _toJson)
+  final CompleteStatusProperty status;
   @override
-  final TaskDateProperty date;
+  final DateProperty date;
 
   @override
   String toString() {
@@ -262,9 +225,10 @@ abstract class _TaskDatabase implements TaskDatabase {
   const factory _TaskDatabase(
       {required final String id,
       required final String name,
-      required final TaskTitleProperty title,
-      required final TaskStatusProperty status,
-      required final TaskDateProperty date}) = _$TaskDatabaseImpl;
+      required final TitleProperty title,
+      @JsonKey(fromJson: _fromJson, toJson: _toJson)
+      required final CompleteStatusProperty status,
+      required final DateProperty date}) = _$TaskDatabaseImpl;
 
   factory _TaskDatabase.fromJson(Map<String, dynamic> json) =
       _$TaskDatabaseImpl.fromJson;
@@ -274,11 +238,12 @@ abstract class _TaskDatabase implements TaskDatabase {
   @override
   String get name;
   @override
-  TaskTitleProperty get title;
+  TitleProperty get title;
   @override
-  TaskStatusProperty get status;
+  @JsonKey(fromJson: _fromJson, toJson: _toJson)
+  CompleteStatusProperty get status;
   @override
-  TaskDateProperty get date;
+  DateProperty get date;
 
   /// Create a copy of TaskDatabase
   /// with the given fields replaced by the non-null parameter values.

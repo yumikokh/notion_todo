@@ -1,9 +1,15 @@
 import 'dart:async';
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+import '../../settings/task_database/task_database_viewmodel.dart';
 import '../model/property.dart';
 import '../model/task.dart';
 import '../model/task_database.dart';
 import '../repository/notion_task_repository.dart';
+
+part 'task_service.g.dart';
 
 class TaskResult {
   final List<Task> tasks;
@@ -15,6 +21,16 @@ class TaskResult {
     required this.hasMore,
     this.nextCursor,
   });
+}
+
+@riverpod
+Future<TaskService?> taskService(Ref ref) async {
+  final repository = ref.watch(notionTaskRepositoryProvider);
+  final taskDatabase = ref.watch(taskDatabaseViewModelProvider).valueOrNull;
+  if (repository == null || taskDatabase == null) {
+    return null;
+  }
+  return TaskService(repository, taskDatabase);
 }
 
 class TaskService {
@@ -145,29 +161,27 @@ class TaskService {
   }
 
   bool _isTaskCompleted(Map<String, dynamic> data) {
-    final status = taskDatabase.status;
-    if (status.type == PropertyType.checkbox) {
-      return data['properties'][status.name]['checkbox'];
+    final property = taskDatabase.status;
+    switch (property) {
+      case CheckboxCompleteStatusProperty():
+        return data['properties'][property.name]['checkbox'];
+      case StatusCompleteStatusProperty(status: var status):
+        final completeGroupIds = status.groups
+            .where(
+              (group) => group.name == 'Complete',
+            )
+            .firstOrNull
+            ?.optionIds;
+        if (completeGroupIds == null) {
+          throw Exception('Complete group not found');
+        }
+        // statusが未指定の場合がある
+        if (data['properties'][property.name]['status'] == null) {
+          return false;
+        }
+        return completeGroupIds.contains(
+          data['properties'][property.name]['status']['id'],
+        );
     }
-    if (status.type == PropertyType.status &&
-        status is StatusTaskStatusProperty) {
-      final completeGroupIds = status.status.groups
-          .where(
-            (group) => group.name == 'Complete',
-          )
-          .firstOrNull
-          ?.option_ids;
-      if (completeGroupIds == null) {
-        throw Exception('Complete group not found');
-      }
-      // statusが未指定の場合がある
-      if (data['properties'][status.name]['status'] == null) {
-        return false;
-      }
-      return completeGroupIds.contains(
-        data['properties'][status.name]['status']['id'],
-      );
-    }
-    return false;
   }
 }

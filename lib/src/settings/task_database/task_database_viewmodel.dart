@@ -43,8 +43,8 @@ class TaskDatabaseViewModel extends _$TaskDatabaseViewModel {
     final taskDatabase = TaskDatabase(
         id: selectedTaskDatabase.id,
         name: selectedTaskDatabase.name,
-        status: selectedTaskDatabase.status as TaskStatusProperty,
-        date: selectedTaskDatabase.date as TaskDateProperty,
+        status: selectedTaskDatabase.status!,
+        date: selectedTaskDatabase.date!,
         title: selectedTaskDatabase.title);
     state = const AsyncValue.loading();
     try {
@@ -55,7 +55,7 @@ class TaskDatabaseViewModel extends _$TaskDatabaseViewModel {
         final analytics = ref.read(analyticsServiceProvider);
         await analytics.logDatabaseOperation(
           action: 'saved',
-          statusType: taskDatabase.status.type == PropertyType.status
+          statusType: taskDatabase.status is StatusCompleteStatusProperty
               ? 'status'
               : 'checkbox',
         );
