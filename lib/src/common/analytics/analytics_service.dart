@@ -101,4 +101,13 @@ class AnalyticsService {
       parameters: params,
     );
   }
+
+  Future<void> logNotionAuth({
+    required String action,
+  }) async {
+    await _analytics.logEvent(
+      name: 'notion_auth',
+      parameters: {'action': action},
+    );
+  }
 }

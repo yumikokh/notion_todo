@@ -1,9 +1,15 @@
 import 'dart:async';
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+import '../../settings/task_database/task_database_viewmodel.dart';
 import '../model/property.dart';
 import '../model/task.dart';
 import '../model/task_database.dart';
 import '../repository/notion_task_repository.dart';
+
+part 'task_service.g.dart';
 
 class TaskResult {
   final List<Task> tasks;
@@ -15,6 +21,16 @@ class TaskResult {
     required this.hasMore,
     this.nextCursor,
   });
+}
+
+@riverpod
+Future<TaskService?> taskService(Ref ref) async {
+  final repository = ref.watch(notionTaskRepositoryProvider);
+  final taskDatabase = ref.watch(taskDatabaseViewModelProvider).valueOrNull;
+  if (repository == null || taskDatabase == null) {
+    return null;
+  }
+  return TaskService(repository, taskDatabase);
 }
 
 class TaskService {

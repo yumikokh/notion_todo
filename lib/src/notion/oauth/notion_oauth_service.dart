@@ -1,64 +1,77 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../common/analytics/analytics_service.dart';
+import '../../env/env.dart';
 import '../repository/notion_oauth_repository.dart';
 
-class NotionOAuth {
-  final String? accessToken;
+part 'notion_oauth_service.g.dart';
 
-  NotionOAuth({
-    required this.accessToken,
-  });
-
-  bool get isAuthenticated => accessToken != null;
-
-  NotionOAuth.initialState() : accessToken = null;
+@riverpod
+Future<NotionOAuthService> notionOAuthService(Ref ref) async {
+  final prefs = await SharedPreferences.getInstance();
+  const secureStorage = FlutterSecureStorage();
+  final repository = NotionOAuthRepository(
+    Env.notionAuthUrl,
+    Env.oAuthClientId,
+    Env.oAuthClientSecret,
+    Env.redirectUri,
+    secureStorage,
+    prefs,
+  );
+  final analytics = ref.read(analyticsServiceProvider);
+  return NotionOAuthService(repository, analytics);
 }
 
 class NotionOAuthService {
-  final String notionAuthUrl;
-  final String clientId;
-  final String clientSecret;
-  final String redirectUri;
-
-  static const _accessTokenKey = 'accessToken';
-  static const _isFirstLaunchKey = 'isFirstLaunch';
-  late final NotionOAuthRepository _notionOAuthRepository;
-  late final FlutterSecureStorage _secureStorage;
+  final NotionOAuthRepository _notionOAuthRepository;
+  final AnalyticsService _analyticsService;
 
   NotionOAuthService(
-      this.notionAuthUrl, this.clientId, this.clientSecret, this.redirectUri) {
-    _notionOAuthRepository = NotionOAuthRepository(
-        notionAuthUrl, clientId, clientSecret, redirectUri);
-    _secureStorage = const FlutterSecureStorage();
-  }
+    this._notionOAuthRepository,
+    this._analyticsService,
+  );
 
   Future<String?> initialize() async {
-    final prefs = await SharedPreferences.getInstance();
-    final isFirstLaunch = prefs.getBool(_isFirstLaunchKey) ?? true;
+    final isFirstLaunch = await _notionOAuthRepository.isFirstLaunch();
+    final currentToken = await _notionOAuthRepository.loadAccessToken();
 
-    // 再インストール時に残っていたアクセストークンを削除
-    if (isFirstLaunch) {
+    // 初回起動時かつトークンが存在する場合のみ削除
+    // これにより、正常なアプリの初回起動時にはトークンを削除せず
+    // アプリの再インストール時のみトークンを削除する
+    if (isFirstLaunch && currentToken != null) {
       await deleteAccessToken();
-      await prefs.setBool(_isFirstLaunchKey, false);
+      await _notionOAuthRepository.setIsFirstLaunch(false);
+
+      try {
+        await _analyticsService.logNotionAuth(
+          action: 'reinstalled',
+        );
+      } catch (e) {
+        print('Analytics error: $e');
+      }
+
+      return null;
     }
 
-    return await _loadAccessToken();
+    // 初回起動だが、トークンが存在しない場合は、フラグのみ更新
+    if (isFirstLaunch) {
+      await _notionOAuthRepository.setIsFirstLaunch(false);
+    }
+
+    return currentToken;
   }
 
-  Future<String?> fetchAccessToken() async {
-    return await _notionOAuthRepository.fetchAccessToken();
-  }
-
-  Future<String?> _loadAccessToken() async {
-    return await _secureStorage.read(key: _accessTokenKey);
-  }
-
-  Future<void> saveAccessToken(String token) async {
-    await _secureStorage.write(key: _accessTokenKey, value: token);
+  Future<String?> authenticate() async {
+    final code = await _notionOAuthRepository.fetchAccessToken();
+    if (code == null) return null;
+    await _notionOAuthRepository.saveAccessToken(code);
+    return code;
   }
 
   Future<void> deleteAccessToken() async {
-    await _secureStorage.delete(key: _accessTokenKey);
+    await _notionOAuthRepository.deleteAccessToken();
   }
 }

@@ -21,7 +21,7 @@ part 'task_viewmodel.g.dart';
 
 @riverpod
 class TaskViewModel extends _$TaskViewModel {
-  late TaskService _taskService;
+  late TaskService? _taskService;
   late FilterType _filterType;
   late bool _hasCompleted;
   bool _hasMore = false;
@@ -38,15 +38,13 @@ class TaskViewModel extends _$TaskViewModel {
   Future<List<Task>> build({
     FilterType filterType = FilterType.all,
   }) async {
-    final repository = ref.watch(notionTaskRepositoryProvider);
-    final taskDatabase = ref.watch(taskDatabaseViewModelProvider).valueOrNull;
+    _taskService = await ref.watch(taskServiceProvider.future);
 
-    if (repository == null || taskDatabase == null) {
+    if (_taskService == null) {
       await FlutterAppBadger.removeBadge();
       return [];
     }
 
-    _taskService = TaskService(repository, taskDatabase);
     _filterType = filterType;
     // MEMO: ユースケースを鑑みて読み込みは固定にする
     // もしpageSize以上のタスクがあったとき、「showCompleted」と「Load more」の不整合がおきるがいったん無視
@@ -115,8 +113,8 @@ class TaskViewModel extends _$TaskViewModel {
   }
 
   Future<List<Task>> _fetchTasks({bool isFirstFetch = false}) async {
-    final taskDatabase = ref.read(taskDatabaseViewModelProvider).valueOrNull;
-    if (taskDatabase == null) {
+    final taskService = _taskService;
+    if (taskService == null) {
       return [];
     }
     final locale = ref.read(settingsViewModelProvider).locale;
@@ -125,7 +123,7 @@ class TaskViewModel extends _$TaskViewModel {
     ref.notifyListeners(); // ローディング状態が更新されるようにする
     try {
       final cursor = isFirstFetch ? null : _nextCursor;
-      final result = await _taskService.fetchTasks(_filterType, _hasCompleted,
+      final result = await taskService.fetchTasks(_filterType, _hasCompleted,
           startCursor: cursor);
       _hasMore = result.hasMore;
       _nextCursor = result.nextCursor;
@@ -185,8 +183,8 @@ class TaskViewModel extends _$TaskViewModel {
     final locale = ref.read(settingsViewModelProvider).locale;
     final l = await AppLocalizations.delegate.load(locale);
     await _addOperation(() async {
-      final taskDatabase = ref.read(taskDatabaseViewModelProvider).valueOrNull;
-      if (taskDatabase == null || title.trim().isEmpty) {
+      final taskService = _taskService;
+      if (taskService == null || title.trim().isEmpty) {
         return;
       }
       final snackbar = ref.read(snackbarProvider.notifier);
@@ -206,7 +204,7 @@ class TaskViewModel extends _$TaskViewModel {
 
       try {
         final t =
-            await _taskService.addTask(tempTask.title, tempTask.dueDate?.start);
+            await taskService.addTask(tempTask.title, tempTask.dueDate?.start);
 
         // 最新のstateを使用して更新
         state = AsyncValue.data([
@@ -243,14 +241,14 @@ class TaskViewModel extends _$TaskViewModel {
 
   Future<void> updateTask(Task task, {bool fromUndo = false}) async {
     await _addOperation(() async {
-      final db = ref.read(taskDatabaseViewModelProvider).valueOrNull;
+      final taskService = _taskService;
       final prevState = state;
       final prevTask =
           prevState.valueOrNull?.where((t) => t.id == task.id).firstOrNull;
       if (prevTask == null || task.title.trim().isEmpty) {
         return;
       }
-      if (db == null) {
+      if (taskService == null) {
         return;
       }
 
@@ -293,7 +291,7 @@ class TaskViewModel extends _$TaskViewModel {
 
       try {
         final updatedTask =
-            await _taskService.updateTask(task.id, task.title, updatedDueDate);
+            await taskService.updateTask(task.id, task.title, updatedDueDate);
 
         state = AsyncValue.data([
           for (final Task t in state.valueOrNull ?? [])
@@ -323,8 +321,8 @@ class TaskViewModel extends _$TaskViewModel {
   Future<void> updateStatus(Task task, bool isCompleted,
       {bool fromUndo = false}) async {
     await _addOperation(() async {
-      final taskDatabase = ref.read(taskDatabaseViewModelProvider).valueOrNull;
-      if (taskDatabase == null) {
+      final taskService = _taskService;
+      if (taskService == null) {
         return;
       }
       final snackbar = ref.read(snackbarProvider.notifier);
@@ -342,7 +340,7 @@ class TaskViewModel extends _$TaskViewModel {
       final prevState = state;
       try {
         final updatedTask =
-            await _taskService.updateStatus(task.id, isCompleted);
+            await taskService.updateStatus(task.id, isCompleted);
         state = AsyncValue.data([
           for (final t in state.valueOrNull ?? [])
             if (t.id == updatedTask.id) updatedTask else t
@@ -386,8 +384,8 @@ class TaskViewModel extends _$TaskViewModel {
 
   Future<void> deleteTask(Task task, {bool fromUndo = false}) async {
     await _addOperation(() async {
-      final taskDatabase = ref.read(taskDatabaseViewModelProvider).valueOrNull;
-      if (taskDatabase == null) {
+      final taskService = _taskService;
+      if (taskService == null) {
         return;
       }
 
@@ -405,7 +403,7 @@ class TaskViewModel extends _$TaskViewModel {
       });
 
       try {
-        await _taskService.deleteTask(task.id);
+        await taskService.deleteTask(task.id);
         try {
           final analytics = ref.read(analyticsServiceProvider);
           await analytics.logTask(
@@ -428,8 +426,8 @@ class TaskViewModel extends _$TaskViewModel {
 
   Future<void> undoDeleteTask(Task prev) async {
     await _addOperation(() async {
-      final taskDatabase = ref.read(taskDatabaseViewModelProvider).valueOrNull;
-      if (taskDatabase == null) {
+      final taskService = _taskService;
+      if (taskService == null) {
         return;
       }
       final snackbar = ref.read(snackbarProvider.notifier);
@@ -442,7 +440,7 @@ class TaskViewModel extends _$TaskViewModel {
       snackbar.show(l.task_delete_undo(prev.title), type: SnackbarType.success);
 
       try {
-        final restoredTask = await _taskService.undoDeleteTask(prev.id);
+        final restoredTask = await taskService.undoDeleteTask(prev.id);
         if (restoredTask == null) {
           return;
         }
