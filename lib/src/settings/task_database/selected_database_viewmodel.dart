@@ -7,6 +7,7 @@ import '../../common/snackbar/model/snackbar_state.dart';
 import '../../common/snackbar/snackbar.dart';
 import '../../notion/model/index.dart';
 import '../../notion/repository/notion_database_repository.dart';
+import '../../notion/repository/notion_task_repository.dart';
 import 'task_database_service.dart';
 import 'task_database_viewmodel.dart';
 
@@ -184,6 +185,7 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
               name: p.name,
               status: p.status,
               todoOption: null,
+              inProgressOption: null,
               completeOption: null,
             ),
           );
@@ -210,15 +212,17 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
     });
   }
 
-  // optionType: 'To-do' or 'Complete'
-  void selectStatusOption(String? optionId, String optionType) {
+  // optionType: 'To-do' or 'Complete' or 'In Progress'
+  void selectStatusOption(String? optionId, StatusGroupType optionType) {
     if (optionId == null) {
       return;
     }
     state = state.whenData((value) {
       if (value == null ||
           value.status == null ||
-          (optionType != 'To-do' && optionType != 'Complete')) {
+          (optionType != StatusGroupType.todo &&
+              optionType != StatusGroupType.complete &&
+              optionType != StatusGroupType.inProgress)) {
         return value;
       }
       final status = value.status;
@@ -229,15 +233,20 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
       final option =
           status.status.options.firstWhere((option) => option.id == optionId);
 
-      if (optionType == 'To-do') {
-        return value.copyWith(
-          status: status.copyWith(todoOption: option),
-        );
+      switch (optionType) {
+        case StatusGroupType.todo:
+          return value.copyWith(
+            status: status.copyWith(todoOption: option),
+          );
+        case StatusGroupType.complete:
+          return value.copyWith(
+            status: status.copyWith(completeOption: option),
+          );
+        case StatusGroupType.inProgress:
+          return value.copyWith(
+            status: status.copyWith(inProgressOption: option),
+          );
       }
-      return value.copyWith(
-          status: status.copyWith(
-        completeOption: option,
-      ));
     });
   }
 

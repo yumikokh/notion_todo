@@ -14,6 +14,15 @@ part 'notion_task_repository.g.dart';
 
 enum FilterType { today, all }
 
+enum StatusGroupType {
+  todo('To-do'),
+  inProgress('In progress'),
+  complete('Complete');
+
+  final String value;
+  const StatusGroupType(this.value);
+}
+
 class NotionTaskRepository {
   final String accessToken;
   final TaskDatabase database;
@@ -240,7 +249,8 @@ List<dynamic> getNotCompleteStatusFilter(CompleteStatusProperty property) {
   switch (property) {
     case StatusCompleteStatusProperty(status: var status):
       final optionIds = status.groups
-              .where((e) => e.name == 'Complete')
+              .where(
+                  (e) => e.name.toLowerCase() == StatusGroupType.complete.name)
               .firstOrNull
               ?.optionIds ??
           [];

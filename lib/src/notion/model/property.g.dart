@@ -79,6 +79,10 @@ StatusCompleteStatusProperty _$StatusCompleteStatusPropertyFromJson(
       todoOption: json['todoOption'] == null
           ? null
           : StatusOption.fromJson(json['todoOption'] as Map<String, dynamic>),
+      inProgressOption: json['inProgressOption'] == null
+          ? null
+          : StatusOption.fromJson(
+              json['inProgressOption'] as Map<String, dynamic>),
       completeOption: json['completeOption'] == null
           ? null
           : StatusOption.fromJson(
@@ -96,6 +100,7 @@ Map<String, dynamic> _$StatusCompleteStatusPropertyToJson(
         'options': instance.status.options,
       },
       'todoOption': instance.todoOption,
+      'inProgressOption': instance.inProgressOption,
       'completeOption': instance.completeOption,
     };
 

@@ -127,6 +127,7 @@ class CheckboxCompleteStatusProperty extends CompleteStatusProperty {
 class StatusCompleteStatusProperty extends CompleteStatusProperty {
   final ({List<StatusOption> options, List<StatusGroup> groups}) status;
   final StatusOption? todoOption;
+  final StatusOption? inProgressOption;
   final StatusOption? completeOption;
 
   StatusCompleteStatusProperty({
@@ -134,11 +135,13 @@ class StatusCompleteStatusProperty extends CompleteStatusProperty {
     required String name,
     required this.status,
     required this.todoOption,
+    required this.inProgressOption,
     required this.completeOption,
   }) : super(id: id, name: name, type: PropertyType.status);
 
   StatusCompleteStatusProperty copyWith({
     StatusOption? todoOption,
+    StatusOption? inProgressOption,
     StatusOption? completeOption,
   }) {
     return StatusCompleteStatusProperty(
@@ -146,6 +149,7 @@ class StatusCompleteStatusProperty extends CompleteStatusProperty {
       name: name,
       status: status,
       todoOption: todoOption ?? this.todoOption,
+      inProgressOption: inProgressOption ?? this.inProgressOption,
       completeOption: completeOption ?? this.completeOption,
     );
   }
