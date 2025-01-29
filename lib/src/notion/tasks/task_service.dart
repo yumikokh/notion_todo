@@ -39,6 +39,14 @@ class TaskService {
 
   TaskService(this.notionTaskRepository, this.taskDatabase);
 
+  Future<bool> loadShowCompleted() async {
+    return await notionTaskRepository.loadShowCompleted();
+  }
+
+  Future<void> saveShowCompleted(bool value) async {
+    await notionTaskRepository.saveShowCompleted(value);
+  }
+
   Future<TaskResult> fetchTasks(FilterType filterType, bool hasCompleted,
       {String? startCursor}) async {
     try {

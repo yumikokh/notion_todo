@@ -46,6 +46,8 @@ class TaskViewModel extends _$TaskViewModel {
       return [];
     }
 
+    _showCompleted = await _taskService!.loadShowCompleted();
+
     _filterType = filterType;
     // MEMO: ユースケースを鑑みて読み込みは固定にする
     // もしpageSize以上のタスクがあったとき、「showCompleted」と「Load more」の不整合がおきるがいったん無視
@@ -68,6 +70,9 @@ class TaskViewModel extends _$TaskViewModel {
 
   Future<void> toggleShowCompleted() async {
     _showCompleted = !_showCompleted;
+    if (_taskService != null) {
+      await _taskService!.saveShowCompleted(_showCompleted);
+    }
     try {
       final analytics = ref.read(analyticsServiceProvider);
       await analytics.logCompletedTasksToggle(
