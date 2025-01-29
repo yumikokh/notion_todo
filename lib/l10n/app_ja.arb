@@ -117,5 +117,9 @@
         "type": "String"
       }
     }
-  }
+  },
+  "task_star_button_dialog_title": "進行中オプションが未設定です",
+  "task_star_button_dialog_content": "データベース設定から設定して、今集中すべきタスクを確認してみましょう！",
+  "task_star_button_dialog_cancel": "キャンセル",
+  "task_star_button_dialog_settings": "設定"
 }

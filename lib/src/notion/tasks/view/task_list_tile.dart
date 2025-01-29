@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:haptic_feedback/haptic_feedback.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../helpers/date.dart';
 import '../../model/task.dart';
 import '../task_viewmodel.dart';
 import 'task_sheet/task_sheet.dart';
+import 'task_star_button.dart';
 
-class TaskListTile extends HookWidget {
+class TaskListTile extends HookConsumerWidget {
   const TaskListTile({
     super.key,
     required this.task,
@@ -20,11 +22,10 @@ class TaskListTile extends HookWidget {
   static final DateHelper d = DateHelper();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final date = taskViewModel.getDisplayDate(task, context);
 
     final checked = useState(task.isCompleted);
-    final stared = useState(task.isInProgress);
 
     return ListTile(
       onLongPress: () async {
@@ -82,29 +83,10 @@ class TaskListTile extends HookWidget {
           await taskViewModel.updateCompleteStatus(task, willComplete);
         },
       ),
-      // TODO: Statusのときだけ表示
-      trailing: Container(
-        width: 40,
-        height: 40,
-        decoration: const BoxDecoration(
-          shape: BoxShape.circle,
-        ),
-        child: InkWell(
-          customBorder: const CircleBorder(),
-          onTap: () async {
-            if (await Haptics.canVibrate()) {
-              await Haptics.vibrate(HapticsType.light);
-            }
-            stared.value = !stared.value;
-            taskViewModel.updateInProgressStatus(task);
-          },
-          child: stared.value
-              ? Icon(Icons.star_rounded,
-                  size: 24, color: Theme.of(context).colorScheme.secondary)
-              : Icon(Icons.star_border_rounded,
-                  size: 24,
-                  color: Theme.of(context).colorScheme.inversePrimary),
-        ),
+      trailing: TaskStarButton(
+        task: task,
+        onInProgressChanged: (task) =>
+            taskViewModel.updateInProgressStatus(task),
       ),
       title: Text(task.title,
           style: TextStyle(

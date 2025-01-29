@@ -201,5 +201,9 @@
         "type": "String"
       }
     }
-  }
+  },
+  "task_star_button_dialog_title": "In Progress Option Not Set",
+  "task_star_button_dialog_content": "Set up the In Progress option in database settings to track what you should focus on!",
+  "task_star_button_dialog_cancel": "Cancel",
+  "task_star_button_dialog_settings": "Settings"
 }
