@@ -6,6 +6,12 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      OAUTH_CLIENT_ID: ${{ secrets.OAUTH_CLIENT_ID }}
+      OAUTH_CLIENT_SECRET: ${{ secrets.OAUTH_CLIENT_SECRET }}
+      NOTION_AUTH_URL: ${{ secrets.NOTION_AUTH_URL }}
+      REDIRECT_URI: ${{ secrets.REDIRECT_URI }}
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
     steps:
       - uses: actions/checkout@v4
 
@@ -30,6 +36,9 @@ jobs:
 
       - name: Install dependencies
         run: flutter pub get
+
+      - name: Generate files
+        run: dart run build_runner build --delete-conflicting-outputs
 
       - name: Run tests
         run: flutter test
