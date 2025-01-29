@@ -20,12 +20,21 @@ class TaskStarButton extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
+
     if (task.status is! TaskStatusStatus) {
       return const SizedBox.shrink();
     }
 
-    final stared = useState(task.isInProgress);
-    final l = AppLocalizations.of(context)!;
+    final statusProperty =
+        ref.read(taskDatabaseViewModelProvider).valueOrNull?.status;
+    if (statusProperty is! StatusCompleteStatusProperty) {
+      return const SizedBox.shrink();
+    }
+    final inProgressOption = statusProperty.inProgressOption;
+
+    final stared = useState(
+        inProgressOption != null && task.isInProgress(inProgressOption));
 
     return Container(
       width: 40,

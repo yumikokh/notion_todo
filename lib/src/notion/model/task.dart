@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:tanzaku_todo/src/notion/model/property.dart';
+
+import 'property.dart';
 
 part 'task.freezed.dart';
 part 'task.g.dart';
@@ -50,10 +51,10 @@ class Task with _$Task {
           group?.name == StatusGroupType.complete.value,
       };
 
-  bool get isInProgress => switch (status) {
+  bool isInProgress(StatusOption inProgressOption) => switch (status) {
         TaskStatusCheckbox() => false,
-        TaskStatusStatus(group: var group) =>
-          group?.name == StatusGroupType.inProgress.value,
+        TaskStatusStatus(option: var option) =>
+          option?.id == inProgressOption.id,
       };
 
   factory Task.fromJson(Map<String, dynamic> json) => _$TaskFromJson(json);

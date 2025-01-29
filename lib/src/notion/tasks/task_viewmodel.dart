@@ -51,8 +51,17 @@ class TaskViewModel extends _$TaskViewModel {
     // もしpageSize以上のタスクがあったとき、「showCompleted」と「Load more」の不整合がおきるがいったん無視
     _hasCompleted = filterType == FilterType.today;
 
-    final tasks = await _fetchTasks(isFirstFetch: true)
-      ..sort((a, b) => a.isInProgress ? -1 : 1);
+    final statusProperty =
+        ref.watch(taskDatabaseViewModelProvider).valueOrNull?.status;
+    final tasks = await _fetchTasks(isFirstFetch: true);
+
+    if (statusProperty is StatusCompleteStatusProperty) {
+      final inProgressOption = statusProperty.inProgressOption;
+      if (inProgressOption == null) {
+        return tasks;
+      }
+      return tasks..sort((a, b) => a.isInProgress(inProgressOption) ? -1 : 1);
+    }
 
     return tasks;
   }
@@ -397,10 +406,20 @@ class TaskViewModel extends _$TaskViewModel {
       if (taskService == null) {
         return;
       }
+      final statusProperty =
+          ref.read(taskDatabaseViewModelProvider).valueOrNull?.status;
+      if (statusProperty is! StatusCompleteStatusProperty) {
+        return;
+      }
+      final inProgressOption = statusProperty.inProgressOption;
+      if (inProgressOption == null) {
+        return;
+      }
       final snackbar = ref.read(snackbarProvider.notifier);
       final locale = ref.read(settingsViewModelProvider).locale;
       final l = await AppLocalizations.delegate.load(locale);
-      final willBeInProgress = !task.isInProgress;
+
+      final willBeInProgress = !task.isInProgress(inProgressOption);
       final prevState = state;
 
       snackbar.show(
