@@ -57,6 +57,13 @@ class TaskViewModel extends _$TaskViewModel {
         ref.watch(taskDatabaseViewModelProvider).valueOrNull?.status;
     final tasks = await _fetchTasks(isFirstFetch: true);
 
+    // バッジ更新
+    if (filterType == FilterType.today) {
+      final showBadge =
+          ref.watch(settingsViewModelProvider).showNotificationBadge;
+      _updateBadge(tasks, showBadge);
+    }
+
     if (statusProperty is StatusCompleteStatusProperty) {
       final inProgressOption = statusProperty.inProgressOption;
       if (inProgressOption == null) {
@@ -145,10 +152,6 @@ class TaskViewModel extends _$TaskViewModel {
           startCursor: cursor);
       _hasMore = result.hasMore;
       _nextCursor = result.nextCursor;
-      // バッジ更新
-      if (filterType == FilterType.today) {
-        _updateBadge(result.tasks);
-      }
       return result.tasks;
     } catch (e) {
       if (e is TaskException && e.statusCode == 404) {
@@ -603,7 +606,11 @@ class TaskViewModel extends _$TaskViewModel {
     );
   }
 
-  Future<void> _updateBadge(List<Task> tasks) async {
+  Future<void> _updateBadge(List<Task> tasks, bool showBadge) async {
+    if (!showBadge) {
+      FlutterAppBadger.removeBadge();
+      return;
+    }
     final notCompletedCount = tasks.where((task) => !task.isCompleted).length;
     await FlutterAppBadger.updateBadgeCount(notCompletedCount);
   }
