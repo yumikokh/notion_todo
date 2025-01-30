@@ -19,9 +19,7 @@ class SettingsPage extends ConsumerWidget {
 
   static const TextStyle _supportFontStyle = TextStyle(fontSize: 13);
 
-  final SettingsViewModel settingsViewModel;
-
-  const SettingsPage({super.key, required this.settingsViewModel});
+  const SettingsPage({super.key});
 
   @override
   Widget build(BuildContext context, ref) {
@@ -64,7 +62,8 @@ class SettingsPage extends ConsumerWidget {
                 ),
                 ListTile(
                   title: Text(l.language_settings_title),
-                  subtitle: Text(settingsViewModel.languageName(l)),
+                  subtitle: Text(
+                      ref.watch(settingsViewModelProvider).languageName(l)),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {
                     analytics.logScreenView(screenName: 'LanguageSettings');
@@ -103,9 +102,11 @@ class SettingsPage extends ConsumerWidget {
                     ],
                   ),
                   trailing: Switch(
-                    value: settingsViewModel.wakelock,
+                    value: ref.watch(settingsViewModelProvider).wakelock,
                     onChanged: (value) {
-                      settingsViewModel.updateWakelock(value);
+                      ref
+                          .read(settingsViewModelProvider.notifier)
+                          .updateWakelock(value);
                     },
                   ),
                 ),

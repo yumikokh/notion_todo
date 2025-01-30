@@ -70,7 +70,7 @@ class MyApp extends ConsumerWidget {
               builder: (BuildContext context) {
                 switch (routeSettings.name) {
                   case SettingsPage.routeName:
-                    return SettingsPage(settingsViewModel: settingsViewModel);
+                    return const SettingsPage();
                   case NotionSettingsPage.routeName:
                     return const NotionSettingsPage();
                   case ThemeSettingsPage.routeName:
