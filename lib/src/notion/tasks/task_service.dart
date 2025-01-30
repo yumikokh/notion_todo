@@ -49,7 +49,7 @@ class TaskService {
           .map((page) => Task(
                 id: page['id'],
                 title: _title(page),
-                isCompleted: _isTaskCompleted(page),
+                status: _status(page),
                 dueDate: _date(page),
                 url: page['url'],
               ))
@@ -68,12 +68,12 @@ class TaskService {
   Future<Task> addTask(String title, String? dueDate) async {
     final data = await notionTaskRepository.addTask(title, dueDate);
     if (data == null || data.isEmpty) {
-      return Task.initial();
+      throw Exception('Failed to add task');
     }
     return Task(
       id: data['id'],
       title: title,
-      isCompleted: _isTaskCompleted(data),
+      status: _status(data),
       dueDate: _date(data),
       url: data['url'],
     );
@@ -82,27 +82,43 @@ class TaskService {
   Future<Task> updateTask(String taskId, String title, String? dueDate) async {
     final data = await notionTaskRepository.updateTask(taskId, title, dueDate);
     if (data == null || data['id'] == null) {
-      return Task.initial();
+      throw Exception('Failed to update task');
     }
     return Task(
       id: data['id'],
       title: title,
-      isCompleted: _isTaskCompleted(data),
+      status: _status(data),
       dueDate: _date(data),
       url: data['url'],
     );
   }
 
-  Future<Task> updateStatus(String taskId, bool isCompleted) async {
-    final data = await notionTaskRepository.updateStatus(taskId, isCompleted);
+  Future<Task> updateCompleteStatus(String taskId, bool isCompleted) async {
+    final data =
+        await notionTaskRepository.updateCompleteStatus(taskId, isCompleted);
     if (data == null || data.isEmpty) {
-      return Task.initial();
+      throw Exception('Failed to update task');
     }
     // TODO: すでに存在しないIDだった場合のエラーハンドリング
     return Task(
       id: data['id'],
       title: _title(data),
-      isCompleted: _isTaskCompleted(data),
+      status: _status(data),
+      dueDate: _date(data),
+      url: data['url'],
+    );
+  }
+
+  Future<Task> updateInProgressStatus(String taskId, bool isInProgress) async {
+    final data =
+        await notionTaskRepository.updateInProgressStatus(taskId, isInProgress);
+    if (data == null || data.isEmpty) {
+      throw Exception('Failed to update task');
+    }
+    return Task(
+      id: data['id'],
+      title: _title(data),
+      status: _status(data),
       dueDate: _date(data),
       url: data['url'],
     );
@@ -116,7 +132,7 @@ class TaskService {
     return Task(
       id: data['id'],
       title: _title(data),
-      isCompleted: _isTaskCompleted(data),
+      status: _status(data),
       dueDate: _date(data),
       url: data['url'],
     );
@@ -130,7 +146,7 @@ class TaskService {
     return Task(
       id: data['id'],
       title: _title(data),
-      isCompleted: _isTaskCompleted(data),
+      status: _status(data),
       dueDate: _date(data),
       url: data['url'],
     );
@@ -160,28 +176,27 @@ class TaskService {
     );
   }
 
-  bool _isTaskCompleted(Map<String, dynamic> data) {
+  TaskStatus _status(Map<String, dynamic> data) {
     final property = taskDatabase.status;
     switch (property) {
       case CheckboxCompleteStatusProperty():
-        return data['properties'][property.name]['checkbox'];
+        return TaskStatus.checkbox(
+            checked: data['properties'][property.name]['checkbox']);
       case StatusCompleteStatusProperty(status: var status):
-        final completeGroupIds = status.groups
-            .where(
-              (group) => group.name == 'Complete',
-            )
-            .firstOrNull
-            ?.optionIds;
-        if (completeGroupIds == null) {
-          throw Exception('Complete group not found');
-        }
         // statusが未指定の場合がある
         if (data['properties'][property.name]['status'] == null) {
-          return false;
+          return const TaskStatus.status(group: null, option: null);
         }
-        return completeGroupIds.contains(
-          data['properties'][property.name]['status']['id'],
+
+        final optionId = data['properties'][property.name]['status']['id'];
+        final group = status.groups.firstWhere(
+          (group) => group.optionIds.contains(optionId),
         );
+        final option = status.options.firstWhere(
+          (option) => option.id == optionId,
+        );
+
+        return TaskStatus.status(group: group, option: option);
     }
   }
 }

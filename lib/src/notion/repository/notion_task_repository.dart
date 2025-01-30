@@ -184,7 +184,7 @@ class NotionTaskRepository {
     return jsonDecode(res.body);
   }
 
-  Future updateStatus(String taskId, bool isCompleted) async {
+  Future updateCompleteStatus(String taskId, bool isCompleted) async {
     final db = database;
     if (db.id.isEmpty) {
       return;
@@ -203,6 +203,39 @@ class NotionTaskRepository {
           "status": {"name": todoOption?.name ?? 'To-do'}
         },
       (CheckboxCompleteStatusProperty(), _) => {"checkbox": isCompleted},
+    };
+
+    final res = await http.patch(
+      Uri.parse('https://api.notion.com/v1/pages/$taskId'),
+      headers: headers,
+      body: jsonEncode({
+        "properties": {status.name: statusProperties},
+      }),
+    );
+    return jsonDecode(res.body);
+  }
+
+  Future updateInProgressStatus(String taskId, bool isInProgress) async {
+    final db = database;
+    if (db.id.isEmpty) {
+      return;
+    }
+
+    final status = db.status;
+
+    final statusProperties = switch ((status, isInProgress)) {
+      (
+        StatusCompleteStatusProperty(inProgressOption: var inProgressOption),
+        true
+      ) =>
+        {
+          "status": {"name": inProgressOption?.name ?? 'In Progress'}
+        },
+      (StatusCompleteStatusProperty(todoOption: var todoOption), false) => {
+          "status": {"name": todoOption?.name ?? 'To-do'}
+        },
+      // checkboxは更新しない
+      (CheckboxCompleteStatusProperty(), _) => {"checkbox": false},
     };
 
     final res = await http.patch(
@@ -240,7 +273,8 @@ List<dynamic> getNotCompleteStatusFilter(CompleteStatusProperty property) {
   switch (property) {
     case StatusCompleteStatusProperty(status: var status):
       final optionIds = status.groups
-              .where((e) => e.name == 'Complete')
+              .where(
+                  (e) => e.name.toLowerCase() == StatusGroupType.complete.name)
               .firstOrNull
               ?.optionIds ??
           [];

@@ -155,6 +155,10 @@ class NotionSettingsView extends ConsumerWidget {
                             statusProperty.todoOption?.name ?? 'None',
                           ),
                           _buildInfoTile(
+                            l.status_property_in_progress_option,
+                            statusProperty.inProgressOption?.name ?? 'None',
+                          ),
+                          _buildInfoTile(
                             l.status_property_complete_option,
                             statusProperty.completeOption?.name ?? 'None',
                           ),

@@ -11,6 +11,7 @@ import '../../common/snackbar/snackbar.dart';
 import '../../helpers/date.dart';
 import '../../settings/settings_viewmodel.dart';
 import '../../settings/task_database/task_database_viewmodel.dart';
+import '../model/property.dart';
 import '../model/task.dart';
 import '../repository/notion_task_repository.dart';
 import 'task_service.dart';
@@ -50,7 +51,19 @@ class TaskViewModel extends _$TaskViewModel {
     // もしpageSize以上のタスクがあったとき、「showCompleted」と「Load more」の不整合がおきるがいったん無視
     _hasCompleted = filterType == FilterType.today;
 
-    return await _fetchTasks(isFirstFetch: true);
+    final statusProperty =
+        ref.watch(taskDatabaseViewModelProvider).valueOrNull?.status;
+    final tasks = await _fetchTasks(isFirstFetch: true);
+
+    if (statusProperty is StatusCompleteStatusProperty) {
+      final inProgressOption = statusProperty.inProgressOption;
+      if (inProgressOption == null) {
+        return tasks;
+      }
+      return tasks..sort((a, b) => a.isInProgress(inProgressOption) ? -1 : 1);
+    }
+
+    return tasks;
   }
 
   Future<void> toggleShowCompleted() async {
@@ -195,7 +208,7 @@ class TaskViewModel extends _$TaskViewModel {
       final tempTask = Task(
           id: tempId,
           title: title,
-          isCompleted: false,
+          status: const TaskStatus.checkbox(checked: false),
           dueDate:
               dueDate != null ? TaskDate(start: d.dateString(dueDate)) : null,
           url: null);
@@ -318,7 +331,7 @@ class TaskViewModel extends _$TaskViewModel {
     });
   }
 
-  Future<void> updateStatus(Task task, bool isCompleted,
+  Future<void> updateCompleteStatus(Task task, bool isCompleted,
       {bool fromUndo = false}) async {
     await _addOperation(() async {
       final taskService = _taskService;
@@ -333,21 +346,21 @@ class TaskViewModel extends _$TaskViewModel {
               ? l.task_update_status_success(task.title)
               : l.task_update_status_undo(task.title),
           type: SnackbarType.success, onUndo: () async {
-        updateStatus(task, !isCompleted, fromUndo: true);
+        updateCompleteStatus(task, !isCompleted, fromUndo: true);
       });
 
       _isLoading = true;
       final prevState = state;
       try {
         final updatedTask =
-            await taskService.updateStatus(task.id, isCompleted);
+            await taskService.updateCompleteStatus(task.id, isCompleted);
         state = AsyncValue.data([
           for (final t in state.valueOrNull ?? [])
             if (t.id == updatedTask.id) updatedTask else t
         ]);
         ref.invalidateSelf();
 
-        // 今日のタスクが全て完了したかチェック
+        // [レビューポップアップ] 今日のタスクが全て完了したかチェック
         if (!fromUndo && isCompleted && _filterType == FilterType.today) {
           final tasks = state.valueOrNull ?? [];
           final allTasksCompleted = tasks.every((t) => t.isCompleted);
@@ -368,6 +381,71 @@ class TaskViewModel extends _$TaskViewModel {
             'task_completed',
             hasDueDate: task.dueDate?.start != null,
             isCompleted: isCompleted,
+            fromUndo: fromUndo,
+          );
+        } catch (e) {
+          print('Analytics error: $e');
+        }
+      } catch (e) {
+        state = prevState;
+        snackbar.show(l.task_update_status_failed, type: SnackbarType.error);
+      } finally {
+        _isLoading = false;
+      }
+    });
+  }
+
+  Future<void> updateInProgressStatus(Task task,
+      {bool fromUndo = false}) async {
+    // checkboxは更新できない
+    if (task.status is CheckboxCompleteStatusProperty) {
+      return;
+    }
+    await _addOperation(() async {
+      final taskService = _taskService;
+      if (taskService == null) {
+        return;
+      }
+      final statusProperty =
+          ref.read(taskDatabaseViewModelProvider).valueOrNull?.status;
+      if (statusProperty is! StatusCompleteStatusProperty) {
+        return;
+      }
+      final inProgressOption = statusProperty.inProgressOption;
+      if (inProgressOption == null) {
+        return;
+      }
+      final snackbar = ref.read(snackbarProvider.notifier);
+      final locale = ref.read(settingsViewModelProvider).locale;
+      final l = await AppLocalizations.delegate.load(locale);
+
+      final willBeInProgress = !task.isInProgress(inProgressOption);
+      final prevState = state;
+
+      snackbar.show(
+          willBeInProgress
+              ? l.task_update_status_in_progress(task.title)
+              : l.task_update_status_todo(task.title),
+          type: SnackbarType.success, onUndo: () async {
+        updateInProgressStatus(task, fromUndo: true);
+      });
+
+      _isLoading = true;
+
+      try {
+        final updatedTask =
+            await taskService.updateInProgressStatus(task.id, willBeInProgress);
+        state = AsyncValue.data([
+          for (final t in state.valueOrNull ?? [])
+            if (t.id == updatedTask.id) updatedTask else t
+        ]);
+        ref.invalidateSelf();
+
+        try {
+          final analytics = ref.read(analyticsServiceProvider);
+          await analytics.logTask(
+            'task_in_progress_updated',
+            hasDueDate: task.dueDate?.start != null,
             fromUndo: fromUndo,
           );
         } catch (e) {

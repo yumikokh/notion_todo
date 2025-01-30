@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:haptic_feedback/haptic_feedback.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../helpers/date.dart';
 import '../../model/task.dart';
 import '../task_viewmodel.dart';
 import 'task_sheet/task_sheet.dart';
+import 'task_star_button.dart';
 
-class TaskListTile extends HookWidget {
+class TaskListTile extends HookConsumerWidget {
   const TaskListTile({
     super.key,
     required this.task,
@@ -20,7 +22,7 @@ class TaskListTile extends HookWidget {
   static final DateHelper d = DateHelper();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final date = taskViewModel.getDisplayDate(task, context);
 
     final checked = useState(task.isCompleted);
@@ -78,16 +80,20 @@ class TaskListTile extends HookWidget {
         onChanged: (bool? willComplete) async {
           if (willComplete == null) return;
           checked.value = willComplete;
-
-          await taskViewModel.updateStatus(task, willComplete);
+          await taskViewModel.updateCompleteStatus(task, willComplete);
         },
+      ),
+      trailing: TaskStarButton(
+        task: task,
+        onInProgressChanged: (task) =>
+            taskViewModel.updateInProgressStatus(task),
       ),
       title: Text(task.title,
           style: TextStyle(
-            color: checked.value
+            color: task.isCompleted
                 ? Theme.of(context).colorScheme.outline
                 : Theme.of(context).colorScheme.onSurface,
-            decoration: checked.value ? TextDecoration.lineThrough : null,
+            decoration: task.isCompleted ? TextDecoration.lineThrough : null,
             decorationColor: Theme.of(context).colorScheme.outline,
             fontSize: 15,
           )),
