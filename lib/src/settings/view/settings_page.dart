@@ -6,22 +6,20 @@ import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../task_database/task_database_viewmodel.dart';
-import 'language_settings_view.dart';
+import 'language_settings_page.dart';
 import 'notification_settings_page.dart';
-import 'notion_settings_view.dart';
+import 'notion_settings_page.dart';
 import '../settings_viewmodel.dart';
 import '../../common/analytics/analytics_service.dart';
 import '../../common/app_version/app_version_viewmodel.dart';
-import 'appearance_settings_view.dart';
+import 'appearance_settings_page.dart';
 
-class SettingsView extends ConsumerWidget {
+class SettingsPage extends ConsumerWidget {
   static const routeName = '/settings';
 
   static const TextStyle _supportFontStyle = TextStyle(fontSize: 13);
 
-  final SettingsViewModel settingsViewModel;
-
-  const SettingsView({super.key, required this.settingsViewModel});
+  const SettingsPage({super.key});
 
   @override
   Widget build(BuildContext context, ref) {
@@ -59,17 +57,18 @@ class SettingsView extends ConsumerWidget {
                   onTap: () {
                     analytics.logScreenView(screenName: 'NotionSettings');
                     Navigator.of(context)
-                        .pushNamed(NotionSettingsView.routeName);
+                        .pushNamed(NotionSettingsPage.routeName);
                   },
                 ),
                 ListTile(
                   title: Text(l.language_settings_title),
-                  subtitle: Text(settingsViewModel.languageName(l)),
+                  subtitle: Text(
+                      ref.watch(settingsViewModelProvider).languageName(l)),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {
                     analytics.logScreenView(screenName: 'LanguageSettings');
                     Navigator.of(context)
-                        .pushNamed(LanguageSettingsView.routeName);
+                        .pushNamed(LanguageSettingsPage.routeName);
                   },
                 ),
                 ListTile(
@@ -78,7 +77,7 @@ class SettingsView extends ConsumerWidget {
                   onTap: () {
                     analytics.logScreenView(screenName: 'AppearanceSettings');
                     Navigator.of(context)
-                        .pushNamed(AppearanceSettingsView.routeName);
+                        .pushNamed(AppearanceSettingsPage.routeName);
                   },
                 ),
                 ListTile(
@@ -103,9 +102,11 @@ class SettingsView extends ConsumerWidget {
                     ],
                   ),
                   trailing: Switch(
-                    value: settingsViewModel.wakelock,
+                    value: ref.watch(settingsViewModelProvider).wakelock,
                     onChanged: (value) {
-                      settingsViewModel.updateWakelock(value);
+                      ref
+                          .read(settingsViewModelProvider.notifier)
+                          .updateWakelock(value);
                     },
                   ),
                 ),
