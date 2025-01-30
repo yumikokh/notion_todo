@@ -7,10 +7,10 @@ import '../../notion/oauth/notion_oauth_viewmodel.dart';
 import '../task_database/task_database_viewmodel.dart';
 import '../task_database/view/task_database_setting_page.dart';
 
-class NotionSettingsView extends ConsumerWidget {
+class NotionSettingsPage extends ConsumerWidget {
   static const routeName = '/settings/notion';
 
-  const NotionSettingsView({super.key});
+  const NotionSettingsPage({super.key});
 
   @override
   Widget build(BuildContext context, ref) {

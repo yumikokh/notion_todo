@@ -7,15 +7,15 @@ import 'helpers/date.dart';
 import 'common/app_version/view/app_version_notifier.dart';
 import 'settings/task_database/view/task_database_setting_page.dart';
 import 'notion/tasks/view/task_main_page.dart';
-import 'settings/view/appearance_settings_view.dart';
-import 'settings/view/language_settings_view.dart';
+import 'settings/view/appearance_settings_page.dart';
+import 'settings/view/language_settings_page.dart';
 import 'settings/view/notification_settings_page.dart';
-import 'settings/view/notion_settings_view.dart';
+import 'settings/view/notion_settings_page.dart';
 import 'settings/settings_viewmodel.dart';
-import 'settings/view/settings_view.dart';
+import 'settings/view/settings_page.dart';
 import 'settings/theme/theme.dart';
 import 'settings/theme/util.dart';
-import 'settings/view/theme_settings_view.dart';
+import 'settings/view/theme_settings_page.dart';
 
 /// The Widget that configures your application.
 class MyApp extends ConsumerWidget {
@@ -69,18 +69,18 @@ class MyApp extends ConsumerWidget {
               settings: routeSettings,
               builder: (BuildContext context) {
                 switch (routeSettings.name) {
-                  case SettingsView.routeName:
-                    return SettingsView(settingsViewModel: settingsViewModel);
-                  case NotionSettingsView.routeName:
-                    return const NotionSettingsView();
-                  case ThemeSettingsView.routeName:
-                    return ThemeSettingsView(settingsViewModel);
-                  case LanguageSettingsView.routeName:
-                    return const LanguageSettingsView();
+                  case SettingsPage.routeName:
+                    return SettingsPage(settingsViewModel: settingsViewModel);
+                  case NotionSettingsPage.routeName:
+                    return const NotionSettingsPage();
+                  case ThemeSettingsPage.routeName:
+                    return const ThemeSettingsPage();
+                  case LanguageSettingsPage.routeName:
+                    return const LanguageSettingsPage();
                   case TaskDatabaseSettingPage.routeName:
                     return const TaskDatabaseSettingPage();
-                  case AppearanceSettingsView.routeName:
-                    return const AppearanceSettingsView();
+                  case AppearanceSettingsPage.routeName:
+                    return const AppearanceSettingsPage();
                   case NotificationSettingsPage.routeName:
                     return const NotificationSettingsPage();
                   case TaskMainPage.routeName:

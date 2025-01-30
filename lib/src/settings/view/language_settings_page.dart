@@ -4,10 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../settings_viewmodel.dart';
 
-class LanguageSettingsView extends ConsumerWidget {
+class LanguageSettingsPage extends ConsumerWidget {
   static const routeName = '/settings/language';
 
-  const LanguageSettingsView({super.key});
+  const LanguageSettingsPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
