@@ -7,7 +7,9 @@ import 'helpers/date.dart';
 import 'common/app_version/view/app_version_notifier.dart';
 import 'settings/task_database/view/task_database_setting_page.dart';
 import 'notion/tasks/view/task_main_page.dart';
+import 'settings/view/appearance_settings_view.dart';
 import 'settings/view/language_settings_view.dart';
+import 'settings/view/notification_settings_page.dart';
 import 'settings/view/notion_settings_view.dart';
 import 'settings/settings_viewmodel.dart';
 import 'settings/view/settings_view.dart';
@@ -77,6 +79,10 @@ class MyApp extends ConsumerWidget {
                     return const LanguageSettingsView();
                   case TaskDatabaseSettingPage.routeName:
                     return const TaskDatabaseSettingPage();
+                  case AppearanceSettingsView.routeName:
+                    return const AppearanceSettingsView();
+                  case NotificationSettingsPage.routeName:
+                    return const NotificationSettingsPage();
                   case TaskMainPage.routeName:
                     return const TaskMainPage();
                   default:

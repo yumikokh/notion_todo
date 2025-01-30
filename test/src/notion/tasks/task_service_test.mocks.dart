@@ -83,6 +83,26 @@ class MockNotionTaskRepository extends _i1.Mock
       );
 
   @override
+  _i5.Future<bool> loadShowCompleted() => (super.noSuchMethod(
+        Invocation.method(
+          #loadShowCompleted,
+          [],
+        ),
+        returnValue: _i5.Future<bool>.value(false),
+        returnValueForMissingStub: _i5.Future<bool>.value(false),
+      ) as _i5.Future<bool>);
+
+  @override
+  _i5.Future<void> saveShowCompleted(bool? value) => (super.noSuchMethod(
+        Invocation.method(
+          #saveShowCompleted,
+          [value],
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
+
+  @override
   _i5.Future<dynamic> fetchPages(
     _i3.FilterType? filterType,
     bool? hasCompleted, {

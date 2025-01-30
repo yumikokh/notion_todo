@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../common/error.dart';
 import '../../helpers/date.dart';
@@ -19,6 +20,7 @@ class NotionTaskRepository {
   final TaskDatabase database;
   late final Map<String, String> headers;
 
+  static const _showCompletedKey = 'showCompleted';
   static final DateHelper d = DateHelper();
   static const _pageSize = 100; // NOTE: NotionAPIの最大許容サイズ
 
@@ -28,6 +30,16 @@ class NotionTaskRepository {
       'Notion-Version': '2022-06-28',
       'Authorization': 'Bearer $accessToken'
     };
+  }
+
+  Future<bool> loadShowCompleted() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_showCompletedKey) ?? false;
+  }
+
+  Future<void> saveShowCompleted(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_showCompletedKey, value);
   }
 
   Future fetchPages(FilterType filterType, bool hasCompleted,

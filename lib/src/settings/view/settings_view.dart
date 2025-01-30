@@ -7,6 +7,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../task_database/task_database_viewmodel.dart';
 import 'language_settings_view.dart';
+import 'notification_settings_page.dart';
 import 'notion_settings_view.dart';
 import '../settings_viewmodel.dart';
 import '../../common/analytics/analytics_service.dart';
@@ -76,12 +77,17 @@ class SettingsView extends ConsumerWidget {
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {
                     analytics.logScreenView(screenName: 'AppearanceSettings');
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const AppearanceSettingsView(),
-                      ),
-                    );
+                    Navigator.of(context)
+                        .pushNamed(AppearanceSettingsView.routeName);
+                  },
+                ),
+                ListTile(
+                  title: Text(l.notifications),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () {
+                    analytics.logScreenView(screenName: 'NotificationSettings');
+                    Navigator.of(context)
+                        .pushNamed(NotificationSettingsPage.routeName);
                   },
                 ),
                 ListTile(

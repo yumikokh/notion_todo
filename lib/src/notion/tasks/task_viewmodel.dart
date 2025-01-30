@@ -46,6 +46,8 @@ class TaskViewModel extends _$TaskViewModel {
       return [];
     }
 
+    _showCompleted = await _taskService!.loadShowCompleted();
+
     _filterType = filterType;
     // MEMO: ユースケースを鑑みて読み込みは固定にする
     // もしpageSize以上のタスクがあったとき、「showCompleted」と「Load more」の不整合がおきるがいったん無視
@@ -54,6 +56,13 @@ class TaskViewModel extends _$TaskViewModel {
     final statusProperty =
         ref.watch(taskDatabaseViewModelProvider).valueOrNull?.status;
     final tasks = await _fetchTasks(isFirstFetch: true);
+
+    // バッジ更新
+    if (filterType == FilterType.today) {
+      final showBadge =
+          ref.watch(settingsViewModelProvider).showNotificationBadge;
+      _updateBadge(tasks, showBadge);
+    }
 
     if (statusProperty is StatusCompleteStatusProperty) {
       final inProgressOption = statusProperty.inProgressOption;
@@ -68,6 +77,9 @@ class TaskViewModel extends _$TaskViewModel {
 
   Future<void> toggleShowCompleted() async {
     _showCompleted = !_showCompleted;
+    if (_taskService != null) {
+      await _taskService!.saveShowCompleted(_showCompleted);
+    }
     try {
       final analytics = ref.read(analyticsServiceProvider);
       await analytics.logCompletedTasksToggle(
@@ -140,10 +152,6 @@ class TaskViewModel extends _$TaskViewModel {
           startCursor: cursor);
       _hasMore = result.hasMore;
       _nextCursor = result.nextCursor;
-      // バッジ更新
-      if (filterType == FilterType.today) {
-        _updateBadge(result.tasks);
-      }
       return result.tasks;
     } catch (e) {
       if (e is TaskException && e.statusCode == 404) {
@@ -598,7 +606,11 @@ class TaskViewModel extends _$TaskViewModel {
     );
   }
 
-  Future<void> _updateBadge(List<Task> tasks) async {
+  Future<void> _updateBadge(List<Task> tasks, bool showBadge) async {
+    if (!showBadge) {
+      FlutterAppBadger.removeBadge();
+      return;
+    }
     final notCompletedCount = tasks.where((task) => !task.isCompleted).length;
     await FlutterAppBadger.updateBadgeCount(notCompletedCount);
   }
