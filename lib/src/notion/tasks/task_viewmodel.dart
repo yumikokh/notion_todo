@@ -69,7 +69,11 @@ class TaskViewModel extends _$TaskViewModel {
       if (inProgressOption == null) {
         return tasks;
       }
-      return tasks..sort((a, b) => a.isInProgress(inProgressOption) ? -1 : 1);
+      // task.inProgressを先頭にする
+      return [
+        ...tasks.where((task) => task.isInProgress(inProgressOption)),
+        ...tasks.where((task) => !task.isInProgress(inProgressOption)),
+      ];
     }
 
     return tasks;
