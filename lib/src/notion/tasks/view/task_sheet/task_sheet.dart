@@ -6,14 +6,16 @@ import 'date_chip.dart';
 import 'task_date_sheet.dart';
 
 class TaskSheet extends HookWidget {
-  final DateTime? initialDueDate;
+  final DateTime? startDateTime;
+  final DateTime? endDateTime;
   final String? initialTitle;
   final Function(String title, DateTime? dueDate) onSubmitted;
   final Function()? onDeleted;
 
   const TaskSheet({
     Key? key,
-    required this.initialDueDate,
+    required this.startDateTime,
+    required this.endDateTime,
     required this.initialTitle,
     required this.onSubmitted,
     this.onDeleted,
@@ -22,7 +24,7 @@ class TaskSheet extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final titleController = useTextEditingController(text: initialTitle);
-    final selectedDueDate = useState<DateTime?>(initialDueDate);
+    final selectedDueDate = useState<DateTime?>(startDateTime);
     final isValidTitle = useState<bool>(initialTitle?.isNotEmpty ?? false);
     final l = AppLocalizations.of(context)!;
 
@@ -77,7 +79,8 @@ class TaskSheet extends HookWidget {
                       ),
                       context: context,
                       builder: (context) => TaskDateSheet(
-                        selectedDate: selectedDueDate.value,
+                        startDateTime: startDateTime,
+                        endDateTime: endDateTime,
                         onSelected: (DateTime? date) {
                           changeDueDate(date);
                         },

@@ -100,7 +100,8 @@ class TaskBaseScaffold extends StatelessWidget {
                     ),
                     context: context,
                     builder: (context) => TaskSheet(
-                      initialDueDate: isToday ? DateTime.now() : null,
+                      startDateTime: isToday ? DateTime.now() : null,
+                      endDateTime: null,
                       initialTitle: null,
                       onSubmitted: (title, dueDate) {
                         onAddTask(title, dueDate);

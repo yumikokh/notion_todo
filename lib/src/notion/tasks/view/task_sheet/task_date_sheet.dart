@@ -6,14 +6,16 @@ import '../../../../helpers/date.dart';
 import '../../const/date.dart';
 
 class TaskDateSheet extends HookWidget {
-  final DateTime? selectedDate;
+  final DateTime? startDateTime;
+  final DateTime? endDateTime;
   final Function(DateTime?) onSelected;
 
   static final DateHelper d = DateHelper();
 
   const TaskDateSheet({
     super.key,
-    required this.selectedDate,
+    required this.startDateTime,
+    required this.endDateTime,
     required this.onSelected,
   });
 
@@ -22,7 +24,7 @@ class TaskDateSheet extends HookWidget {
     final now = DateTime.now();
     final options = dateStyleConfigs(context);
     final selected = useState<String?>(
-      selectedDate != null ? d.formatDate(selectedDate!) : null,
+      startDateTime != null ? d.formatDate(startDateTime!) : null,
     );
 
     final l = Localizations.localeOf(context);
@@ -60,14 +62,16 @@ class TaskDateSheet extends HookWidget {
                 ),
                 TableCalendar(
                   locale: localeCode,
-                  firstDay: selectedDate == null
+                  firstDay: startDateTime == null
                       ? now
-                      : selectedDate!.isBefore(now)
-                          ? selectedDate!
+                      : startDateTime!.isBefore(now)
+                          ? startDateTime!
                           : now,
                   lastDay: now.add(const Duration(days: 365)),
-                  focusedDay: selectedDate ?? now,
-                  currentDay: selectedDate,
+                  focusedDay: startDateTime ?? now,
+                  currentDay: startDateTime,
+                  rangeStartDay: startDateTime,
+                  rangeEndDay: endDateTime,
                   calendarFormat: CalendarFormat.twoWeeks,
                   calendarStyle: CalendarStyle(
                     todayDecoration: BoxDecoration(

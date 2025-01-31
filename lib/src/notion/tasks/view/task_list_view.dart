@@ -50,9 +50,12 @@ class TaskListView extends HookConsumerWidget {
             context: context,
             builder: (context) {
               return TaskDateSheet(
-                selectedDate: task.dueDate?.start == null
+                startDateTime: task.dueDate?.start == null
                     ? null
                     : DateTime.parse(task.dueDate!.start).toLocal(),
+                endDateTime: task.dueDate?.end == null
+                    ? null
+                    : DateTime.parse(task.dueDate!.end!).toLocal(),
                 onSelected: (DateTime? date) async {
                   final newTask = task.copyWith(
                       dueDate: date == null

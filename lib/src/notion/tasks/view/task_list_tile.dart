@@ -49,9 +49,12 @@ class TaskListTile extends HookConsumerWidget {
           context: context,
           builder: (context) {
             return TaskSheet(
-              initialDueDate: task.dueDate?.start == null
+              startDateTime: task.dueDate?.start == null
                   ? null
                   : DateTime.parse(task.dueDate!.start).toLocal(),
+              endDateTime: task.dueDate?.end == null
+                  ? null
+                  : DateTime.parse(task.dueDate!.end!).toLocal(),
               initialTitle: task.title,
               onSubmitted: (title, dueDate) {
                 final due = dueDate == null
