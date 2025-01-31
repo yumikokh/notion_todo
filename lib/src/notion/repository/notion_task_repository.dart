@@ -82,7 +82,9 @@ class NotionTaskRepository {
               },
               ...getNotCompleteStatusFilter(statusProperty)
             ]
-          }
+          },
+          // 進行中のタスク
+          ...getInProgressStatusFilter(db)
         ]
       };
     } else if (filterType == FilterType.all && !hasCompleted) {
@@ -308,6 +310,26 @@ List<dynamic> getNotCompleteStatusFilter(CompleteStatusProperty property) {
           "checkbox": {"equals": false}
         }
       ];
+  }
+}
+
+List<dynamic> getInProgressStatusFilter(TaskDatabase database) {
+  switch (database.status) {
+    case StatusCompleteStatusProperty(
+        name: var name,
+        inProgressOption: var inProgressOption
+      ):
+      if (inProgressOption == null) {
+        return [];
+      }
+      return [
+        {
+          "property": name,
+          "status": {"equals": inProgressOption.name}
+        }
+      ];
+    case CheckboxCompleteStatusProperty():
+      return [];
   }
 }
 

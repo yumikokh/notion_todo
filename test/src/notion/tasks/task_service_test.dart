@@ -133,6 +133,89 @@ void main() {
       expect(result.hasMore, false);
       expect(result.nextCursor, null);
     });
+
+    test('今日のタスクと進行中のタスクを取得できる', () async {
+      final mockResponseWithInProgress = {
+        'results': [
+          {
+            'id': 'task1',
+            'properties': {
+              'Title': {
+                'type': 'title',
+                'title': [
+                  {'plain_text': 'Today Task'}
+                ]
+              },
+              'Status': {
+                'status': {
+                  'id': 'todo_option',
+                  'name': 'To-do',
+                  'color': 'gray',
+                }
+              },
+              'Date': {
+                'date': {'start': DateTime.now().toIso8601String(), 'end': null}
+              }
+            },
+            'url': 'https://notion.so/task1'
+          },
+          {
+            'id': 'task2',
+            'properties': {
+              'Title': {
+                'type': 'title',
+                'title': [
+                  {'plain_text': 'In Progress Task'}
+                ]
+              },
+              'Status': {
+                'status': {
+                  'id': 'in_progress_option',
+                  'name': 'In Progress',
+                  'color': 'blue',
+                }
+              },
+              'Date': {
+                'date': {'start': '2024-04-01', 'end': null}
+              }
+            },
+            'url': 'https://notion.so/task2'
+          }
+        ],
+        'has_more': false,
+        'next_cursor': null
+      };
+
+      when(mockRepository.fetchPages(FilterType.today, false,
+              startCursor: anyNamed('startCursor')))
+          .thenAnswer((_) async => mockResponseWithInProgress);
+
+      final result = await service.fetchTasks(FilterType.today, false);
+
+      expect(result.tasks.length, 2);
+
+      // 今日のタスク
+      expect(result.tasks[0].id, 'task1');
+      expect(result.tasks[0].title, 'Today Task');
+      expect(
+        result.tasks[0].status,
+        isA<TaskStatusStatus>()
+            .having((s) => s.option?.name, 'option.name', 'To-do'),
+      );
+
+      // 進行中のタスク
+      expect(result.tasks[1].id, 'task2');
+      expect(result.tasks[1].title, 'In Progress Task');
+      expect(
+        result.tasks[1].status,
+        isA<TaskStatusStatus>()
+            .having((s) => s.option?.name, 'option.name', 'In Progress'),
+      );
+      expect(result.tasks[1].dueDate?.start, '2024-04-01');
+
+      expect(result.hasMore, false);
+      expect(result.nextCursor, null);
+    });
   });
 
   group('addTask', () {

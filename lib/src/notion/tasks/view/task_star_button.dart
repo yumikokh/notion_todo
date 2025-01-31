@@ -36,6 +36,12 @@ class TaskStarButton extends HookConsumerWidget {
     final stared = useState(
         inProgressOption != null && task.isInProgress(inProgressOption));
 
+    useEffect(() {
+      stared.value =
+          inProgressOption != null && task.isInProgress(inProgressOption);
+      return null;
+    }, [inProgressOption, task]);
+
     return Container(
       width: 40,
       height: 40,
