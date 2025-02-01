@@ -40,6 +40,12 @@ class NotionOAuthService {
     final isFirstLaunch = await _notionOAuthRepository.isFirstLaunch();
     final currentToken = await _notionOAuthRepository.loadAccessToken();
 
+    // TODO: しばらく経ったら消す
+    // 既存のトークンがある場合は、新しいオプションで書き換える
+    if (currentToken != null) {
+      await _notionOAuthRepository.saveAccessToken(currentToken);
+    }
+
     // 初回起動時かつトークンが存在する場合のみ削除
     // これにより、正常なアプリの初回起動時にはトークンを削除せず
     // アプリの再インストール時のみトークンを削除する
