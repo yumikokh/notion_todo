@@ -23,7 +23,7 @@ Future<NotionOAuthService> notionOAuthService(Ref ref) async {
     secureStorage,
     prefs,
   );
-  final analytics = ref.read(analyticsServiceProvider);
+  final analytics = ref.watch(analyticsServiceProvider);
   return NotionOAuthService(repository, analytics);
 }
 

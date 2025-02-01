@@ -1,32 +1,37 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../common/analytics/analytics_service.dart';
 import 'notion_oauth_service.dart';
 
 part 'notion_oauth_viewmodel.g.dart';
+part 'notion_oauth_viewmodel.freezed.dart';
 
-class NotionOAuth {
-  final String? accessToken;
+@freezed
+class NotionOAuth with _$NotionOAuth {
+  NotionOAuth._();
 
-  NotionOAuth({
-    required this.accessToken,
-  });
+  const factory NotionOAuth({
+    required String? accessToken,
+  }) = _NotionOAuth;
+
+  factory NotionOAuth.initialState() => const NotionOAuth(accessToken: null);
 
   bool get isAuthenticated => accessToken != null;
-
-  NotionOAuth.initialState() : accessToken = null;
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 class NotionOAuthViewModel extends _$NotionOAuthViewModel {
   late final NotionOAuthService _notionOAuthService;
 
   @override
   Future<NotionOAuth> build() async {
-    if (state.valueOrNull?.accessToken != null) {
-      return NotionOAuth(accessToken: state.valueOrNull?.accessToken);
+    final currentState = state.valueOrNull;
+    if (currentState != null && currentState.accessToken != null) {
+      return currentState;
     }
-    _notionOAuthService = await ref.read(notionOAuthServiceProvider.future);
+
+    _notionOAuthService = await ref.watch(notionOAuthServiceProvider.future);
     final accessToken = await _notionOAuthService.initialize();
     return NotionOAuth(accessToken: accessToken);
   }
