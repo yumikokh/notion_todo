@@ -12,7 +12,9 @@ part 'notion_oauth_service.g.dart';
 @riverpod
 Future<NotionOAuthService> notionOAuthService(Ref ref) async {
   final prefs = await SharedPreferences.getInstance();
-  const secureStorage = FlutterSecureStorage();
+  const secureStorage = FlutterSecureStorage(
+    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+  );
   final repository = NotionOAuthRepository(
     Env.notionAuthUrl,
     Env.oAuthClientId,
