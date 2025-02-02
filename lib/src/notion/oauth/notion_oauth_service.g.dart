@@ -7,13 +7,13 @@ part of 'notion_oauth_service.dart';
 // **************************************************************************
 
 String _$notionOAuthServiceHash() =>
-    r'e619860d7689dba2672939e611bb42ca1dc4c489';
+    r'ef044a8d8885662f22bb604d38413d6e166ee185';
 
-/// See also [notionOAuthService].
-@ProviderFor(notionOAuthService)
+/// See also [NotionOAuthService].
+@ProviderFor(NotionOAuthService)
 final notionOAuthServiceProvider =
-    AutoDisposeFutureProvider<NotionOAuthService>.internal(
-  notionOAuthService,
+    AsyncNotifierProvider<NotionOAuthService, String?>.internal(
+  NotionOAuthService.new,
   name: r'notionOAuthServiceProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
@@ -22,9 +22,6 @@ final notionOAuthServiceProvider =
   allTransitiveDependencies: null,
 );
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef NotionOAuthServiceRef
-    = AutoDisposeFutureProviderRef<NotionOAuthService>;
+typedef _$NotionOAuthService = AsyncNotifier<String?>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
