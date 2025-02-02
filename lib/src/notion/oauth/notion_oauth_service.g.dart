@@ -7,7 +7,7 @@ part of 'notion_oauth_service.dart';
 // **************************************************************************
 
 String _$notionOAuthServiceHash() =>
-    r'519c35a87a9b256021e8c96779cce4a18ee6b5a8';
+    r'ef044a8d8885662f22bb604d38413d6e166ee185';
 
 /// See also [NotionOAuthService].
 @ProviderFor(NotionOAuthService)
