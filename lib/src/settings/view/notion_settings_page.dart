@@ -14,7 +14,7 @@ class NotionSettingsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ref) {
-    final notionOAuth = ref.read(notionOAuthViewModelProvider.notifier);
+    final notionOAuth = ref.watch(notionOAuthViewModelProvider.notifier);
     final isAuthenticated =
         ref.watch(notionOAuthViewModelProvider).valueOrNull?.isAuthenticated ??
             false;
