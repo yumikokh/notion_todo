@@ -1,4 +1,3 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -9,34 +8,30 @@ import '../repository/notion_oauth_repository.dart';
 
 part 'notion_oauth_service.g.dart';
 
-@riverpod
-Future<NotionOAuthService> notionOAuthService(Ref ref) async {
-  final prefs = await SharedPreferences.getInstance();
-  const secureStorage = FlutterSecureStorage(
-    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
-  );
-  final repository = NotionOAuthRepository(
-    Env.notionAuthUrl,
-    Env.oAuthClientId,
-    Env.oAuthClientSecret,
-    Env.redirectUri,
-    secureStorage,
-    prefs,
-  );
-  final analytics = ref.watch(analyticsServiceProvider);
-  return NotionOAuthService(repository, analytics);
-}
+@Riverpod(keepAlive: true)
+class NotionOAuthService extends _$NotionOAuthService {
+  late final NotionOAuthRepository _notionOAuthRepository;
+  late final AnalyticsService _analyticsService =
+      ref.watch(analyticsServiceProvider);
 
-class NotionOAuthService {
-  final NotionOAuthRepository _notionOAuthRepository;
-  final AnalyticsService _analyticsService;
+  @override
+  Future<String?> build() async {
+    final prefs = await SharedPreferences.getInstance();
+    const secureStorage = FlutterSecureStorage(
+      iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+    );
+    _notionOAuthRepository = NotionOAuthRepository(
+      Env.notionAuthUrl,
+      Env.oAuthClientId,
+      Env.oAuthClientSecret,
+      Env.redirectUri,
+      secureStorage,
+      prefs,
+    );
+    return await _initialize();
+  }
 
-  NotionOAuthService(
-    this._notionOAuthRepository,
-    this._analyticsService,
-  );
-
-  Future<String?> initialize() async {
+  Future<String?> _initialize() async {
     final isFirstLaunch = await _notionOAuthRepository.isFirstLaunch();
     final currentToken = await _notionOAuthRepository.loadAccessToken();
 

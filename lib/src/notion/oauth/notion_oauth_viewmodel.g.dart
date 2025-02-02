@@ -7,7 +7,7 @@ part of 'notion_oauth_viewmodel.dart';
 // **************************************************************************
 
 String _$notionOAuthViewModelHash() =>
-    r'441d18bf17cbc2b78b1708134ae38944f1df17be';
+    r'3864d33393f0bfc38885480d3ac3ac3d4be6a8dd';
 
 /// See also [NotionOAuthViewModel].
 @ProviderFor(NotionOAuthViewModel)

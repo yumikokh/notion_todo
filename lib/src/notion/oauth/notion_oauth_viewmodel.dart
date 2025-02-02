@@ -2,6 +2,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../common/analytics/analytics_service.dart';
+
 import 'notion_oauth_service.dart';
 
 part 'notion_oauth_viewmodel.g.dart';
@@ -9,21 +10,20 @@ part 'notion_oauth_viewmodel.freezed.dart';
 
 @freezed
 class NotionOAuth with _$NotionOAuth {
-  NotionOAuth._();
-
   const factory NotionOAuth({
     required String? accessToken,
   }) = _NotionOAuth;
+
+  const NotionOAuth._();
 
   factory NotionOAuth.initialState() => const NotionOAuth(accessToken: null);
 
   bool get isAuthenticated => accessToken != null;
 }
 
+// バックグラウンドモードでも保持されるようにする
 @Riverpod(keepAlive: true)
 class NotionOAuthViewModel extends _$NotionOAuthViewModel {
-  late final NotionOAuthService _notionOAuthService;
-
   @override
   Future<NotionOAuth> build() async {
     final currentState = state.valueOrNull;
@@ -31,13 +31,14 @@ class NotionOAuthViewModel extends _$NotionOAuthViewModel {
       return currentState;
     }
 
-    _notionOAuthService = await ref.watch(notionOAuthServiceProvider.future);
-    final accessToken = await _notionOAuthService.initialize();
+    final accessToken = await ref.watch(notionOAuthServiceProvider.future);
+
     return NotionOAuth(accessToken: accessToken);
   }
 
   Future<void> authenticate() async {
-    final accessToken = await _notionOAuthService.authenticate();
+    final notionOAuthService = ref.read(notionOAuthServiceProvider.notifier);
+    final accessToken = await notionOAuthService.authenticate();
     if (accessToken == null) return;
 
     state = AsyncValue.data(NotionOAuth(accessToken: accessToken));
@@ -54,7 +55,8 @@ class NotionOAuthViewModel extends _$NotionOAuthViewModel {
   }
 
   Future<void> deauthenticate() async {
-    await _notionOAuthService.deleteAccessToken();
+    final notionOAuthService = ref.read(notionOAuthServiceProvider.notifier);
+    await notionOAuthService.deleteAccessToken();
     state = AsyncValue.data(NotionOAuth.initialState());
 
     try {
