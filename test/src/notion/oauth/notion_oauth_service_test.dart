@@ -1,6 +1,8 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tanzaku_todo/src/notion/oauth/notion_oauth_service.dart';
 import 'package:tanzaku_todo/src/notion/repository/notion_oauth_repository.dart';
 import 'package:tanzaku_todo/src/common/analytics/analytics_service.dart';
@@ -12,26 +14,68 @@ import 'package:tanzaku_todo/src/common/analytics/analytics_service.dart';
 import 'notion_oauth_service_test.mocks.dart';
 
 void main() {
-  late NotionOAuthService service;
-  late NotionOAuthRepository mockRepository;
-  late AnalyticsService mockAnalyticsService;
+  TestWidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences.setMockInitialValues({});
+
+  late ProviderContainer container;
+  late MockNotionOAuthRepository mockRepository;
+  late MockAnalyticsService mockAnalyticsService;
   const testToken = 'test_token';
 
   setUp(() async {
     mockRepository = MockNotionOAuthRepository();
     mockAnalyticsService = MockAnalyticsService();
-    service = NotionOAuthService(mockRepository, mockAnalyticsService);
+
+    container = ProviderContainer(
+      overrides: [
+        notionOAuthRepositoryProvider.overrideWith(
+          (ref) => Future.value(mockRepository),
+        ),
+        analyticsServiceProvider.overrideWithValue(mockAnalyticsService),
+      ],
+    );
   });
 
-  group('initialize', () {
-    test('初回起動時かつトークンが存在する場合、トークンを削除する', () async {
+  tearDown(() {
+    container.dispose();
+  });
+
+  group('build', () {
+    test('初回起動時かつトークンが存在する場合、トークンを削除しアナリティクスを送信する', () async {
       when(mockRepository.isFirstLaunch()).thenAnswer((_) async => true);
       when(mockRepository.loadAccessToken()).thenAnswer((_) async => testToken);
+      when(mockAnalyticsService.logNotionAuth(
+        action: 'reinstalled',
+      )).thenAnswer((_) async {});
 
-      final result = await service.initialize();
+      final result = await container.read(notionOAuthServiceProvider.future);
 
+      verify(mockRepository.loadAccessToken()).called(1);
+      verify(mockRepository.saveAccessToken(testToken)).called(1);
       verify(mockRepository.deleteAccessToken()).called(1);
       verify(mockRepository.setIsFirstLaunch(false)).called(1);
+      verify(mockAnalyticsService.logNotionAuth(
+        action: 'reinstalled',
+      )).called(1);
+      expect(result, null);
+    });
+
+    test('初回起動時かつトークンが存在する場合でアナリティクスがエラーの場合も、トークンは削除される', () async {
+      when(mockRepository.isFirstLaunch()).thenAnswer((_) async => true);
+      when(mockRepository.loadAccessToken()).thenAnswer((_) async => testToken);
+      when(mockAnalyticsService.logNotionAuth(
+        action: 'reinstalled',
+      )).thenThrow(Exception('Analytics error'));
+
+      final result = await container.read(notionOAuthServiceProvider.future);
+
+      verify(mockRepository.loadAccessToken()).called(1);
+      verify(mockRepository.saveAccessToken(testToken)).called(1);
+      verify(mockRepository.deleteAccessToken()).called(1);
+      verify(mockRepository.setIsFirstLaunch(false)).called(1);
+      verify(mockAnalyticsService.logNotionAuth(
+        action: 'reinstalled',
+      )).called(1);
       expect(result, null);
     });
 
@@ -39,8 +83,9 @@ void main() {
       when(mockRepository.isFirstLaunch()).thenAnswer((_) async => true);
       when(mockRepository.loadAccessToken()).thenAnswer((_) async => null);
 
-      final result = await service.initialize();
+      final result = await container.read(notionOAuthServiceProvider.future);
 
+      verify(mockRepository.loadAccessToken()).called(1);
       verifyNever(mockRepository.deleteAccessToken());
       verify(mockRepository.setIsFirstLaunch(false)).called(1);
       expect(result, null);
@@ -50,20 +95,27 @@ void main() {
       when(mockRepository.isFirstLaunch()).thenAnswer((_) async => false);
       when(mockRepository.loadAccessToken()).thenAnswer((_) async => testToken);
 
-      final result = await service.initialize();
+      final result = await container.read(notionOAuthServiceProvider.future);
 
+      verify(mockRepository.loadAccessToken()).called(1);
+      verify(mockRepository.saveAccessToken(testToken)).called(1);
       verifyNever(mockRepository.setIsFirstLaunch(false));
       verifyNever(mockRepository.deleteAccessToken());
-
       expect(result, testToken);
     });
   });
 
   group('authenticate', () {
+    setUp(() async {
+      // サービスの初期化を待つ
+      await container.read(notionOAuthServiceProvider.future);
+    });
+
     test('認証成功時、アクセストークンを保存する', () async {
       when(mockRepository.fetchAccessToken())
           .thenAnswer((_) async => testToken);
 
+      final service = container.read(notionOAuthServiceProvider.notifier);
       final result = await service.authenticate();
 
       verify(mockRepository.saveAccessToken(testToken)).called(1);
@@ -73,6 +125,7 @@ void main() {
     test('認証失敗時、アクセストークンを保存しない', () async {
       when(mockRepository.fetchAccessToken()).thenAnswer((_) async => null);
 
+      final service = container.read(notionOAuthServiceProvider.notifier);
       final result = await service.authenticate();
 
       verify(mockRepository.fetchAccessToken()).called(1);
@@ -82,7 +135,13 @@ void main() {
   });
 
   group('deleteAccessToken', () {
+    setUp(() async {
+      // サービスの初期化を待つ
+      await container.read(notionOAuthServiceProvider.future);
+    });
+
     test('アクセストークンを削除する', () async {
+      final service = container.read(notionOAuthServiceProvider.notifier);
       await service.deleteAccessToken();
 
       verify(mockRepository.deleteAccessToken()).called(1);

@@ -9,6 +9,7 @@ class SettingsService {
   static const _languageKey = 'language';
   static const _wakelockKey = 'wakelock';
   static const _hideNavigationLabelKey = 'hide_navigation_label';
+  static const _showNotificationBadgeKey = 'show_notification_badge';
 
   /* themeMode */
   Future<ThemeMode> themeMode() async {
@@ -57,6 +58,8 @@ class SettingsService {
     return await PackageInfo.fromPlatform();
   }
 
+  /* hideNavigationLabel */
+
   Future<bool> loadHideNavigationLabel() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_hideNavigationLabelKey) ?? false;
@@ -65,5 +68,22 @@ class SettingsService {
   Future<void> saveHideNavigationLabel(bool value) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_hideNavigationLabelKey, value);
+  }
+
+  /* notificationBadge */
+
+  Future<bool> loadShowNotificationBadge() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_showNotificationBadgeKey) ?? true;
+  }
+
+  Future<void> saveShowNotificationBadge(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_showNotificationBadgeKey, value);
+  }
+
+  Future<void> updateShowNotificationBadge(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_showNotificationBadgeKey, value);
   }
 }

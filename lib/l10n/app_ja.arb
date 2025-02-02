@@ -26,11 +26,13 @@
   "task_database_settings_title": "タスクデータベース設定",
   "database": "データベース",
   "status_property": "ステータスプロパティ",
-  "status_property_todo_option": "To-doオプション",
-  "status_property_complete_option": "Completeオプション",
+  "status_property_todo_option": "未完了オプション",
+  "status_property_in_progress_option": "進行中オプション",
+  "status_property_complete_option": "完了オプション",
   "date_property": "日付プロパティ",
-  "todo_option_description": "未完了時に指定するオプション",
-  "complete_option_description": "完了時に指定するオプション",
+  "todo_option_description": "未完了時として指定するステータス",
+  "in_progress_option_description": "進行中時として指定するステータス",
+  "complete_option_description": "完了時として指定するステータス",
   "status_property_description": "種類: Status, Checkbox",
   "date_property_description": "種類: Date",
   "save": "保存",
@@ -68,6 +70,8 @@
   "task_update_status_success": "「{title}」を完了しました 🎉",
   "task_update_status_undo": "「{title}」を未完了に戻しました",
   "task_update_status_failed": "ステータスの更新に失敗しました",
+  "task_update_status_in_progress": "「{title}」を進行中にしました",
+  "task_update_status_todo": "「{title}」を未完了に戻しました",
   "task_delete_success": "「{title}」を削除しました",
   "task_delete_undo": "「{title}」を復元しました",
   "task_delete_failed": "「{title}」の削除に失敗しました",
@@ -113,5 +117,11 @@
         "type": "String"
       }
     }
-  }
+  },
+  "task_star_button_dialog_title": "進行中オプションが未設定です",
+  "task_star_button_dialog_content": "データベース設定から設定して、今集中すべきタスクを確認してみましょう！",
+  "task_star_button_dialog_cancel": "キャンセル",
+  "task_star_button_dialog_settings": "設定",
+  "notifications": "通知",
+  "showNotificationBadge": "通知バッジを表示"
 }

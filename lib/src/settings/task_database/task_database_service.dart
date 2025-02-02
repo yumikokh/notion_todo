@@ -125,6 +125,7 @@ class TaskDatabaseService {
                 groups: groups,
               ),
               todoOption: null,
+              inProgressOption: null,
               completeOption: null,
             );
           default:

@@ -8,12 +8,12 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../common/analytics/analytics_service.dart';
 import '../../../helpers/date.dart';
 import '../../../settings/settings_viewmodel.dart';
-import '../../../settings/view/notion_settings_view.dart';
+import '../../../settings/view/notion_settings_page.dart';
 import '../../repository/notion_task_repository.dart';
 import '../../../settings/task_database/task_database_viewmodel.dart';
 import '../task_viewmodel.dart';
 import 'task_list_view.dart';
-import 'task_base_page.dart';
+import 'task_base_scaffold.dart';
 import '../../../settings/font/font_settings_viewmodel.dart';
 
 const int updateIntervalSec = 60;
@@ -83,7 +83,7 @@ class TaskMainPage extends HookConsumerWidget {
       return WakelockPlus.disable;
     }, [wakelock]);
 
-    return TaskBasePage(
+    return TaskBaseScaffold(
       key: Key('taskMainPage/${isToday ? 'Today' : 'All'}'),
       currentIndex: currentIndex.value,
       showCompleted: isToday ? todayViewModel.showCompleted : null,
@@ -168,7 +168,7 @@ class TaskMainPage extends HookConsumerWidget {
                     FilledButton(
                       onPressed: () {
                         Navigator.restorablePushNamed(
-                            context, NotionSettingsView.routeName);
+                            context, NotionSettingsPage.routeName);
                       },
                       child: Text(l.go_to_settings),
                     ),

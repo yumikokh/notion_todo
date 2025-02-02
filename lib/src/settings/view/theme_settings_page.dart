@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../settings_viewmodel.dart';
 
-class ThemeSettingsView extends StatelessWidget {
+class ThemeSettingsPage extends ConsumerWidget {
   static const routeName = '/settings/theme';
 
-  final SettingsViewModel settingsViewModel;
-  const ThemeSettingsView(this.settingsViewModel, {super.key});
+  const ThemeSettingsPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
 
     return Scaffold(
@@ -27,24 +27,27 @@ class ThemeSettingsView extends StatelessWidget {
               title: const Text('System'),
               leading: Radio<ThemeMode>(
                 value: ThemeMode.system,
-                groupValue: settingsViewModel.themeMode,
-                onChanged: settingsViewModel.updateThemeMode,
+                groupValue: ref.watch(settingsViewModelProvider).themeMode,
+                onChanged: (value) =>
+                    ref.read(settingsViewModelProvider).updateThemeMode(value),
               ),
             ),
             ListTile(
               title: const Text('Light'),
               leading: Radio<ThemeMode>(
                 value: ThemeMode.light,
-                groupValue: settingsViewModel.themeMode,
-                onChanged: settingsViewModel.updateThemeMode,
+                groupValue: ref.watch(settingsViewModelProvider).themeMode,
+                onChanged: (value) =>
+                    ref.read(settingsViewModelProvider).updateThemeMode(value),
               ),
             ),
             ListTile(
               title: const Text('Dark'),
               leading: Radio<ThemeMode>(
                 value: ThemeMode.dark,
-                groupValue: settingsViewModel.themeMode,
-                onChanged: settingsViewModel.updateThemeMode,
+                groupValue: ref.watch(settingsViewModelProvider).themeMode,
+                onChanged: (value) =>
+                    ref.read(settingsViewModelProvider).updateThemeMode(value),
               ),
             ),
           ],

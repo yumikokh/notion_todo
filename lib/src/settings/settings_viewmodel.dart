@@ -21,6 +21,7 @@ class SettingsViewModel with ChangeNotifier {
     _locale = await _settingsService.locale();
     _wakelock = await _settingsService.wakelock();
     _hideNavigationLabel = await _settingsService.loadHideNavigationLabel();
+    _showNotificationBadge = await _settingsService.loadShowNotificationBadge();
     notifyListeners();
   }
 
@@ -98,6 +99,18 @@ class SettingsViewModel with ChangeNotifier {
       settingName: 'hide_navigation_label',
       value: value ? 'hidden' : 'shown',
     );
+  }
+
+  /// Notification Badge
+  late bool _showNotificationBadge;
+  bool get showNotificationBadge => _showNotificationBadge;
+  Future<void> updateShowNotificationBadge(bool value) async {
+    if (value == _showNotificationBadge) return;
+
+    _showNotificationBadge = value;
+    notifyListeners();
+
+    await _settingsService.updateShowNotificationBadge(value);
   }
 }
 

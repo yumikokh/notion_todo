@@ -104,10 +104,27 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                           const SizedBox(height: 8),
                           _buildDropdown(
                             value: selectedStatus.todoOption?.id,
-                            items:
-                                _buildStatusOptions(selectedDatabase, 'To-do'),
-                            onChanged: (value) => selectedDatabaseViewModel
-                                .selectStatusOption(value, 'To-do'),
+                            items: _buildStatusOptions(selectedDatabaseViewModel
+                                .getStatusOptionsByGroup(StatusGroupType.todo)),
+                            onChanged: (value) =>
+                                selectedDatabaseViewModel.selectStatusOption(
+                                    value, StatusGroupType.todo),
+                            context: context,
+                          ),
+                          const SizedBox(height: 24),
+                          _buildSectionTitle(
+                              context, l.status_property_in_progress_option,
+                              tooltip: l.in_progress_option_description,
+                              isRequired: false),
+                          const SizedBox(height: 8),
+                          _buildDropdown(
+                            value: selectedStatus.inProgressOption?.id,
+                            items: _buildStatusOptions(selectedDatabaseViewModel
+                                .getStatusOptionsByGroup(
+                                    StatusGroupType.inProgress)),
+                            onChanged: (value) =>
+                                selectedDatabaseViewModel.selectStatusOption(
+                                    value, StatusGroupType.inProgress),
                             context: context,
                           ),
                           const SizedBox(height: 24),
@@ -117,10 +134,12 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                           const SizedBox(height: 8),
                           _buildDropdown(
                             value: selectedStatus.completeOption?.id,
-                            items: _buildStatusOptions(
-                                selectedDatabase, 'Complete'),
-                            onChanged: (value) => selectedDatabaseViewModel
-                                .selectStatusOption(value, 'Complete'),
+                            items: _buildStatusOptions(selectedDatabaseViewModel
+                                .getStatusOptionsByGroup(
+                                    StatusGroupType.complete)),
+                            onChanged: (value) =>
+                                selectedDatabaseViewModel.selectStatusOption(
+                                    value, StatusGroupType.complete),
                             context: context,
                           ),
                           const SizedBox(height: 24),
@@ -276,22 +295,12 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
   }
 
   List<DropdownMenuItem<String>> _buildStatusOptions(
-      SelectedDatabaseState db, String groupName) {
-    final property = db.status;
-    if (property is! StatusCompleteStatusProperty) {
-      return [];
-    }
-    return property.status.groups
-            .where((group) => group.name == groupName)
-            .firstOrNull
-            ?.optionIds
-            .map((id) => DropdownMenuItem<String>(
-                  value: id,
-                  child: Text(property.status.options
-                      .firstWhere((option) => option.id == id)
-                      .name),
-                ))
-            .toList() ??
-        [];
+      List<StatusOption> options) {
+    return options
+        .map((option) => DropdownMenuItem<String>(
+              value: option.id,
+              child: Text(option.name),
+            ))
+        .toList();
   }
 }
