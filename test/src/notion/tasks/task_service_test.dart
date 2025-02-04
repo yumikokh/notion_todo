@@ -88,7 +88,6 @@ void main() {
       date: DateProperty(
         id: 'date_id',
         name: 'Date',
-        date: null,
       ),
     );
     service = TaskService(mockRepository, taskDatabase);

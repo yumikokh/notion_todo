@@ -31,8 +31,6 @@ const _$PropertyTypeEnumMap = {
 DateProperty _$DatePropertyFromJson(Map<String, dynamic> json) => DateProperty(
       id: json['id'] as String,
       name: json['name'] as String,
-      date:
-          json['date'] == null ? null : DateTime.parse(json['date'] as String),
     )..type = $enumDecode(_$PropertyTypeEnumMap, json['type']);
 
 Map<String, dynamic> _$DatePropertyToJson(DateProperty instance) =>
@@ -40,7 +38,6 @@ Map<String, dynamic> _$DatePropertyToJson(DateProperty instance) =>
       'id': instance.id,
       'name': instance.name,
       'type': _$PropertyTypeEnumMap[instance.type]!,
-      'date': instance.date?.toIso8601String(),
     };
 
 CheckboxCompleteStatusProperty _$CheckboxCompleteStatusPropertyFromJson(

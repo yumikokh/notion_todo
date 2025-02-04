@@ -63,12 +63,9 @@ class TitleProperty extends Property {
 
 @JsonSerializable()
 class DateProperty extends Property {
-  final DateTime? date;
-
   DateProperty({
     required String id,
     required String name,
-    required this.date,
   }) : super(id: id, name: name, type: PropertyType.date);
 
   factory DateProperty.fromJson(Map<String, dynamic> json) =>
