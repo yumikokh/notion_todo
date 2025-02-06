@@ -14,15 +14,186 @@ T _$identity<T>(T value) => value;
 final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
+NotionDateTime _$NotionDateTimeFromJson(Map<String, dynamic> json) {
+  return _NotionDateTime.fromJson(json);
+}
+
+/// @nodoc
+mixin _$NotionDateTime {
+  DateTime get datetime => throw _privateConstructorUsedError;
+  bool get isAllDay => throw _privateConstructorUsedError;
+
+  /// Serializes this NotionDateTime to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of NotionDateTime
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $NotionDateTimeCopyWith<NotionDateTime> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $NotionDateTimeCopyWith<$Res> {
+  factory $NotionDateTimeCopyWith(
+          NotionDateTime value, $Res Function(NotionDateTime) then) =
+      _$NotionDateTimeCopyWithImpl<$Res, NotionDateTime>;
+  @useResult
+  $Res call({DateTime datetime, bool isAllDay});
+}
+
+/// @nodoc
+class _$NotionDateTimeCopyWithImpl<$Res, $Val extends NotionDateTime>
+    implements $NotionDateTimeCopyWith<$Res> {
+  _$NotionDateTimeCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of NotionDateTime
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? datetime = null,
+    Object? isAllDay = null,
+  }) {
+    return _then(_value.copyWith(
+      datetime: null == datetime
+          ? _value.datetime
+          : datetime // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      isAllDay: null == isAllDay
+          ? _value.isAllDay
+          : isAllDay // ignore: cast_nullable_to_non_nullable
+              as bool,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$NotionDateTimeImplCopyWith<$Res>
+    implements $NotionDateTimeCopyWith<$Res> {
+  factory _$$NotionDateTimeImplCopyWith(_$NotionDateTimeImpl value,
+          $Res Function(_$NotionDateTimeImpl) then) =
+      __$$NotionDateTimeImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({DateTime datetime, bool isAllDay});
+}
+
+/// @nodoc
+class __$$NotionDateTimeImplCopyWithImpl<$Res>
+    extends _$NotionDateTimeCopyWithImpl<$Res, _$NotionDateTimeImpl>
+    implements _$$NotionDateTimeImplCopyWith<$Res> {
+  __$$NotionDateTimeImplCopyWithImpl(
+      _$NotionDateTimeImpl _value, $Res Function(_$NotionDateTimeImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of NotionDateTime
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? datetime = null,
+    Object? isAllDay = null,
+  }) {
+    return _then(_$NotionDateTimeImpl(
+      datetime: null == datetime
+          ? _value.datetime
+          : datetime // ignore: cast_nullable_to_non_nullable
+              as DateTime,
+      isAllDay: null == isAllDay
+          ? _value.isAllDay
+          : isAllDay // ignore: cast_nullable_to_non_nullable
+              as bool,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$NotionDateTimeImpl extends _NotionDateTime {
+  const _$NotionDateTimeImpl({required this.datetime, required this.isAllDay})
+      : super._();
+
+  factory _$NotionDateTimeImpl.fromJson(Map<String, dynamic> json) =>
+      _$$NotionDateTimeImplFromJson(json);
+
+  @override
+  final DateTime datetime;
+  @override
+  final bool isAllDay;
+
+  @override
+  String toString() {
+    return 'NotionDateTime(datetime: $datetime, isAllDay: $isAllDay)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$NotionDateTimeImpl &&
+            (identical(other.datetime, datetime) ||
+                other.datetime == datetime) &&
+            (identical(other.isAllDay, isAllDay) ||
+                other.isAllDay == isAllDay));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, datetime, isAllDay);
+
+  /// Create a copy of NotionDateTime
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$NotionDateTimeImplCopyWith<_$NotionDateTimeImpl> get copyWith =>
+      __$$NotionDateTimeImplCopyWithImpl<_$NotionDateTimeImpl>(
+          this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$NotionDateTimeImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _NotionDateTime extends NotionDateTime {
+  const factory _NotionDateTime(
+      {required final DateTime datetime,
+      required final bool isAllDay}) = _$NotionDateTimeImpl;
+  const _NotionDateTime._() : super._();
+
+  factory _NotionDateTime.fromJson(Map<String, dynamic> json) =
+      _$NotionDateTimeImpl.fromJson;
+
+  @override
+  DateTime get datetime;
+  @override
+  bool get isAllDay;
+
+  /// Create a copy of NotionDateTime
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$NotionDateTimeImplCopyWith<_$NotionDateTimeImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
 TaskDate _$TaskDateFromJson(Map<String, dynamic> json) {
   return _TaskDate.fromJson(json);
 }
 
 /// @nodoc
 mixin _$TaskDate {
-  String get start =>
-      throw _privateConstructorUsedError; // TODO: DateTimeにして、時間指定があるかのフラグを追加する
-  String? get end => throw _privateConstructorUsedError;
+  NotionDateTime get start => throw _privateConstructorUsedError;
+  NotionDateTime? get end => throw _privateConstructorUsedError;
 
   /// Serializes this TaskDate to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -39,7 +210,10 @@ abstract class $TaskDateCopyWith<$Res> {
   factory $TaskDateCopyWith(TaskDate value, $Res Function(TaskDate) then) =
       _$TaskDateCopyWithImpl<$Res, TaskDate>;
   @useResult
-  $Res call({String start, String? end});
+  $Res call({NotionDateTime start, NotionDateTime? end});
+
+  $NotionDateTimeCopyWith<$Res> get start;
+  $NotionDateTimeCopyWith<$Res>? get end;
 }
 
 /// @nodoc
@@ -64,12 +238,36 @@ class _$TaskDateCopyWithImpl<$Res, $Val extends TaskDate>
       start: null == start
           ? _value.start
           : start // ignore: cast_nullable_to_non_nullable
-              as String,
+              as NotionDateTime,
       end: freezed == end
           ? _value.end
           : end // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as NotionDateTime?,
     ) as $Val);
+  }
+
+  /// Create a copy of TaskDate
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $NotionDateTimeCopyWith<$Res> get start {
+    return $NotionDateTimeCopyWith<$Res>(_value.start, (value) {
+      return _then(_value.copyWith(start: value) as $Val);
+    });
+  }
+
+  /// Create a copy of TaskDate
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $NotionDateTimeCopyWith<$Res>? get end {
+    if (_value.end == null) {
+      return null;
+    }
+
+    return $NotionDateTimeCopyWith<$Res>(_value.end!, (value) {
+      return _then(_value.copyWith(end: value) as $Val);
+    });
   }
 }
 
@@ -81,7 +279,12 @@ abstract class _$$TaskDateImplCopyWith<$Res>
       __$$TaskDateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String start, String? end});
+  $Res call({NotionDateTime start, NotionDateTime? end});
+
+  @override
+  $NotionDateTimeCopyWith<$Res> get start;
+  @override
+  $NotionDateTimeCopyWith<$Res>? get end;
 }
 
 /// @nodoc
@@ -104,11 +307,11 @@ class __$$TaskDateImplCopyWithImpl<$Res>
       start: null == start
           ? _value.start
           : start // ignore: cast_nullable_to_non_nullable
-              as String,
+              as NotionDateTime,
       end: freezed == end
           ? _value.end
           : end // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as NotionDateTime?,
     ));
   }
 }
@@ -122,10 +325,9 @@ class _$TaskDateImpl implements _TaskDate {
       _$$TaskDateImplFromJson(json);
 
   @override
-  final String start;
-// TODO: DateTimeにして、時間指定があるかのフラグを追加する
+  final NotionDateTime start;
   @override
-  final String? end;
+  final NotionDateTime? end;
 
   @override
   String toString() {
@@ -162,16 +364,17 @@ class _$TaskDateImpl implements _TaskDate {
 }
 
 abstract class _TaskDate implements TaskDate {
-  const factory _TaskDate({required final String start, final String? end}) =
-      _$TaskDateImpl;
+  const factory _TaskDate(
+      {required final NotionDateTime start,
+      final NotionDateTime? end}) = _$TaskDateImpl;
 
   factory _TaskDate.fromJson(Map<String, dynamic> json) =
       _$TaskDateImpl.fromJson;
 
   @override
-  String get start; // TODO: DateTimeにして、時間指定があるかのフラグを追加する
+  NotionDateTime get start;
   @override
-  String? get end;
+  NotionDateTime? get end;
 
   /// Create a copy of TaskDate
   /// with the given fields replaced by the non-null parameter values.

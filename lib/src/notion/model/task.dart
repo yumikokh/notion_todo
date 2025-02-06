@@ -6,10 +6,32 @@ part 'task.freezed.dart';
 part 'task.g.dart';
 
 @freezed
+class NotionDateTime with _$NotionDateTime {
+  const NotionDateTime._();
+
+  const factory NotionDateTime({
+    required DateTime datetime,
+    required bool isAllDay,
+  }) = _NotionDateTime;
+
+  factory NotionDateTime.fromString(String date) => NotionDateTime(
+        datetime: DateTime.parse(date),
+        isAllDay: !date.contains('T'),
+      );
+
+  String get formattedDate => isAllDay
+      ? datetime.toLocal().toString().split(' ')[0]
+      : datetime.toLocal().toIso8601String();
+
+  factory NotionDateTime.fromJson(Map<String, dynamic> json) =>
+      _$NotionDateTimeFromJson(json);
+}
+
+@freezed
 class TaskDate with _$TaskDate {
   const factory TaskDate({
-    required String start, // TODO: DateTimeにして、時間指定があるかのフラグを追加する
-    String? end,
+    required NotionDateTime start,
+    NotionDateTime? end,
   }) = _TaskDate;
 
   factory TaskDate.fromJson(Map<String, dynamic> json) =>
