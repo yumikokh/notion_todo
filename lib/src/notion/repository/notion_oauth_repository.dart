@@ -1,9 +1,31 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
+
+import '../../env/env.dart';
+
+part 'notion_oauth_repository.g.dart';
+
+@riverpod
+Future<NotionOAuthRepository> notionOAuthRepository(Ref ref) async {
+  const secureStorage = FlutterSecureStorage(
+    iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
+  );
+  final prefs = await SharedPreferences.getInstance();
+  return NotionOAuthRepository(
+    Env.notionAuthUrl,
+    Env.oAuthClientId,
+    Env.oAuthClientSecret,
+    Env.redirectUri,
+    secureStorage,
+    prefs,
+  );
+}
 
 class NotionOAuthRepository {
   final String notionAuthUrl;

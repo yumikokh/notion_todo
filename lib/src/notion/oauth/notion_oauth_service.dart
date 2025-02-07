@@ -1,49 +1,36 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 import '../../common/analytics/analytics_service.dart';
-import '../../env/env.dart';
 import '../repository/notion_oauth_repository.dart';
 
 part 'notion_oauth_service.g.dart';
 
-@riverpod
-Future<NotionOAuthService> notionOAuthService(Ref ref) async {
-  final prefs = await SharedPreferences.getInstance();
-  const secureStorage = FlutterSecureStorage();
-  final repository = NotionOAuthRepository(
-    Env.notionAuthUrl,
-    Env.oAuthClientId,
-    Env.oAuthClientSecret,
-    Env.redirectUri,
-    secureStorage,
-    prefs,
-  );
-  final analytics = ref.read(analyticsServiceProvider);
-  return NotionOAuthService(repository, analytics);
-}
+@Riverpod(keepAlive: true)
+class NotionOAuthService extends _$NotionOAuthService {
+  AnalyticsService get _analyticsService => ref.watch(analyticsServiceProvider);
 
-class NotionOAuthService {
-  final NotionOAuthRepository _notionOAuthRepository;
-  final AnalyticsService _analyticsService;
+  @override
+  Future<String?> build() async {
+    return await _initialize();
+  }
 
-  NotionOAuthService(
-    this._notionOAuthRepository,
-    this._analyticsService,
-  );
+  Future<String?> _initialize() async {
+    final repository = await ref.read(notionOAuthRepositoryProvider.future);
 
-  Future<String?> initialize() async {
-    final isFirstLaunch = await _notionOAuthRepository.isFirstLaunch();
-    final currentToken = await _notionOAuthRepository.loadAccessToken();
+    final isFirstLaunch = await repository.isFirstLaunch();
+    final currentToken = await repository.loadAccessToken();
+
+    // TODO: しばらく経ったら消す
+    // 既存のトークンがある場合は、新しいオプションで書き換える
+    if (currentToken != null) {
+      await repository.saveAccessToken(currentToken);
+    }
 
     // 初回起動時かつトークンが存在する場合のみ削除
     // これにより、正常なアプリの初回起動時にはトークンを削除せず
     // アプリの再インストール時のみトークンを削除する
     if (isFirstLaunch && currentToken != null) {
-      await deleteAccessToken();
-      await _notionOAuthRepository.setIsFirstLaunch(false);
+      await repository.deleteAccessToken();
+      await repository.setIsFirstLaunch(false);
 
       try {
         await _analyticsService.logNotionAuth(
@@ -58,20 +45,23 @@ class NotionOAuthService {
 
     // 初回起動だが、トークンが存在しない場合は、フラグのみ更新
     if (isFirstLaunch) {
-      await _notionOAuthRepository.setIsFirstLaunch(false);
+      await repository.setIsFirstLaunch(false);
     }
 
     return currentToken;
   }
 
   Future<String?> authenticate() async {
-    final code = await _notionOAuthRepository.fetchAccessToken();
+    final repository = await ref.read(notionOAuthRepositoryProvider.future);
+
+    final code = await repository.fetchAccessToken();
     if (code == null) return null;
-    await _notionOAuthRepository.saveAccessToken(code);
+    await repository.saveAccessToken(code);
     return code;
   }
 
   Future<void> deleteAccessToken() async {
-    await _notionOAuthRepository.deleteAccessToken();
+    final repository = await ref.read(notionOAuthRepositoryProvider.future);
+    await repository.deleteAccessToken();
   }
 }
