@@ -18,10 +18,7 @@ class TaskDateSheet extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = TaskDateViewModel(
-      initialDateTime: selectedDate,
-    );
-
+    final viewModel = TaskDateViewModel(initialDateTime: selectedDate);
     final options = dateStyleConfigs(context);
     final l = Localizations.localeOf(context);
     final localeCode = "${l.languageCode}_${l.countryCode}";
@@ -36,9 +33,27 @@ class TaskDateSheet extends HookWidget {
           child: Wrap(
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 30, 20, 60),
+                padding: const EdgeInsets.fromLTRB(20, 10, 20, 60),
                 child: Column(
                   children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text('キャンセル'),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            onSelected(viewModel.selectedDateTime);
+                            Navigator.pop(context);
+                          },
+                          child: const Text('完了',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                        ),
+                      ],
+                    ),
+                    // const SizedBox(height: 16),
                     SegmentedButton(
                       expandedInsets: const EdgeInsets.symmetric(horizontal: 0),
                       emptySelectionAllowed: true,
