@@ -189,7 +189,6 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
             date: DateProperty(
               id: p.id,
               name: p.name,
-              date: p.date,
             ),
           );
         default:

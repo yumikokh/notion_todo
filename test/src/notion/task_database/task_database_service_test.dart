@@ -37,7 +37,6 @@ void main() {
         date: DateProperty(
           id: 'date-id',
           name: 'Date',
-          date: null,
         ),
       );
 
@@ -78,7 +77,6 @@ void main() {
         date: DateProperty(
           id: 'date-id',
           name: 'Date',
-          date: null,
         ),
       );
 

@@ -119,7 +119,7 @@ class NotionTaskRepository {
     };
   }
 
-  Future addTask(String title, String? dueDate) async {
+  Future addTask(String title, String? startDate, String? endDate) async {
     final db = database;
     final status = db.status;
     final statusReady = switch (status) {
@@ -142,9 +142,9 @@ class NotionTaskRepository {
         ]
       },
       db.status.name: statusReady,
-      if (dueDate != null)
+      if (startDate != null)
         db.date.name: {
-          "date": {"start": dueDate}
+          "date": {"start": startDate, if (endDate != null) "end": endDate}
         }
     };
 
@@ -163,7 +163,8 @@ class NotionTaskRepository {
     return data;
   }
 
-  Future updateTask(String taskId, String title, String? dueDate) async {
+  Future updateTask(
+      String taskId, String title, String? startDate, String? endDate) async {
     final db = database;
     if (db.id.isEmpty) {
       return;
@@ -180,9 +181,10 @@ class NotionTaskRepository {
       },
       db.date.name: {
         "id": db.date.id,
-        "date": dueDate != null
+        "date": startDate != null
             ? {
-                "start": dueDate,
+                "start": startDate,
+                if (endDate != null) "end": endDate,
                 // timezoneは時間指定しないとエラーになる see: https://developers.notion.com/changelog/time-zone-support
                 // REVIEW: 時間指定がないときのtimezoneがあっているか？
                 // if (dueDate.contains('T')) "time_zone": "Asia/Tokyo",

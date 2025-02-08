@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../../model/task.dart';
 import 'date_chip.dart';
 import 'task_date_sheet.dart';
 
 class TaskSheet extends HookWidget {
-  final DateTime? initialDueDate;
+  final TaskDate? initialDueDate;
   final String? initialTitle;
-  final Function(String title, DateTime? dueDate) onSubmitted;
+  final Function(String title, TaskDate? dueDate) onSubmitted;
   final Function()? onDeleted;
 
   const TaskSheet({
@@ -22,7 +23,7 @@ class TaskSheet extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final titleController = useTextEditingController(text: initialTitle);
-    final selectedDueDate = useState<DateTime?>(initialDueDate);
+    final selectedDueDate = useState<TaskDate?>(initialDueDate);
     final isValidTitle = useState<bool>(initialTitle?.isNotEmpty ?? false);
     final l = AppLocalizations.of(context)!;
 
@@ -36,7 +37,11 @@ class TaskSheet extends HookWidget {
     }, [titleController]);
 
     final changeDueDate = useCallback(
-      (DateTime? newDueDate) {
+      (TaskDate? newDueDate) {
+        if (newDueDate == null) {
+          selectedDueDate.value = null;
+          return;
+        }
         selectedDueDate.value = newDueDate;
       },
       [selectedDueDate],
@@ -78,7 +83,7 @@ class TaskSheet extends HookWidget {
                       context: context,
                       builder: (context) => TaskDateSheet(
                         selectedDate: selectedDueDate.value,
-                        onSelected: (DateTime? date) {
+                        onSelected: (TaskDate? date) {
                           changeDueDate(date);
                         },
                       ),

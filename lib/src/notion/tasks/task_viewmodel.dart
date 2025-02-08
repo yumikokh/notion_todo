@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -204,7 +203,7 @@ class TaskViewModel extends _$TaskViewModel {
     }
   }
 
-  Future<void> addTask(String title, DateTime? dueDate) async {
+  Future<void> addTask(String title, TaskDate? dueDate) async {
     final locale = ref.read(settingsViewModelProvider).locale;
     final l = await AppLocalizations.delegate.load(locale);
     await _addOperation(() async {
@@ -221,15 +220,13 @@ class TaskViewModel extends _$TaskViewModel {
           id: tempId,
           title: title,
           status: const TaskStatus.checkbox(checked: false),
-          dueDate:
-              dueDate != null ? TaskDate(start: d.dateString(dueDate)) : null,
+          dueDate: dueDate,
           url: null);
 
       state = AsyncValue.data([...state.valueOrNull ?? [], tempTask]);
 
       try {
-        final t =
-            await taskService.addTask(tempTask.title, tempTask.dueDate?.start);
+        final t = await taskService.addTask(tempTask.title, tempTask.dueDate);
 
         // 最新のstateを使用して更新
         state = AsyncValue.data([
@@ -277,27 +274,12 @@ class TaskViewModel extends _$TaskViewModel {
         return;
       }
 
-      String? updatedDueDate;
-      final inputDueDateStart = task.dueDate?.start;
-      final prevDueDateStart = prevTask.dueDate?.start;
+      // TODO: endの反映
+      TaskDate? updatedDueDate;
+      final inputDueDateStart = task.dueDate;
       // 入力された日付がある場合のみ
       if (inputDueDateStart != null) {
         updatedDueDate = inputDueDateStart;
-        // もともとのタスクに日付がある場合
-        if (prevDueDateStart != null) {
-          final inputDateTime = DateTime.parse(inputDueDateStart);
-          final prevDateTime = DateTime.parse(prevDueDateStart);
-
-          // 日付が変更されている場合は時間情報を削除
-          if (!d.isThisDay(prevDateTime, inputDateTime)) {
-            updatedDueDate = d.dateString(inputDateTime);
-          } else {
-            updatedDueDate = inputDueDateStart;
-          }
-        } else {
-          // もともとのタスクに日付がなかった場合
-          updatedDueDate = inputDueDateStart;
-        }
       }
 
       final snackbar = ref.read(snackbarProvider.notifier);
@@ -563,51 +545,6 @@ class TaskViewModel extends _$TaskViewModel {
             type: SnackbarType.error);
       }
     });
-  }
-
-  ({Color color, IconData icon, double size, List<String> dateStrings})?
-      getDisplayDate(Task task, BuildContext context) {
-    final defaultColor = Theme.of(context).colorScheme.secondary;
-    const icon = Icons.event_rounded;
-    const size = 13.0;
-    final dueDate = task.dueDate;
-
-    if (dueDate == null) {
-      return null;
-    }
-    final dueDateEnd = dueDate.end;
-
-    Color determineColor(TaskDate dueDate) {
-      final now = DateTime.now();
-      final dueDateEnd = dueDate.end;
-      if (dueDateEnd == null &&
-          d.isToday(DateTime.parse(dueDate.start)) &&
-          !d.hasTime(dueDate.start)) {
-        return Theme.of(context).colorScheme.tertiary; // 今日だったら青
-      }
-
-      if ((dueDateEnd != null && DateTime.parse(dueDateEnd).isBefore(now)) ||
-          (dueDateEnd == null && DateTime.parse(dueDate.start).isBefore(now))) {
-        return Theme.of(context).colorScheme.error; // 過ぎてたら赤
-      }
-
-      return defaultColor; // それ以外は灰色
-    }
-
-    final c = determineColor(dueDate);
-
-    List<String> dateStrings = [
-      d.formatDateTime(dueDate.start, showToday: _filterType == FilterType.all),
-      if (dueDateEnd != null)
-        d.formatDateTime(dueDateEnd, showToday: _filterType == FilterType.all),
-    ].whereType<String>().toList();
-
-    return (
-      color: c,
-      icon: icon,
-      size: size,
-      dateStrings: dateStrings,
-    );
   }
 
   Future<void> _updateBadge(List<Task> tasks, bool showBadge) async {

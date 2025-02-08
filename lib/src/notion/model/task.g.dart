@@ -6,10 +6,25 @@ part of 'task.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+_$NotionDateTimeImpl _$$NotionDateTimeImplFromJson(Map<String, dynamic> json) =>
+    _$NotionDateTimeImpl(
+      datetime: DateTime.parse(json['datetime'] as String),
+      isAllDay: json['isAllDay'] as bool,
+    );
+
+Map<String, dynamic> _$$NotionDateTimeImplToJson(
+        _$NotionDateTimeImpl instance) =>
+    <String, dynamic>{
+      'datetime': instance.datetime.toIso8601String(),
+      'isAllDay': instance.isAllDay,
+    };
+
 _$TaskDateImpl _$$TaskDateImplFromJson(Map<String, dynamic> json) =>
     _$TaskDateImpl(
-      start: json['start'] as String,
-      end: json['end'] as String?,
+      start: NotionDateTime.fromJson(json['start'] as Map<String, dynamic>),
+      end: json['end'] == null
+          ? null
+          : NotionDateTime.fromJson(json['end'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$$TaskDateImplToJson(_$TaskDateImpl instance) =>

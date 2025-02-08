@@ -73,8 +73,12 @@ class TaskService {
     }
   }
 
-  Future<Task> addTask(String title, String? dueDate) async {
-    final data = await notionTaskRepository.addTask(title, dueDate);
+  Future<Task> addTask(String title, TaskDate? dueDate) async {
+    final data = await notionTaskRepository.addTask(
+      title,
+      dueDate?.start.datetime.toIso8601String(),
+      dueDate?.end?.datetime.toIso8601String(),
+    );
     if (data == null || data.isEmpty) {
       throw Exception('Failed to add task');
     }
@@ -87,8 +91,14 @@ class TaskService {
     );
   }
 
-  Future<Task> updateTask(String taskId, String title, String? dueDate) async {
-    final data = await notionTaskRepository.updateTask(taskId, title, dueDate);
+  Future<Task> updateTask(
+      String taskId, String title, TaskDate? dueDate) async {
+    final data = await notionTaskRepository.updateTask(
+      taskId,
+      title,
+      dueDate?.start.submitFormat,
+      dueDate?.end?.submitFormat,
+    );
     if (data == null || data['id'] == null) {
       throw Exception('Failed to update task');
     }
@@ -179,8 +189,8 @@ class TaskService {
       return null;
     }
     return TaskDate(
-      start: date['start'],
-      end: date['end'],
+      start: NotionDateTime.fromString(date['start']),
+      end: date['end'] != null ? NotionDateTime.fromString(date['end']) : null,
     );
   }
 

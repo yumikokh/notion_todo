@@ -88,7 +88,6 @@ void main() {
       date: DateProperty(
         id: 'date_id',
         name: 'Date',
-        date: null,
       ),
     );
     service = TaskService(mockRepository, taskDatabase);
@@ -129,7 +128,7 @@ void main() {
       expect(result.tasks[0].id, 'task1');
       expect(result.tasks[0].title, 'Test Task');
       expect(result.tasks[0].isCompleted, false);
-      expect(result.tasks[0].dueDate?.start, '2024-03-20');
+      expect(result.tasks[0].dueDate?.start.submitFormat, '2024-03-20');
       expect(result.hasMore, false);
       expect(result.nextCursor, null);
     });
@@ -211,7 +210,7 @@ void main() {
         isA<TaskStatusStatus>()
             .having((s) => s.option?.name, 'option.name', 'In Progress'),
       );
-      expect(result.tasks[1].dueDate?.start, '2024-04-01');
+      expect(result.tasks[1].dueDate?.start.submitFormat, '2024-04-01');
 
       expect(result.hasMore, false);
       expect(result.nextCursor, null);
@@ -237,15 +236,22 @@ void main() {
     };
 
     test('タスクを追加できる', () async {
-      when(mockRepository.addTask(any, any))
+      when(mockRepository.addTask(any, any, any))
           .thenAnswer((_) async => mockResponse);
 
-      final result = await service.addTask('New Task', '2024-03-20');
+      final result = await service.addTask(
+          'New Task',
+          TaskDate(
+            start: NotionDateTime(
+              datetime: DateTime.parse('2024-03-20'),
+              isAllDay: true,
+            ),
+          ));
 
       expect(result.id, 'new_task');
       expect(result.title, 'New Task');
       expect(result.isCompleted, false);
-      expect(result.dueDate?.start, '2024-03-20');
+      expect(result.dueDate?.start.submitFormat, '2024-03-20');
     });
   });
 
@@ -268,16 +274,23 @@ void main() {
     };
 
     test('タスクを更新できる', () async {
-      when(mockRepository.updateTask(any, any, any))
+      when(mockRepository.updateTask(any, any, any, any))
           .thenAnswer((_) async => mockResponse);
 
-      final result =
-          await service.updateTask('task1', 'Updated Task', '2024-03-21');
-
+      final result = await service.updateTask(
+        'task1',
+        'Updated Task',
+        TaskDate(
+          start: NotionDateTime(
+            datetime: DateTime.parse('2024-03-21'),
+            isAllDay: true,
+          ),
+        ),
+      );
       expect(result.id, 'task1');
       expect(result.title, 'Updated Task');
       expect(result.isCompleted, false);
-      expect(result.dueDate?.start, '2024-03-21');
+      expect(result.dueDate?.start.submitFormat, '2024-03-21');
     });
   });
 
@@ -314,7 +327,7 @@ void main() {
       expect(result.id, 'task1');
       expect(result.title, 'Test Task');
       expect(result.isCompleted, true);
-      expect(result.dueDate?.start, '2024-03-20');
+      expect(result.dueDate?.start.submitFormat, '2024-03-20');
     });
   });
 
@@ -345,7 +358,7 @@ void main() {
       expect(result?.id, 'task1');
       expect(result?.title, 'Test Task');
       expect(result?.isCompleted, false);
-      expect(result?.dueDate?.start, '2024-03-20');
+      expect(result?.dueDate?.start.submitFormat, '2024-03-20');
     });
   });
 

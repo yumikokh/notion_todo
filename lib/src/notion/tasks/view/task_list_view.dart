@@ -48,20 +48,14 @@ class TaskListView extends HookConsumerWidget {
               borderRadius: BorderRadius.circular(12),
             ),
             context: context,
-            builder: (context) {
-              return TaskDateSheet(
-                selectedDate: task.dueDate?.start == null
-                    ? null
-                    : DateTime.parse(task.dueDate!.start).toLocal(),
-                onSelected: (DateTime? date) async {
-                  final newTask = task.copyWith(
-                      dueDate: date == null
-                          ? null
-                          : TaskDate(start: d.dateString(date)));
-                  await taskViewModel.updateTask(newTask);
-                },
-              );
-            },
+            builder: (context) => TaskDateSheet(
+              selectedDate: task.dueDate,
+              onSelected: (TaskDate? date) async {
+                final newTask = task.copyWith(dueDate: date);
+                print(newTask);
+                await taskViewModel.updateTask(newTask);
+              },
+            ),
           );
           return false;
         }

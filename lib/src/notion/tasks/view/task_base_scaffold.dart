@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../settings/view/settings_page.dart';
+import '../../model/task.dart';
 import 'task_sheet/task_sheet.dart';
 
 class TaskBaseScaffold extends StatelessWidget {
@@ -11,7 +12,7 @@ class TaskBaseScaffold extends StatelessWidget {
   final bool hideNavigationLabel;
   final void Function(int) onIndexChanged;
   final void Function(bool) onShowCompletedChanged;
-  final void Function(String, DateTime?) onAddTask;
+  final void Function(String, TaskDate?) onAddTask;
 
   const TaskBaseScaffold({
     Key? key,
@@ -100,7 +101,14 @@ class TaskBaseScaffold extends StatelessWidget {
                     ),
                     context: context,
                     builder: (context) => TaskSheet(
-                      initialDueDate: isToday ? DateTime.now() : null,
+                      initialDueDate: isToday
+                          ? TaskDate(
+                              start: NotionDateTime(
+                                datetime: DateTime.now(),
+                                isAllDay: true,
+                              ),
+                            )
+                          : null,
                       initialTitle: null,
                       onSubmitted: (title, dueDate) {
                         onAddTask(title, dueDate);
