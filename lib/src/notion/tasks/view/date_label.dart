@@ -8,6 +8,7 @@ class DateLabel extends StatelessWidget {
   final TaskDate? date;
   final bool showToday;
   final bool showColor;
+  final bool showIcon;
 
   static final DateHelper d = DateHelper();
 
@@ -16,7 +17,8 @@ class DateLabel extends StatelessWidget {
       required this.date,
       required this.showToday,
       required this.context,
-      required this.showColor});
+      required this.showColor,
+      required this.showIcon});
 
   Color? get color {
     if (!showColor) return null;
@@ -59,30 +61,26 @@ class DateLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (dateStrings.isEmpty) return const SizedBox.shrink();
-    return Padding(
-      padding: const EdgeInsets.only(top: 2),
-      child: Row(
-        children: [
-          Icon(Icons.event_rounded, size: size, color: color),
-          const SizedBox(width: 4),
-          dateStrings.length == 1
-              ? Text(
-                  dateStrings[0],
-                  style: TextStyle(fontSize: size, color: color),
-                )
-              : Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(dateStrings[0],
-                        style: TextStyle(fontSize: size, color: color)),
-                    Icon(Icons.arrow_right_alt_rounded,
-                        size: size, color: color),
-                    Text(dateStrings[1],
-                        style: TextStyle(fontSize: size, color: color)),
-                  ],
-                ),
-        ],
-      ),
+    return Row(
+      children: [
+        if (showIcon) Icon(Icons.event_rounded, size: size, color: color),
+        if (showIcon) const SizedBox(width: 4),
+        dateStrings.length == 1
+            ? Text(
+                dateStrings[0],
+                style: TextStyle(fontSize: size, color: color),
+              )
+            : Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(dateStrings[0],
+                      style: TextStyle(fontSize: size, color: color)),
+                  Icon(Icons.arrow_right_alt_rounded, size: size, color: color),
+                  Text(dateStrings[1],
+                      style: TextStyle(fontSize: size, color: color)),
+                ],
+              ),
+      ],
     );
   }
 }

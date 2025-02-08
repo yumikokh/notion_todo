@@ -73,7 +73,7 @@ class TaskSheet extends HookWidget {
               const SizedBox(height: 16),
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 DateChip(
-                  date: selectedDueDate.value?.start.datetime,
+                  date: selectedDueDate.value,
                   context: context,
                   onSelected: (selected) {
                     showModalBottomSheet(

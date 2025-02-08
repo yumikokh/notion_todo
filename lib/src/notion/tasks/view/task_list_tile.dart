@@ -97,11 +97,16 @@ class TaskListTile extends HookConsumerWidget {
           )),
       subtitle: task.dueDate == null
           ? null
-          : DateLabel(
-              date: task.dueDate,
-              showToday: taskViewModel.filterType != FilterType.today,
-              context: context,
-              showColor: true),
+          : Padding(
+              padding: const EdgeInsets.only(top: 2),
+              child: DateLabel(
+                date: task.dueDate,
+                showToday: taskViewModel.filterType != FilterType.today,
+                context: context,
+                showColor: true,
+                showIcon: true,
+              ),
+            ),
     );
   }
 }
