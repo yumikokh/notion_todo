@@ -14,14 +14,18 @@ class NotionDateTime with _$NotionDateTime {
     required bool isAllDay,
   }) = _NotionDateTime;
 
-  factory NotionDateTime.fromString(String date) => NotionDateTime(
-        datetime: DateTime.parse(date),
-        isAllDay: !date.contains('T'),
-      );
+  factory NotionDateTime.fromString(String date) {
+    final dt = DateTime.parse(date);
+    final isAllDay = !date.contains('T');
+    return NotionDateTime(
+      datetime: isAllDay ? dt.toLocal() : dt.toUtc(),
+      isAllDay: isAllDay,
+    );
+  }
 
-  String get formattedDate => isAllDay
-      ? datetime.toLocal().toString().split(' ')[0]
-      : datetime.toLocal().toIso8601String();
+  String get submitFormat => isAllDay
+      ? datetime.toLocal().toIso8601String().split('T')[0]
+      : datetime.toUtc().toIso8601String();
 
   factory NotionDateTime.fromJson(Map<String, dynamic> json) =>
       _$NotionDateTimeFromJson(json);

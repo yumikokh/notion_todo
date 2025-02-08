@@ -1,53 +1,62 @@
 import 'package:flutter/foundation.dart';
 
-import '../../helpers/date.dart';
+import '../model/task.dart';
 
 class TaskDateViewModel extends ChangeNotifier {
-  final DateTime? initialStartDateTime;
-  final DateTime? initialEndDateTime;
-  final Function(DateTime?) onSelected;
-  final DateHelper _dateHelper;
+  final TaskDate? initialDateTime;
 
   TaskDateViewModel({
-    required this.initialStartDateTime,
-    required this.initialEndDateTime,
-    required this.onSelected,
-  })  : _dateHelper = DateHelper(),
-        _focusedDay = initialStartDateTime ?? DateTime.now() {
-    _selectedStartDate = initialStartDateTime;
-    _selectedEndDate = initialEndDateTime;
+    required this.initialDateTime,
+  }) : _focusedDay = initialDateTime?.start.datetime ?? DateTime.now() {
+    _selectedDateTime = initialDateTime;
   }
 
-  DateTime? _selectedStartDate;
-  DateTime? get selectedStartDate => _selectedStartDate;
-
-  DateTime? _selectedEndDate;
-  DateTime? get selectedEndDate => _selectedEndDate;
+  TaskDate? _selectedDateTime;
+  TaskDate? get selectedDateTime => _selectedDateTime;
+  DateTime? get selectedStartDateTime =>
+      _selectedDateTime?.start.datetime.toLocal();
+  DateTime? get selectedEndDateTime =>
+      _selectedDateTime?.end?.datetime.toLocal();
 
   DateTime _focusedDay;
   DateTime get focusedDay => _focusedDay;
 
-  void handleSelectionChanged(Set<Object?> selectedSet) {
-    print('selectedSet: $selectedSet');
-    // _selectedStartDate = selectedSet.first;
-    // _selectedEndDate = null;
-    // onSelected(
-    //     selectedSet.first != null ? DateTime.parse(selectedSet.first!) : null);
+  void handleSegmentChanged(Set<Object?> selectedSet) {
+    TaskDate? date;
+    print(selectedSet);
+    final first = selectedSet.first;
+    if (first == null) {
+      date = null;
+    }
+    if (first is String) {
+      date = TaskDate(
+        start: NotionDateTime.fromString(first),
+        end: null,
+      );
+    }
+    _selectedDateTime = date;
+    _focusedDay = date?.start.datetime ?? DateTime.now();
     notifyListeners();
   }
 
-  void handleDaySelected(DateTime date, DateTime focusedDate) {
+  void handleCalendarSelected(DateTime date, DateTime focusedDate) {
+    _selectedDateTime = TaskDate(
+      start: NotionDateTime(
+        datetime: date,
+        isAllDay: true,
+      ),
+      end: null,
+    );
     _focusedDay = focusedDate;
-    onSelected(date);
     notifyListeners();
   }
 
   DateTime getFirstDay() {
     final now = DateTime.now();
-    return initialStartDateTime == null
+    return initialDateTime == null
         ? now
-        : initialStartDateTime!.isBefore(now)
-            ? initialStartDateTime!
+        : initialDateTime!.start.datetime.isBefore(now)
+            ? initialDateTime!.start.datetime
             : now;
   }
 }

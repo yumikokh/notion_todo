@@ -204,7 +204,7 @@ class TaskViewModel extends _$TaskViewModel {
     }
   }
 
-  Future<void> addTask(String title, DateTime? dueDate) async {
+  Future<void> addTask(String title, TaskDate? dueDate) async {
     final locale = ref.read(settingsViewModelProvider).locale;
     final l = await AppLocalizations.delegate.load(locale);
     await _addOperation(() async {
@@ -221,15 +221,13 @@ class TaskViewModel extends _$TaskViewModel {
           id: tempId,
           title: title,
           status: const TaskStatus.checkbox(checked: false),
-          dueDate:
-              dueDate != null ? TaskDate(start: d.dateString(dueDate)) : null,
+          dueDate: dueDate,
           url: null);
 
       state = AsyncValue.data([...state.valueOrNull ?? [], tempTask]);
 
       try {
-        final t =
-            await taskService.addTask(tempTask.title, tempTask.dueDate?.start);
+        final t = await taskService.addTask(tempTask.title, tempTask.dueDate);
 
         // 最新のstateを使用して更新
         state = AsyncValue.data([
@@ -277,27 +275,12 @@ class TaskViewModel extends _$TaskViewModel {
         return;
       }
 
-      String? updatedDueDate;
-      final inputDueDateStart = task.dueDate?.start;
-      final prevDueDateStart = prevTask.dueDate?.start;
+      // TODO: endの反映
+      TaskDate? updatedDueDate;
+      final inputDueDateStart = task.dueDate;
       // 入力された日付がある場合のみ
       if (inputDueDateStart != null) {
         updatedDueDate = inputDueDateStart;
-        // もともとのタスクに日付がある場合
-        if (prevDueDateStart != null) {
-          final inputDateTime = DateTime.parse(inputDueDateStart);
-          final prevDateTime = DateTime.parse(prevDueDateStart);
-
-          // 日付が変更されている場合は時間情報を削除
-          if (!d.isThisDay(prevDateTime, inputDateTime)) {
-            updatedDueDate = d.dateString(inputDateTime);
-          } else {
-            updatedDueDate = inputDueDateStart;
-          }
-        } else {
-          // もともとのタスクに日付がなかった場合
-          updatedDueDate = inputDueDateStart;
-        }
       }
 
       final snackbar = ref.read(snackbarProvider.notifier);
@@ -575,19 +558,23 @@ class TaskViewModel extends _$TaskViewModel {
     if (dueDate == null) {
       return null;
     }
+    final dueDateStart = dueDate.start;
     final dueDateEnd = dueDate.end;
 
     Color determineColor(TaskDate dueDate) {
       final now = DateTime.now();
       final dueDateEnd = dueDate.end;
+
+      // 終日かつ今日
       if (dueDateEnd == null &&
-          d.isToday(DateTime.parse(dueDate.start)) &&
-          !d.hasTime(dueDate.start)) {
+          d.isToday(dueDate.start.datetime) &&
+          dueDate.start.isAllDay) {
         return Theme.of(context).colorScheme.tertiary; // 今日だったら青
       }
 
-      if ((dueDateEnd != null && DateTime.parse(dueDateEnd).isBefore(now)) ||
-          (dueDateEnd == null && DateTime.parse(dueDate.start).isBefore(now))) {
+      // 時間があり、すぎている
+      if ((dueDateEnd != null && dueDateEnd.datetime.isBefore(now)) ||
+          (dueDateEnd == null && dueDate.start.datetime.isBefore(now))) {
         return Theme.of(context).colorScheme.error; // 過ぎてたら赤
       }
 
@@ -597,7 +584,7 @@ class TaskViewModel extends _$TaskViewModel {
     final c = determineColor(dueDate);
 
     List<String> dateStrings = [
-      d.formatDateTime(dueDate.start, showToday: _filterType == FilterType.all),
+      d.formatDateTime(dueDateStart, showToday: _filterType == FilterType.all),
       if (dueDateEnd != null)
         d.formatDateTime(dueDateEnd, showToday: _filterType == FilterType.all),
     ].whereType<String>().toList();

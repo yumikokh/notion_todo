@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../../helpers/date.dart';
+import '../../../model/task.dart';
 import '../../const/date.dart';
 
 class DateChip extends StatelessWidget {
@@ -25,14 +26,15 @@ class DateChip extends StatelessWidget {
     final dt = date;
     if (dt == null) return null;
     final configs = dateStyleConfigs(context);
-    return configs.where((c) => d.isThisDay(c.date, dt)).firstOrNull;
+    return configs.where((c) => d.isThisDay(c.date?.datetime, dt)).firstOrNull;
   }
 
   String? get label {
     final dt = date;
     if (dt == null) return null;
-    final formatted =
-        d.formatDateTime(dt.toLocal().toString(), showToday: true);
+    final formatted = d.formatDateTime(
+        NotionDateTime(datetime: dt, isAllDay: true),
+        showToday: true);
     return formatted;
   }
 

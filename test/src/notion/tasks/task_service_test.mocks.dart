@@ -124,14 +124,16 @@ class MockNotionTaskRepository extends _i1.Mock
   @override
   _i5.Future<dynamic> addTask(
     String? title,
-    String? dueDate,
+    String? startDate,
+    String? endDate,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
           #addTask,
           [
             title,
-            dueDate,
+            startDate,
+            endDate,
           ],
         ),
         returnValue: _i5.Future<dynamic>.value(),
@@ -142,7 +144,8 @@ class MockNotionTaskRepository extends _i1.Mock
   _i5.Future<dynamic> updateTask(
     String? taskId,
     String? title,
-    String? dueDate,
+    String? startDate,
+    String? endDate,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -150,7 +153,8 @@ class MockNotionTaskRepository extends _i1.Mock
           [
             taskId,
             title,
-            dueDate,
+            startDate,
+            endDate,
           ],
         ),
         returnValue: _i5.Future<dynamic>.value(),

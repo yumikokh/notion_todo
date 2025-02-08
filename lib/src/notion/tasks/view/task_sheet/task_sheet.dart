@@ -2,20 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../../model/task.dart';
 import 'date_chip.dart';
 import 'task_date_sheet.dart';
 
 class TaskSheet extends HookWidget {
-  final DateTime? startDateTime;
-  final DateTime? endDateTime;
+  final TaskDate? initialDueDate;
   final String? initialTitle;
-  final Function(String title, DateTime? dueDate) onSubmitted;
+  final Function(String title, TaskDate? dueDate) onSubmitted;
   final Function()? onDeleted;
 
   const TaskSheet({
     Key? key,
-    required this.startDateTime,
-    required this.endDateTime,
+    required this.initialDueDate,
     required this.initialTitle,
     required this.onSubmitted,
     this.onDeleted,
@@ -24,7 +23,7 @@ class TaskSheet extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final titleController = useTextEditingController(text: initialTitle);
-    final selectedDueDate = useState<DateTime?>(startDateTime);
+    final selectedDueDate = useState<TaskDate?>(initialDueDate);
     final isValidTitle = useState<bool>(initialTitle?.isNotEmpty ?? false);
     final l = AppLocalizations.of(context)!;
 
@@ -38,7 +37,11 @@ class TaskSheet extends HookWidget {
     }, [titleController]);
 
     final changeDueDate = useCallback(
-      (DateTime? newDueDate) {
+      (TaskDate? newDueDate) {
+        if (newDueDate == null) {
+          selectedDueDate.value = null;
+          return;
+        }
         selectedDueDate.value = newDueDate;
       },
       [selectedDueDate],
@@ -70,7 +73,7 @@ class TaskSheet extends HookWidget {
               const SizedBox(height: 16),
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 DateChip(
-                  date: selectedDueDate.value,
+                  date: selectedDueDate.value?.start.datetime,
                   context: context,
                   onSelected: (selected) {
                     showModalBottomSheet(
@@ -79,9 +82,8 @@ class TaskSheet extends HookWidget {
                       ),
                       context: context,
                       builder: (context) => TaskDateSheet(
-                        startDateTime: startDateTime,
-                        endDateTime: endDateTime,
-                        onSelected: (DateTime? date) {
+                        selectedDate: selectedDueDate.value,
+                        onSelected: (TaskDate? date) {
                           changeDueDate(date);
                         },
                       ),
