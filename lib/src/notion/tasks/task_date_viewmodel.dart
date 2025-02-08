@@ -23,7 +23,6 @@ class TaskDateViewModel extends ChangeNotifier {
 
   void handleSegmentChanged(Set<Object?> selectedSet) {
     TaskDate? date;
-    print(selectedSet);
     final first = selectedSet.first;
     if (first == null) {
       date = null;

@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -546,55 +545,6 @@ class TaskViewModel extends _$TaskViewModel {
             type: SnackbarType.error);
       }
     });
-  }
-
-  ({Color color, IconData icon, double size, List<String> dateStrings})?
-      getDisplayDate(Task task, BuildContext context) {
-    final defaultColor = Theme.of(context).colorScheme.secondary;
-    const icon = Icons.event_rounded;
-    const size = 13.0;
-    final dueDate = task.dueDate;
-
-    if (dueDate == null) {
-      return null;
-    }
-    final dueDateStart = dueDate.start;
-    final dueDateEnd = dueDate.end;
-
-    Color determineColor(TaskDate dueDate) {
-      final now = DateTime.now();
-      final dueDateEnd = dueDate.end;
-
-      // 終日かつ今日
-      if (dueDateEnd == null &&
-          d.isToday(dueDate.start.datetime) &&
-          dueDate.start.isAllDay) {
-        return Theme.of(context).colorScheme.tertiary; // 今日だったら青
-      }
-
-      // 時間があり、すぎている
-      if ((dueDateEnd != null && dueDateEnd.datetime.isBefore(now)) ||
-          (dueDateEnd == null && dueDate.start.datetime.isBefore(now))) {
-        return Theme.of(context).colorScheme.error; // 過ぎてたら赤
-      }
-
-      return defaultColor; // それ以外は灰色
-    }
-
-    final c = determineColor(dueDate);
-
-    List<String> dateStrings = [
-      d.formatDateTime(dueDateStart, showToday: _filterType == FilterType.all),
-      if (dueDateEnd != null)
-        d.formatDateTime(dueDateEnd, showToday: _filterType == FilterType.all),
-    ].whereType<String>().toList();
-
-    return (
-      color: c,
-      icon: icon,
-      size: size,
-      dateStrings: dateStrings,
-    );
   }
 
   Future<void> _updateBadge(List<Task> tasks, bool showBadge) async {
