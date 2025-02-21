@@ -161,7 +161,33 @@ class TaskDateViewModel extends ChangeNotifier {
   }
 
   void clearTime() {
-    _selectedDateTime = null;
+    final selectedDateTime = _selectedDateTime;
+    if (selectedDateTime == null) return;
+
+    final start = selectedDateTime.start.datetime.toLocal();
+    final end = selectedDateTime.end?.datetime.toLocal();
+
+    _selectedDateTime = selectedDateTime.copyWith(
+      start: selectedDateTime.start.copyWith(
+        datetime: DateTime(
+          start.year,
+          start.month,
+          start.day,
+        ),
+        isAllDay: true,
+      ),
+      end: end != null
+          ? selectedDateTime.end?.copyWith(
+              datetime: DateTime(
+                end.year,
+                end.month,
+                end.day,
+              ),
+              isAllDay: true,
+            )
+          : null,
+    );
+
     notifyListeners();
   }
 }

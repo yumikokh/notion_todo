@@ -112,6 +112,9 @@ class TaskDateSheet extends HookWidget {
                           ),
                         );
                       },
+                      onClearTime: () {
+                        viewModel.clearTime();
+                      },
                     ),
                   ],
                 ),

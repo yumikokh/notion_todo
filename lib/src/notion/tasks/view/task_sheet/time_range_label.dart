@@ -4,13 +4,15 @@ import '../../../model/task.dart';
 
 class TimeRangeLabel extends StatelessWidget {
   final TaskDate? date;
-  final VoidCallback? onTap;
+  final VoidCallback onTap;
+  final VoidCallback onClearTime;
   static final DateHelper d = DateHelper();
 
   const TimeRangeLabel({
     super.key,
     required this.date,
-    this.onTap,
+    required this.onTap,
+    required this.onClearTime,
   });
 
   List<String> get timeRangeText {
@@ -37,6 +39,11 @@ class TimeRangeLabel extends StatelessWidget {
     return [startText, endText];
   }
 
+  bool get showClearTimeButton {
+    if (date?.start.isAllDay == true) return false;
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -49,8 +56,13 @@ class TimeRangeLabel extends StatelessWidget {
         ),
         child: Row(
           children: [
-            const Icon(Icons.access_time_rounded, size: 20),
+            Icon(
+              Icons.access_time_rounded,
+              size: 20,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
             const SizedBox(width: 12),
+            if (showClearTimeButton) const Spacer(),
             timeRangeText.length == 1
                 ? Text(timeRangeText[0])
                 : Row(
@@ -61,6 +73,19 @@ class TimeRangeLabel extends StatelessWidget {
                       Text(timeRangeText[1]),
                     ],
                   ),
+            if (showClearTimeButton) ...[
+              const SizedBox(width: 12),
+              SizedBox(
+                width: 18,
+                height: 18,
+                child: IconButton.filledTonal(
+                  onPressed: onClearTime,
+                  icon: const Icon(Icons.close_rounded),
+                  iconSize: 12,
+                  padding: EdgeInsets.zero,
+                ),
+              ),
+            ],
           ],
         ),
       ),
