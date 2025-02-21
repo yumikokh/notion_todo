@@ -62,27 +62,16 @@ class TaskDateViewModel extends ChangeNotifier {
 
     // 既存の時間を保持したまま日付のみ更新
     final start = selectedDateTime.start.copyWith(
-      datetime: DateTime(
-        date.year,
-        date.month,
-        date.day,
+      datetime: selectedDateTime.start.datetime.copyWith(
+        year: date.year,
+        month: date.month,
+        day: date.day,
       ),
     );
 
-    // 終了時間が設定されている場合は、同じ日付に更新
-    final end = selectedDateTime.end?.isAllDay == true
-        ? null
-        : selectedDateTime.end?.copyWith(
-            datetime: DateTime(
-              date.year,
-              date.month,
-              date.day,
-            ),
-          );
-
+    // 終了日は削除
     _selectedDateTime = TaskDate(
       start: start,
-      end: end,
     );
     _focusedDay = focusedDate;
 
