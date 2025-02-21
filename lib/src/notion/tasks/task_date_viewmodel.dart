@@ -61,18 +61,19 @@ class TaskDateViewModel extends ChangeNotifier {
     if (selectedDateTime == null) return;
 
     // 既存の時間を保持したまま日付のみ更新
+    final localDate = selectedDateTime.start.datetime.toLocal();
     final start = selectedDateTime.start.copyWith(
-      datetime: selectedDateTime.start.datetime.copyWith(
-        year: date.year,
-        month: date.month,
-        day: date.day,
+      datetime: DateTime(
+        date.year,
+        date.month,
+        date.day,
+        localDate.hour,
+        localDate.minute,
       ),
     );
 
     // 終了日は削除
-    _selectedDateTime = TaskDate(
-      start: start,
-    );
+    _selectedDateTime = TaskDate(start: start);
     _focusedDay = focusedDate;
 
     notifyListeners();
