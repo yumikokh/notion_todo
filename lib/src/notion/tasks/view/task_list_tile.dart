@@ -23,6 +23,15 @@ class TaskListTile extends HookConsumerWidget {
   final TaskViewModel taskViewModel;
   static final DateHelper d = DateHelper();
 
+  bool get showDueDate {
+    final dueDate = task.dueDate;
+    if (dueDate == null) return false;
+    if (dueDate.end != null) return true;
+    if (taskViewModel.filterType != FilterType.today) return true;
+    if (d.isToday(dueDate.start.datetime)) return false;
+    return true;
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final checked = useState(task.isCompleted);
@@ -95,9 +104,8 @@ class TaskListTile extends HookConsumerWidget {
             decorationColor: Theme.of(context).colorScheme.outline,
             fontSize: 15,
           )),
-      subtitle: task.dueDate == null
-          ? null
-          : Padding(
+      subtitle: showDueDate
+          ? Padding(
               padding: const EdgeInsets.only(top: 2),
               child: DateLabel(
                 date: task.dueDate,
@@ -106,7 +114,8 @@ class TaskListTile extends HookConsumerWidget {
                 showColor: true,
                 showIcon: true,
               ),
-            ),
+            )
+          : null,
     );
   }
 }
