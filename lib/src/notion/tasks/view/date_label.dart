@@ -50,7 +50,8 @@ class DateLabel extends StatelessWidget {
     final dueDateStart = dueDate.start;
     final dueDateEnd = dueDate.end;
     return [
-      d.formatDateTime(dueDateStart, showToday: showToday),
+      d.formatDateTime(dueDateStart,
+          showToday: dueDateEnd != null ? true : showToday),
       if (dueDateEnd != null)
         d.formatDateTime(dueDateEnd, showToday: showToday),
     ].whereType<String>().toList();
