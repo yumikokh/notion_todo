@@ -31,6 +31,17 @@ class DateHelper {
     return isThisDay(date, DateTime.now());
   }
 
+  bool isSameDay(DateTime? a, DateTime? b) {
+    final aLocal = a?.toLocal();
+    final bLocal = b?.toLocal();
+    if (aLocal == null || bLocal == null) {
+      return aLocal == bLocal;
+    }
+    return aLocal.year == bLocal.year &&
+        aLocal.month == bLocal.month &&
+        aLocal.day == bLocal.day;
+  }
+
   DateTime endTimeOfDay(DateTime date) {
     return DateTime(date.year, date.month, date.day, 23, 59, 59);
   }
