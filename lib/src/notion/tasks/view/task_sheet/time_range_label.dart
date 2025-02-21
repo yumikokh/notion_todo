@@ -15,28 +15,26 @@ class TimeRangeLabel extends StatelessWidget {
     required this.onClearTime,
   });
 
-  List<String> get timeRangeText {
+  String get startTimeText {
     final date = this.date;
-    const selectTimeText = '時間を選択';
     if (date == null || date.start.isAllDay == true) {
-      return [selectTimeText];
+      return '時間を選択';
     }
+    return d.formatDate(date.start.datetime.toLocal(), format: 'HH:mm');
+  }
 
-    final startText = d.formatDateTime(date.start);
-    if (startText == null) {
-      return [selectTimeText];
+  String? get durationText {
+    final date = this.date;
+    if (date == null || date.start.isAllDay == true) {
+      return null;
     }
-
-    final end = date.end;
+    final end = date.end?.datetime;
     if (end == null) {
-      return [startText];
+      return null;
     }
-
-    final endText = d.formatDateTime(end);
-    if (endText == null) {
-      return [selectTimeText];
-    }
-    return [startText, endText];
+    final duration = end.difference(date.start.datetime);
+    final durationHours = (duration.inMinutes / 60).toStringAsFixed(1);
+    return '(${durationHours}h)';
   }
 
   bool get showClearTimeButton {
@@ -63,16 +61,14 @@ class TimeRangeLabel extends StatelessWidget {
             ),
             const SizedBox(width: 12),
             if (showClearTimeButton) const Spacer(),
-            timeRangeText.length == 1
-                ? Text(timeRangeText[0])
-                : Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(timeRangeText[0]),
-                      const Icon(Icons.arrow_right_alt_rounded, size: 16),
-                      Text(timeRangeText[1]),
-                    ],
-                  ),
+            Text(
+              startTimeText,
+              style: const TextStyle(fontWeight: FontWeight.w500),
+            ),
+            if (durationText != null) ...[
+              const SizedBox(width: 4),
+              Text(durationText!, style: const TextStyle(fontSize: 12)),
+            ],
             if (showClearTimeButton) ...[
               const SizedBox(width: 12),
               SizedBox(
