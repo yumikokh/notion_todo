@@ -60,8 +60,9 @@ class DateHelper {
     return locale == AppLocale.ja ? '明日' : 'Tomorrow';
   }
 
+  /// @param dateTime NotionDateTime(UTC)
   String? formatDateTime(NotionDateTime dateTime, {bool showToday = false}) {
-    final parsed = dateTime.datetime.toLocal();
+    final parsed = dateTime.datetime.toLocal(); // ローカルタイムに変換
     final date = DateTime(parsed.year, parsed.month, parsed.day);
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);

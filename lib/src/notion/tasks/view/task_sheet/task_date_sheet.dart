@@ -5,6 +5,8 @@ import 'package:table_calendar/table_calendar.dart';
 import '../../../model/task.dart';
 import '../../const/date.dart';
 import '../../task_date_viewmodel.dart';
+import 'time_range_label.dart';
+import 'time_picker_sheet.dart';
 
 class TaskDateSheet extends HookWidget {
   final TaskDate? selectedDate;
@@ -48,12 +50,11 @@ class TaskDateSheet extends HookWidget {
                             onSelected(viewModel.selectedDateTime);
                             Navigator.pop(context);
                           },
-                          child: const Text('完了',
+                          child: const Text('決定',
                               style: TextStyle(fontWeight: FontWeight.bold)),
                         ),
                       ],
                     ),
-                    // const SizedBox(height: 16),
                     SegmentedButton(
                       expandedInsets: const EdgeInsets.symmetric(horizontal: 0),
                       emptySelectionAllowed: true,
@@ -73,10 +74,11 @@ class TaskDateSheet extends HookWidget {
                                   style: const TextStyle(fontSize: 12))))
                           .toList(),
                     ),
+                    const SizedBox(height: 8),
                     TableCalendar(
                       locale: localeCode,
-                      firstDay: viewModel.getFirstDay(),
-                      lastDay: DateTime.now().add(const Duration(days: 365)),
+                      firstDay: viewModel.calenderFirstDay,
+                      lastDay: viewModel.calenderLastDay,
                       focusedDay: viewModel.focusedDay,
                       currentDay: viewModel.selectedStartDateTime,
                       rangeStartDay: viewModel.selectedStartDateTime,
@@ -91,6 +93,24 @@ class TaskDateSheet extends HookWidget {
                       onFormatChanged: (_) {
                         // NOTE:Week選択時のエラーを回避
                         return;
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    TimeRangeLabel(
+                      date: viewModel.selectedDateTime,
+                      onTap: () {
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (context) => TimePickerSheet(
+                            initialDate: viewModel.selectedDateTime,
+                            onSelected: (date) {
+                              // viewModel.handleSelected(date);
+                              Navigator.pop(context);
+                            },
+                          ),
+                        );
                       },
                     ),
                   ],
