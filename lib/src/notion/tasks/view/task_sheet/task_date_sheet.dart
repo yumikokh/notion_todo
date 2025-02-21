@@ -4,7 +4,7 @@ import 'package:table_calendar/table_calendar.dart';
 
 import '../../../model/task.dart';
 import '../../const/date.dart';
-import '../../task_date_viewmodel.dart';
+import '../../date_sheet_viewmodel.dart';
 import 'time_range_label.dart';
 import 'time_picker_sheet.dart';
 
@@ -20,7 +20,7 @@ class TaskDateSheet extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = TaskDateViewModel(initialDateTime: selectedDate);
+    final viewModel = DateSheetViewModel(initialDateTime: selectedDate);
     final options = dateStyleConfigs(context);
     final l = Localizations.localeOf(context);
     final localeCode = "${l.languageCode}_${l.countryCode}";

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 import '../../../model/task.dart';
+import '../../time_sheet_viewmodel.dart';
 
 class TimePickerSheet extends StatelessWidget {
   final TaskDate? initialDate;
@@ -15,20 +15,15 @@ class TimePickerSheet extends StatelessWidget {
     Duration(minutes: 480),
   ];
 
-  TimePickerSheet({
+  const TimePickerSheet({
     super.key,
     required this.initialDate,
     required this.onSelected,
-  }) {
-    _startTime = initialDate?.start.datetime ?? DateTime.now();
-    _endTime = initialDate?.end?.datetime;
-  }
-
-  DateTime? _startTime;
-  DateTime? _endTime;
+  });
 
   @override
   Widget build(BuildContext context) {
+    final viewModel = TimeSheetViewModel(initialDateTime: initialDate);
     return DraggableScrollableSheet(
       expand: false,
       initialChildSize: 0.8,
@@ -98,7 +93,8 @@ class TimePickerSheet extends StatelessWidget {
                           SizedBox(
                             height: 120,
                             child: TimePickerSpinner(
-                              time: _startTime ?? DateTime.now(),
+                              time: viewModel.selectedStartDateTime ??
+                                  DateTime.now(),
                               is24HourMode: true,
                               normalTextStyle: TextStyle(
                                 fontSize: 18,
@@ -145,7 +141,8 @@ class TimePickerSheet extends StatelessWidget {
                           SizedBox(
                             height: 120,
                             child: TimePickerSpinner(
-                              time: _endTime ?? _startTime ?? DateTime.now(),
+                              time: viewModel.selectedEndDateTime ??
+                                  DateTime.now(),
                               is24HourMode: true,
                               normalTextStyle: TextStyle(
                                 fontSize: 18,
@@ -174,8 +171,10 @@ class TimePickerSheet extends StatelessWidget {
                   spacing: 8,
                   runSpacing: 8,
                   children: durations.map((duration) {
-                    final isSelected = _endTime != null &&
-                        _endTime!.difference(_startTime ?? DateTime.now()) ==
+                    final isSelected = viewModel.selectedEndDateTime != null &&
+                        viewModel.selectedEndDateTime!.difference(
+                                viewModel.selectedStartDateTime ??
+                                    DateTime.now()) ==
                             duration;
                     return FilterChip(
                         label: Text('${duration.inMinutes}分'),
@@ -208,11 +207,6 @@ class TimePickerSheet extends StatelessWidget {
         );
       },
     );
-  }
-
-  String _formatDate(DateTime date) {
-    final formatter = DateFormat('MMM d, y');
-    return formatter.format(date);
   }
 }
 
