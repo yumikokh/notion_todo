@@ -76,8 +76,8 @@ class TaskService {
   Future<Task> addTask(String title, TaskDate? dueDate) async {
     final data = await notionTaskRepository.addTask(
       title,
-      dueDate?.start.datetime.toIso8601String(),
-      dueDate?.end?.datetime.toIso8601String(),
+      dueDate?.start.submitFormat,
+      dueDate?.end?.submitFormat,
     );
     if (data == null || data.isEmpty) {
       throw Exception('Failed to add task');
