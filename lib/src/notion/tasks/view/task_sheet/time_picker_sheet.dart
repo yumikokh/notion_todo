@@ -15,6 +15,7 @@ class TimePickerSheet extends StatelessWidget {
   static const durations = [
     Duration(minutes: 30),
     Duration(minutes: 60),
+    Duration(minutes: 90),
     Duration(minutes: 120),
     Duration(minutes: 240),
     Duration(minutes: 480),
@@ -165,48 +166,73 @@ class TimePickerSheet extends StatelessWidget {
                       ),
                     ],
                   ),
-                  if (_viewModel.selectedStartDateTime != null)
-                    Column(
-                      children: [
-                        const SizedBox(height: 20),
-                        Row(
+                  Column(
+                    children: [
+                      const SizedBox(height: 20),
+                      Row(
+                        children: [
+                          const Text('期間'),
+                          const Spacer(),
+                          InputChip(
+                            key: _durationKey,
+                            label: Text(
+                              (_viewModel.currentDuration != null)
+                                  ? '${_viewModel.currentDuration!.inHours}:${(_viewModel.currentDuration!.inMinutes % 60).toString().padLeft(2, '0')}'
+                                  : '指定なし',
+                              style: TextStyle(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurfaceVariant,
+                              ),
+                            ),
+                            onPressed: () {
+                              _showTimePickerDialog(
+                                context: context,
+                                key: _durationKey,
+                                child: DurationPicker(
+                                  initialDuration: _viewModel.currentDuration,
+                                  onDurationChanged:
+                                      _viewModel.handleDurationSelected,
+                                ),
+                              );
+                            },
+                            onDeleted: _viewModel.currentDuration != null
+                                ? () => _viewModel.clearDuration()
+                                : null,
+                            deleteIcon:
+                                const Icon(Icons.close_rounded, size: 16),
+                            visualDensity: VisualDensity.compact,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      // duration候補ボタン
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
                           children: [
-                            const Text('期間'),
-                            const Spacer(),
-                            InputChip(
-                              key: _durationKey,
-                              label: Text(
-                                (_viewModel.currentDuration != null)
-                                    ? '${_viewModel.currentDuration!.inHours}:${(_viewModel.currentDuration!.inMinutes % 60).toString().padLeft(2, '0')}'
-                                    : '指定なし',
-                                style: TextStyle(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onSurfaceVariant,
+                            for (final duration in durations)
+                              Padding(
+                                padding: const EdgeInsets.only(right: 8.0),
+                                child: ChoiceChip(
+                                  selected:
+                                      _viewModel.currentDuration == duration,
+                                  onSelected: (selected) {
+                                    if (selected) {
+                                      _viewModel
+                                          .handleDurationSelected(duration);
+                                    }
+                                  },
+                                  label: Text(
+                                    '${duration.inHours}:${(duration.inMinutes % 60).toString().padLeft(2, '0')}',
+                                  ),
                                 ),
                               ),
-                              onPressed: () {
-                                _showTimePickerDialog(
-                                  context: context,
-                                  key: _durationKey,
-                                  child: DurationPicker(
-                                    initialDuration: _viewModel.currentDuration,
-                                    onDurationChanged:
-                                        _viewModel.handleDurationSelected,
-                                  ),
-                                );
-                              },
-                              onDeleted: _viewModel.currentDuration != null
-                                  ? () => _viewModel.clearDuration()
-                                  : null,
-                              deleteIcon:
-                                  const Icon(Icons.close_rounded, size: 16),
-                              visualDensity: VisualDensity.compact,
-                            ),
                           ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             );
