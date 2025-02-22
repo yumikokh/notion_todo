@@ -79,15 +79,10 @@ class DateSheetViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void handleDurationSelected(Duration duration) {
-    final end = _selectedDateTime?.start.datetime.add(duration);
-    if (end == null) return;
-
-    _selectedDateTime = _selectedDateTime?.copyWith(
-      end: _selectedDateTime?.end?.copyWith(
-        datetime: end,
-      ),
-    );
+  // 選択された日時を更新
+  void handleSelectedDateTime(TaskDate date) {
+    _selectedDateTime = date;
+    _focusedDay = date.start.datetime;
 
     notifyListeners();
   }
@@ -99,8 +94,8 @@ class DateSheetViewModel extends ChangeNotifier {
     final start = selectedDateTime.start.datetime.toLocal();
     final end = selectedDateTime.end?.datetime.toLocal();
 
-    _selectedDateTime = selectedDateTime.copyWith(
-      start: selectedDateTime.start.copyWith(
+    _selectedDateTime = TaskDate(
+      start: NotionDateTime(
         datetime: DateTime(
           start.year,
           start.month,
@@ -109,7 +104,7 @@ class DateSheetViewModel extends ChangeNotifier {
         isAllDay: true,
       ),
       end: end != null
-          ? selectedDateTime.end?.copyWith(
+          ? NotionDateTime(
               datetime: DateTime(
                 end.year,
                 end.month,

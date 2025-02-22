@@ -19,7 +19,7 @@ class TimeSheetViewModel extends ChangeNotifier {
   DateTime? get selectedEndDateTime =>
       _selectedDateTime?.end?.datetime.toLocal();
 
-  Duration? get selectedDuration {
+  Duration? get currentDuration {
     final start = selectedStartDateTime;
     final end = selectedEndDateTime;
     if (start == null || end == null) return null;
@@ -30,36 +30,49 @@ class TimeSheetViewModel extends ChangeNotifier {
     final currentStart = _selectedDateTime?.start;
     if (currentStart == null) return;
 
+    final localCurrentStart = currentStart.datetime.toLocal();
+    final start = DateTime(
+      localCurrentStart.year,
+      localCurrentStart.month,
+      localCurrentStart.day,
+      time.hour,
+      time.minute,
+    );
+
     _selectedDateTime = _selectedDateTime?.copyWith(
-      start: currentStart.copyWith(
-        datetime: DateTime(
-          currentStart.datetime.year,
-          currentStart.datetime.month,
-          currentStart.datetime.day,
-          time.hour,
-          time.minute,
-        ),
+      start: NotionDateTime(
+        datetime: start,
+        isAllDay: false,
+      ),
+      end: NotionDateTime(
+        datetime: start.add(currentDuration ?? Duration.zero),
+        isAllDay: false,
       ),
     );
+
     notifyListeners();
   }
 
   void handleEndTimeSelected(DateTime time) {
-    final selectedDateTime = _selectedDateTime;
-    final currentEnd = selectedDateTime?.end;
-    if (selectedDateTime == null || currentEnd == null) return;
+    final currentEnd = _selectedDateTime?.end;
+    if (currentEnd == null) return;
 
-    _selectedDateTime = selectedDateTime.copyWith(
-      end: currentEnd.copyWith(
-        datetime: DateTime(
-          currentEnd.datetime.year,
-          currentEnd.datetime.month,
-          currentEnd.datetime.day,
-          time.hour,
-          time.minute,
-        ),
+    final localCurrentEnd = currentEnd.datetime.toLocal();
+    final end = DateTime(
+      localCurrentEnd.year,
+      localCurrentEnd.month,
+      localCurrentEnd.day,
+      time.hour,
+      time.minute,
+    );
+
+    _selectedDateTime = _selectedDateTime?.copyWith(
+      end: NotionDateTime(
+        datetime: end,
+        isAllDay: false,
       ),
     );
+
     notifyListeners();
   }
 
@@ -68,53 +81,39 @@ class TimeSheetViewModel extends ChangeNotifier {
     if (end == null) return;
 
     _selectedDateTime = _selectedDateTime?.copyWith(
-      end: _selectedDateTime?.end?.copyWith(
+      end: NotionDateTime(
         datetime: end,
+        isAllDay: false,
       ),
-    );
-
-    notifyListeners();
-  }
-
-  void clearTime() {
-    final selectedDateTime = _selectedDateTime;
-    if (selectedDateTime == null) return;
-
-    final start = selectedDateTime.start.datetime.toLocal();
-    final end = selectedDateTime.end?.datetime.toLocal();
-
-    _selectedDateTime = selectedDateTime.copyWith(
-      start: selectedDateTime.start.copyWith(
-        datetime: DateTime(
-          start.year,
-          start.month,
-          start.day,
-        ),
-        isAllDay: true,
-      ),
-      end: end != null
-          ? selectedDateTime.end?.copyWith(
-              datetime: DateTime(
-                end.year,
-                end.month,
-                end.day,
-              ),
-              isAllDay: true,
-            )
-          : null,
     );
 
     notifyListeners();
   }
 
   void clearStartTime() {
-    _selectedDateTime = null;
+    final start = _selectedDateTime?.start;
+    if (start == null) return;
+
+    final localStart = start.datetime.toLocal();
+    _selectedDateTime = TaskDate(
+      start: NotionDateTime(
+        datetime: DateTime(
+          localStart.year,
+          localStart.month,
+          localStart.day,
+        ),
+        isAllDay: true,
+      ),
+      end: null,
+    );
+
     notifyListeners();
   }
 
   void clearDuration() {
     if (_selectedDateTime == null) return;
     _selectedDateTime = _selectedDateTime?.copyWith(end: null);
+
     notifyListeners();
   }
 }

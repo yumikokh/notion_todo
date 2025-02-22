@@ -28,7 +28,8 @@ class TimePickerSheet extends StatelessWidget {
   void _showTimePickerDialog({
     required BuildContext context,
     required GlobalKey key,
-    required Widget child,
+    required DateTime initialDateTime,
+    required Function(DateTime) onDateTimeChanged,
   }) {
     final RenderBox? button =
         key.currentContext?.findRenderObject() as RenderBox?;
@@ -75,7 +76,19 @@ class TimePickerSheet extends StatelessWidget {
                           ),
                         ],
                       ),
-                      child: child,
+                      child: Column(
+                        children: [
+                          Expanded(
+                            child: CupertinoDatePicker(
+                              mode: CupertinoDatePickerMode.time,
+                              minuteInterval: 15,
+                              use24hFormat: true,
+                              initialDateTime: initialDateTime,
+                              onDateTimeChanged: onDateTimeChanged,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -117,7 +130,6 @@ class TimePickerSheet extends StatelessWidget {
                       ),
                       TextButton(
                         onPressed: () {
-                          Navigator.pop(context);
                           onSelected(_viewModel.selectedDateTime);
                         },
                         child: const Text('決定',
@@ -133,7 +145,7 @@ class TimePickerSheet extends StatelessWidget {
                       InputChip(
                         key: _startTimeKey,
                         label: Text(
-                          _viewModel.selectedStartDateTime != null
+                          _viewModel.selectedDateTime?.start.isAllDay != true
                               ? '${_viewModel.selectedStartDateTime!.hour}:${_viewModel.selectedStartDateTime!.minute.toString().padLeft(2, '0')}'
                               : '指定なし',
                           style: TextStyle(
@@ -145,29 +157,17 @@ class TimePickerSheet extends StatelessWidget {
                           _showTimePickerDialog(
                             context: context,
                             key: _startTimeKey,
-                            child: Column(
-                              children: [
-                                Expanded(
-                                  child: CupertinoDatePicker(
-                                    mode: CupertinoDatePickerMode.time,
-                                    minuteInterval: 15,
-                                    use24hFormat: true,
-                                    initialDateTime:
-                                        _viewModel.selectedStartDateTime ??
-                                            DateTime.now(),
-                                    onDateTimeChanged: (date) {
-                                      _viewModel.handleStartTimeSelected(date);
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
+                            initialDateTime: _viewModel.selectedStartDateTime ??
+                                DateTime.now(),
+                            onDateTimeChanged:
+                                _viewModel.handleStartTimeSelected,
                           );
                         },
+                        onDeleted:
+                            _viewModel.selectedDateTime?.start.isAllDay != true
+                                ? _viewModel.clearStartTime
+                                : null,
                         deleteIcon: const Icon(Icons.close_rounded, size: 16),
-                        onDeleted: _viewModel.selectedStartDateTime != null
-                            ? () => _viewModel.clearStartTime()
-                            : null,
                         visualDensity: VisualDensity.compact,
                       ),
                     ],
@@ -178,13 +178,13 @@ class TimePickerSheet extends StatelessWidget {
                         const SizedBox(height: 20),
                         Row(
                           children: [
-                            const Text('期間'),
+                            const Text('終了時間'),
                             const Spacer(),
                             InputChip(
                               key: _durationKey,
                               label: Text(
-                                _viewModel.currentDuration != null
-                                    ? '${_viewModel.currentDuration!.inHours}:${(_viewModel.currentDuration!.inMinutes % 60).toString().padLeft(2, '0')}'
+                                _viewModel.selectedEndDateTime != null
+                                    ? '${_viewModel.selectedEndDateTime!.hour}:${_viewModel.selectedEndDateTime!.minute.toString().padLeft(2, '0')}'
                                     : '指定なし',
                                 style: TextStyle(
                                   color: Theme.of(context)
@@ -196,29 +196,12 @@ class TimePickerSheet extends StatelessWidget {
                                 _showTimePickerDialog(
                                   context: context,
                                   key: _durationKey,
-                                  child: Column(
-                                    children: [
-                                      Expanded(
-                                        child: CupertinoDatePicker(
-                                          mode: CupertinoDatePickerMode.time,
-                                          minuteInterval: 15,
-                                          use24hFormat: true,
-                                          initialDateTime: _viewModel
-                                                  .selectedEndDateTime ??
-                                              (_viewModel.selectedStartDateTime
-                                                      ?.add(const Duration(
-                                                          hours: 1)) ??
-                                                  DateTime.now()),
-                                          onDateTimeChanged: (date) {
-                                            _viewModel.handleDurationSelected(
-                                                Duration(
-                                                    hours: date.hour,
-                                                    minutes: date.minute));
-                                          },
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                  initialDateTime:
+                                      _viewModel.selectedEndDateTime ??
+                                          DateTime.now(),
+                                  onDateTimeChanged: (date) {
+                                    _viewModel.handleEndTimeSelected(date);
+                                  },
                                 );
                               },
                               onDeleted: _viewModel.currentDuration != null

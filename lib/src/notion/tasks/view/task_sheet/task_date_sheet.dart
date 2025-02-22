@@ -42,16 +42,16 @@ class TaskDateSheet extends HookWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         TextButton(
-                          onPressed: () => Navigator.pop(context),
                           child: const Text('キャンセル'),
+                          onPressed: () => Navigator.pop(context),
                         ),
                         TextButton(
+                          child: const Text('決定',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
                           onPressed: () {
                             onSelected(viewModel.selectedDateTime);
                             Navigator.pop(context);
                           },
-                          child: const Text('決定',
-                              style: TextStyle(fontWeight: FontWeight.bold)),
                         ),
                       ],
                     ),
@@ -106,7 +106,8 @@ class TaskDateSheet extends HookWidget {
                           builder: (context) => TimePickerSheet(
                             initialDate: viewModel.selectedDateTime,
                             onSelected: (date) {
-                              // viewModel.handleSelected(date);
+                              if (date == null) return;
+                              viewModel.handleSelectedDateTime(date);
                               Navigator.pop(context);
                             },
                           ),
