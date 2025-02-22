@@ -9,6 +9,7 @@ class TimePickerSheet extends StatelessWidget {
   final Function(TaskDate?) onSelected;
   final GlobalKey _startTimeKey = GlobalKey();
   final GlobalKey _durationKey = GlobalKey();
+  final TimeSheetViewModel _viewModel;
 
   static const durations = [
     Duration(minutes: 30),
@@ -22,7 +23,7 @@ class TimePickerSheet extends StatelessWidget {
     super.key,
     required this.initialDate,
     required this.onSelected,
-  });
+  }) : _viewModel = TimeSheetViewModel(initialDateTime: initialDate);
 
   void _showTimePickerDialog({
     required BuildContext context,
@@ -88,144 +89,154 @@ class TimePickerSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = TimeSheetViewModel(initialDateTime: initialDate);
-
-    return DraggableScrollableSheet(
-      expand: false,
-      initialChildSize: 0.4,
-      maxChildSize: 0.5,
-      minChildSize: 0.3,
-      builder: (context, scrollController) {
-        return Container(
-          padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text('キャンセル'),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      onSelected(viewModel.selectedDateTime);
-                    },
-                    child: const Text('決定',
-                        style: TextStyle(fontWeight: FontWeight.bold)),
-                  ),
-                ],
+    return ListenableBuilder(
+      listenable: _viewModel,
+      builder: (context, _) {
+        return DraggableScrollableSheet(
+          expand: false,
+          initialChildSize: 0.4,
+          maxChildSize: 0.5,
+          minChildSize: 0.3,
+          builder: (context, scrollController) {
+            return Container(
+              padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface,
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(12)),
               ),
-              const SizedBox(height: 20),
-              Row(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text('開始時間'),
-                  const Spacer(),
-                  InputChip(
-                    key: _startTimeKey,
-                    label: Text(
-                      viewModel.selectedStartDateTime != null
-                          ? '${viewModel.selectedStartDateTime!.hour}:${viewModel.selectedStartDateTime!.minute.toString().padLeft(2, '0')}'
-                          : '指定なし',
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('キャンセル'),
                       ),
-                    ),
-                    onPressed: () {
-                      _showTimePickerDialog(
-                        context: context,
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          onSelected(_viewModel.selectedDateTime);
+                        },
+                        child: const Text('決定',
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    children: [
+                      const Text('開始時間'),
+                      const Spacer(),
+                      InputChip(
                         key: _startTimeKey,
-                        child: Column(
+                        label: Text(
+                          _viewModel.selectedStartDateTime != null
+                              ? '${_viewModel.selectedStartDateTime!.hour}:${_viewModel.selectedStartDateTime!.minute.toString().padLeft(2, '0')}'
+                              : '指定なし',
+                          style: TextStyle(
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                        onPressed: () {
+                          _showTimePickerDialog(
+                            context: context,
+                            key: _startTimeKey,
+                            child: Column(
+                              children: [
+                                Expanded(
+                                  child: CupertinoDatePicker(
+                                    mode: CupertinoDatePickerMode.time,
+                                    minuteInterval: 15,
+                                    use24hFormat: true,
+                                    initialDateTime:
+                                        _viewModel.selectedStartDateTime ??
+                                            DateTime.now(),
+                                    onDateTimeChanged: (date) {
+                                      _viewModel.handleStartTimeSelected(date);
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                        deleteIcon: const Icon(Icons.close_rounded, size: 16),
+                        onDeleted: _viewModel.selectedStartDateTime != null
+                            ? () => _viewModel.clearStartTime()
+                            : null,
+                        visualDensity: VisualDensity.compact,
+                      ),
+                    ],
+                  ),
+                  if (_viewModel.selectedStartDateTime != null)
+                    Column(
+                      children: [
+                        const SizedBox(height: 20),
+                        Row(
                           children: [
-                            Expanded(
-                              child: CupertinoDatePicker(
-                                mode: CupertinoDatePickerMode.time,
-                                minuteInterval: 15,
-                                use24hFormat: true,
-                                initialDateTime:
-                                    viewModel.selectedStartDateTime ??
-                                        DateTime.now(),
-                                onDateTimeChanged: (date) {
-                                  viewModel.handleStartTimeSelected(date);
-                                },
+                            const Text('期間'),
+                            const Spacer(),
+                            InputChip(
+                              key: _durationKey,
+                              label: Text(
+                                _viewModel.currentDuration != null
+                                    ? '${_viewModel.currentDuration!.inHours}:${(_viewModel.currentDuration!.inMinutes % 60).toString().padLeft(2, '0')}'
+                                    : '指定なし',
+                                style: TextStyle(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurfaceVariant,
+                                ),
                               ),
+                              onPressed: () {
+                                _showTimePickerDialog(
+                                  context: context,
+                                  key: _durationKey,
+                                  child: Column(
+                                    children: [
+                                      Expanded(
+                                        child: CupertinoDatePicker(
+                                          mode: CupertinoDatePickerMode.time,
+                                          minuteInterval: 15,
+                                          use24hFormat: true,
+                                          initialDateTime: _viewModel
+                                                  .selectedEndDateTime ??
+                                              (_viewModel.selectedStartDateTime
+                                                      ?.add(const Duration(
+                                                          hours: 1)) ??
+                                                  DateTime.now()),
+                                          onDateTimeChanged: (date) {
+                                            _viewModel.handleDurationSelected(
+                                                Duration(
+                                                    hours: date.hour,
+                                                    minutes: date.minute));
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                              onDeleted: _viewModel.currentDuration != null
+                                  ? () => _viewModel.clearDuration()
+                                  : null,
+                              deleteIcon:
+                                  const Icon(Icons.close_rounded, size: 16),
+                              visualDensity: VisualDensity.compact,
+                              // padding: const EdgeInsets.symmetric(horizontal: 8),
                             ),
                           ],
                         ),
-                      );
-                    },
-                    deleteIcon: const Icon(Icons.close_rounded, size: 16),
-                    onDeleted: viewModel.selectedStartDateTime != null
-                        ? () => viewModel.clearStartTime()
-                        : null,
-                    visualDensity: VisualDensity.compact,
-                  ),
-                ],
-              ),
-              if (viewModel.selectedStartDateTime != null)
-                Column(
-                  children: [
-                    const SizedBox(height: 20),
-                    Row(
-                      children: [
-                        const Text('期間'),
-                        const Spacer(),
-                        InputChip(
-                          key: _durationKey,
-                          label: Text(
-                            viewModel.selectedDuration != null
-                                ? '${viewModel.selectedDuration!.inHours}:${(viewModel.selectedDuration!.inMinutes % 60).toString().padLeft(2, '0')}'
-                                : '指定なし',
-                            style: TextStyle(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onSurfaceVariant,
-                            ),
-                          ),
-                          onPressed: () {
-                            _showTimePickerDialog(
-                              context: context,
-                              key: _durationKey,
-                              child: Column(
-                                children: [
-                                  Expanded(
-                                    child: CupertinoDatePicker(
-                                      mode: CupertinoDatePickerMode.time,
-                                      minuteInterval: 15,
-                                      use24hFormat: true,
-                                      initialDateTime: viewModel
-                                              .selectedEndDateTime ??
-                                          (viewModel.selectedStartDateTime?.add(
-                                                  const Duration(hours: 1)) ??
-                                              DateTime.now()),
-                                      onDateTimeChanged: (date) {
-                                        viewModel.handleEndTimeSelected(date);
-                                      },
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                          onDeleted: viewModel.selectedDuration != null
-                              ? () => viewModel.clearDuration()
-                              : null,
-                          deleteIcon: const Icon(Icons.close_rounded, size: 16),
-                          visualDensity: VisualDensity.compact,
-                          // padding: const EdgeInsets.symmetric(horizontal: 8),
-                        ),
                       ],
                     ),
-                  ],
-                ),
-            ],
-          ),
+                ],
+              ),
+            );
+          },
         );
       },
     );
