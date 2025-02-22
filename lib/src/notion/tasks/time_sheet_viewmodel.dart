@@ -44,33 +44,12 @@ class TimeSheetViewModel extends ChangeNotifier {
         datetime: start,
         isAllDay: false,
       ),
-      end: NotionDateTime(
-        datetime: start.add(currentDuration ?? Duration.zero),
-        isAllDay: false,
-      ),
-    );
-
-    notifyListeners();
-  }
-
-  void handleEndTimeSelected(DateTime time) {
-    final currentEnd = _selectedDateTime?.end;
-    if (currentEnd == null) return;
-
-    final localCurrentEnd = currentEnd.datetime.toLocal();
-    final end = DateTime(
-      localCurrentEnd.year,
-      localCurrentEnd.month,
-      localCurrentEnd.day,
-      time.hour,
-      time.minute,
-    );
-
-    _selectedDateTime = _selectedDateTime?.copyWith(
-      end: NotionDateTime(
-        datetime: end,
-        isAllDay: false,
-      ),
+      end: currentDuration != null
+          ? NotionDateTime(
+              datetime: start.add(currentDuration!),
+              isAllDay: false,
+            )
+          : null,
     );
 
     notifyListeners();
