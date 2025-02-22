@@ -26,6 +26,21 @@ class TimeSheetViewModel extends ChangeNotifier {
     return end.difference(start);
   }
 
+  // 次に15分単位になる時間
+  DateTime get currentRoundTime {
+    final now = DateTime.now();
+    final minute = now.minute;
+    if (minute <= 15) {
+      return DateTime(now.year, now.month, now.day, now.hour, 15);
+    } else if (minute <= 30) {
+      return DateTime(now.year, now.month, now.day, now.hour, 30);
+    } else if (minute <= 45) {
+      return DateTime(now.year, now.month, now.day, now.hour, 45);
+    } else {
+      return DateTime(now.year, now.month, now.day, now.hour + 1, 0);
+    }
+  }
+
   void handleStartTimeSelected(DateTime time) {
     final currentStart = _selectedDateTime?.start;
     if (currentStart == null) return;
@@ -56,15 +71,20 @@ class TimeSheetViewModel extends ChangeNotifier {
   }
 
   void handleDurationSelected(Duration duration) {
-    final end = _selectedDateTime?.start.datetime.add(duration);
-    if (end == null) return;
+    final start = _selectedDateTime?.start;
+    if (start == null || start.isAllDay) return;
+    final end = start.datetime.add(duration);
 
-    _selectedDateTime = _selectedDateTime?.copyWith(
-      end: NotionDateTime(
-        datetime: end,
-        isAllDay: false,
-      ),
-    );
+    if (duration.inMinutes == 0) {
+      _selectedDateTime = _selectedDateTime?.copyWith(end: null);
+    } else {
+      _selectedDateTime = _selectedDateTime?.copyWith(
+        end: NotionDateTime(
+          datetime: end,
+          isAllDay: false,
+        ),
+      );
+    }
 
     notifyListeners();
   }

@@ -143,15 +143,22 @@ class TimePickerSheet extends StatelessWidget {
                           ),
                         ),
                         onPressed: () {
+                          if (_viewModel.selectedDateTime?.start.isAllDay ==
+                              true) {
+                            _viewModel.handleStartTimeSelected(
+                                _viewModel.currentRoundTime);
+                            return;
+                          }
+                          final initialDateTime =
+                              _viewModel.selectedStartDateTime;
+
                           _showTimePickerDialog(
                             context: context,
                             key: _startTimeKey,
                             child: CupertinoDatePicker(
                               mode: CupertinoDatePickerMode.time,
                               use24hFormat: true,
-                              initialDateTime:
-                                  _viewModel.selectedStartDateTime ??
-                                      DateTime.now(),
+                              initialDateTime: initialDateTime,
                               onDateTimeChanged:
                                   _viewModel.handleStartTimeSelected,
                             ),
@@ -166,73 +173,74 @@ class TimePickerSheet extends StatelessWidget {
                       ),
                     ],
                   ),
-                  Column(
-                    children: [
-                      const SizedBox(height: 20),
-                      Row(
-                        children: [
-                          const Text('期間'),
-                          const Spacer(),
-                          InputChip(
-                            key: _durationKey,
-                            label: Text(
-                              (_viewModel.currentDuration != null)
-                                  ? '${_viewModel.currentDuration!.inHours}:${(_viewModel.currentDuration!.inMinutes % 60).toString().padLeft(2, '0')}'
-                                  : '指定なし',
-                              style: TextStyle(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onSurfaceVariant,
-                              ),
-                            ),
-                            onPressed: () {
-                              _showTimePickerDialog(
-                                context: context,
-                                key: _durationKey,
-                                child: DurationPicker(
-                                  initialDuration: _viewModel.currentDuration,
-                                  onDurationChanged:
-                                      _viewModel.handleDurationSelected,
-                                ),
-                              );
-                            },
-                            onDeleted: _viewModel.currentDuration != null
-                                ? () => _viewModel.clearDuration()
-                                : null,
-                            deleteIcon:
-                                const Icon(Icons.close_rounded, size: 16),
-                            visualDensity: VisualDensity.compact,
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      // duration候補ボタン
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
+                  if (_viewModel.selectedDateTime?.start.isAllDay != true)
+                    Column(
+                      children: [
+                        const SizedBox(height: 20),
+                        Row(
                           children: [
-                            for (final duration in durations)
-                              Padding(
-                                padding: const EdgeInsets.only(right: 8.0),
-                                child: ChoiceChip(
-                                  selected:
-                                      _viewModel.currentDuration == duration,
-                                  onSelected: (selected) {
-                                    if (selected) {
-                                      _viewModel
-                                          .handleDurationSelected(duration);
-                                    }
-                                  },
-                                  label: Text(
-                                    '${duration.inHours}:${(duration.inMinutes % 60).toString().padLeft(2, '0')}',
-                                  ),
+                            const Text('期間'),
+                            const Spacer(),
+                            InputChip(
+                              key: _durationKey,
+                              label: Text(
+                                (_viewModel.currentDuration != null)
+                                    ? '${_viewModel.currentDuration!.inHours}:${(_viewModel.currentDuration!.inMinutes % 60).toString().padLeft(2, '0')}'
+                                    : '指定なし',
+                                style: TextStyle(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurfaceVariant,
                                 ),
                               ),
+                              onPressed: () {
+                                _showTimePickerDialog(
+                                  context: context,
+                                  key: _durationKey,
+                                  child: DurationPicker(
+                                    initialDuration: _viewModel.currentDuration,
+                                    onDurationChanged:
+                                        _viewModel.handleDurationSelected,
+                                  ),
+                                );
+                              },
+                              onDeleted: _viewModel.currentDuration != null
+                                  ? () => _viewModel.clearDuration()
+                                  : null,
+                              deleteIcon:
+                                  const Icon(Icons.close_rounded, size: 16),
+                              visualDensity: VisualDensity.compact,
+                            ),
                           ],
                         ),
-                      ),
-                    ],
-                  ),
+                        const SizedBox(height: 20),
+                        // duration候補ボタン
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: [
+                              for (final duration in durations)
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 8.0),
+                                  child: ChoiceChip(
+                                    selected:
+                                        _viewModel.currentDuration == duration,
+                                    onSelected: (selected) {
+                                      if (selected) {
+                                        _viewModel
+                                            .handleDurationSelected(duration);
+                                      }
+                                    },
+                                    label: Text(
+                                      '${duration.inHours}:${(duration.inMinutes % 60).toString().padLeft(2, '0')}',
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                 ],
               ),
             );
