@@ -19,6 +19,13 @@ class TimeSheetViewModel extends ChangeNotifier {
   DateTime? get selectedEndDateTime =>
       _selectedDateTime?.end?.datetime.toLocal();
 
+  Duration? get selectedDuration {
+    final start = selectedStartDateTime;
+    final end = selectedEndDateTime;
+    if (start == null || end == null) return null;
+    return end.difference(start);
+  }
+
   void handleStartTimeSelected(DateTime time) {
     final currentStart = _selectedDateTime?.start;
     if (currentStart == null) return;
@@ -97,6 +104,17 @@ class TimeSheetViewModel extends ChangeNotifier {
           : null,
     );
 
+    notifyListeners();
+  }
+
+  void clearStartTime() {
+    _selectedDateTime = null;
+    notifyListeners();
+  }
+
+  void clearDuration() {
+    if (_selectedDateTime == null) return;
+    _selectedDateTime = _selectedDateTime?.copyWith(end: null);
     notifyListeners();
   }
 }
