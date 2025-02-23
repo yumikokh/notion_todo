@@ -33,8 +33,16 @@ class TimeRangeLabel extends StatelessWidget {
       return null;
     }
     final duration = end.difference(date.start.datetime);
-    final durationHours = (duration.inMinutes / 60).toStringAsFixed(1);
-    return '(${durationHours}h)';
+    final hours = duration.inHours;
+    final minutes = duration.inMinutes % 60;
+    final timeStr = hours > 0
+        ? minutes > 0
+            ? '$hours時間 $minutes分'
+            : '$hours時間'
+        : minutes > 0
+            ? '$minutes分'
+            : '';
+    return '($timeStr)';
   }
 
   bool get showClearTimeButton {
