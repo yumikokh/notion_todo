@@ -49,14 +49,15 @@ class DateLabel extends StatelessWidget {
     if (dueDate == null) return [];
     final dueDateStart = dueDate.start;
     final dueDateEnd = dueDate.end;
+    final isSameDay = dueDateEnd != null &&
+        d.isSameDay(dueDateStart.datetime, dueDateEnd.datetime);
+
     return [
-      d.formatDateTime(dueDateStart,
-          showToday: dueDateEnd != null ? true : showToday),
+      d.formatDateTime(dueDateStart.datetime, dueDateStart.isAllDay,
+          showToday: showToday),
       if (dueDateEnd != null)
-        d.formatDateTime(dueDateEnd,
-            showToday: d.isSameDay(dueDateStart.datetime, dueDateEnd.datetime)
-                ? false
-                : showToday),
+        d.formatDateTime(dueDateEnd.datetime, dueDateEnd.isAllDay,
+            showToday: showToday, showOnlyTime: isSameDay),
     ].whereType<String>().toList();
   }
 
