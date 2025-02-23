@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../model/task.dart';
 import '../../time_sheet_viewmodel.dart';
@@ -11,12 +12,15 @@ class TimePickerSheet extends StatelessWidget {
   final GlobalKey _startTimeKey = GlobalKey();
   final GlobalKey _durationKey = GlobalKey();
   final TimeSheetViewModel _viewModel;
+  final AppLocalizations l10n;
 
   TimePickerSheet({
     super.key,
     required this.initialDate,
     required this.onSelected,
-  }) : _viewModel = TimeSheetViewModel(initialDateTime: initialDate);
+    required this.l10n,
+  }) : _viewModel =
+            TimeSheetViewModel(initialDateTime: initialDate, l10n: l10n);
 
   void _showTimePickerDialog({
     required BuildContext context,
@@ -106,21 +110,22 @@ class TimePickerSheet extends StatelessWidget {
                     children: [
                       TextButton(
                         onPressed: () => Navigator.pop(context),
-                        child: const Text('キャンセル'),
+                        child: Text(l10n.cancel),
                       ),
                       TextButton(
                         onPressed: () {
                           onSelected(_viewModel.selectedDateTime);
                         },
-                        child: const Text('保存',
-                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        child: Text(l10n.save,
+                            style:
+                                const TextStyle(fontWeight: FontWeight.bold)),
                       ),
                     ],
                   ),
                   const SizedBox(height: 20),
                   Row(
                     children: [
-                      const Text('開始時間'),
+                      Text(l10n.start_time),
                       const Spacer(),
                       InputChip(
                         key: _startTimeKey,
@@ -168,7 +173,7 @@ class TimePickerSheet extends StatelessWidget {
                         const SizedBox(height: 20),
                         Row(
                           children: [
-                            const Text('所要時間'),
+                            Text(l10n.duration),
                             const Spacer(),
                             InputChip(
                               key: _durationKey,

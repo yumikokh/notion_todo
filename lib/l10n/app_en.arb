@@ -58,6 +58,7 @@
   "navigation_today": "Today",
   "task_sheet_title_hint": "Enter the task name",
   "today": "Today",
+  "yesterday": "Yesterday",
   "tomorrow": "Tomorrow",
   "undetermined": "Not set",
   "select_date": "Select Date",
@@ -207,5 +208,36 @@
   "task_star_button_dialog_cancel": "Cancel",
   "task_star_button_dialog_settings": "Settings",
   "notifications": "Notifications",
-  "showNotificationBadge": "Show notification badge"
+  "showNotificationBadge": "Show notification badge",
+  "select_time": "Select time",
+  "no_time": "No time",
+  "start_time": "Start time",
+  "duration": "Duration",
+  "duration_format_minutes": "{minutes}min",
+  "@duration_format_minutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "duration_format_hours": "{hours}h",
+  "@duration_format_hours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "duration_format_hours_minutes": "{hours}h {minutes}min",
+  "@duration_format_hours_minutes": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  }
 }

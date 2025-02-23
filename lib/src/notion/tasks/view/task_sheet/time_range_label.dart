@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../helpers/date.dart';
 import '../../../model/task.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TimeRangeLabel extends StatelessWidget {
   final TaskDate? date;
@@ -15,15 +16,15 @@ class TimeRangeLabel extends StatelessWidget {
     required this.onClearTime,
   });
 
-  String get startTimeText {
+  String getStartTimeText(AppLocalizations l10n) {
     final date = this.date;
     if (date == null || date.start.isAllDay == true) {
-      return '時間を選択';
+      return l10n.select_time;
     }
-    return d.formatDate(date.start.datetime.toLocal(), format: 'HH:mm');
+    return d.formatDate(date.start.datetime.toLocal(), format: 'H:mm');
   }
 
-  String? get durationText {
+  String? getDurationText(AppLocalizations l10n) {
     final date = this.date;
     if (date == null || date.start.isAllDay == true) {
       return null;
@@ -37,10 +38,10 @@ class TimeRangeLabel extends StatelessWidget {
     final minutes = duration.inMinutes % 60;
     final timeStr = hours > 0
         ? minutes > 0
-            ? '$hours時間 $minutes分'
-            : '$hours時間'
+            ? l10n.duration_format_hours_minutes(hours, minutes)
+            : l10n.duration_format_hours(hours)
         : minutes > 0
-            ? '$minutes分'
+            ? l10n.duration_format_minutes(minutes)
             : '';
     return '($timeStr)';
   }
@@ -52,12 +53,15 @@ class TimeRangeLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final startTimeText = getStartTimeText(l10n);
+    final durationText = getDurationText(l10n);
     return InkWell(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceVariant,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
@@ -75,7 +79,7 @@ class TimeRangeLabel extends StatelessWidget {
             ),
             if (durationText != null) ...[
               const SizedBox(width: 4),
-              Text(durationText!, style: const TextStyle(fontSize: 12)),
+              Text(durationText, style: const TextStyle(fontSize: 12)),
             ],
             if (showClearTimeButton) ...[
               const SizedBox(width: 12),

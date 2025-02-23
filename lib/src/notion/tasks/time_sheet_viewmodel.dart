@@ -1,13 +1,16 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../helpers/date.dart';
 import '../model/task.dart';
 
 class TimeSheetViewModel extends ChangeNotifier {
   final TaskDate? initialDateTime;
+  final AppLocalizations l10n;
 
   TimeSheetViewModel({
     required this.initialDateTime,
+    required this.l10n,
   }) : _selectedDateTime = initialDateTime;
 
   static final dateHelper = DateHelper();
@@ -40,22 +43,23 @@ class TimeSheetViewModel extends ChangeNotifier {
   List<Duration> get durations => _durations;
   List<String> get durationLabels => _durations.map((e) {
         if (e.inHours == 0) {
-          return '${e.inMinutes}分';
+          return l10n.duration_format_minutes(e.inMinutes);
         } else {
           return e.inMinutes % 60 == 0
-              ? '${e.inHours}時間'
-              : '${e.inHours}.${(e.inMinutes % 60 * 10 / 60).round()}時間';
+              ? l10n.duration_format_hours(e.inHours)
+              : l10n.duration_format_hours_minutes(
+                  e.inHours, (e.inMinutes % 60));
         }
       }).toList();
 
   String get startTimeLabel => selectedDateTime?.start.isAllDay != true
       ? '${selectedStartDateTime!.hour}:${selectedStartDateTime!.minute.toString().padLeft(2, '0')}'
-      : '指定なし';
+      : l10n.no_time;
 
   String get durationLabel => (_selectedDateTime?.end != null &&
           _selectedDateTime?.end?.isAllDay != true)
       ? '${currentDuration!.inHours}:${(currentDuration!.inMinutes % 60).toString().padLeft(2, '0')}'
-      : '指定なし';
+      : l10n.no_time;
 
   // 次に15分単位になる時間
   DateTime get currentRoundTime {

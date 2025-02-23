@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../../../model/task.dart';
@@ -24,6 +25,7 @@ class TaskDateSheet extends HookWidget {
     final options = dateStyleConfigs(context);
     final l = Localizations.localeOf(context);
     final localeCode = "${l.languageCode}_${l.countryCode}";
+    final l10n = AppLocalizations.of(context)!;
 
     return ListenableBuilder(
       listenable: viewModel,
@@ -42,12 +44,13 @@ class TaskDateSheet extends HookWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         TextButton(
-                          child: const Text('キャンセル'),
+                          child: Text(l10n.cancel),
                           onPressed: () => Navigator.pop(context),
                         ),
                         TextButton(
-                          child: const Text('保存',
-                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          child: Text(l10n.save,
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold)),
                           onPressed: () {
                             onSelected(viewModel.selectedDateTime);
                             Navigator.pop(context);
@@ -102,6 +105,7 @@ class TaskDateSheet extends HookWidget {
                           isScrollControlled: true,
                           backgroundColor: Colors.transparent,
                           builder: (context) => TimePickerSheet(
+                            l10n: l10n,
                             initialDate: viewModel.selectedDateTime,
                             onSelected: (date) {
                               if (date == null) return;
