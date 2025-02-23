@@ -81,20 +81,32 @@ class TaskDateSheet extends HookWidget {
                       firstDay: viewModel.calenderFirstDay,
                       lastDay: viewModel.calenderLastDay,
                       focusedDay: viewModel.focusedDay,
-                      currentDay: viewModel.selectedStartDateTime,
+                      currentDay: DateTime.now(),
                       rangeStartDay: viewModel.selectedStartDateTime,
                       rangeEndDay: viewModel.selectedEndDateTime,
-                      calendarFormat: CalendarFormat.twoWeeks,
-                      calendarStyle: CalendarStyle(
-                        todayDecoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Theme.of(context).colorScheme.secondary),
-                      ),
                       onDaySelected: viewModel.handleCalendarSelected,
                       onFormatChanged: (_) {
                         // NOTE:Week選択時のエラーを回避
                         return;
                       },
+                      calendarFormat: CalendarFormat.twoWeeks,
+                      calendarStyle: CalendarStyle(
+                        todayDecoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color:
+                                Theme.of(context).colorScheme.inversePrimary),
+                        todayTextStyle: TextStyle(
+                            color:
+                                Theme.of(context).colorScheme.secondaryFixed),
+                        rangeStartDecoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Theme.of(context).primaryColor),
+                        rangeEndDecoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Theme.of(context).primaryColor),
+                        rangeHighlightColor:
+                            Theme.of(context).colorScheme.secondaryContainer,
+                      ),
                     ),
                     const SizedBox(height: 10),
                     TimeRangeLabel(
