@@ -79,11 +79,13 @@ class TaskListTile extends HookConsumerWidget {
           await taskViewModel.updateCompleteStatus(task, willComplete);
         },
       ),
-      trailing: TaskStarButton(
-        task: task,
-        onInProgressChanged: (task) =>
-            taskViewModel.updateInProgressStatus(task),
-      ),
+      trailing: taskViewModel.showStarButton(task)
+          ? TaskStarButton(
+              task: task,
+              onInProgressChanged: (task) =>
+                  taskViewModel.updateInProgressStatus(task),
+            )
+          : null,
       title: Text(task.title,
           style: TextStyle(
             color: task.isCompleted
@@ -94,14 +96,18 @@ class TaskListTile extends HookConsumerWidget {
             fontSize: 15,
           )),
       subtitle: taskViewModel.showDueDate(task)
-          ? Padding(
-              padding: const EdgeInsets.only(top: 2),
-              child: DateLabel(
-                date: task.dueDate,
-                showToday: taskViewModel.filterType != FilterType.today,
-                context: context,
-                showColor: true,
-                showIcon: true,
+          ? SizedBox(
+              width: double.infinity,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.only(top: 2),
+                child: DateLabel(
+                  date: task.dueDate,
+                  showToday: taskViewModel.filterType != FilterType.today,
+                  context: context,
+                  showColor: true,
+                  showIcon: true,
+                ),
               ),
             )
           : null,

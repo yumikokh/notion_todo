@@ -64,7 +64,7 @@ class DateLabel extends StatelessWidget {
     ].whereType<String>().toList();
   }
 
-  double get size => 13.0;
+  double get size => 12.0;
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +72,7 @@ class DateLabel extends StatelessWidget {
     return Row(
       children: [
         if (showIcon) Icon(Icons.event_rounded, size: size, color: color),
-        if (showIcon) const SizedBox(width: 4),
+        if (showIcon) const SizedBox(width: 2),
         dateStrings.length == 1
             ? Text(
                 dateStrings[0],

@@ -89,6 +89,13 @@ class TaskViewModel extends _$TaskViewModel {
     return true;
   }
 
+  bool showStarButton(Task task) {
+    if (task.status is! TaskStatusStatus) {
+      return false;
+    }
+    return true;
+  }
+
   Future<void> toggleShowCompleted() async {
     _showCompleted = !_showCompleted;
     if (_taskService != null) {
