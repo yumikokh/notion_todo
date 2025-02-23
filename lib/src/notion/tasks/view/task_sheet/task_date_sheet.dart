@@ -101,10 +101,14 @@ class TaskDateSheet extends HookWidget {
                                 Theme.of(context).colorScheme.secondaryFixed),
                         rangeStartDecoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: Theme.of(context).primaryColor),
+                            color: Theme.of(context).colorScheme.primary),
                         rangeEndDecoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: Theme.of(context).primaryColor),
+                            color: Theme.of(context).colorScheme.primary),
+                        rangeStartTextStyle: TextStyle(
+                            color: Theme.of(context).colorScheme.onPrimary),
+                        rangeEndTextStyle: TextStyle(
+                            color: Theme.of(context).colorScheme.onPrimary),
                         rangeHighlightColor:
                             Theme.of(context).colorScheme.secondaryContainer,
                       ),

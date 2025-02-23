@@ -25,7 +25,6 @@ class NotionSettingsPage extends ConsumerWidget {
     final l = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
       appBar: AppBar(
         title: Text(l.notion_settings_view_title,
             style: const TextStyle(fontSize: 18)),
@@ -38,7 +37,7 @@ class NotionSettingsPage extends ConsumerWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
                 side: BorderSide(
-                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                  color: Theme.of(context).colorScheme.outlineVariant,
                 ),
               ),
               child: Padding(
@@ -106,8 +105,7 @@ class NotionSettingsPage extends ConsumerWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                   side: BorderSide(
-                    color:
-                        Theme.of(context).colorScheme.surfaceContainerHighest,
+                    color: Theme.of(context).colorScheme.outlineVariant,
                   ),
                 ),
                 child: Padding(
@@ -187,8 +185,7 @@ class NotionSettingsPage extends ConsumerWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                   side: BorderSide(
-                    color:
-                        Theme.of(context).colorScheme.surfaceContainerHighest,
+                    color: Theme.of(context).colorScheme.outlineVariant,
                   ),
                 ),
                 child: Padding(
