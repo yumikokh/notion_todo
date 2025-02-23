@@ -1,0 +1,20 @@
+---
+description: 
+globs: 
+---
+# Coding Guideline
+  
+## 設計
+- MVVM + Repositoryパターンを採用する    
+- グローバルステート管理はRiverpodを採用し、ViewModelをProviderとする
+- 簡単なローカルステートは flutter_hooks を使用する。StatefulWidgetは使わない
+- 複雑なローカルステートロジックが必要な場合はChangeNotifierを拡張したViewModelを作成し、View（Widget）でロジックは持たせない 
+
+## ローカライズ 
+- ローカライズ辞書は [app_en.arb](mdc:lib/l10n/app_en.arb) [app_ja.arb](mdc:lib/l10n/app_ja.arb) で管理する  
+- Widgetでの実装は [task_date_sheet.dart](mdc:lib/src/notion/tasks/view/task_sheet/task_date_sheet.dart), Context をもたないProvider管理下の実装は [task_viewmodel.dart](mdc:lib/src/notion/tasks/task_viewmodel.dart) を参考にすること。それ以外の場合は、クラスにAppLocalizations型をもつパラメータを渡すようにする
+  
+# Prompt
+- 指示した内容以外に修正したい内容があった場合、勝手にコードを書き換えず、応答の文言内で補足してください
+
+
