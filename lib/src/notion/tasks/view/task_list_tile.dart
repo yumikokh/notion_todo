@@ -4,7 +4,6 @@ import 'package:haptic_feedback/haptic_feedback.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../helpers/date.dart';
 import '../../model/task.dart';
 import '../../repository/notion_task_repository.dart';
 import '../task_viewmodel.dart';
@@ -21,16 +20,6 @@ class TaskListTile extends HookConsumerWidget {
 
   final Task task;
   final TaskViewModel taskViewModel;
-  static final DateHelper d = DateHelper();
-
-  bool get showDueDate {
-    final dueDate = task.dueDate;
-    if (dueDate == null) return false;
-    if (dueDate.end != null) return true;
-    if (taskViewModel.filterType != FilterType.today) return true;
-    if (d.isToday(dueDate.start.datetime)) return false;
-    return true;
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -104,7 +93,7 @@ class TaskListTile extends HookConsumerWidget {
             decorationColor: Theme.of(context).colorScheme.outline,
             fontSize: 15,
           )),
-      subtitle: showDueDate
+      subtitle: taskViewModel.showDueDate(task)
           ? Padding(
               padding: const EdgeInsets.only(top: 2),
               child: DateLabel(
