@@ -78,6 +78,17 @@ class TaskViewModel extends _$TaskViewModel {
     return tasks;
   }
 
+  bool showDueDate(Task task) {
+    final dueDate = task.dueDate;
+    if (dueDate == null) return false;
+    if (dueDate.end != null) return true;
+    if (_filterType != FilterType.today) return true;
+    if (d.isToday(dueDate.start.datetime) && dueDate.start.isAllDay == true) {
+      return false;
+    }
+    return true;
+  }
+
   Future<void> toggleShowCompleted() async {
     _showCompleted = !_showCompleted;
     if (_taskService != null) {

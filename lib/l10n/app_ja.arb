@@ -58,6 +58,7 @@
   "navigation_today": "今日",
   "task_sheet_title_hint": "タスク名を入力",
   "today": "今日",
+  "yesterday": "昨日",
   "tomorrow": "明日",
   "undetermined": "未定",
   "select_date": "日付を選択",
@@ -123,5 +124,36 @@
   "task_star_button_dialog_cancel": "キャンセル",
   "task_star_button_dialog_settings": "設定",
   "notifications": "通知",
-  "showNotificationBadge": "通知バッジを表示"
+  "showNotificationBadge": "通知バッジを表示",
+  "select_time": "時間を選択",
+  "no_time": "指定なし",
+  "start_time": "開始時間",
+  "duration": "所要時間",
+  "duration_format_minutes": "{minutes}分",
+  "@duration_format_minutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "duration_format_hours": "{hours}時間",
+  "@duration_format_hours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "duration_format_hours_minutes": "{hours}時間{minutes}分",
+  "@duration_format_hours_minutes": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  }
 }
