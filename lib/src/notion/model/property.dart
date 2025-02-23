@@ -63,12 +63,9 @@ class TitleProperty extends Property {
 
 @JsonSerializable()
 class DateProperty extends Property {
-  final DateTime? date;
-
   DateProperty({
     required String id,
     required String name,
-    required this.date,
   }) : super(id: id, name: name, type: PropertyType.date);
 
   factory DateProperty.fromJson(Map<String, dynamic> json) =>
@@ -127,6 +124,7 @@ class CheckboxCompleteStatusProperty extends CompleteStatusProperty {
 class StatusCompleteStatusProperty extends CompleteStatusProperty {
   final ({List<StatusOption> options, List<StatusGroup> groups}) status;
   final StatusOption? todoOption;
+  final StatusOption? inProgressOption; // optional
   final StatusOption? completeOption;
 
   StatusCompleteStatusProperty({
@@ -134,11 +132,13 @@ class StatusCompleteStatusProperty extends CompleteStatusProperty {
     required String name,
     required this.status,
     required this.todoOption,
+    required this.inProgressOption,
     required this.completeOption,
   }) : super(id: id, name: name, type: PropertyType.status);
 
   StatusCompleteStatusProperty copyWith({
     StatusOption? todoOption,
+    StatusOption? inProgressOption,
     StatusOption? completeOption,
   }) {
     return StatusCompleteStatusProperty(
@@ -146,6 +146,7 @@ class StatusCompleteStatusProperty extends CompleteStatusProperty {
       name: name,
       status: status,
       todoOption: todoOption ?? this.todoOption,
+      inProgressOption: inProgressOption ?? this.inProgressOption,
       completeOption: completeOption ?? this.completeOption,
     );
   }
@@ -155,6 +156,15 @@ class StatusCompleteStatusProperty extends CompleteStatusProperty {
 
   @override
   Map<String, dynamic> toJson() => _$StatusCompleteStatusPropertyToJson(this);
+}
+
+enum StatusGroupType {
+  todo('To-do'),
+  inProgress('In progress'),
+  complete('Complete');
+
+  final String value;
+  const StatusGroupType(this.value);
 }
 
 /// ステータスプロパティの基底クラス
@@ -200,4 +210,17 @@ class StatusGroup extends StatusPropertyBase {
       _$StatusGroupFromJson(json);
 
   Map<String, dynamic> toJson() => _$StatusGroupToJson(this);
+}
+
+@JsonSerializable()
+class StatusOptionsByGroup {
+  final StatusGroupType groupType;
+  final List<StatusOption> options;
+
+  StatusOptionsByGroup({required this.groupType, required this.options});
+
+  factory StatusOptionsByGroup.fromJson(Map<String, dynamic> json) =>
+      _$StatusOptionsByGroupFromJson(json);
+
+  Map<String, dynamic> toJson() => _$StatusOptionsByGroupToJson(this);
 }

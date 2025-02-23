@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -11,6 +10,7 @@ import '../../common/snackbar/snackbar.dart';
 import '../../helpers/date.dart';
 import '../../settings/settings_viewmodel.dart';
 import '../../settings/task_database/task_database_viewmodel.dart';
+import '../model/property.dart';
 import '../model/task.dart';
 import '../repository/notion_task_repository.dart';
 import 'task_service.dart';
@@ -45,16 +45,55 @@ class TaskViewModel extends _$TaskViewModel {
       return [];
     }
 
+    _showCompleted = await _taskService!.loadShowCompleted();
+
     _filterType = filterType;
     // MEMO: ユースケースを鑑みて読み込みは固定にする
     // もしpageSize以上のタスクがあったとき、「showCompleted」と「Load more」の不整合がおきるがいったん無視
     _hasCompleted = filterType == FilterType.today;
 
-    return await _fetchTasks(isFirstFetch: true);
+    final statusProperty =
+        ref.watch(taskDatabaseViewModelProvider).valueOrNull?.status;
+    final tasks = await _fetchTasks(isFirstFetch: true);
+
+    // バッジ更新
+    if (filterType == FilterType.today) {
+      final showBadge =
+          ref.watch(settingsViewModelProvider).showNotificationBadge;
+      _updateBadge(tasks, showBadge);
+    }
+
+    if (statusProperty is StatusCompleteStatusProperty) {
+      final inProgressOption = statusProperty.inProgressOption;
+      if (inProgressOption == null) {
+        return tasks;
+      }
+      // task.inProgressを先頭にする
+      return [
+        ...tasks.where((task) => task.isInProgress(inProgressOption)),
+        ...tasks.where((task) => !task.isInProgress(inProgressOption)),
+      ];
+    }
+
+    return tasks;
+  }
+
+  bool showDueDate(Task task) {
+    final dueDate = task.dueDate;
+    if (dueDate == null) return false;
+    if (dueDate.end != null) return true;
+    if (_filterType != FilterType.today) return true;
+    if (d.isToday(dueDate.start.datetime) && dueDate.start.isAllDay == true) {
+      return false;
+    }
+    return true;
   }
 
   Future<void> toggleShowCompleted() async {
     _showCompleted = !_showCompleted;
+    if (_taskService != null) {
+      await _taskService!.saveShowCompleted(_showCompleted);
+    }
     try {
       final analytics = ref.read(analyticsServiceProvider);
       await analytics.logCompletedTasksToggle(
@@ -127,10 +166,6 @@ class TaskViewModel extends _$TaskViewModel {
           startCursor: cursor);
       _hasMore = result.hasMore;
       _nextCursor = result.nextCursor;
-      // バッジ更新
-      if (filterType == FilterType.today) {
-        _updateBadge(result.tasks);
-      }
       return result.tasks;
     } catch (e) {
       if (e is TaskException && e.statusCode == 404) {
@@ -179,7 +214,7 @@ class TaskViewModel extends _$TaskViewModel {
     }
   }
 
-  Future<void> addTask(String title, DateTime? dueDate) async {
+  Future<void> addTask(String title, TaskDate? dueDate) async {
     final locale = ref.read(settingsViewModelProvider).locale;
     final l = await AppLocalizations.delegate.load(locale);
     await _addOperation(() async {
@@ -195,16 +230,14 @@ class TaskViewModel extends _$TaskViewModel {
       final tempTask = Task(
           id: tempId,
           title: title,
-          isCompleted: false,
-          dueDate:
-              dueDate != null ? TaskDate(start: d.dateString(dueDate)) : null,
+          status: const TaskStatus.checkbox(checked: false),
+          dueDate: dueDate,
           url: null);
 
       state = AsyncValue.data([...state.valueOrNull ?? [], tempTask]);
 
       try {
-        final t =
-            await taskService.addTask(tempTask.title, tempTask.dueDate?.start);
+        final t = await taskService.addTask(tempTask.title, tempTask.dueDate);
 
         // 最新のstateを使用して更新
         state = AsyncValue.data([
@@ -252,27 +285,12 @@ class TaskViewModel extends _$TaskViewModel {
         return;
       }
 
-      String? updatedDueDate;
-      final inputDueDateStart = task.dueDate?.start;
-      final prevDueDateStart = prevTask.dueDate?.start;
+      // TODO: endの反映
+      TaskDate? updatedDueDate;
+      final inputDueDateStart = task.dueDate;
       // 入力された日付がある場合のみ
       if (inputDueDateStart != null) {
         updatedDueDate = inputDueDateStart;
-        // もともとのタスクに日付がある場合
-        if (prevDueDateStart != null) {
-          final inputDateTime = DateTime.parse(inputDueDateStart);
-          final prevDateTime = DateTime.parse(prevDueDateStart);
-
-          // 日付が変更されている場合は時間情報を削除
-          if (!d.isThisDay(prevDateTime, inputDateTime)) {
-            updatedDueDate = d.dateString(inputDateTime);
-          } else {
-            updatedDueDate = inputDueDateStart;
-          }
-        } else {
-          // もともとのタスクに日付がなかった場合
-          updatedDueDate = inputDueDateStart;
-        }
       }
 
       final snackbar = ref.read(snackbarProvider.notifier);
@@ -318,7 +336,7 @@ class TaskViewModel extends _$TaskViewModel {
     });
   }
 
-  Future<void> updateStatus(Task task, bool isCompleted,
+  Future<void> updateCompleteStatus(Task task, bool isCompleted,
       {bool fromUndo = false}) async {
     await _addOperation(() async {
       final taskService = _taskService;
@@ -333,21 +351,21 @@ class TaskViewModel extends _$TaskViewModel {
               ? l.task_update_status_success(task.title)
               : l.task_update_status_undo(task.title),
           type: SnackbarType.success, onUndo: () async {
-        updateStatus(task, !isCompleted, fromUndo: true);
+        updateCompleteStatus(task, !isCompleted, fromUndo: true);
       });
 
       _isLoading = true;
       final prevState = state;
       try {
         final updatedTask =
-            await taskService.updateStatus(task.id, isCompleted);
+            await taskService.updateCompleteStatus(task.id, isCompleted);
         state = AsyncValue.data([
           for (final t in state.valueOrNull ?? [])
             if (t.id == updatedTask.id) updatedTask else t
         ]);
         ref.invalidateSelf();
 
-        // 今日のタスクが全て完了したかチェック
+        // [レビューポップアップ] 今日のタスクが全て完了したかチェック
         if (!fromUndo && isCompleted && _filterType == FilterType.today) {
           final tasks = state.valueOrNull ?? [];
           final allTasksCompleted = tasks.every((t) => t.isCompleted);
@@ -368,6 +386,71 @@ class TaskViewModel extends _$TaskViewModel {
             'task_completed',
             hasDueDate: task.dueDate?.start != null,
             isCompleted: isCompleted,
+            fromUndo: fromUndo,
+          );
+        } catch (e) {
+          print('Analytics error: $e');
+        }
+      } catch (e) {
+        state = prevState;
+        snackbar.show(l.task_update_status_failed, type: SnackbarType.error);
+      } finally {
+        _isLoading = false;
+      }
+    });
+  }
+
+  Future<void> updateInProgressStatus(Task task,
+      {bool fromUndo = false}) async {
+    // checkboxは更新できない
+    if (task.status is CheckboxCompleteStatusProperty) {
+      return;
+    }
+    await _addOperation(() async {
+      final taskService = _taskService;
+      if (taskService == null) {
+        return;
+      }
+      final statusProperty =
+          ref.read(taskDatabaseViewModelProvider).valueOrNull?.status;
+      if (statusProperty is! StatusCompleteStatusProperty) {
+        return;
+      }
+      final inProgressOption = statusProperty.inProgressOption;
+      if (inProgressOption == null) {
+        return;
+      }
+      final snackbar = ref.read(snackbarProvider.notifier);
+      final locale = ref.read(settingsViewModelProvider).locale;
+      final l = await AppLocalizations.delegate.load(locale);
+
+      final willBeInProgress = !task.isInProgress(inProgressOption);
+      final prevState = state;
+
+      snackbar.show(
+          willBeInProgress
+              ? l.task_update_status_in_progress(task.title)
+              : l.task_update_status_todo(task.title),
+          type: SnackbarType.success, onUndo: () async {
+        updateInProgressStatus(task, fromUndo: true);
+      });
+
+      _isLoading = true;
+
+      try {
+        final updatedTask =
+            await taskService.updateInProgressStatus(task.id, willBeInProgress);
+        state = AsyncValue.data([
+          for (final t in state.valueOrNull ?? [])
+            if (t.id == updatedTask.id) updatedTask else t
+        ]);
+        ref.invalidateSelf();
+
+        try {
+          final analytics = ref.read(analyticsServiceProvider);
+          await analytics.logTask(
+            'task_in_progress_updated',
+            hasDueDate: task.dueDate?.start != null,
             fromUndo: fromUndo,
           );
         } catch (e) {
@@ -475,52 +558,11 @@ class TaskViewModel extends _$TaskViewModel {
     });
   }
 
-  ({Color color, IconData icon, double size, List<String> dateStrings})?
-      getDisplayDate(Task task, BuildContext context) {
-    final defaultColor = Theme.of(context).colorScheme.secondary;
-    const icon = Icons.event_rounded;
-    const size = 13.0;
-    final dueDate = task.dueDate;
-
-    if (dueDate == null) {
-      return null;
+  Future<void> _updateBadge(List<Task> tasks, bool showBadge) async {
+    if (!showBadge) {
+      FlutterAppBadger.removeBadge();
+      return;
     }
-    final dueDateEnd = dueDate.end;
-
-    Color determineColor(TaskDate dueDate) {
-      final now = DateTime.now();
-      final dueDateEnd = dueDate.end;
-      if (dueDateEnd == null &&
-          d.isToday(DateTime.parse(dueDate.start)) &&
-          !d.hasTime(dueDate.start)) {
-        return Theme.of(context).colorScheme.tertiary; // 今日だったら青
-      }
-
-      if ((dueDateEnd != null && DateTime.parse(dueDateEnd).isBefore(now)) ||
-          (dueDateEnd == null && DateTime.parse(dueDate.start).isBefore(now))) {
-        return Theme.of(context).colorScheme.error; // 過ぎてたら赤
-      }
-
-      return defaultColor; // それ以外は灰色
-    }
-
-    final c = determineColor(dueDate);
-
-    List<String> dateStrings = [
-      d.formatDateTime(dueDate.start, showToday: _filterType == FilterType.all),
-      if (dueDateEnd != null)
-        d.formatDateTime(dueDateEnd, showToday: _filterType == FilterType.all),
-    ].whereType<String>().toList();
-
-    return (
-      color: c,
-      icon: icon,
-      size: size,
-      dateStrings: dateStrings,
-    );
-  }
-
-  Future<void> _updateBadge(List<Task> tasks) async {
     final notCompletedCount = tasks.where((task) => !task.isCompleted).length;
     await FlutterAppBadger.updateBadgeCount(notCompletedCount);
   }

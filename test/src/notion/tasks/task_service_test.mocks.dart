@@ -83,6 +83,26 @@ class MockNotionTaskRepository extends _i1.Mock
       );
 
   @override
+  _i5.Future<bool> loadShowCompleted() => (super.noSuchMethod(
+        Invocation.method(
+          #loadShowCompleted,
+          [],
+        ),
+        returnValue: _i5.Future<bool>.value(false),
+        returnValueForMissingStub: _i5.Future<bool>.value(false),
+      ) as _i5.Future<bool>);
+
+  @override
+  _i5.Future<void> saveShowCompleted(bool? value) => (super.noSuchMethod(
+        Invocation.method(
+          #saveShowCompleted,
+          [value],
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
+
+  @override
   _i5.Future<dynamic> fetchPages(
     _i3.FilterType? filterType,
     bool? hasCompleted, {
@@ -104,14 +124,16 @@ class MockNotionTaskRepository extends _i1.Mock
   @override
   _i5.Future<dynamic> addTask(
     String? title,
-    String? dueDate,
+    String? startDate,
+    String? endDate,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
           #addTask,
           [
             title,
-            dueDate,
+            startDate,
+            endDate,
           ],
         ),
         returnValue: _i5.Future<dynamic>.value(),
@@ -122,7 +144,8 @@ class MockNotionTaskRepository extends _i1.Mock
   _i5.Future<dynamic> updateTask(
     String? taskId,
     String? title,
-    String? dueDate,
+    String? startDate,
+    String? endDate,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -130,7 +153,8 @@ class MockNotionTaskRepository extends _i1.Mock
           [
             taskId,
             title,
-            dueDate,
+            startDate,
+            endDate,
           ],
         ),
         returnValue: _i5.Future<dynamic>.value(),
@@ -138,16 +162,33 @@ class MockNotionTaskRepository extends _i1.Mock
       ) as _i5.Future<dynamic>);
 
   @override
-  _i5.Future<dynamic> updateStatus(
+  _i5.Future<dynamic> updateCompleteStatus(
     String? taskId,
     bool? isCompleted,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
-          #updateStatus,
+          #updateCompleteStatus,
           [
             taskId,
             isCompleted,
+          ],
+        ),
+        returnValue: _i5.Future<dynamic>.value(),
+        returnValueForMissingStub: _i5.Future<dynamic>.value(),
+      ) as _i5.Future<dynamic>);
+
+  @override
+  _i5.Future<dynamic> updateInProgressStatus(
+    String? taskId,
+    bool? isInProgress,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #updateInProgressStatus,
+          [
+            taskId,
+            isInProgress,
           ],
         ),
         returnValue: _i5.Future<dynamic>.value(),

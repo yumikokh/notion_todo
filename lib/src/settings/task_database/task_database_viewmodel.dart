@@ -43,8 +43,8 @@ class TaskDatabaseViewModel extends _$TaskDatabaseViewModel {
     final taskDatabase = TaskDatabase(
         id: selectedTaskDatabase.id,
         name: selectedTaskDatabase.name,
-        status: selectedTaskDatabase.status!,
-        date: selectedTaskDatabase.date!,
+        status: selectedTaskDatabase.status!, // TODO: !消す
+        date: selectedTaskDatabase.date!, // TODO: !消す
         title: selectedTaskDatabase.title);
     state = const AsyncValue.loading();
     try {

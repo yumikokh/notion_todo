@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../common/error.dart';
 import '../../helpers/date.dart';
@@ -19,6 +20,7 @@ class NotionTaskRepository {
   final TaskDatabase database;
   late final Map<String, String> headers;
 
+  static const _showCompletedKey = 'showCompleted';
   static final DateHelper d = DateHelper();
   static const _pageSize = 100; // NOTE: NotionAPIの最大許容サイズ
 
@@ -28,6 +30,16 @@ class NotionTaskRepository {
       'Notion-Version': '2022-06-28',
       'Authorization': 'Bearer $accessToken'
     };
+  }
+
+  Future<bool> loadShowCompleted() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_showCompletedKey) ?? false;
+  }
+
+  Future<void> saveShowCompleted(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_showCompletedKey, value);
   }
 
   Future fetchPages(FilterType filterType, bool hasCompleted,
@@ -70,7 +82,9 @@ class NotionTaskRepository {
               },
               ...getNotCompleteStatusFilter(statusProperty)
             ]
-          }
+          },
+          // 進行中のタスク
+          ...getInProgressStatusFilter(db)
         ]
       };
     } else if (filterType == FilterType.all && !hasCompleted) {
@@ -105,7 +119,7 @@ class NotionTaskRepository {
     };
   }
 
-  Future addTask(String title, String? dueDate) async {
+  Future addTask(String title, String? startDate, String? endDate) async {
     final db = database;
     final status = db.status;
     final statusReady = switch (status) {
@@ -128,9 +142,9 @@ class NotionTaskRepository {
         ]
       },
       db.status.name: statusReady,
-      if (dueDate != null)
+      if (startDate != null)
         db.date.name: {
-          "date": {"start": dueDate}
+          "date": {"start": startDate, if (endDate != null) "end": endDate}
         }
     };
 
@@ -149,7 +163,8 @@ class NotionTaskRepository {
     return data;
   }
 
-  Future updateTask(String taskId, String title, String? dueDate) async {
+  Future updateTask(
+      String taskId, String title, String? startDate, String? endDate) async {
     final db = database;
     if (db.id.isEmpty) {
       return;
@@ -166,9 +181,10 @@ class NotionTaskRepository {
       },
       db.date.name: {
         "id": db.date.id,
-        "date": dueDate != null
+        "date": startDate != null
             ? {
-                "start": dueDate,
+                "start": startDate,
+                if (endDate != null) "end": endDate,
                 // timezoneは時間指定しないとエラーになる see: https://developers.notion.com/changelog/time-zone-support
                 // REVIEW: 時間指定がないときのtimezoneがあっているか？
                 // if (dueDate.contains('T')) "time_zone": "Asia/Tokyo",
@@ -184,7 +200,7 @@ class NotionTaskRepository {
     return jsonDecode(res.body);
   }
 
-  Future updateStatus(String taskId, bool isCompleted) async {
+  Future updateCompleteStatus(String taskId, bool isCompleted) async {
     final db = database;
     if (db.id.isEmpty) {
       return;
@@ -203,6 +219,39 @@ class NotionTaskRepository {
           "status": {"name": todoOption?.name ?? 'To-do'}
         },
       (CheckboxCompleteStatusProperty(), _) => {"checkbox": isCompleted},
+    };
+
+    final res = await http.patch(
+      Uri.parse('https://api.notion.com/v1/pages/$taskId'),
+      headers: headers,
+      body: jsonEncode({
+        "properties": {status.name: statusProperties},
+      }),
+    );
+    return jsonDecode(res.body);
+  }
+
+  Future updateInProgressStatus(String taskId, bool isInProgress) async {
+    final db = database;
+    if (db.id.isEmpty) {
+      return;
+    }
+
+    final status = db.status;
+
+    final statusProperties = switch ((status, isInProgress)) {
+      (
+        StatusCompleteStatusProperty(inProgressOption: var inProgressOption),
+        true
+      ) =>
+        {
+          "status": {"name": inProgressOption?.name ?? 'In Progress'}
+        },
+      (StatusCompleteStatusProperty(todoOption: var todoOption), false) => {
+          "status": {"name": todoOption?.name ?? 'To-do'}
+        },
+      // checkboxは更新しない
+      (CheckboxCompleteStatusProperty(), _) => {"checkbox": false},
     };
 
     final res = await http.patch(
@@ -240,7 +289,8 @@ List<dynamic> getNotCompleteStatusFilter(CompleteStatusProperty property) {
   switch (property) {
     case StatusCompleteStatusProperty(status: var status):
       final optionIds = status.groups
-              .where((e) => e.name == 'Complete')
+              .where(
+                  (e) => e.name.toLowerCase() == StatusGroupType.complete.name)
               .firstOrNull
               ?.optionIds ??
           [];
@@ -262,6 +312,26 @@ List<dynamic> getNotCompleteStatusFilter(CompleteStatusProperty property) {
           "checkbox": {"equals": false}
         }
       ];
+  }
+}
+
+List<dynamic> getInProgressStatusFilter(TaskDatabase database) {
+  switch (database.status) {
+    case StatusCompleteStatusProperty(
+        name: var name,
+        inProgressOption: var inProgressOption
+      ):
+      if (inProgressOption == null) {
+        return [];
+      }
+      return [
+        {
+          "property": name,
+          "status": {"equals": inProgressOption.name}
+        }
+      ];
+    case CheckboxCompleteStatusProperty():
+      return [];
   }
 }
 

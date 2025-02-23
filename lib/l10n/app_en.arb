@@ -27,10 +27,12 @@
   "database": "Database",
   "status_property": "Status Property",
   "status_property_todo_option": "To-do Option",
+  "status_property_in_progress_option": "In Progress Option",
   "status_property_complete_option": "Complete Option",
   "date_property": "Date Property",
-  "todo_option_description": "Option for not completed",
-  "complete_option_description": "Option for completed",
+  "todo_option_description": "Status for not completed",
+  "in_progress_option_description": "Status for in progress",
+  "complete_option_description": "Status for completed",
   "status_property_description": "Type: Status, Checkbox",
   "date_property_description": "Type: Date",
   "save": "Save",
@@ -56,6 +58,7 @@
   "navigation_today": "Today",
   "task_sheet_title_hint": "Enter the task name",
   "today": "Today",
+  "yesterday": "Yesterday",
   "tomorrow": "Tomorrow",
   "undetermined": "Not set",
   "select_date": "Select Date",
@@ -93,7 +96,7 @@
       }
     }
   },
-  "task_update_status_success": "\"{title}\" Completed 🎉",
+  "task_update_status_success": "\"{title}\" completed 🎉",
   "@task_update_status_success": {
     "placeholders": {
       "title": {
@@ -101,7 +104,7 @@
       }
     }
   },
-  "task_update_status_undo": "\"{title}\" Undone.",
+  "task_update_status_undo": "\"{title}\" marked as incomplete",
   "@task_update_status_undo": {
     "placeholders": {
       "title": {
@@ -110,7 +113,7 @@
     }
   },
   "task_update_status_failed": "Failed to update status",
-  "task_delete_success": "\"{title}\" Deleted.",
+  "task_delete_success": "\"{title}\" deleted",
   "@task_delete_success": {
     "placeholders": {
       "title": {
@@ -181,6 +184,59 @@
     "placeholders": {
       "setting": {
         "type": "String"
+      }
+    }
+  },
+  "task_update_status_in_progress": "\"{title}\" marked as in progress",
+  "@task_update_status_in_progress": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "task_update_status_todo": "\"{title}\" marked as to-do",
+  "@task_update_status_todo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "task_star_button_dialog_title": "In Progress Option Not Set",
+  "task_star_button_dialog_content": "Set up the In Progress option in database settings to track what you should focus on!",
+  "task_star_button_dialog_cancel": "Cancel",
+  "task_star_button_dialog_settings": "Settings",
+  "notifications": "Notifications",
+  "showNotificationBadge": "Show notification badge",
+  "select_time": "Select time",
+  "no_time": "No time",
+  "start_time": "Start time",
+  "duration": "Duration",
+  "duration_format_minutes": "{minutes}min",
+  "@duration_format_minutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "duration_format_hours": "{hours}h",
+  "@duration_format_hours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "duration_format_hours_minutes": "{hours}h {minutes}min",
+  "@duration_format_hours_minutes": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
       }
     }
   }

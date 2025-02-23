@@ -1,13 +1,19 @@
 import 'package:intl/intl.dart';
-
 import '../common/locale.dart';
 
 class DateHelper {
   static final DateHelper _instance = DateHelper._();
   late AppLocale locale;
+  DateTime Function() _now = DateTime.now;
 
   DateHelper._() : locale = AppLocale.en;
   factory DateHelper() => _instance;
+
+  // テスト用
+  void setNow(DateTime now) {
+    _now = () => now;
+  }
+
   setup(String locale) {
     this.locale = AppLocale.values.firstWhere(
       (l) => l.name == locale,
@@ -16,14 +22,29 @@ class DateHelper {
   }
 
   bool isThisDay(DateTime? a, DateTime? b) {
-    if (a == null || b == null) {
-      return a == b;
+    final aLocal = a?.toLocal();
+    final bLocal = b?.toLocal();
+    if (aLocal == null || bLocal == null) {
+      return aLocal == bLocal;
     }
-    return a.year == b.year && a.month == b.month && a.day == b.day;
+    return aLocal.year == bLocal.year &&
+        aLocal.month == bLocal.month &&
+        aLocal.day == bLocal.day;
   }
 
   bool isToday(DateTime? date) {
-    return isThisDay(date, DateTime.now());
+    return isThisDay(date, _now());
+  }
+
+  bool isSameDay(DateTime? a, DateTime? b) {
+    final aLocal = a?.toLocal();
+    final bLocal = b?.toLocal();
+    if (aLocal == null || bLocal == null) {
+      return aLocal == bLocal;
+    }
+    return aLocal.year == bLocal.year &&
+        aLocal.month == bLocal.month &&
+        aLocal.day == bLocal.day;
   }
 
   DateTime endTimeOfDay(DateTime date) {
@@ -55,38 +76,39 @@ class DateHelper {
     return locale == AppLocale.ja ? '明日' : 'Tomorrow';
   }
 
-  String? formatDateTime(String dateTime, {bool showToday = false}) {
-    final parsed = DateTime.parse(dateTime).toLocal();
+  /// @param dateTime NotionDateTime(UTC)
+  String? formatDateTime(DateTime dateTime, bool isAllDay,
+      {bool showToday = false, bool showOnlyTime = false}) {
+    final parsed = dateTime.toLocal(); // ローカルタイムに変換
     final date = DateTime(parsed.year, parsed.month, parsed.day);
-    final now = DateTime.now();
+    final now = _now();
     final today = DateTime(now.year, now.month, now.day);
     final yesterday = DateTime(now.year, now.month, now.day - 1);
     final tomorrow = DateTime(now.year, now.month, now.day + 1);
 
     String? formatText() {
+      if (showOnlyTime && !isAllDay) {
+        return "H:mm";
+      }
       if (date == today) {
         if (!showToday) {
-          return hasTime(dateTime) ? "HH:mm" : null;
+          return isAllDay ? null : "H:mm";
         }
-        return hasTime(dateTime) ? "'$todayString' HH:mm" : "'$todayString'";
+        return isAllDay ? "'$todayString'" : "'$todayString' H:mm";
       }
       if (date == yesterday) {
-        return hasTime(dateTime)
-            ? "'$yesterdayString' HH:mm"
-            : "'$yesterdayString'";
+        return isAllDay ? "'$yesterdayString'" : "'$yesterdayString' H:mm";
       }
       if (date == tomorrow) {
-        return hasTime(dateTime)
-            ? "'$tomorrowString' HH:mm"
-            : "'$tomorrowString'";
+        return isAllDay ? "'$tomorrowString'" : "'$tomorrowString' H:mm";
       }
       if (date.year == today.year) {
         if (date.month == today.month) {
-          return hasTime(dateTime) ? "dd E HH:mm" : "dd E";
+          return isAllDay ? "d E" : "d E H:mm";
         }
-        return hasTime(dateTime) ? "MM/dd HH:mm" : "MM/dd";
+        return isAllDay ? "M/d" : "M/d H:mm";
       }
-      return 'yyyy/MM/dd';
+      return isAllDay ? 'yyyy/M/d' : 'yyyy/M/d H:mm';
     }
 
     final format = formatText();

@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../settings/theme/theme.dart';
+import '../../model/task.dart';
 
 // レコードクラスの定義を追加
 class DateChipData {
   final String text;
-  final DateTime? date;
+  final NotionDateTime? date;
   final IconData icon;
   final Color color;
   final Color onColor;
@@ -25,14 +26,20 @@ List<DateChipData> dateStyleConfigs(BuildContext context) {
   return [
     DateChipData(
       text: l.today,
-      date: DateTime.now(),
+      date: NotionDateTime(
+        datetime: DateTime.now(),
+        isAllDay: true,
+      ),
       icon: Icons.calendar_today_rounded,
       color: MaterialTheme(Theme.of(context).textTheme).extendedColors[1].value,
       onColor: Theme.of(context).colorScheme.onTertiaryContainer,
     ),
     DateChipData(
       text: l.tomorrow,
-      date: DateTime.now().add(const Duration(days: 1)),
+      date: NotionDateTime(
+        datetime: DateTime.now().add(const Duration(days: 1)),
+        isAllDay: true,
+      ),
       icon: Icons.upcoming_rounded,
       color: MaterialTheme(Theme.of(context).textTheme).extendedColors[0].value,
       onColor: Theme.of(context).colorScheme.onTertiaryContainer,

@@ -98,17 +98,12 @@ class TaskDatabaseService {
             return DateProperty(
               id: id,
               name: name,
-              date: property['date'].isEmpty
-                  ? null
-                  : DateTime.parse(property['date']['start']),
             );
           case 'checkbox':
             return CheckboxCompleteStatusProperty(
               id: id,
               name: name,
-              checked: property['checkbox'].isEmpty
-                  ? false
-                  : property['checkbox']['checked'],
+              checked: false,
             );
           case 'status':
             final options = (property['status']['options'] as List<dynamic>)
@@ -125,6 +120,7 @@ class TaskDatabaseService {
                 groups: groups,
               ),
               todoOption: null,
+              inProgressOption: null,
               completeOption: null,
             );
           default:

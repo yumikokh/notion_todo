@@ -31,8 +31,6 @@ const _$PropertyTypeEnumMap = {
 DateProperty _$DatePropertyFromJson(Map<String, dynamic> json) => DateProperty(
       id: json['id'] as String,
       name: json['name'] as String,
-      date:
-          json['date'] == null ? null : DateTime.parse(json['date'] as String),
     )..type = $enumDecode(_$PropertyTypeEnumMap, json['type']);
 
 Map<String, dynamic> _$DatePropertyToJson(DateProperty instance) =>
@@ -40,7 +38,6 @@ Map<String, dynamic> _$DatePropertyToJson(DateProperty instance) =>
       'id': instance.id,
       'name': instance.name,
       'type': _$PropertyTypeEnumMap[instance.type]!,
-      'date': instance.date?.toIso8601String(),
     };
 
 CheckboxCompleteStatusProperty _$CheckboxCompleteStatusPropertyFromJson(
@@ -79,6 +76,10 @@ StatusCompleteStatusProperty _$StatusCompleteStatusPropertyFromJson(
       todoOption: json['todoOption'] == null
           ? null
           : StatusOption.fromJson(json['todoOption'] as Map<String, dynamic>),
+      inProgressOption: json['inProgressOption'] == null
+          ? null
+          : StatusOption.fromJson(
+              json['inProgressOption'] as Map<String, dynamic>),
       completeOption: json['completeOption'] == null
           ? null
           : StatusOption.fromJson(
@@ -96,6 +97,7 @@ Map<String, dynamic> _$StatusCompleteStatusPropertyToJson(
         'options': instance.status.options,
       },
       'todoOption': instance.todoOption,
+      'inProgressOption': instance.inProgressOption,
       'completeOption': instance.completeOption,
     };
 
@@ -134,3 +136,25 @@ Map<String, dynamic> _$StatusGroupToJson(StatusGroup instance) =>
       'color': instance.color,
       'option_ids': instance.optionIds,
     };
+
+StatusOptionsByGroup _$StatusOptionsByGroupFromJson(
+        Map<String, dynamic> json) =>
+    StatusOptionsByGroup(
+      groupType: $enumDecode(_$StatusGroupTypeEnumMap, json['groupType']),
+      options: (json['options'] as List<dynamic>)
+          .map((e) => StatusOption.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+
+Map<String, dynamic> _$StatusOptionsByGroupToJson(
+        StatusOptionsByGroup instance) =>
+    <String, dynamic>{
+      'groupType': _$StatusGroupTypeEnumMap[instance.groupType]!,
+      'options': instance.options,
+    };
+
+const _$StatusGroupTypeEnumMap = {
+  StatusGroupType.todo: 'todo',
+  StatusGroupType.inProgress: 'inProgress',
+  StatusGroupType.complete: 'complete',
+};
