@@ -5,17 +5,22 @@ class DurationPicker extends StatelessWidget {
     super.key,
     required this.initialDuration,
     required this.onDurationChanged,
-    this.maxHours = 16,
+    this.maxHours = 24,
     this.maxMinutes = 60,
+    this.minuteInterval = 1,
   });
 
   final Duration? initialDuration;
   final void Function(Duration) onDurationChanged;
   final int maxHours;
   final int maxMinutes;
+  final int minuteInterval;
 
   @override
   Widget build(BuildContext context) {
+    final hours = initialDuration?.inHours ?? 0;
+    final minutes = initialDuration?.inMinutes.remainder(60) ?? 0;
+
     return Row(
       children: [
         Expanded(
@@ -24,12 +29,12 @@ class DurationPicker extends StatelessWidget {
             onSelectedItemChanged: (index) {
               final duration = Duration(
                 hours: index,
-                minutes: initialDuration?.inMinutes.remainder(60) ?? 0,
+                minutes: minutes,
               );
               onDurationChanged(duration);
             },
             scrollController: FixedExtentScrollController(
-              initialItem: initialDuration?.inHours ?? 0,
+              initialItem: hours,
             ),
             children: List.generate(maxHours + 1, (index) {
               return Center(child: Text('$index'));
@@ -43,16 +48,18 @@ class DurationPicker extends StatelessWidget {
             onSelectedItemChanged: (index) {
               final duration = Duration(
                 hours: initialDuration?.inHours ?? 0,
-                minutes: index,
+                minutes: index * minuteInterval,
               );
               onDurationChanged(duration);
             },
             scrollController: FixedExtentScrollController(
-              initialItem: initialDuration?.inMinutes.remainder(60) ?? 0,
+              initialItem: minutes ~/ minuteInterval,
             ),
-            children: List.generate(maxMinutes, (index) {
+            children:
+                List.generate((maxMinutes / minuteInterval).ceil(), (index) {
               return Center(
-                child: Text(index.toString().padLeft(2, '0')),
+                child:
+                    Text((index * minuteInterval).toString().padLeft(2, '0')),
               );
             }),
           ),

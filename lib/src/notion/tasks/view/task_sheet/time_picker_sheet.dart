@@ -143,8 +143,22 @@ class TimePickerSheet extends StatelessWidget {
                                 _viewModel.currentRoundTime);
                             return;
                           }
+
                           final initialDateTime =
                               _viewModel.selectedStartDateTime;
+                          // 15分刻みに切り上げる
+                          final roundedDateTime = initialDateTime != null
+                              ? DateTime(
+                                  initialDateTime.year,
+                                  initialDateTime.month,
+                                  initialDateTime.day,
+                                  initialDateTime.hour,
+                                  ((initialDateTime.minute + 14) ~/ 15) * 15,
+                                )
+                              : null;
+                          if (roundedDateTime != null) {
+                            _viewModel.handleStartTimeSelected(roundedDateTime);
+                          }
 
                           _showTimePickerDialog(
                             context: context,
@@ -152,7 +166,8 @@ class TimePickerSheet extends StatelessWidget {
                             child: CupertinoDatePicker(
                               mode: CupertinoDatePickerMode.time,
                               use24hFormat: true,
-                              initialDateTime: initialDateTime,
+                              minuteInterval: 15,
+                              initialDateTime: roundedDateTime,
                               onDateTimeChanged:
                                   _viewModel.handleStartTimeSelected,
                             ),
@@ -186,13 +201,31 @@ class TimePickerSheet extends StatelessWidget {
                                 ),
                               ),
                               onPressed: () {
+                                final duration = _viewModel.currentDuration;
+                                const interval = 5;
+                                // 5分間隔に丸める
+                                final roundedDuration = duration != null
+                                    ? Duration(
+                                        hours: duration.inHours,
+                                        minutes: ((duration.inMinutes % 60 +
+                                                    (interval - 1)) ~/
+                                                interval) *
+                                            interval)
+                                    : Duration.zero;
+
+                                // 丸めた値で初期化
+                                _viewModel
+                                    .handleDurationSelected(roundedDuration);
+
                                 _showTimePickerDialog(
                                   context: context,
                                   key: _durationKey,
                                   child: DurationPicker(
-                                    initialDuration: _viewModel.currentDuration,
+                                    initialDuration: roundedDuration,
                                     onDurationChanged:
                                         _viewModel.handleDurationSelected,
+                                    maxHours: 16,
+                                    minuteInterval: interval,
                                   ),
                                 );
                               },
