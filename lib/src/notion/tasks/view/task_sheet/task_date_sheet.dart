@@ -70,7 +70,7 @@ class TaskDateSheet extends HookWidget {
                       },
                       segments: options
                           .map((dt) => ButtonSegment(
-                              value: dt.date?.submitFormat,
+                              value: dt.date?.submitFormat ?? 'no-date',
                               icon: Icon(dt.icon, size: 14),
                               label: Text(dt.text,
                                   style: const TextStyle(fontSize: 12))))

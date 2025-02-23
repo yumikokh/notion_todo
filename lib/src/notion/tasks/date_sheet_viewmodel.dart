@@ -37,28 +37,57 @@ class DateSheetViewModel extends ChangeNotifier {
     return DateTime.now().add(const Duration(days: 365));
   }
 
-  String? get selectedSegment {
+  String get selectedSegment {
     final selectedDateTime = _selectedDateTime;
-    if (selectedDateTime == null) return null;
-    if (selectedDateTime.end == null) {
-      return selectedDateTime.start.submitFormat;
-    }
-    return 'none';
+    if (selectedDateTime == null) return 'no-date';
+    return selectedDateTime.start.submitFormat.split('T')[0];
   }
 
   // セグメントが変更されたときの処理
   void handleSegmentChanged(Set<Object?> selectedSet) {
     TaskDate? date;
+    if (selectedSet.isEmpty) return;
+
     final first = selectedSet.first;
-    if (first == null) {
+    if (first == 'no-date') {
       date = null;
+    } else if (first is String) {
+      final start = NotionDateTime.fromString(first);
+      final selectedDateTime = _selectedDateTime;
+      if (selectedDateTime != null && !selectedDateTime.start.isAllDay) {
+        // 既存の時間を保持
+        final localTime = selectedDateTime.start.datetime.toLocal();
+        final end = selectedDateTime.end;
+        final duration =
+            end?.datetime.difference(selectedDateTime.start.datetime);
+        final newStartDateTime = DateTime(
+          start.datetime.year,
+          start.datetime.month,
+          start.datetime.day,
+          localTime.hour,
+          localTime.minute,
+        );
+        final newEnd = duration != null && end != null
+            ? NotionDateTime(
+                datetime: newStartDateTime.add(duration),
+                isAllDay: end.isAllDay,
+              )
+            : null;
+        date = TaskDate(
+          start: NotionDateTime(
+            datetime: newStartDateTime,
+            isAllDay: false,
+          ),
+          end: newEnd,
+        );
+      } else {
+        date = TaskDate(
+          start: start,
+          end: null,
+        );
+      }
     }
-    if (first is String) {
-      date = TaskDate(
-        start: NotionDateTime.fromString(first),
-        end: null,
-      );
-    }
+
     _selectedDateTime = date;
     _focusedDay = date?.start.datetime ?? DateTime.now();
     notifyListeners();
@@ -109,30 +138,18 @@ class DateSheetViewModel extends ChangeNotifier {
   void clearTime() {
     final selectedDateTime = _selectedDateTime;
     if (selectedDateTime == null) return;
-
     final start = selectedDateTime.start.datetime.toLocal();
-    final end = selectedDateTime.end?.datetime.toLocal();
 
     _selectedDateTime = TaskDate(
-      start: NotionDateTime(
-        datetime: DateTime(
-          start.year,
-          start.month,
-          start.day,
+        start: NotionDateTime(
+          datetime: DateTime(
+            start.year,
+            start.month,
+            start.day,
+          ),
+          isAllDay: true,
         ),
-        isAllDay: true,
-      ),
-      end: end != null
-          ? NotionDateTime(
-              datetime: DateTime(
-                end.year,
-                end.month,
-                end.day,
-              ),
-              isAllDay: true,
-            )
-          : null,
-    );
+        end: null);
 
     notifyListeners();
   }
