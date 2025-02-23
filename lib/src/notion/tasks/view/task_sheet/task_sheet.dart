@@ -53,7 +53,7 @@ class TaskSheet extends HookWidget {
       ),
       child: Wrap(children: <Widget>[
         Padding(
-          padding: const EdgeInsets.fromLTRB(40, 20, 40, 20),
+          padding: const EdgeInsets.fromLTRB(24, 8, 24, 30),
           child: Column(
             children: [
               TextField(
@@ -70,51 +70,47 @@ class TaskSheet extends HookWidget {
                   }
                 },
               ),
-              const SizedBox(height: 16),
-              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                DateChip(
-                  date: selectedDueDate.value,
-                  context: context,
-                  onSelected: (selected) {
-                    showModalBottomSheet(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      context: context,
-                      builder: (context) => TaskDateSheet(
-                        selectedDate: selectedDueDate.value,
-                        onSelected: (TaskDate? date) {
-                          changeDueDate(date);
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: DateChip(
+                        date: selectedDueDate.value,
+                        context: context,
+                        onSelected: (selected) {
+                          showModalBottomSheet(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            context: context,
+                            builder: (context) => TaskDateSheet(
+                              selectedDate: selectedDueDate.value,
+                              onSelected: (TaskDate? date) {
+                                changeDueDate(date);
+                              },
+                            ),
+                          );
                         },
+                        onDeleted: () => changeDueDate(null),
                       ),
-                    );
-                  },
-                  onDeleted: () => changeDueDate(null),
-                ),
-                Row(
-                  children: [
-                    // いったん削除ボタンは非表示
-                    // if (onDeleted != null)
-                    //   IconButton(
-                    //     onPressed: () async {
-                    //       Navigator.pop(context);
-                    //       onDeleted!();
-                    //     },
-                    //     icon: const Icon(Icons.delete),
-                    //   ),
-                    IconButton.filled(
-                      onPressed: isValidTitle.value
-                          ? () {
-                              Navigator.pop(context);
-                              onSubmitted(
-                                  titleController.text, selectedDueDate.value);
-                            }
-                          : null,
-                      icon: const Icon(Icons.arrow_forward_rounded),
                     ),
-                  ],
-                ),
-              ]),
+                  ),
+                  const SizedBox(width: 4),
+                  IconButton.filled(
+                    onPressed: isValidTitle.value
+                        ? () {
+                            Navigator.pop(context);
+                            onSubmitted(
+                                titleController.text, selectedDueDate.value);
+                          }
+                        : null,
+                    icon: const Icon(Icons.arrow_forward_rounded),
+                  ),
+                ],
+              ),
             ],
           ),
         ),

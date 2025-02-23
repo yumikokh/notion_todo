@@ -26,20 +26,25 @@ class DateChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     return InputChip(
-        label: date == null
-            ? Text(l.select_date)
-            : DateLabel(
-                date: date,
-                context: context,
-                showColor: false,
-                showToday: true,
-                showIcon: false),
-        selected: selected,
-        onDeleted: selected ? onDeleted : null,
-        onSelected: onSelected,
-        deleteIcon: const Icon(Icons.clear),
-        showCheckmark: false,
-        labelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-        avatar: const Icon(Icons.event_rounded, size: 14));
+      label: date == null
+          ? Text(l.select_date)
+          : DateLabel(
+              date: date,
+              context: context,
+              showColor: false,
+              showToday: true,
+              showIcon: false),
+      selected: selected,
+      onDeleted: selected ? onDeleted : null,
+      onSelected: onSelected,
+      deleteIcon: const Icon(Icons.clear),
+      showCheckmark: false,
+      labelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+      avatar: const Icon(Icons.event_rounded, size: 14),
+      visualDensity: VisualDensity.compact,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(6),
+      ),
+    );
   }
 }

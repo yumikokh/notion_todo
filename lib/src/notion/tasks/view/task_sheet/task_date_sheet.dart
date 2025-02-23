@@ -58,9 +58,7 @@ class TaskDateSheet extends HookWidget {
                     SegmentedButton(
                       expandedInsets: const EdgeInsets.symmetric(horizontal: 0),
                       emptySelectionAllowed: true,
-                      selected: {
-                        viewModel.selectedDateTime?.start.submitFormat
-                      },
+                      selected: {viewModel.selectedSegment},
                       onSelectionChanged: (selectedSet) {
                         viewModel.handleSegmentChanged(selectedSet);
                         onSelected(viewModel.selectedDateTime);

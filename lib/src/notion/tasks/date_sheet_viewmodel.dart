@@ -37,6 +37,15 @@ class DateSheetViewModel extends ChangeNotifier {
     return DateTime.now().add(const Duration(days: 365));
   }
 
+  String? get selectedSegment {
+    final selectedDateTime = _selectedDateTime;
+    if (selectedDateTime == null) return null;
+    if (selectedDateTime.end == null) {
+      return selectedDateTime.start.submitFormat;
+    }
+    return 'none';
+  }
+
   // セグメントが変更されたときの処理
   void handleSegmentChanged(Set<Object?> selectedSet) {
     TaskDate? date;
@@ -72,8 +81,18 @@ class DateSheetViewModel extends ChangeNotifier {
       ),
     );
 
+    // 終了日がある場合は、もともとの間隔を保持
+    final end = selectedDateTime.end;
+    final duration = end?.datetime.difference(selectedDateTime.start.datetime);
+    final newEnd = duration != null && end != null
+        ? NotionDateTime(
+            datetime: start.datetime.add(duration),
+            isAllDay: end.isAllDay,
+          )
+        : null;
+
     // 終了日は削除
-    _selectedDateTime = TaskDate(start: start);
+    _selectedDateTime = TaskDate(start: start, end: newEnd);
     _focusedDay = focusedDate;
 
     notifyListeners();
