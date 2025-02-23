@@ -40,9 +40,8 @@ class TimeRangeLabel extends StatelessWidget {
         ? minutes > 0
             ? l10n.duration_format_hours_minutes(hours, minutes)
             : l10n.duration_format_hours(hours)
-        : minutes > 0
-            ? l10n.duration_format_minutes(minutes)
-            : '';
+        : l10n.duration_format_minutes(minutes);
+
     return '($timeStr)';
   }
 

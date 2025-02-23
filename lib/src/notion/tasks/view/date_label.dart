@@ -51,6 +51,9 @@ class DateLabel extends StatelessWidget {
     final dueDateEnd = dueDate.end;
     final isSameDay = dueDateEnd != null &&
         d.isSameDay(dueDateStart.datetime, dueDateEnd.datetime);
+    final noTime = dueDateStart.isAllDay;
+    // NOTE: showToday=falseでも、今日 -> 今日は表示する
+    final showToday = (noTime && isSameDay) || this.showToday;
 
     return [
       d.formatDateTime(dueDateStart.datetime, dueDateStart.isAllDay,

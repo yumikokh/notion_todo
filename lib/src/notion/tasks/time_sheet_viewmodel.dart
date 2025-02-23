@@ -94,7 +94,7 @@ class TimeSheetViewModel extends ChangeNotifier {
         datetime: start,
         isAllDay: false,
       ),
-      end: currentDuration != null
+      end: currentDuration != null && currentDuration!.inMinutes > 0
           ? NotionDateTime(
               datetime: start.add(currentDuration!),
               isAllDay: false,
