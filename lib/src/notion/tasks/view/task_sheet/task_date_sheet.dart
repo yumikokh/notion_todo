@@ -46,7 +46,7 @@ class TaskDateSheet extends HookWidget {
                           onPressed: () => Navigator.pop(context),
                         ),
                         TextButton(
-                          child: const Text('決定',
+                          child: const Text('保存',
                               style: TextStyle(fontWeight: FontWeight.bold)),
                           onPressed: () {
                             onSelected(viewModel.selectedDateTime);

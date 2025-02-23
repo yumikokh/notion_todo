@@ -12,6 +12,17 @@ class TimeSheetViewModel extends ChangeNotifier {
 
   static final dateHelper = DateHelper();
 
+  static const _durations = [
+    Duration(minutes: 15),
+    Duration(minutes: 30),
+    Duration(minutes: 45),
+    Duration(minutes: 60),
+    Duration(minutes: 90),
+    Duration(minutes: 120),
+    Duration(minutes: 240),
+    Duration(minutes: 480),
+  ];
+
   TaskDate? _selectedDateTime;
   TaskDate? get selectedDateTime => _selectedDateTime;
   DateTime? get selectedStartDateTime =>
@@ -25,6 +36,26 @@ class TimeSheetViewModel extends ChangeNotifier {
     if (start == null || end == null) return null;
     return end.difference(start);
   }
+
+  List<Duration> get durations => _durations;
+  List<String> get durationLabels => _durations.map((e) {
+        if (e.inHours == 0) {
+          return '${e.inMinutes}分';
+        } else {
+          return e.inMinutes % 60 == 0
+              ? '${e.inHours}時間'
+              : '${e.inHours}.${(e.inMinutes % 60 * 10 / 60).round()}時間';
+        }
+      }).toList();
+
+  String get startTimeLabel => selectedDateTime?.start.isAllDay != true
+      ? '${selectedStartDateTime!.hour}:${selectedStartDateTime!.minute.toString().padLeft(2, '0')}'
+      : '指定なし';
+
+  String get durationLabel => (_selectedDateTime?.end != null &&
+          _selectedDateTime?.end?.isAllDay != true)
+      ? '${currentDuration!.inHours}:${(currentDuration!.inMinutes % 60).toString().padLeft(2, '0')}'
+      : '指定なし';
 
   // 次に15分単位になる時間
   DateTime get currentRoundTime {

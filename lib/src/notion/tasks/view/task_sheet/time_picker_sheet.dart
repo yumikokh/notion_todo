@@ -12,15 +12,6 @@ class TimePickerSheet extends StatelessWidget {
   final GlobalKey _durationKey = GlobalKey();
   final TimeSheetViewModel _viewModel;
 
-  static const durations = [
-    Duration(minutes: 30),
-    Duration(minutes: 60),
-    Duration(minutes: 90),
-    Duration(minutes: 120),
-    Duration(minutes: 240),
-    Duration(minutes: 480),
-  ];
-
   TimePickerSheet({
     super.key,
     required this.initialDate,
@@ -121,7 +112,7 @@ class TimePickerSheet extends StatelessWidget {
                         onPressed: () {
                           onSelected(_viewModel.selectedDateTime);
                         },
-                        child: const Text('決定',
+                        child: const Text('保存',
                             style: TextStyle(fontWeight: FontWeight.bold)),
                       ),
                     ],
@@ -134,9 +125,7 @@ class TimePickerSheet extends StatelessWidget {
                       InputChip(
                         key: _startTimeKey,
                         label: Text(
-                          _viewModel.selectedDateTime?.start.isAllDay != true
-                              ? '${_viewModel.selectedStartDateTime!.hour}:${_viewModel.selectedStartDateTime!.minute.toString().padLeft(2, '0')}'
-                              : '指定なし',
+                          _viewModel.startTimeLabel,
                           style: TextStyle(
                             color:
                                 Theme.of(context).colorScheme.onSurfaceVariant,
@@ -179,14 +168,12 @@ class TimePickerSheet extends StatelessWidget {
                         const SizedBox(height: 20),
                         Row(
                           children: [
-                            const Text('期間'),
+                            const Text('所要時間'),
                             const Spacer(),
                             InputChip(
                               key: _durationKey,
                               label: Text(
-                                (_viewModel.currentDuration != null)
-                                    ? '${_viewModel.currentDuration!.inHours}:${(_viewModel.currentDuration!.inMinutes % 60).toString().padLeft(2, '0')}'
-                                    : '指定なし',
+                                _viewModel.durationLabel,
                                 style: TextStyle(
                                   color: Theme.of(context)
                                       .colorScheme
@@ -219,7 +206,7 @@ class TimePickerSheet extends StatelessWidget {
                           scrollDirection: Axis.horizontal,
                           child: Row(
                             children: [
-                              for (final duration in durations)
+                              for (final duration in _viewModel.durations)
                                 Padding(
                                   padding: const EdgeInsets.only(right: 8.0),
                                   child: ChoiceChip(
@@ -232,7 +219,9 @@ class TimePickerSheet extends StatelessWidget {
                                       }
                                     },
                                     label: Text(
-                                      '${duration.inHours}:${(duration.inMinutes % 60).toString().padLeft(2, '0')}',
+                                      _viewModel.durationLabels[_viewModel
+                                          .durations
+                                          .indexOf(duration)],
                                     ),
                                   ),
                                 ),

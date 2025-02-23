@@ -5,10 +5,14 @@ class DurationPicker extends StatelessWidget {
     super.key,
     required this.initialDuration,
     required this.onDurationChanged,
+    this.maxHours = 16,
+    this.maxMinutes = 60,
   });
 
   final Duration? initialDuration;
   final void Function(Duration) onDurationChanged;
+  final int maxHours;
+  final int maxMinutes;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +31,7 @@ class DurationPicker extends StatelessWidget {
             scrollController: FixedExtentScrollController(
               initialItem: initialDuration?.inHours ?? 0,
             ),
-            children: List.generate(17, (index) {
+            children: List.generate(maxHours + 1, (index) {
               return Center(child: Text('$index'));
             }),
           ),
@@ -46,7 +50,7 @@ class DurationPicker extends StatelessWidget {
             scrollController: FixedExtentScrollController(
               initialItem: initialDuration?.inMinutes.remainder(60) ?? 0,
             ),
-            children: List.generate(60, (index) {
+            children: List.generate(maxMinutes, (index) {
               return Center(
                 child: Text(index.toString().padLeft(2, '0')),
               );
