@@ -96,32 +96,41 @@ class DateSheetViewModel extends ChangeNotifier {
   // カレンダーが選択されたときの処理
   void handleCalendarSelected(DateTime date, DateTime focusedDate) {
     final selectedDateTime = _selectedDateTime;
-    if (selectedDateTime == null) return;
+    if (selectedDateTime == null) {
+      _selectedDateTime = TaskDate(
+        start: NotionDateTime(
+          datetime: DateTime(date.year, date.month, date.day),
+          isAllDay: true,
+        ),
+        end: null,
+      );
+    } else {
+      // 既存の時間を保持したまま日付のみ更新
+      final localDate = selectedDateTime.start.datetime.toLocal();
+      final start = selectedDateTime.start.copyWith(
+        datetime: DateTime(
+          date.year,
+          date.month,
+          date.day,
+          localDate.hour,
+          localDate.minute,
+        ),
+      );
 
-    // 既存の時間を保持したまま日付のみ更新
-    final localDate = selectedDateTime.start.datetime.toLocal();
-    final start = selectedDateTime.start.copyWith(
-      datetime: DateTime(
-        date.year,
-        date.month,
-        date.day,
-        localDate.hour,
-        localDate.minute,
-      ),
-    );
+      // 終了日がある場合は、もともとの間隔を保持
+      final end = selectedDateTime.end;
+      final duration =
+          end?.datetime.difference(selectedDateTime.start.datetime);
+      final newEnd = duration != null && end != null
+          ? NotionDateTime(
+              datetime: start.datetime.add(duration),
+              isAllDay: end.isAllDay,
+            )
+          : null;
 
-    // 終了日がある場合は、もともとの間隔を保持
-    final end = selectedDateTime.end;
-    final duration = end?.datetime.difference(selectedDateTime.start.datetime);
-    final newEnd = duration != null && end != null
-        ? NotionDateTime(
-            datetime: start.datetime.add(duration),
-            isAllDay: end.isAllDay,
-          )
-        : null;
-
-    // 終了日は削除
-    _selectedDateTime = TaskDate(start: start, end: newEnd);
+      // 終了日は削除
+      _selectedDateTime = TaskDate(start: start, end: newEnd);
+    }
     _focusedDay = focusedDate;
 
     notifyListeners();
