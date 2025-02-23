@@ -113,29 +113,31 @@ class TaskDateSheet extends HookWidget {
                             Theme.of(context).colorScheme.secondaryContainer,
                       ),
                     ),
-                    const SizedBox(height: 10),
-                    TimeRangeLabel(
-                      date: viewModel.selectedDateTime,
-                      onTap: () {
-                        showModalBottomSheet(
-                          context: context,
-                          isScrollControlled: true,
-                          backgroundColor: Colors.transparent,
-                          builder: (context) => TimePickerSheet(
-                            l10n: l10n,
-                            initialDate: viewModel.selectedDateTime,
-                            onSelected: (date) {
-                              if (date == null) return;
-                              viewModel.handleSelectedDateTime(date);
-                              Navigator.pop(context);
-                            },
-                          ),
-                        );
-                      },
-                      onClearTime: () {
-                        viewModel.clearTime();
-                      },
-                    ),
+                    if (viewModel.selectedDateTime != null) ...[
+                      const SizedBox(height: 10),
+                      TimeRangeLabel(
+                        date: viewModel.selectedDateTime,
+                        onTap: () {
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            backgroundColor: Colors.transparent,
+                            builder: (context) => TimePickerSheet(
+                              l10n: l10n,
+                              initialDate: viewModel.selectedDateTime,
+                              onSelected: (date) {
+                                if (date == null) return;
+                                viewModel.handleSelectedDateTime(date);
+                                Navigator.pop(context);
+                              },
+                            ),
+                          );
+                        },
+                        onClearTime: () {
+                          viewModel.clearTime();
+                        },
+                      ),
+                    ],
                   ],
                 ),
               ),

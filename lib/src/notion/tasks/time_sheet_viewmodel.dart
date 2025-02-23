@@ -52,7 +52,8 @@ class TimeSheetViewModel extends ChangeNotifier {
         }
       }).toList();
 
-  String get startTimeLabel => selectedDateTime?.start.isAllDay != true
+  String get startTimeLabel => selectedDateTime != null &&
+          selectedDateTime?.start.isAllDay != true
       ? '${selectedStartDateTime!.hour}:${selectedStartDateTime!.minute.toString().padLeft(2, '0')}'
       : l10n.no_time;
 
