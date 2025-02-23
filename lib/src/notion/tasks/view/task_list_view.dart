@@ -50,9 +50,9 @@ class TaskListView extends HookConsumerWidget {
             context: context,
             builder: (context) => TaskDateSheet(
               selectedDate: task.dueDate,
+              confirmable: true,
               onSelected: (TaskDate? date) async {
                 final newTask = task.copyWith(dueDate: date);
-                print(newTask);
                 await taskViewModel.updateTask(newTask);
               },
             ),

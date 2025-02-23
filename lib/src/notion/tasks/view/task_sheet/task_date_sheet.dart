@@ -12,11 +12,12 @@ import 'time_picker_sheet.dart';
 class TaskDateSheet extends HookWidget {
   final TaskDate? selectedDate;
   final Function(TaskDate?) onSelected;
-
+  final bool confirmable;
   const TaskDateSheet({
     super.key,
     required this.selectedDate,
     required this.onSelected,
+    this.confirmable = false,
   });
 
   @override
@@ -48,7 +49,7 @@ class TaskDateSheet extends HookWidget {
                           onPressed: () => Navigator.pop(context),
                         ),
                         TextButton(
-                          child: Text(l10n.save,
+                          child: Text(confirmable ? l10n.confirm : l10n.save,
                               style:
                                   const TextStyle(fontWeight: FontWeight.bold)),
                           onPressed: () {

@@ -15,6 +15,7 @@ globs:
 - Widgetでの実装は [task_date_sheet.dart](mdc:lib/src/notion/tasks/view/task_sheet/task_date_sheet.dart), Context をもたないProvider管理下の実装は [task_viewmodel.dart](mdc:lib/src/notion/tasks/task_viewmodel.dart) を参考にすること。それ以外の場合は、クラスにAppLocalizations型をもつパラメータを渡すようにする
   
 # Prompt
-- 指示した内容以外に修正したい内容があった場合、勝手にコードを書き換えず、応答の文言内で補足してください
+- 指示した内容以外に修正したい内容があった場合、勝手にコードを書き換えず、応答の文言内で補足してください  
+- コメントは削除しないこと
 
 

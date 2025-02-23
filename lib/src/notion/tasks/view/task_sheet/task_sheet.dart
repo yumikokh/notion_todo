@@ -26,6 +26,7 @@ class TaskSheet extends HookWidget {
     final selectedDueDate = useState<TaskDate?>(initialDueDate);
     final isValidTitle = useState<bool>(initialTitle?.isNotEmpty ?? false);
     final l = AppLocalizations.of(context)!;
+    final isNewTask = initialTitle == null;
 
     useEffect(() {
       void listener() {
@@ -36,7 +37,7 @@ class TaskSheet extends HookWidget {
       return () => titleController.removeListener(listener);
     }, [titleController]);
 
-    final changeDueDate = useCallback(
+    final changeSelectedDueDate = useCallback(
       (TaskDate? newDueDate) {
         if (newDueDate == null) {
           selectedDueDate.value = null;
@@ -58,16 +59,19 @@ class TaskSheet extends HookWidget {
             children: [
               TextField(
                 controller: titleController,
-                autofocus: true,
+                autofocus: isNewTask,
                 textInputAction: TextInputAction.done,
                 decoration: InputDecoration(
                   hintText: l.task_sheet_title_hint,
                 ),
                 onSubmitted: (value) {
                   if (value.trim().isNotEmpty) {
-                    Navigator.pop(context);
                     onSubmitted(value, selectedDueDate.value);
                   }
+                  if (!isNewTask) {
+                    Navigator.pop(context);
+                  }
+                  titleController.clear();
                 },
               ),
               const SizedBox(height: 8),
@@ -89,12 +93,12 @@ class TaskSheet extends HookWidget {
                             builder: (context) => TaskDateSheet(
                               selectedDate: selectedDueDate.value,
                               onSelected: (TaskDate? date) {
-                                changeDueDate(date);
+                                changeSelectedDueDate(date);
                               },
                             ),
                           );
                         },
-                        onDeleted: () => changeDueDate(null),
+                        onDeleted: () => changeSelectedDueDate(null),
                       ),
                     ),
                   ),
@@ -102,9 +106,12 @@ class TaskSheet extends HookWidget {
                   IconButton.filled(
                     onPressed: isValidTitle.value
                         ? () {
-                            Navigator.pop(context);
                             onSubmitted(
                                 titleController.text, selectedDueDate.value);
+                            if (!isNewTask) {
+                              Navigator.pop(context);
+                            }
+                            titleController.clear();
                           }
                         : null,
                     icon: const Icon(Icons.arrow_forward_rounded),
