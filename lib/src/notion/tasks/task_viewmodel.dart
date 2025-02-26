@@ -16,6 +16,7 @@ import '../repository/notion_task_repository.dart';
 import 'task_service.dart';
 import '../../common/analytics/analytics_service.dart';
 import '../../common/app_review/app_review_service.dart';
+import '../../widget/widget_service.dart';
 
 part 'task_viewmodel.g.dart';
 
@@ -61,6 +62,9 @@ class TaskViewModel extends _$TaskViewModel {
       final showBadge =
           ref.watch(settingsViewModelProvider).showNotificationBadge;
       _updateBadge(tasks, showBadge);
+
+      // ウィジェット更新
+      _updateWidget(tasks);
     }
 
     if (statusProperty is StatusCompleteStatusProperty) {
@@ -572,5 +576,13 @@ class TaskViewModel extends _$TaskViewModel {
     }
     final notCompletedCount = tasks.where((task) => !task.isCompleted).length;
     await FlutterAppBadger.updateBadgeCount(notCompletedCount);
+  }
+
+  // ウィジェットを更新する
+  void _updateWidget(List<Task> tasks) {
+    final widgetService = ref.read(widgetServiceProvider);
+    // 未完了のタスクのみをウィジェットに表示
+    final incompleteTasks = tasks.where((task) => !task.isCompleted).toList();
+    widgetService.updateTodayTasks(incompleteTasks);
   }
 }
