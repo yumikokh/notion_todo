@@ -1,10 +1,3 @@
-//
-//  TodayTasksWidgetBundle.swift
-//  TodayTasksWidget
-//
-//  Created by Yumiko Kokubu on 2025/02/26.
-//
-
 import WidgetKit
 import SwiftUI
 
@@ -12,7 +5,5 @@ import SwiftUI
 struct TodayTasksWidgetBundle: WidgetBundle {
     var body: some Widget {
         TodayTasksWidget()
-        TodayTasksWidgetControl()
-        TodayTasksWidgetLiveActivity()
     }
-}
+} 
