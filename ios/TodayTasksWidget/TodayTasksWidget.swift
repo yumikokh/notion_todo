@@ -22,6 +22,12 @@ struct Provider: TimelineProvider {
             if let decodedTasks = try? JSONDecoder().decode([String].self, from: tasksData) {
                 tasks = decodedTasks
             }
+        } else if let tasksString = sharedDefaults?.string(forKey: "today_tasks") {
+            // 文字列として保存されている場合の処理
+            if let data = tasksString.data(using: .utf8),
+               let decodedTasks = try? JSONDecoder().decode([String].self, from: data) {
+                tasks = decodedTasks
+            }
         }
         
         if tasks.isEmpty {
