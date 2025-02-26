@@ -103,6 +103,8 @@ PODS:
     - GoogleUtilities/Privacy
   - haptic_feedback (0.5.1):
     - Flutter
+  - home_widget (0.0.1):
+    - Flutter
   - in_app_review (2.0.0):
     - Flutter
   - nanopb (2.30910.0):
@@ -139,6 +141,7 @@ DEPENDENCIES:
   - flutter_secure_storage (from `.symlinks/plugins/flutter_secure_storage/ios`)
   - flutter_web_auth_2 (from `.symlinks/plugins/flutter_web_auth_2/ios`)
   - haptic_feedback (from `.symlinks/plugins/haptic_feedback/ios`)
+  - home_widget (from `.symlinks/plugins/home_widget/ios`)
   - in_app_review (from `.symlinks/plugins/in_app_review/ios`)
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
@@ -179,6 +182,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_web_auth_2/ios"
   haptic_feedback:
     :path: ".symlinks/plugins/haptic_feedback/ios"
+  home_widget:
+    :path: ".symlinks/plugins/home_widget/ios"
   in_app_review:
     :path: ".symlinks/plugins/in_app_review/ios"
   package_info_plus:
@@ -211,6 +216,7 @@ SPEC CHECKSUMS:
   GoogleAppMeasurement: 9abf64b682732fed36da827aa2a68f0221fd2356
   GoogleUtilities: ea963c370a38a8069cc5f7ba4ca849a60b6d7d15
   haptic_feedback: 8cb3ee0cb6b797946c2b0df9c99ebc8f7ed79c71
+  home_widget: 0434835a4c9a75704264feff6be17ea40e0f0d57
   in_app_review: a31b5257259646ea78e0e35fc914979b0031d011
   nanopb: 438bc412db1928dac798aa6fd75726007be04262
   package_info_plus: c0502532a26c7662a62a356cebe2692ec5fe4ec4
@@ -224,4 +230,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 0b5d6ef8e94e10156e96a74a8cb9fa04599b7d6b
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.16.2

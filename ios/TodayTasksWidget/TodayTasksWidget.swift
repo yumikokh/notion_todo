@@ -1,18 +1,17 @@
 import WidgetKit
 import SwiftUI
-import Intents
 
-struct Provider: IntentTimelineProvider {
+struct Provider: TimelineProvider {
     func placeholder(in context: Context) -> SimpleEntry {
-        SimpleEntry(date: Date(), tasks: ["サンプルタスク1", "サンプルタスク2", "サンプルタスク3"], configuration: ConfigurationIntent())
+        SimpleEntry(date: Date(), tasks: ["サンプルタスク1", "サンプルタスク2", "サンプルタスク3"])
     }
 
-    func getSnapshot(for configuration: ConfigurationIntent, in context: Context, completion: @escaping (SimpleEntry) -> ()) {
-        let entry = SimpleEntry(date: Date(), tasks: ["サンプルタスク1", "サンプルタスク2", "サンプルタスク3"], configuration: configuration)
+    func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ()) {
+        let entry = SimpleEntry(date: Date(), tasks: ["サンプルタスク1", "サンプルタスク2", "サンプルタスク3"])
         completion(entry)
     }
 
-    func getTimeline(for configuration: ConfigurationIntent, in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
+    func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
         var entries: [SimpleEntry] = []
         
         // ユーザーデフォルトからタスクを取得
@@ -31,7 +30,7 @@ struct Provider: IntentTimelineProvider {
         
         // 現在の日付
         let currentDate = Date()
-        let entry = SimpleEntry(date: currentDate, tasks: tasks, configuration: configuration)
+        let entry = SimpleEntry(date: currentDate, tasks: tasks)
         entries.append(entry)
         
         // 次の更新時間（1時間後）
@@ -45,7 +44,6 @@ struct Provider: IntentTimelineProvider {
 struct SimpleEntry: TimelineEntry {
     let date: Date
     let tasks: [String]
-    let configuration: ConfigurationIntent
 }
 
 struct TodayTasksWidgetEntryView : View {
@@ -99,7 +97,7 @@ struct TodayTasksWidget: Widget {
     let kind: String = "TodayTasksWidget"
 
     var body: some WidgetConfiguration {
-        IntentConfiguration(kind: kind, intent: ConfigurationIntent.self, provider: Provider()) { entry in
+        StaticConfiguration(kind: kind, provider: Provider()) { entry in
             TodayTasksWidgetEntryView(entry: entry)
         }
         .configurationDisplayName("今日のタスク")
@@ -110,7 +108,7 @@ struct TodayTasksWidget: Widget {
 
 struct TodayTasksWidget_Previews: PreviewProvider {
     static var previews: some View {
-        TodayTasksWidgetEntryView(entry: SimpleEntry(date: Date(), tasks: ["タスク1", "タスク2", "タスク3"], configuration: ConfigurationIntent()))
+        TodayTasksWidgetEntryView(entry: SimpleEntry(date: Date(), tasks: ["タスク1", "タスク2", "タスク3"]))
             .previewContext(WidgetPreviewContext(family: .systemSmall))
     }
 } 
