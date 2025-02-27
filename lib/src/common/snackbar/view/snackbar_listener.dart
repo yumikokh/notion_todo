@@ -37,6 +37,7 @@ class SnackbarListener extends HookConsumerWidget {
               : SnackBarBehavior.fixed,
         );
 
+        scaffoldMessengerKey.currentState?.clearSnackBars();
         scaffoldMessengerKey.currentState?.showSnackBar(snackBar);
         ref.read(snackbarProvider.notifier).clear();
       },
