@@ -49,7 +49,7 @@ class TaskListTile extends HookConsumerWidget {
             return TaskSheet(
               initialDueDate: task.dueDate,
               initialTitle: task.title,
-              onSubmitted: (title, dueDate) {
+              onSubmitted: (title, dueDate, {bool? needSnackbarFloating}) {
                 final due = dueDate == null
                     ? null
                     : TaskDate(start: dueDate.start, end: dueDate.end);

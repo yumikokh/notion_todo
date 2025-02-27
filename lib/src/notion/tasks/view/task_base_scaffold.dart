@@ -12,7 +12,7 @@ class TaskBaseScaffold extends StatelessWidget {
   final bool hideNavigationLabel;
   final void Function(int) onIndexChanged;
   final void Function(bool) onShowCompletedChanged;
-  final void Function(String, TaskDate?) onAddTask;
+  final void Function(String, TaskDate?, bool) onAddTask;
 
   const TaskBaseScaffold({
     Key? key,
@@ -110,8 +110,10 @@ class TaskBaseScaffold extends StatelessWidget {
                             )
                           : null,
                       initialTitle: null,
-                      onSubmitted: (title, dueDate) {
-                        onAddTask(title, dueDate);
+                      onSubmitted: (title, dueDate,
+                          {bool? needSnackbarFloating}) {
+                        onAddTask(
+                            title, dueDate, needSnackbarFloating ?? false);
                       },
                     ),
                   );

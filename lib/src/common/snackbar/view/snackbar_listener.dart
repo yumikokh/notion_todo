@@ -32,9 +32,11 @@ class SnackbarListener extends HookConsumerWidget {
                 )
               : null,
           duration: const Duration(milliseconds: 2000),
+          behavior: current.isFloating
+              ? SnackBarBehavior.floating
+              : SnackBarBehavior.fixed,
         );
 
-        // FIXME: 同時表示するとき不自然
         scaffoldMessengerKey.currentState?.showSnackBar(snackBar);
         ref.read(snackbarProvider.notifier).clear();
       },

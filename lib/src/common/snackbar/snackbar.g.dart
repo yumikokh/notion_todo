@@ -6,7 +6,7 @@ part of 'snackbar.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$snackbarHash() => r'e9e6ce4df3fd18ee86e91c2cbed15e167b0e75fb';
+String _$snackbarHash() => r'69238bdef18056df4ae8d7425ff0fd5e2a5d4be6';
 
 /// See also [Snackbar].
 @ProviderFor(Snackbar)

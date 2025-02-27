@@ -11,7 +11,8 @@ import '../../../../settings/settings_viewmodel.dart';
 class TaskSheet extends HookConsumerWidget {
   final TaskDate? initialDueDate;
   final String? initialTitle;
-  final Function(String title, TaskDate? dueDate) onSubmitted;
+  final Function(String title, TaskDate? dueDate, {bool? needSnackbarFloating})
+      onSubmitted;
   final Function()? onDeleted;
 
   const TaskSheet({
@@ -69,10 +70,12 @@ class TaskSheet extends HookConsumerWidget {
                   hintText: l.task_sheet_title_hint,
                 ),
                 onSubmitted: (value) {
+                  final willClose = !isNewTask || !continuousTaskAddition;
                   if (value.trim().isNotEmpty) {
-                    onSubmitted(value, selectedDueDate.value);
+                    onSubmitted(value, selectedDueDate.value,
+                        needSnackbarFloating: !willClose);
                   }
-                  if (!isNewTask || !continuousTaskAddition) {
+                  if (willClose) {
                     Navigator.pop(context);
                   }
                   titleController.clear();
@@ -110,9 +113,12 @@ class TaskSheet extends HookConsumerWidget {
                   IconButton.filled(
                     onPressed: isValidTitle.value
                         ? () {
+                            final willClose =
+                                !isNewTask || !continuousTaskAddition;
                             onSubmitted(
-                                titleController.text, selectedDueDate.value);
-                            if (!isNewTask || !continuousTaskAddition) {
+                                titleController.text, selectedDueDate.value,
+                                needSnackbarFloating: !willClose);
+                            if (willClose) {
                               Navigator.pop(context);
                             }
                             titleController.clear();
