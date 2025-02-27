@@ -22,6 +22,8 @@ class SettingsViewModel with ChangeNotifier {
     _wakelock = await _settingsService.wakelock();
     _hideNavigationLabel = await _settingsService.loadHideNavigationLabel();
     _showNotificationBadge = await _settingsService.loadShowNotificationBadge();
+    _continuousTaskAddition =
+        await _settingsService.loadContinuousTaskAddition();
     notifyListeners();
   }
 
@@ -111,6 +113,26 @@ class SettingsViewModel with ChangeNotifier {
     notifyListeners();
 
     await _settingsService.updateShowNotificationBadge(value);
+    await _analytics.logSettingsChanged(
+      settingName: 'show_notification_badge',
+      value: value ? 'enabled' : 'disabled',
+    );
+  }
+
+  /// Continuous Task Addition
+  late bool _continuousTaskAddition;
+  bool get continuousTaskAddition => _continuousTaskAddition;
+  Future<void> updateContinuousTaskAddition(bool value) async {
+    if (value == _continuousTaskAddition) return;
+
+    _continuousTaskAddition = value;
+    notifyListeners();
+
+    await _settingsService.updateContinuousTaskAddition(value);
+    await _analytics.logSettingsChanged(
+      settingName: 'continuous_task_addition',
+      value: value ? 'enabled' : 'disabled',
+    );
   }
 }
 

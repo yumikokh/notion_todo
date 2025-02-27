@@ -164,7 +164,7 @@
     }
   },
   "releaseNote": "Details",
-  "settings_view_support_release_notes_title": "Release Note",
+  "settings_view_support_release_notes_title": "Release Notes",
   "font_settings": "Title Font Style",
   "font_language": "Font Language",
   "font_family": "Font Family",
@@ -239,5 +239,8 @@
         "type": "int"
       }
     }
-  }
+  },
+  "continuous_task_addition_title": "Continuous Task Addition",
+  "continuous_task_addition_description": "Allow continuous task addition",
+  "behavior_settings_title": "Behavior"
 }

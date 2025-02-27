@@ -221,7 +221,8 @@ class TaskViewModel extends _$TaskViewModel {
     }
   }
 
-  Future<void> addTask(String title, TaskDate? dueDate) async {
+  Future<void> addTask(
+      String title, TaskDate? dueDate, bool needSnackbarFloating) async {
     final locale = ref.read(settingsViewModelProvider).locale;
     final l = await AppLocalizations.delegate.load(locale);
     await _addOperation(() async {
@@ -258,6 +259,7 @@ class TaskViewModel extends _$TaskViewModel {
           onUndo: () {
             deleteTask(t);
           },
+          isFloating: needSnackbarFloating,
         );
         ref.invalidateSelf();
 
