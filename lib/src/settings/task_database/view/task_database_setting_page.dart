@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../../../helpers/haptic_helper.dart';
 import '../../../notion/model/property.dart';
 import '../../../notion/oauth/notion_oauth_viewmodel.dart';
 import '../../../notion/repository/notion_database_repository.dart';
@@ -180,7 +181,7 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                               loading: () => const CircularProgressIndicator(),
                               error: (error, stack) => Text(error.toString()),
                             ),
-                        const SizedBox(height: 48),
+                        const SizedBox(height: 32),
                       ],
 
                       // 保存ボタン
@@ -196,6 +197,7 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                                     TaskMainPage.routeName,
                                     (route) => false,
                                   );
+                                  HapticHelper.selection();
                                 },
                           child: Padding(
                             padding: const EdgeInsets.symmetric(vertical: 16),
@@ -203,6 +205,7 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                           ),
                         ),
                       ),
+                      const SizedBox(height: 48),
                     ],
                   ),
                 ),
@@ -218,6 +221,7 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                     FilledButton(
                       onPressed: () {
                         notionOAuthViewModel.authenticate();
+                        HapticHelper.selection();
                       },
                       child: Text(l.notion_reconnect),
                     ),
@@ -284,7 +288,13 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
         disabledHint: Text(l.create_property),
         value: value,
         items: items,
-        onChanged: onChanged,
+        onTap: () {
+          HapticHelper.light();
+        },
+        onChanged: (value) {
+          onChanged(value);
+          HapticHelper.selection();
+        },
         isExpanded: true,
         underline: const SizedBox.shrink(),
         dropdownColor: Theme.of(context).brightness == Brightness.dark

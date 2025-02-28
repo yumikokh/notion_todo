@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:tanzaku_todo/src/helpers/haptic_helper.dart';
 
 import '../../notion/model/index.dart';
 import '../../notion/oauth/notion_oauth_viewmodel.dart';
@@ -69,6 +70,7 @@ class NotionSettingsPage extends ConsumerWidget {
                         onPressed: () async {
                           await notionOAuth.deauthenticate();
                           taskDatabaseViewModel.clear();
+                          HapticHelper.light();
                         },
                         icon: const Icon(Icons.link_off),
                         label:
@@ -90,6 +92,7 @@ class NotionSettingsPage extends ConsumerWidget {
                       FilledButton.icon(
                         onPressed: () async {
                           await notionOAuth.authenticate();
+                          HapticHelper.light();
                         },
                         icon: const Icon(Icons.link),
                         label: Text(l.notion_settings_view_auth_status_connect),
@@ -170,6 +173,7 @@ class NotionSettingsPage extends ConsumerWidget {
                           onPressed: () {
                             Navigator.of(context)
                                 .pushNamed(TaskDatabaseSettingPage.routeName);
+                            HapticHelper.light();
                           },
                           icon: const Icon(Icons.settings),
                           label: Text(l
