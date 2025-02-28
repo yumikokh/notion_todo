@@ -5,6 +5,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../helpers/haptic_helper.dart';
+import '../../../settings/task_database/task_database_viewmodel.dart';
+import '../../model/property.dart';
 import '../../model/task.dart';
 import '../../repository/notion_task_repository.dart';
 import '../task_viewmodel.dart';
@@ -91,8 +93,19 @@ class TaskListTile extends HookConsumerWidget {
       trailing: taskViewModel.showStarButton(task)
           ? TaskStarButton(
               task: task,
-              onInProgressChanged: (task) =>
-                  taskViewModel.updateInProgressStatus(task),
+              onInProgressChanged: (task) async {
+                final statusProperty =
+                    ref.read(taskDatabaseViewModelProvider).valueOrNull?.status;
+                if (statusProperty is! StatusCompleteStatusProperty) {
+                  return;
+                }
+                final inProgressOption = statusProperty.inProgressOption;
+                if (inProgressOption == null) {
+                  return;
+                }
+                taskViewModel.updateInProgressStatus(
+                    task, !task.isInProgress(inProgressOption));
+              },
             )
           : null,
       title: Text(task.title,

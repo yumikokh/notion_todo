@@ -409,7 +409,7 @@ class TaskViewModel extends _$TaskViewModel {
     });
   }
 
-  Future<void> updateInProgressStatus(Task task,
+  Future<void> updateInProgressStatus(Task task, bool willBeInProgress,
       {bool fromUndo = false}) async {
     // checkboxは更新できない
     if (task.status is CheckboxCompleteStatusProperty) {
@@ -420,20 +420,10 @@ class TaskViewModel extends _$TaskViewModel {
       if (taskService == null) {
         return;
       }
-      final statusProperty =
-          ref.read(taskDatabaseViewModelProvider).valueOrNull?.status;
-      if (statusProperty is! StatusCompleteStatusProperty) {
-        return;
-      }
-      final inProgressOption = statusProperty.inProgressOption;
-      if (inProgressOption == null) {
-        return;
-      }
       final snackbar = ref.read(snackbarProvider.notifier);
       final locale = ref.read(settingsViewModelProvider).locale;
       final l = await AppLocalizations.delegate.load(locale);
 
-      final willBeInProgress = !task.isInProgress(inProgressOption);
       final prevState = state;
 
       snackbar.show(
@@ -441,7 +431,7 @@ class TaskViewModel extends _$TaskViewModel {
               ? l.task_update_status_in_progress(task.title)
               : l.task_update_status_todo(task.title),
           type: SnackbarType.success, onUndo: () async {
-        updateInProgressStatus(task, fromUndo: true);
+        updateInProgressStatus(task, !willBeInProgress, fromUndo: true);
       });
 
       _isLoading = true;
