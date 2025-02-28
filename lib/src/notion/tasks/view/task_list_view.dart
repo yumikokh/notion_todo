@@ -3,6 +3,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../helpers/date.dart';
+import '../../../helpers/haptic_helper.dart';
 import '../../../settings/font/font_constants.dart';
 import '../../../settings/font/font_settings_viewmodel.dart';
 import '../../../settings/theme/theme.dart';
@@ -36,6 +37,11 @@ class TaskListView extends HookConsumerWidget {
         DismissDirection.startToEnd: 0.2, // edit
       },
       resizeDuration: null,
+      onUpdate: (details) {
+        if (details.reached && !details.previousReached) {
+          HapticHelper.medium();
+        }
+      },
       onDismissed: (direction) {
         if (direction == DismissDirection.endToStart) {
           taskViewModel.deleteTask(task);
@@ -60,6 +66,7 @@ class TaskListView extends HookConsumerWidget {
           return false;
         }
         if (direction == DismissDirection.endToStart) {
+          // 削除のトリガー
           return true;
         }
         return false;

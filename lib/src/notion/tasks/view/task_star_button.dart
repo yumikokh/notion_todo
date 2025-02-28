@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:haptic_feedback/haptic_feedback.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../../helpers/haptic_helper.dart';
 import '../../../settings/task_database/task_database_viewmodel.dart';
 import '../../model/property.dart';
 import '../../model/task.dart';
@@ -86,8 +86,10 @@ class TaskStarButton extends HookConsumerWidget {
             }
           }
 
-          if (await Haptics.canVibrate()) {
-            await Haptics.vibrate(HapticsType.light);
+          if (stared.value) {
+            HapticHelper.light();
+          } else {
+            HapticHelper.medium();
           }
           stared.value = !stared.value;
           await onInProgressChanged(task);

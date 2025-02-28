@@ -4,6 +4,7 @@ import 'package:haptic_feedback/haptic_feedback.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../helpers/haptic_helper.dart';
 import '../../model/task.dart';
 import '../../repository/notion_task_repository.dart';
 import '../task_viewmodel.dart';
@@ -27,12 +28,13 @@ class TaskListTile extends HookConsumerWidget {
 
     return ListTile(
       onLongPress: () async {
+        // TODO: メニューを表示
         final taskUrl = task.url;
         if (taskUrl == null) return;
         final url = Uri.parse(taskUrl);
         if (await canLaunchUrl(url)) {
           if (await Haptics.canVibrate()) {
-            await Haptics.vibrate(HapticsType.medium);
+            await HapticHelper.medium();
             await Future.delayed(
                 const Duration(milliseconds: 100)); // 確実にvibrateするために少し待つ
           }
@@ -64,6 +66,7 @@ class TaskListTile extends HookConsumerWidget {
             );
           },
         );
+        HapticHelper.light();
       },
       leading: Checkbox(
         value: checked.value,
@@ -75,6 +78,12 @@ class TaskListTile extends HookConsumerWidget {
         ),
         onChanged: (bool? willComplete) async {
           if (willComplete == null) return;
+          if (willComplete) {
+            HapticHelper.success();
+            // TODO: 音を鳴らす
+          } else {
+            HapticHelper.light();
+          }
           checked.value = willComplete;
           await taskViewModel.updateCompleteStatus(task, willComplete);
         },
