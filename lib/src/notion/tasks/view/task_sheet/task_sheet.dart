@@ -4,6 +4,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../model/task.dart';
+import '../../../../helpers/haptic_helper.dart';
 import 'date_chip.dart';
 import 'task_date_sheet.dart';
 import '../../../../settings/settings_viewmodel.dart';
@@ -70,8 +71,10 @@ class TaskSheet extends HookConsumerWidget {
                   hintText: l.task_sheet_title_hint,
                 ),
                 onSubmitted: (value) {
+                  // Enterキーを押したとき
                   final willClose = !isNewTask || !continuousTaskAddition;
                   if (value.trim().isNotEmpty) {
+                    HapticHelper.success();
                     onSubmitted(value, selectedDueDate.value,
                         needSnackbarFloating: !willClose);
                   }
@@ -92,6 +95,7 @@ class TaskSheet extends HookConsumerWidget {
                         date: selectedDueDate.value,
                         context: context,
                         onSelected: (selected) {
+                          HapticHelper.light();
                           showModalBottomSheet(
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -105,14 +109,18 @@ class TaskSheet extends HookConsumerWidget {
                             ),
                           );
                         },
-                        onDeleted: () => changeSelectedDueDate(null),
+                        onDeleted: () {
+                          HapticHelper.light();
+                          changeSelectedDueDate(null);
+                        },
                       ),
                     ),
                   ),
                   const SizedBox(width: 4),
                   IconButton.filled(
                     onPressed: isValidTitle.value
-                        ? () {
+                        ? () async {
+                            await HapticHelper.success();
                             final willClose =
                                 !isNewTask || !continuousTaskAddition;
                             onSubmitted(
