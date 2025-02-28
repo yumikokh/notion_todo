@@ -56,21 +56,20 @@ class TaskBaseScaffold extends StatelessWidget {
               ],
               Stack(
                 children: [
-                  if (showSettingBadge)
-                    Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: IconButton(
-                        icon: Badge(
-                          child: Icon(Icons.settings_outlined,
-                              color: Theme.of(context).colorScheme.onSurface),
-                        ),
-                        onPressed: () {
-                          HapticHelper.selection();
-                          Navigator.restorablePushNamed(
-                              context, SettingsPage.routeName);
-                        },
-                      ),
-                    ),
+                  IconButton(
+                    icon: showSettingBadge
+                        ? Icon(Icons.settings_outlined,
+                            color: Theme.of(context).colorScheme.onSurface)
+                        : Badge(
+                            child: Icon(Icons.settings_outlined,
+                                color: Theme.of(context).colorScheme.onSurface),
+                          ),
+                    onPressed: () {
+                      HapticHelper.selection();
+                      Navigator.restorablePushNamed(
+                          context, SettingsPage.routeName);
+                    },
+                  ),
                 ],
               ),
             ]),
