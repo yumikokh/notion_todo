@@ -43,7 +43,7 @@ class TaskListView extends HookConsumerWidget {
       ThemeMode.dark =>
         MaterialTheme(Theme.of(context).textTheme).extendedColors[0].dark.color,
       ThemeMode.system =>
-        MediaQuery.of(context).platformBrightness == Brightness.light
+        MediaQuery.platformBrightnessOf(context) == Brightness.light
             ? MaterialTheme(Theme.of(context).textTheme)
                 .extendedColors[0]
                 .light
