@@ -43,6 +43,22 @@ class DateSheetViewModel extends ChangeNotifier {
     return selectedDateTime.start.submitFormat.split('T')[0];
   }
 
+  TaskDate? get submitDateForSegment {
+    final selectedDateTime = _selectedDateTime;
+    if (selectedDateTime == null) return null;
+
+    return TaskDate(
+        start: NotionDateTime(
+          datetime: DateTime(
+            selectedDateTime.start.datetime.year,
+            selectedDateTime.start.datetime.month,
+            selectedDateTime.start.datetime.day,
+          ),
+          isAllDay: true,
+        ),
+        end: null);
+  }
+
   // セグメントが変更されたときの処理
   void handleSegmentChanged(Set<Object?> selectedSet) {
     TaskDate? date;
