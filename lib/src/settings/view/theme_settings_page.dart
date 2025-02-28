@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../helpers/haptic_helper.dart';
 import '../settings_viewmodel.dart';
 
 class ThemeSettingsPage extends ConsumerWidget {
@@ -28,8 +29,10 @@ class ThemeSettingsPage extends ConsumerWidget {
               leading: Radio<ThemeMode>(
                 value: ThemeMode.system,
                 groupValue: ref.watch(settingsViewModelProvider).themeMode,
-                onChanged: (value) =>
-                    ref.read(settingsViewModelProvider).updateThemeMode(value),
+                onChanged: (value) {
+                  ref.read(settingsViewModelProvider).updateThemeMode(value);
+                  HapticHelper.light();
+                },
               ),
             ),
             ListTile(
@@ -37,8 +40,10 @@ class ThemeSettingsPage extends ConsumerWidget {
               leading: Radio<ThemeMode>(
                 value: ThemeMode.light,
                 groupValue: ref.watch(settingsViewModelProvider).themeMode,
-                onChanged: (value) =>
-                    ref.read(settingsViewModelProvider).updateThemeMode(value),
+                onChanged: (value) {
+                  ref.read(settingsViewModelProvider).updateThemeMode(value);
+                  HapticHelper.light();
+                },
               ),
             ),
             ListTile(
@@ -46,8 +51,10 @@ class ThemeSettingsPage extends ConsumerWidget {
               leading: Radio<ThemeMode>(
                 value: ThemeMode.dark,
                 groupValue: ref.watch(settingsViewModelProvider).themeMode,
-                onChanged: (value) =>
-                    ref.read(settingsViewModelProvider).updateThemeMode(value),
+                onChanged: (value) {
+                  ref.read(settingsViewModelProvider).updateThemeMode(value);
+                  HapticHelper.light();
+                },
               ),
             ),
           ],

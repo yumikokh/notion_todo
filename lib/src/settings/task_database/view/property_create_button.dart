@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../../helpers/haptic_helper.dart';
 import '../../../notion/repository/notion_database_repository.dart';
 import '../selected_database_viewmodel.dart';
 
@@ -26,6 +27,7 @@ class PropertyCreateButton extends StatelessWidget {
           ),
         ),
         onPressed: () async {
+          HapticHelper.light();
           final propertyName = await showDialog<String>(
             context: context,
             builder: (BuildContext context) {
@@ -54,6 +56,7 @@ class PropertyCreateButton extends StatelessWidget {
                                   .checkPropertyExists(tempName)
                               ? l.property_name_error
                               : null;
+                      HapticHelper.light();
                       if (errorMessage != null) {
                         showDialog(
                           // ignore: use_build_context_synchronously

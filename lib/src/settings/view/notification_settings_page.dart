@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../helpers/haptic_helper.dart';
 import '../settings_viewmodel.dart';
 
 class NotificationSettingsPage extends ConsumerWidget {
@@ -28,6 +29,7 @@ class NotificationSettingsPage extends ConsumerWidget {
               ref
                   .read(settingsViewModelProvider.notifier)
                   .updateShowNotificationBadge(value);
+              HapticHelper.light();
             },
           ),
         ],

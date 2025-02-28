@@ -13,7 +13,7 @@ import '../settings_viewmodel.dart';
 import '../../common/analytics/analytics_service.dart';
 import '../../common/app_version/app_version_viewmodel.dart';
 import 'appearance_settings_page.dart';
-import 'behavior/behavior_settings_page.dart';
+import 'behavior_settings_page.dart';
 
 class SettingsPage extends ConsumerWidget {
   static const routeName = '/settings';

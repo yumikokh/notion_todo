@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../../../helpers/haptic_helper.dart';
 import '../../../settings/view/settings_page.dart';
 import '../../model/task.dart';
 import 'task_sheet/task_sheet.dart';
@@ -48,6 +49,7 @@ class TaskBaseScaffold extends StatelessWidget {
                     color: Theme.of(context).colorScheme.onSurface,
                   ),
                   onPressed: () {
+                    HapticHelper.selection();
                     onShowCompletedChanged(!showCompleted);
                   },
                 )
@@ -63,6 +65,7 @@ class TaskBaseScaffold extends StatelessWidget {
                                 color: Theme.of(context).colorScheme.onSurface),
                           ),
                     onPressed: () {
+                      HapticHelper.selection();
                       Navigator.restorablePushNamed(
                           context, SettingsPage.routeName);
                     },
@@ -73,7 +76,10 @@ class TaskBaseScaffold extends StatelessWidget {
         body: body,
         bottomNavigationBar: NavigationBar(
           selectedIndex: currentIndex,
-          onDestinationSelected: onIndexChanged,
+          onDestinationSelected: (index) {
+            HapticHelper.light();
+            onIndexChanged(index);
+          },
           labelBehavior: hideNavigationLabel
               ? NavigationDestinationLabelBehavior.alwaysHide
               : NavigationDestinationLabelBehavior.alwaysShow,
@@ -117,6 +123,7 @@ class TaskBaseScaffold extends StatelessWidget {
                       },
                     ),
                   );
+                  HapticHelper.selection();
                 },
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(100),

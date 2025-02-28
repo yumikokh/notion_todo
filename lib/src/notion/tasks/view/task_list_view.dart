@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../helpers/date.dart';
+import '../../../helpers/haptic_helper.dart';
 import '../../../settings/font/font_constants.dart';
 import '../../../settings/font/font_settings_viewmodel.dart';
+import '../../../settings/settings_viewmodel.dart';
 import '../../../settings/theme/theme.dart';
 import '../../model/task.dart';
 import '../task_viewmodel.dart';
@@ -27,15 +30,50 @@ class TaskListView extends HookConsumerWidget {
     this.title,
   });
 
-  Widget _buildDismissibleTask(Task task, BuildContext context) {
+  Widget _buildDismissibleTask(
+      Task task, BuildContext context, ThemeMode themeMode) {
+    final reachType = useState<DismissDirection?>(null);
+    final confirmed = useState(false);
+    final deleteColor = Theme.of(context).colorScheme.error;
+    final editColor = switch (themeMode) {
+      ThemeMode.light => MaterialTheme(Theme.of(context).textTheme)
+          .extendedColors[0]
+          .light
+          .colorContainer,
+      ThemeMode.dark =>
+        MaterialTheme(Theme.of(context).textTheme).extendedColors[0].dark.color,
+      ThemeMode.system =>
+        MediaQuery.of(context).platformBrightness == Brightness.light
+            ? MaterialTheme(Theme.of(context).textTheme)
+                .extendedColors[0]
+                .light
+                .colorContainer
+            : MaterialTheme(Theme.of(context).textTheme)
+                .extendedColors[0]
+                .dark
+                .color
+    };
+
+    final inactiveColor = Theme.of(context).colorScheme.secondaryFixedDim;
+
     return Dismissible(
       key: Key(task.id),
       direction: DismissDirection.horizontal,
       dismissThresholds: const {
-        DismissDirection.endToStart: 0.5, // delete
-        DismissDirection.startToEnd: 0.2, // edit
+        DismissDirection.endToStart: 0.4, // delete
+        DismissDirection.startToEnd: 0.25, // edit
       },
       resizeDuration: null,
+      onUpdate: (details) {
+        if (details.reached && !details.previousReached) {
+          HapticHelper.medium();
+        }
+        if (details.reached) {
+          reachType.value = details.direction;
+        } else if (!confirmed.value) {
+          reachType.value = null;
+        }
+      },
       onDismissed: (direction) {
         if (direction == DismissDirection.endToStart) {
           taskViewModel.deleteTask(task);
@@ -57,15 +95,26 @@ class TaskListView extends HookConsumerWidget {
               },
             ),
           );
+          confirmed.value = true;
+          Future.delayed(const Duration(milliseconds: 1000), () {
+            confirmed.value = false;
+          });
           return false;
         }
         if (direction == DismissDirection.endToStart) {
+          // 削除のトリガー
+          confirmed.value = true;
+          Future.delayed(const Duration(milliseconds: 1000), () {
+            confirmed.value = false;
+          });
           return true;
         }
         return false;
       },
       secondaryBackground: Container(
-        color: Theme.of(context).colorScheme.error,
+        color: reachType.value == DismissDirection.endToStart
+            ? deleteColor
+            : inactiveColor,
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Icon(
@@ -74,10 +123,9 @@ class TaskListView extends HookConsumerWidget {
         ),
       ),
       background: Container(
-        color: MaterialTheme(Theme.of(context).textTheme)
-            .extendedColors[0]
-            .light
-            .colorContainer,
+        color: reachType.value == DismissDirection.startToEnd
+            ? editColor
+            : inactiveColor,
         alignment: Alignment.centerLeft,
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Icon(
@@ -104,6 +152,7 @@ class TaskListView extends HookConsumerWidget {
     final notCompletedTasks = list.where((task) => !task.isCompleted).toList();
     final completedTasks = list.where((task) => task.isCompleted).toList();
     final fontSettings = ref.watch(fontSettingsViewModelProvider);
+    final themeMode = ref.watch(settingsViewModelProvider).themeMode;
 
     final l = AppLocalizations.of(context)!;
 
@@ -143,11 +192,11 @@ class TaskListView extends HookConsumerWidget {
               error: (_, __) => const SizedBox(),
             ),
           ...notCompletedTasks
-              .map((task) => _buildDismissibleTask(task, context))
+              .map((task) => _buildDismissibleTask(task, context, themeMode))
               .toList(),
           if (showCompleted && completedTasks.isNotEmpty)
             ...completedTasks
-                .map((task) => _buildDismissibleTask(task, context))
+                .map((task) => _buildDismissibleTask(task, context, themeMode))
                 .toList(),
           const Divider(height: 0),
           if (taskViewModel.hasMore)

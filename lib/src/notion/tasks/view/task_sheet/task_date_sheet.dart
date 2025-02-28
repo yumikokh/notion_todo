@@ -4,6 +4,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../../../model/task.dart';
+import '../../../../helpers/haptic_helper.dart';
 import '../../const/date.dart';
 import '../../date_sheet_viewmodel.dart';
 import 'time_range_label.dart';
@@ -52,9 +53,10 @@ class TaskDateSheet extends HookWidget {
                           child: Text(confirmable ? l10n.confirm : l10n.save,
                               style:
                                   const TextStyle(fontWeight: FontWeight.bold)),
-                          onPressed: () {
+                          onPressed: () async {
                             onSelected(viewModel.selectedDateTime);
                             Navigator.pop(context);
+                            await HapticHelper.selection();
                           },
                         ),
                       ],
@@ -64,8 +66,10 @@ class TaskDateSheet extends HookWidget {
                       emptySelectionAllowed: true,
                       selected: {viewModel.selectedSegment},
                       onSelectionChanged: (selectedSet) {
+                        HapticHelper.light();
+
                         viewModel.handleSegmentChanged(selectedSet);
-                        onSelected(viewModel.selectedDateTime);
+                        onSelected(viewModel.submitDateForSegment);
                         Navigator.pop(context);
                       },
                       segments: options
@@ -85,7 +89,11 @@ class TaskDateSheet extends HookWidget {
                       currentDay: DateTime.now(),
                       rangeStartDay: viewModel.selectedStartDateTime,
                       rangeEndDay: viewModel.selectedEndDateTime,
-                      onDaySelected: viewModel.handleCalendarSelected,
+                      onDaySelected: (selectedDay, focusedDay) async {
+                        viewModel.handleCalendarSelected(
+                            selectedDay, focusedDay);
+                        await HapticHelper.selection();
+                      },
                       onFormatChanged: (_) {
                         // NOTE:Week選択時のエラーを回避
                         return;
@@ -113,31 +121,35 @@ class TaskDateSheet extends HookWidget {
                             Theme.of(context).colorScheme.secondaryContainer,
                       ),
                     ),
-                    if (viewModel.selectedDateTime != null) ...[
-                      const SizedBox(height: 10),
-                      TimeRangeLabel(
-                        date: viewModel.selectedDateTime,
-                        onTap: () {
-                          showModalBottomSheet(
-                            context: context,
-                            isScrollControlled: true,
-                            backgroundColor: Colors.transparent,
-                            builder: (context) => TimePickerSheet(
-                              l10n: l10n,
-                              initialDate: viewModel.selectedDateTime,
-                              onSelected: (date) {
-                                if (date == null) return;
-                                viewModel.handleSelectedDateTime(date);
-                                Navigator.pop(context);
-                              },
-                            ),
-                          );
-                        },
-                        onClearTime: () {
-                          viewModel.clearTime();
-                        },
-                      ),
-                    ],
+                    const SizedBox(height: 10),
+                    viewModel.selectedDateTime != null
+                        ? TimeRangeLabel(
+                            date: viewModel.selectedDateTime,
+                            onTap: () {
+                              showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                backgroundColor: Colors.transparent,
+                                builder: (context) => TimePickerSheet(
+                                  l10n: l10n,
+                                  initialDate: viewModel.selectedDateTime,
+                                  onSelected: (date) {
+                                    if (date == null) return;
+                                    viewModel.handleSelectedDateTime(date);
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                              );
+                              HapticHelper.light();
+                            },
+                            onClearTime: () async {
+                              viewModel.clearTime();
+                              await HapticHelper.light();
+                            },
+                          )
+                        :
+                        // 高さが変わらないようにする
+                        const SizedBox(height: 44),
                   ],
                 ),
               ),
