@@ -109,7 +109,10 @@ class SoundSettingsView extends HookConsumerWidget {
                       ref.read(soundSettingsViewModelProvider);
                   if (soundSettings.enabled &&
                       soundSettings.soundType != 'none') {
-                    await SoundService().playSound(soundSettings.soundType);
+                    print('play sound: ${soundSettings.soundType}');
+
+                    final soundService = ref.read(soundServiceProvider);
+                    await soundService.playSound(soundSettings.soundType);
                   }
                   HapticHelper.light();
                 },

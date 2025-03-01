@@ -87,7 +87,8 @@ class TaskListTile extends HookConsumerWidget {
             // タスク完了時に音を鳴らす
             final soundSettings = ref.read(soundSettingsViewModelProvider);
             if (soundSettings.enabled && soundSettings.soundType != 'none') {
-              await SoundService().playSound(soundSettings.soundType);
+              final soundService = ref.read(soundServiceProvider);
+              await soundService.playSound(soundSettings.soundType);
             }
           } else {
             HapticHelper.light();
