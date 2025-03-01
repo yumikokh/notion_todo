@@ -11,7 +11,8 @@ alwaysApply: true
   
 ## 設計
 - MVVM + Repositoryパターンを採用する    
-- グローバルステート管理はRiverpodを採用し、ViewModelをProviderとする
+- グローバルステート管理はRiverpodを採用し、ViewModelをProviderとする  
+  - Providerを作成するときは、 @riverpod アノテーションを優先して使用する
 - 簡単なローカルステートは flutter_hooks を使用する。StatefulWidgetは使わない
 - 複雑なローカルステートロジックが必要な場合はChangeNotifierを拡張したViewModelを作成し、View（Widget）でロジックは持たせない 
 
