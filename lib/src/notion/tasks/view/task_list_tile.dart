@@ -66,7 +66,6 @@ class TaskListTile extends HookConsumerWidget {
             );
           },
         );
-        HapticHelper.light();
       },
       leading: Checkbox(
         value: checked.value,

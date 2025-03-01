@@ -77,7 +77,7 @@ class TaskBaseScaffold extends StatelessWidget {
         bottomNavigationBar: NavigationBar(
           selectedIndex: currentIndex,
           onDestinationSelected: (index) {
-            HapticHelper.light();
+            HapticHelper.selection();
             onIndexChanged(index);
           },
           labelBehavior: hideNavigationLabel
