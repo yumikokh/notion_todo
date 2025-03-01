@@ -83,5 +83,7 @@ class Task with _$Task {
           option?.id == inProgressOption.id,
       };
 
+  bool get isTemp => id.startsWith("temp_");
+
   factory Task.fromJson(Map<String, dynamic> json) => _$TaskFromJson(json);
 }

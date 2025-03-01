@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:haptic_feedback/haptic_feedback.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -29,17 +28,16 @@ class TaskListTile extends HookConsumerWidget {
     final checked = useState(task.isCompleted);
 
     return ListTile(
+      enabled: !task.isTemp,
       onLongPress: () async {
         // TODO: メニューを表示
         final taskUrl = task.url;
         if (taskUrl == null) return;
         final url = Uri.parse(taskUrl);
         if (await canLaunchUrl(url)) {
-          if (await Haptics.canVibrate()) {
-            await HapticHelper.medium();
-            await Future.delayed(
-                const Duration(milliseconds: 100)); // 確実にvibrateするために少し待つ
-          }
+          await HapticHelper.medium();
+          await Future.delayed(
+              const Duration(milliseconds: 100)); // 確実にvibrateするために少し待つ
           await launchUrl(url, mode: LaunchMode.externalApplication);
         }
       },
@@ -79,6 +77,7 @@ class TaskListTile extends HookConsumerWidget {
           borderRadius: BorderRadius.circular(0),
         ),
         onChanged: (bool? willComplete) async {
+          if (task.isTemp) return;
           if (willComplete == null) return;
           if (willComplete) {
             HapticHelper.success();
@@ -110,7 +109,7 @@ class TaskListTile extends HookConsumerWidget {
           : null,
       title: Text(task.title,
           style: TextStyle(
-            color: task.isCompleted
+            color: task.isCompleted || task.isTemp
                 ? Theme.of(context).colorScheme.outline
                 : Theme.of(context).colorScheme.onSurface,
             decoration: task.isCompleted ? TextDecoration.lineThrough : null,

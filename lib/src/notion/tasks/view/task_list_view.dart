@@ -33,7 +33,6 @@ class TaskListView extends HookConsumerWidget {
   Widget _buildDismissibleTask(
       Task task, BuildContext context, ThemeMode themeMode) {
     final reachType = useState<DismissDirection?>(null);
-    final confirmed = useState(false);
     final deleteColor = Theme.of(context).colorScheme.error;
     final editColor = switch (themeMode) {
       ThemeMode.light => MaterialTheme(Theme.of(context).textTheme)
@@ -56,6 +55,19 @@ class TaskListView extends HookConsumerWidget {
 
     final inactiveColor = Theme.of(context).colorScheme.secondaryFixedDim;
 
+    if (task.isTemp) {
+      return Column(
+        children: [
+          const Divider(height: 0),
+          TaskListTile(
+            key: Key(task.id),
+            task: task,
+            taskViewModel: taskViewModel,
+          ),
+        ],
+      );
+    }
+
     return Dismissible(
       key: Key(task.id),
       direction: DismissDirection.horizontal,
@@ -70,7 +82,7 @@ class TaskListView extends HookConsumerWidget {
         }
         if (details.reached) {
           reachType.value = details.direction;
-        } else if (!confirmed.value) {
+        } else if (details.progress == 0) {
           reachType.value = null;
         }
       },
@@ -95,18 +107,10 @@ class TaskListView extends HookConsumerWidget {
               },
             ),
           );
-          confirmed.value = true;
-          Future.delayed(const Duration(milliseconds: 1000), () {
-            confirmed.value = false;
-          });
           return false;
         }
         if (direction == DismissDirection.endToStart) {
           // 削除のトリガー
-          confirmed.value = true;
-          Future.delayed(const Duration(milliseconds: 1000), () {
-            confirmed.value = false;
-          });
           return true;
         }
         return false;
