@@ -55,6 +55,19 @@ class TaskListView extends HookConsumerWidget {
 
     final inactiveColor = Theme.of(context).colorScheme.secondaryFixedDim;
 
+    if (task.isTemp) {
+      return Column(
+        children: [
+          const Divider(height: 0),
+          TaskListTile(
+            key: Key(task.id),
+            task: task,
+            taskViewModel: taskViewModel,
+          ),
+        ],
+      );
+    }
+
     return Dismissible(
       key: Key(task.id),
       direction: DismissDirection.horizontal,

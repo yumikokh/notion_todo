@@ -234,7 +234,7 @@ class TaskViewModel extends _$TaskViewModel {
       final analytics = ref.read(analyticsServiceProvider);
 
       final prevState = state;
-      final tempId = DateTime.now().millisecondsSinceEpoch.toString();
+      final tempId = "temp_${DateTime.now().millisecondsSinceEpoch.toString()}";
       final tempTask = Task(
           id: tempId,
           title: title,
@@ -475,6 +475,10 @@ class TaskViewModel extends _$TaskViewModel {
   }
 
   Future<void> deleteTask(Task task, {bool fromUndo = false}) async {
+    if (task.isTemp) {
+      return;
+    }
+
     await _addOperation(() async {
       final taskService = _taskService;
       if (taskService == null) {
