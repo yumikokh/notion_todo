@@ -74,7 +74,7 @@ class TaskSheet extends HookConsumerWidget {
                   // Enterキーを押したとき
                   final willClose = !isNewTask || !continuousTaskAddition;
                   if (value.trim().isNotEmpty) {
-                    HapticHelper.success();
+                    HapticHelper.light();
                     onSubmitted(value, selectedDueDate.value,
                         needSnackbarFloating: !willClose);
                   }
@@ -120,7 +120,7 @@ class TaskSheet extends HookConsumerWidget {
                   IconButton.filled(
                     onPressed: isValidTitle.value
                         ? () async {
-                            await HapticHelper.success();
+                            await HapticHelper.light();
                             final willClose =
                                 !isNewTask || !continuousTaskAddition;
                             onSubmitted(
