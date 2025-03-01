@@ -61,11 +61,10 @@ flutter:
 
   # Enable generation of localized Strings from arb files.
   generate: true
-assets:
-  - assets/images/
-  - assets/google_fonts/
-  - assets/sounds/
+  assets:
+    - assets/images/
     - assets/google_fonts/
+    - assets/sounds/
 
 flutter_launcher_icons:
   ios: true
