@@ -4,6 +4,9 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../helpers/haptic_helper.dart';
 import '../settings_viewmodel.dart';
+import '../sound/sound_constants.dart';
+import '../sound/sound_settings_viewmodel.dart';
+import '../sound/view/sound_settings_view.dart';
 import '../../common/analytics/analytics_service.dart';
 
 class BehaviorSettingsPage extends ConsumerWidget {
@@ -69,6 +72,41 @@ class BehaviorSettingsPage extends ConsumerWidget {
                   HapticHelper.light();
                 },
               ),
+            ),
+
+            // タスク完了時の音設定
+            ListTile(
+              title: Text(l.task_completion_sound_title),
+              subtitle: Row(
+                children: [
+                  Flexible(
+                    child: Text(
+                      l.task_completion_sound_description,
+                      style: const TextStyle(fontSize: 10),
+                    ),
+                  ),
+                ],
+              ),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (ref.watch(soundSettingsViewModelProvider).enabled &&
+                      ref.watch(soundSettingsViewModelProvider).soundType !=
+                          'none')
+                    Icon(
+                      SoundConstants.getSoundIcon(
+                        ref.watch(soundSettingsViewModelProvider).soundType,
+                      ),
+                      size: 16,
+                    ),
+                  const SizedBox(width: 8),
+                  const Icon(Icons.chevron_right),
+                ],
+              ),
+              onTap: () {
+                analytics.logScreenView(screenName: 'SoundSettings');
+                Navigator.pushNamed(context, SoundSettingsView.routeName);
+              },
             ),
 
             // 将来的に追加される他のふるまい設定
