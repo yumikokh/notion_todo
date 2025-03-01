@@ -87,7 +87,8 @@ class SnackbarListener extends HookConsumerWidget {
                   onPressed: undo,
                   child: Text('Undo', style: TextStyle(color: undoTextColor)))
             ]
-          : [],
+          // 空だとエラーになる
+          : [const Text("")],
     );
   }
 }
