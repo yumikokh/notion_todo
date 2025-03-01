@@ -35,6 +35,9 @@ class SnackbarListener extends HookConsumerWidget {
             duration: const Duration(milliseconds: 2000),
             behavior: SnackBarBehavior.fixed);
 
+        scaffoldMessengerKey.currentState?.clearSnackBars();
+        scaffoldMessengerKey.currentState?.clearMaterialBanners();
+
         if (current.isFloating) {
           // snackbarが隠れる場合は上部バナーで表示
           scaffoldMessengerKey.currentState
@@ -43,7 +46,6 @@ class SnackbarListener extends HookConsumerWidget {
             scaffoldMessengerKey.currentState?.clearMaterialBanners();
           });
         } else {
-          scaffoldMessengerKey.currentState?.clearSnackBars();
           scaffoldMessengerKey.currentState?.showSnackBar(snackBar);
           ref.read(snackbarProvider.notifier).clear();
         }
