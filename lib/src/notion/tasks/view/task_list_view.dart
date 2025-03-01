@@ -23,7 +23,7 @@ class TaskListView extends HookConsumerWidget {
   static final DateHelper d = DateHelper();
 
   static const double deleteThreshold = 0.4;
-  static const double editThreshold = 0.25;
+  static const double dateThreshold = 0.25;
 
   const TaskListView({
     super.key,
@@ -76,7 +76,7 @@ class TaskListView extends HookConsumerWidget {
       direction: DismissDirection.horizontal,
       dismissThresholds: const {
         DismissDirection.endToStart: deleteThreshold, // delete
-        DismissDirection.startToEnd: editThreshold, // edit
+        DismissDirection.startToEnd: dateThreshold, // edit
       },
       resizeDuration: null,
       onUpdate: (details) {
@@ -87,7 +87,7 @@ class TaskListView extends HookConsumerWidget {
           reachType.value = details.direction;
         }
 
-        if (details.progress > editThreshold &&
+        if (details.progress < dateThreshold &&
             details.direction == DismissDirection.startToEnd) {
           reachType.value = null;
         }
