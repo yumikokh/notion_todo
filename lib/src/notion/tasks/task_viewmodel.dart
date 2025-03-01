@@ -516,6 +516,9 @@ class TaskViewModel extends _$TaskViewModel {
         state = prevState;
         snackbar.show(l.task_delete_failed(task.title),
             type: SnackbarType.error);
+        // 既にNotion上で削除されている場合があるため、stateを更新する
+        // 本来はステータスコードで判定したいが、できないため
+        ref.invalidateSelf();
       }
     });
   }
