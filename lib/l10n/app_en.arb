@@ -242,5 +242,13 @@
   },
   "continuous_task_addition_title": "Continuous Task Addition",
   "continuous_task_addition_description": "Allow continuous task addition",
-  "behavior_settings_title": "Behavior"
+  "behavior_settings_title": "Behavior",
+  "task_completion_sound_title": "Task Completion Sound",
+  "task_completion_sound_description": "Play a sound when a task is completed",
+  "sound_settings_title": "Task Completion Sound",
+  "sound_enabled": "Enable Sound",
+  "sound_enabled_description": "Play a sound when a task is completed",
+  "sound_type": "Sound Type",
+  "sound_type_description": "Select the sound to play when a task is completed",
+  "play_sound": "Play Sound"
 }
