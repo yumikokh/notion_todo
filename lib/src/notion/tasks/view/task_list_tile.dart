@@ -79,10 +79,8 @@ class TaskListTile extends HookConsumerWidget {
           if (task.isTemp) return;
           if (willComplete == null) return;
           if (willComplete) {
-            HapticHelper.success();
-            // TODO: 音を鳴らす
-          } else {
             HapticHelper.light();
+            // TODO: 音を鳴らす
           }
           checked.value = willComplete;
           await taskViewModel.updateCompleteStatus(task, willComplete);

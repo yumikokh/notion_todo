@@ -86,10 +86,8 @@ class TaskStarButton extends HookConsumerWidget {
             }
           }
 
-          if (stared.value) {
-            HapticHelper.light();
-          } else {
-            HapticHelper.medium();
+          if (!stared.value) {
+            HapticHelper.selection();
           }
           stared.value = !stared.value;
           await onInProgressChanged(task);

@@ -65,7 +65,6 @@ class TaskBaseScaffold extends StatelessWidget {
                                 color: Theme.of(context).colorScheme.onSurface),
                           ),
                     onPressed: () {
-                      HapticHelper.selection();
                       Navigator.restorablePushNamed(
                           context, SettingsPage.routeName);
                     },
@@ -123,7 +122,7 @@ class TaskBaseScaffold extends StatelessWidget {
                       },
                     ),
                   );
-                  HapticHelper.selection();
+                  HapticHelper.light();
                 },
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(100),

@@ -74,7 +74,7 @@ class TaskSheet extends HookConsumerWidget {
                   // Enterキーを押したとき
                   final willClose = !isNewTask || !continuousTaskAddition;
                   if (value.trim().isNotEmpty) {
-                    HapticHelper.light();
+                    HapticHelper.selection();
                     onSubmitted(value, selectedDueDate.value,
                         needSnackbarFloating: !willClose);
                   }
@@ -95,7 +95,6 @@ class TaskSheet extends HookConsumerWidget {
                         date: selectedDueDate.value,
                         context: context,
                         onSelected: (selected) {
-                          HapticHelper.light();
                           showModalBottomSheet(
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -110,7 +109,6 @@ class TaskSheet extends HookConsumerWidget {
                           );
                         },
                         onDeleted: () {
-                          HapticHelper.light();
                           changeSelectedDueDate(null);
                         },
                       ),
@@ -120,7 +118,7 @@ class TaskSheet extends HookConsumerWidget {
                   IconButton.filled(
                     onPressed: isValidTitle.value
                         ? () async {
-                            await HapticHelper.light();
+                            await HapticHelper.selection();
                             final willClose =
                                 !isNewTask || !continuousTaskAddition;
                             onSubmitted(

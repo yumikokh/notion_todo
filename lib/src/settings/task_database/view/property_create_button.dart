@@ -27,7 +27,6 @@ class PropertyCreateButton extends StatelessWidget {
           ),
         ),
         onPressed: () async {
-          HapticHelper.light();
           final propertyName = await showDialog<String>(
             context: context,
             builder: (BuildContext context) {
@@ -56,7 +55,7 @@ class PropertyCreateButton extends StatelessWidget {
                                   .checkPropertyExists(tempName)
                               ? l.property_name_error
                               : null;
-                      HapticHelper.light();
+                      HapticHelper.selection();
                       if (errorMessage != null) {
                         showDialog(
                           // ignore: use_build_context_synchronously

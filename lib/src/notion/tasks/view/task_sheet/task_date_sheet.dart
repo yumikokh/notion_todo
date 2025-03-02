@@ -53,10 +53,10 @@ class TaskDateSheet extends HookWidget {
                           child: Text(confirmable ? l10n.confirm : l10n.save,
                               style:
                                   const TextStyle(fontWeight: FontWeight.bold)),
-                          onPressed: () async {
+                          onPressed: () {
                             onSelected(viewModel.selectedDateTime);
                             Navigator.pop(context);
-                            await HapticHelper.selection();
+                            HapticHelper.selection();
                           },
                         ),
                       ],
@@ -66,11 +66,10 @@ class TaskDateSheet extends HookWidget {
                       emptySelectionAllowed: true,
                       selected: {viewModel.selectedSegment},
                       onSelectionChanged: (selectedSet) {
-                        HapticHelper.light();
-
                         viewModel.handleSegmentChanged(selectedSet);
                         onSelected(viewModel.submitDateForSegment);
                         Navigator.pop(context);
+                        HapticHelper.selection();
                       },
                       segments: options
                           .map((dt) => ButtonSegment(
@@ -92,7 +91,6 @@ class TaskDateSheet extends HookWidget {
                       onDaySelected: (selectedDay, focusedDay) async {
                         viewModel.handleCalendarSelected(
                             selectedDay, focusedDay);
-                        await HapticHelper.selection();
                       },
                       onFormatChanged: (_) {
                         // NOTE:Week選択時のエラーを回避
@@ -140,11 +138,9 @@ class TaskDateSheet extends HookWidget {
                                   },
                                 ),
                               );
-                              HapticHelper.light();
                             },
                             onClearTime: () async {
                               viewModel.clearTime();
-                              await HapticHelper.light();
                             },
                           )
                         :

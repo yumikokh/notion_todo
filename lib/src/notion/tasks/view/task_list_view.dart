@@ -81,7 +81,7 @@ class TaskListView extends HookConsumerWidget {
       resizeDuration: null,
       onUpdate: (details) {
         if (details.reached && !details.previousReached) {
-          HapticHelper.medium();
+          HapticHelper.light();
         }
         if (details.reached) {
           reachType.value = details.direction;
