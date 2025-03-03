@@ -10,6 +10,7 @@ class SettingsService {
   static const _wakelockKey = 'wakelock';
   static const _hideNavigationLabelKey = 'hide_navigation_label';
   static const _showNotificationBadgeKey = 'show_notification_badge';
+  static const _continuousTaskAdditionKey = 'continuous_task_addition';
 
   /* themeMode */
   Future<ThemeMode> themeMode() async {
@@ -85,5 +86,16 @@ class SettingsService {
   Future<void> updateShowNotificationBadge(bool value) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_showNotificationBadgeKey, value);
+  }
+
+  /* continuousTaskAddition */
+  Future<bool> loadContinuousTaskAddition() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_continuousTaskAdditionKey) ?? true;
+  }
+
+  Future<void> updateContinuousTaskAddition(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_continuousTaskAdditionKey, value);
   }
 }

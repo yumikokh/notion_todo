@@ -7,6 +7,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../common/analytics/analytics_service.dart';
 import '../../../helpers/date.dart';
+import '../../../helpers/haptic_helper.dart';
 import '../../../settings/settings_viewmodel.dart';
 import '../../../settings/view/notion_settings_page.dart';
 import '../../repository/notion_task_repository.dart';
@@ -95,12 +96,12 @@ class TaskMainPage extends HookConsumerWidget {
       onShowCompletedChanged: (value) async {
         todayViewModel.toggleShowCompleted();
       },
-      onAddTask: (title, dueDate) {
+      onAddTask: (title, dueDate, needSnackbarFloating) {
         switch (isToday) {
           case true:
-            todayViewModel.addTask(title, dueDate);
+            todayViewModel.addTask(title, dueDate, needSnackbarFloating);
           case false:
-            allViewModel.addTask(title, dueDate);
+            allViewModel.addTask(title, dueDate, needSnackbarFloating);
         }
       },
       body: taskDatabase.when(
@@ -109,11 +110,10 @@ class TaskMainPage extends HookConsumerWidget {
                 index: currentIndex.value,
                 children: [
                   // Today Tasks
-                  RefreshIndicator(
+                  TaskRefreshIndicator(
                     onRefresh: () async {
                       ref.invalidate(todayProvider);
                     },
-                    color: Theme.of(context).colorScheme.inversePrimary,
                     child: todayTasks.when(
                       data: (tasks) => TaskListView(
                         title: d.formatDateForTitle(DateTime.now(),
@@ -130,11 +130,10 @@ class TaskMainPage extends HookConsumerWidget {
                     ),
                   ),
                   // All Tasks
-                  RefreshIndicator(
+                  TaskRefreshIndicator(
                     onRefresh: () async {
                       ref.invalidate(allProvider);
                     },
-                    color: Theme.of(context).colorScheme.inversePrimary,
                     child: allTasks.when(
                       data: (tasks) => TaskListView(
                         list: tasks,
@@ -178,6 +177,43 @@ class TaskMainPage extends HookConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(child: Text(error.toString())),
       ),
+    );
+  }
+}
+
+class TaskRefreshIndicator extends HookWidget {
+  final Widget child;
+  final Future<void> Function() onRefresh;
+
+  const TaskRefreshIndicator({
+    Key? key,
+    required this.child,
+    required this.onRefresh,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final hasHapticFeedback = useState(false);
+
+    return RefreshIndicator(
+      onRefresh: () async {
+        await onRefresh();
+      },
+      color: Theme.of(context).colorScheme.inversePrimary,
+      notificationPredicate: (notification) {
+        final threshold = notification.metrics.minScrollExtent - 100;
+        final isOverThreshold = notification.metrics.pixels <= threshold;
+
+        if (isOverThreshold && !hasHapticFeedback.value) {
+          HapticHelper.medium();
+          hasHapticFeedback.value = true;
+        } else if (!isOverThreshold) {
+          hasHapticFeedback.value = false;
+        }
+
+        return notification.depth == 0;
+      },
+      child: child,
     );
   }
 }

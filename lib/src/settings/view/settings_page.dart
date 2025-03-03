@@ -13,6 +13,7 @@ import '../settings_viewmodel.dart';
 import '../../common/analytics/analytics_service.dart';
 import '../../common/app_version/app_version_viewmodel.dart';
 import 'appearance_settings_page.dart';
+import 'behavior_settings_page.dart';
 
 class SettingsPage extends ConsumerWidget {
   static const routeName = '/settings';
@@ -90,25 +91,13 @@ class SettingsPage extends ConsumerWidget {
                   },
                 ),
                 ListTile(
-                  title: Text(l.wakelock_title),
-                  subtitle: Row(
-                    children: [
-                      const Icon(Icons.warning_rounded, size: 14),
-                      const SizedBox(width: 2),
-                      Flexible(
-                        child: Text(l.wakelock_description,
-                            style: const TextStyle(fontSize: 10)),
-                      ),
-                    ],
-                  ),
-                  trailing: Switch(
-                    value: ref.watch(settingsViewModelProvider).wakelock,
-                    onChanged: (value) {
-                      ref
-                          .read(settingsViewModelProvider.notifier)
-                          .updateWakelock(value);
-                    },
-                  ),
+                  title: Text(l.behavior_settings_title),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () {
+                    analytics.logScreenView(screenName: 'BehaviorSettings');
+                    Navigator.of(context)
+                        .pushNamed(BehaviorSettingsPage.routeName);
+                  },
                 ),
               ],
             ),

@@ -9,6 +9,7 @@ class SnackbarState with _$SnackbarState {
     required String message,
     @Default(SnackbarType.info) SnackbarType type,
     VoidCallback? onUndo,
+    @Default(false) bool isFloating,
   }) = _SnackbarState;
 }
 

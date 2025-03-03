@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../../../helpers/haptic_helper.dart';
 import '../../../settings/view/settings_page.dart';
 import '../../model/task.dart';
 import 'task_sheet/task_sheet.dart';
@@ -12,7 +13,7 @@ class TaskBaseScaffold extends StatelessWidget {
   final bool hideNavigationLabel;
   final void Function(int) onIndexChanged;
   final void Function(bool) onShowCompletedChanged;
-  final void Function(String, TaskDate?) onAddTask;
+  final void Function(String, TaskDate?, bool) onAddTask;
 
   const TaskBaseScaffold({
     Key? key,
@@ -48,6 +49,7 @@ class TaskBaseScaffold extends StatelessWidget {
                     color: Theme.of(context).colorScheme.onSurface,
                   ),
                   onPressed: () {
+                    HapticHelper.selection();
                     onShowCompletedChanged(!showCompleted);
                   },
                 )
@@ -73,7 +75,10 @@ class TaskBaseScaffold extends StatelessWidget {
         body: body,
         bottomNavigationBar: NavigationBar(
           selectedIndex: currentIndex,
-          onDestinationSelected: onIndexChanged,
+          onDestinationSelected: (index) {
+            HapticHelper.selection();
+            onIndexChanged(index);
+          },
           labelBehavior: hideNavigationLabel
               ? NavigationDestinationLabelBehavior.alwaysHide
               : NavigationDestinationLabelBehavior.alwaysShow,
@@ -110,11 +115,14 @@ class TaskBaseScaffold extends StatelessWidget {
                             )
                           : null,
                       initialTitle: null,
-                      onSubmitted: (title, dueDate) {
-                        onAddTask(title, dueDate);
+                      onSubmitted: (title, dueDate,
+                          {bool? needSnackbarFloating}) {
+                        onAddTask(
+                            title, dueDate, needSnackbarFloating ?? false);
                       },
                     ),
                   );
+                  HapticHelper.light();
                 },
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(100),

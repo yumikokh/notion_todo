@@ -4,6 +4,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../../../model/task.dart';
+import '../../../../helpers/haptic_helper.dart';
 import '../../const/date.dart';
 import '../../date_sheet_viewmodel.dart';
 import 'time_range_label.dart';
@@ -55,6 +56,7 @@ class TaskDateSheet extends HookWidget {
                           onPressed: () {
                             onSelected(viewModel.selectedDateTime);
                             Navigator.pop(context);
+                            HapticHelper.selection();
                           },
                         ),
                       ],
@@ -65,8 +67,9 @@ class TaskDateSheet extends HookWidget {
                       selected: {viewModel.selectedSegment},
                       onSelectionChanged: (selectedSet) {
                         viewModel.handleSegmentChanged(selectedSet);
-                        onSelected(viewModel.selectedDateTime);
+                        onSelected(viewModel.submitDateForSegment);
                         Navigator.pop(context);
+                        HapticHelper.selection();
                       },
                       segments: options
                           .map((dt) => ButtonSegment(
@@ -85,7 +88,10 @@ class TaskDateSheet extends HookWidget {
                       currentDay: DateTime.now(),
                       rangeStartDay: viewModel.selectedStartDateTime,
                       rangeEndDay: viewModel.selectedEndDateTime,
-                      onDaySelected: viewModel.handleCalendarSelected,
+                      onDaySelected: (selectedDay, focusedDay) async {
+                        viewModel.handleCalendarSelected(
+                            selectedDay, focusedDay);
+                      },
                       onFormatChanged: (_) {
                         // NOTE:Week選択時のエラーを回避
                         return;
@@ -113,31 +119,33 @@ class TaskDateSheet extends HookWidget {
                             Theme.of(context).colorScheme.secondaryContainer,
                       ),
                     ),
-                    if (viewModel.selectedDateTime != null) ...[
-                      const SizedBox(height: 10),
-                      TimeRangeLabel(
-                        date: viewModel.selectedDateTime,
-                        onTap: () {
-                          showModalBottomSheet(
-                            context: context,
-                            isScrollControlled: true,
-                            backgroundColor: Colors.transparent,
-                            builder: (context) => TimePickerSheet(
-                              l10n: l10n,
-                              initialDate: viewModel.selectedDateTime,
-                              onSelected: (date) {
-                                if (date == null) return;
-                                viewModel.handleSelectedDateTime(date);
-                                Navigator.pop(context);
-                              },
-                            ),
-                          );
-                        },
-                        onClearTime: () {
-                          viewModel.clearTime();
-                        },
-                      ),
-                    ],
+                    const SizedBox(height: 10),
+                    viewModel.selectedDateTime != null
+                        ? TimeRangeLabel(
+                            date: viewModel.selectedDateTime,
+                            onTap: () {
+                              showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                backgroundColor: Colors.transparent,
+                                builder: (context) => TimePickerSheet(
+                                  l10n: l10n,
+                                  initialDate: viewModel.selectedDateTime,
+                                  onSelected: (date) {
+                                    if (date == null) return;
+                                    viewModel.handleSelectedDateTime(date);
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                              );
+                            },
+                            onClearTime: () async {
+                              viewModel.clearTime();
+                            },
+                          )
+                        :
+                        // 高さが変わらないようにする
+                        const SizedBox(height: 44),
                   ],
                 ),
               ),

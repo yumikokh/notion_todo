@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../model/task.dart';
+import '../../../../helpers/haptic_helper.dart';
 import '../../time_sheet_viewmodel.dart';
 import 'duration_picker.dart';
 
@@ -21,6 +22,8 @@ class TimePickerSheet extends StatelessWidget {
     required this.l10n,
   }) : _viewModel =
             TimeSheetViewModel(initialDateTime: initialDate, l10n: l10n);
+
+  List<Duration> get durations => _viewModel.durations;
 
   void _showTimePickerDialog({
     required BuildContext context,
@@ -115,6 +118,7 @@ class TimePickerSheet extends StatelessWidget {
                       TextButton(
                         onPressed: () {
                           onSelected(_viewModel.selectedDateTime);
+                          HapticHelper.selection();
                         },
                         child: Text(l10n.save,
                             style:
@@ -175,7 +179,9 @@ class TimePickerSheet extends StatelessWidget {
                         },
                         onDeleted:
                             _viewModel.selectedDateTime?.start.isAllDay != true
-                                ? _viewModel.clearStartTime
+                                ? () {
+                                    _viewModel.clearStartTime();
+                                  }
                                 : null,
                         deleteIcon: const Icon(Icons.close_rounded, size: 16),
                         visualDensity: VisualDensity.compact,
@@ -222,15 +228,19 @@ class TimePickerSheet extends StatelessWidget {
                                   key: _durationKey,
                                   child: DurationPicker(
                                     initialDuration: roundedDuration,
-                                    onDurationChanged:
-                                        _viewModel.handleDurationSelected,
+                                    onDurationChanged: (duration) {
+                                      _viewModel
+                                          .handleDurationSelected(duration);
+                                    },
                                     maxHours: 16,
                                     minuteInterval: interval,
                                   ),
                                 );
                               },
                               onDeleted: _viewModel.currentDuration != null
-                                  ? () => _viewModel.clearDuration()
+                                  ? () {
+                                      _viewModel.clearDuration();
+                                    }
                                   : null,
                               deleteIcon:
                                   const Icon(Icons.close_rounded, size: 16),
@@ -244,7 +254,7 @@ class TimePickerSheet extends StatelessWidget {
                           scrollDirection: Axis.horizontal,
                           child: Row(
                             children: [
-                              for (final duration in _viewModel.durations)
+                              for (final duration in durations)
                                 Padding(
                                   padding: const EdgeInsets.only(right: 8.0),
                                   child: ChoiceChip(
