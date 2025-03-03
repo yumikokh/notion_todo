@@ -93,6 +93,10 @@ class TaskSheet extends HookConsumerWidget {
                 textInputAction: TextInputAction.done,
                 decoration: InputDecoration(
                   hintText: l.task_sheet_title_hint,
+                  border: InputBorder.none,
+                ),
+                style: const TextStyle(
+                  fontSize: 18,
                 ),
                 onEditingComplete: submitHandler,
               ),
