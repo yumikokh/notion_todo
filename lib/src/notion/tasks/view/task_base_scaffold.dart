@@ -105,6 +105,7 @@ class TaskBaseScaffold extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     context: context,
+                    isScrollControlled: true,
                     builder: (context) => TaskSheet(
                       initialDueDate: isToday
                           ? TaskDate(

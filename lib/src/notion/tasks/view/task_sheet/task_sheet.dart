@@ -80,9 +80,7 @@ class TaskSheet extends HookConsumerWidget {
     ]);
 
     return Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
-      ),
+      padding: MediaQuery.of(context).viewInsets,
       child: Wrap(children: <Widget>[
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 8, 24, 30),

@@ -47,6 +47,7 @@ class TaskListTile extends HookConsumerWidget {
             borderRadius: BorderRadius.circular(12),
           ),
           context: context,
+          isScrollControlled: true,
           builder: (context) {
             return TaskSheet(
               initialDueDate: task.dueDate,
