@@ -6,7 +6,7 @@ alwaysApply: true
 # Coding Guideline  
   
 ## コード変更時の留意点
-- 指示した内容以外に修正したい内容があった場合、勝手にコードを書き換えず、応答の文言内で補足してください  
+- 指示した内容以外に修正したい内容があった場合、勝手にコードを書き換えないでください
 - コメントは削除しないこと
   
 ## 設計
@@ -21,10 +21,17 @@ alwaysApply: true
 - Widgetでの実装は [task_date_sheet.dart](mdc:lib/src/notion/tasks/view/task_sheet/task_date_sheet.dart), Context をもたないProvider管理下の実装は [task_viewmodel.dart](mdc:lib/src/notion/tasks/task_viewmodel.dart) を参考にすること。それ以外の場合は、クラスにAppLocalizations型をもつパラメータを渡すようにする
 
 ## Haptic    
-- よりよいユーザー体験のために、タップのようなユーザーアクション時にはHapticフィードバックを加える
-- 使用側のWidgetで @haptic_helper.dart を利用する    
-  - `await` する必要はない
-- テキスト選択時は `HapticHelper.selection()` 、ButtonやRadioタップ時には `HapticHelper.light()` を使う  
-- 特に重要な確定アクションでは `HapticHelper.success()` を使う  
-- キャンセル時は対応しなくてよい
+- よりよいユーザー体験のために、適度なHapticフィードバックを加える
+- 使用側のWidgetで [haptic_helper.dart](mdc:lib/src/helpers/haptic_helper.dart) を利用する    
+  - `await` する必要はない  
+    
+### `HapticHelper.light()`
+- RadioやSwitchのようなインプット要素で変更があったことを示す  
+- 閾値をもつUI（Pull to Refresh、スワイプ、長押し）で閾値を超えたことを示す  
+  - アクションの種類によってわかりづらければ、 `HapticHelper.medium()` を使う
+- FABのような象徴的なボタンのタップ時
+  
+### `HapticHelper.selection()`  
+- 確定要素のあるテキストボタンやアイコンボタンのタップ時  
+
 

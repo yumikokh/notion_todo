@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'dart:async';
 
 import '../../../settings/settings_viewmodel.dart';
 import '../model/snackbar_state.dart';
@@ -14,6 +15,9 @@ class SnackbarListener extends HookConsumerWidget {
     required this.scaffoldMessengerKey,
     required this.child,
   });
+
+  // タイマーを管理するための静的変数
+  static Timer? _bannerTimer;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -38,11 +42,16 @@ class SnackbarListener extends HookConsumerWidget {
         scaffoldMessengerKey.currentState?.clearSnackBars();
         scaffoldMessengerKey.currentState?.clearMaterialBanners();
 
+        // 前のタイマーがあればキャンセル
+        _bannerTimer?.cancel();
+
         if (current.isFloating) {
           // snackbarが隠れる場合は上部バナーで表示
           scaffoldMessengerKey.currentState
               ?.showMaterialBanner(createTopSnackBar(context, ref, current));
-          Future.delayed(const Duration(milliseconds: 2000), () {
+
+          // 新しいタイマーを設定
+          _bannerTimer = Timer(const Duration(milliseconds: 2000), () {
             scaffoldMessengerKey.currentState?.clearMaterialBanners();
           });
         } else {

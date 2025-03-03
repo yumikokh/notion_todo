@@ -141,8 +141,6 @@ class TimePickerSheet extends StatelessWidget {
                           ),
                         ),
                         onPressed: () {
-                          HapticHelper.light();
-
                           if (_viewModel.selectedDateTime?.start.isAllDay ==
                               true) {
                             _viewModel.handleStartTimeSelected(
@@ -182,7 +180,6 @@ class TimePickerSheet extends StatelessWidget {
                         onDeleted:
                             _viewModel.selectedDateTime?.start.isAllDay != true
                                 ? () {
-                                    HapticHelper.light();
                                     _viewModel.clearStartTime();
                                   }
                                 : null,
@@ -210,7 +207,6 @@ class TimePickerSheet extends StatelessWidget {
                                 ),
                               ),
                               onPressed: () {
-                                HapticHelper.light();
                                 final duration = _viewModel.currentDuration;
                                 const interval = 5;
                                 // 5分間隔に丸める
@@ -243,7 +239,6 @@ class TimePickerSheet extends StatelessWidget {
                               },
                               onDeleted: _viewModel.currentDuration != null
                                   ? () {
-                                      HapticHelper.light();
                                       _viewModel.clearDuration();
                                     }
                                   : null,
@@ -267,7 +262,6 @@ class TimePickerSheet extends StatelessWidget {
                                         _viewModel.currentDuration == duration,
                                     onSelected: (selected) {
                                       if (selected) {
-                                        HapticHelper.light();
                                         _viewModel
                                             .handleDurationSelected(duration);
                                       }

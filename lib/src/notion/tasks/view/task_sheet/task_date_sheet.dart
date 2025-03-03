@@ -32,129 +32,117 @@ class TaskDateSheet extends HookWidget {
     return ListenableBuilder(
       listenable: viewModel,
       builder: (context, _) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
-          ),
-          child: Wrap(
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 10, 20, 60),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        TextButton(
-                          child: Text(l10n.cancel),
-                          onPressed: () => Navigator.pop(context),
-                        ),
-                        TextButton(
-                          child: Text(confirmable ? l10n.confirm : l10n.save,
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.bold)),
-                          onPressed: () async {
-                            onSelected(viewModel.selectedDateTime);
-                            Navigator.pop(context);
-                            await HapticHelper.selection();
-                          },
-                        ),
-                      ],
-                    ),
-                    SegmentedButton(
-                      expandedInsets: const EdgeInsets.symmetric(horizontal: 0),
-                      emptySelectionAllowed: true,
-                      selected: {viewModel.selectedSegment},
-                      onSelectionChanged: (selectedSet) {
-                        HapticHelper.light();
-
-                        viewModel.handleSegmentChanged(selectedSet);
-                        onSelected(viewModel.submitDateForSegment);
-                        Navigator.pop(context);
-                      },
-                      segments: options
-                          .map((dt) => ButtonSegment(
-                              value: dt.date?.submitFormat ?? 'no-date',
-                              icon: Icon(dt.icon, size: 14),
-                              label: Text(dt.text,
-                                  style: const TextStyle(fontSize: 12))))
-                          .toList(),
-                    ),
-                    const SizedBox(height: 8),
-                    TableCalendar(
-                      locale: localeCode,
-                      firstDay: viewModel.calenderFirstDay,
-                      lastDay: viewModel.calenderLastDay,
-                      focusedDay: viewModel.focusedDay,
-                      currentDay: DateTime.now(),
-                      rangeStartDay: viewModel.selectedStartDateTime,
-                      rangeEndDay: viewModel.selectedEndDateTime,
-                      onDaySelected: (selectedDay, focusedDay) async {
-                        viewModel.handleCalendarSelected(
-                            selectedDay, focusedDay);
-                        await HapticHelper.selection();
-                      },
-                      onFormatChanged: (_) {
-                        // NOTE:Week選択時のエラーを回避
-                        return;
-                      },
-                      calendarFormat: CalendarFormat.twoWeeks,
-                      calendarStyle: CalendarStyle(
-                        todayDecoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color:
-                                Theme.of(context).colorScheme.inversePrimary),
-                        todayTextStyle: TextStyle(
-                            color:
-                                Theme.of(context).colorScheme.secondaryFixed),
-                        rangeStartDecoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Theme.of(context).colorScheme.primary),
-                        rangeEndDecoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Theme.of(context).colorScheme.primary),
-                        rangeStartTextStyle: TextStyle(
-                            color: Theme.of(context).colorScheme.onPrimary),
-                        rangeEndTextStyle: TextStyle(
-                            color: Theme.of(context).colorScheme.onPrimary),
-                        rangeHighlightColor:
-                            Theme.of(context).colorScheme.secondaryContainer,
+        return Wrap(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 10, 20, 60),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      TextButton(
+                        child: Text(l10n.cancel),
+                        onPressed: () => Navigator.pop(context),
                       ),
+                      TextButton(
+                        child: Text(confirmable ? l10n.confirm : l10n.save,
+                            style:
+                                const TextStyle(fontWeight: FontWeight.bold)),
+                        onPressed: () {
+                          onSelected(viewModel.selectedDateTime);
+                          Navigator.pop(context);
+                          HapticHelper.selection();
+                        },
+                      ),
+                    ],
+                  ),
+                  SegmentedButton(
+                    expandedInsets: const EdgeInsets.symmetric(horizontal: 0),
+                    emptySelectionAllowed: true,
+                    selected: {viewModel.selectedSegment},
+                    onSelectionChanged: (selectedSet) {
+                      viewModel.handleSegmentChanged(selectedSet);
+                      onSelected(viewModel.submitDateForSegment);
+                      Navigator.pop(context);
+                      HapticHelper.selection();
+                    },
+                    segments: options
+                        .map((dt) => ButtonSegment(
+                            value: dt.date?.submitFormat ?? 'no-date',
+                            icon: Icon(dt.icon, size: 14),
+                            label: Text(dt.text,
+                                style: const TextStyle(fontSize: 12))))
+                        .toList(),
+                  ),
+                  const SizedBox(height: 8),
+                  TableCalendar(
+                    locale: localeCode,
+                    firstDay: viewModel.calenderFirstDay,
+                    lastDay: viewModel.calenderLastDay,
+                    focusedDay: viewModel.focusedDay,
+                    currentDay: DateTime.now(),
+                    rangeStartDay: viewModel.selectedStartDateTime,
+                    rangeEndDay: viewModel.selectedEndDateTime,
+                    onDaySelected: (selectedDay, focusedDay) async {
+                      viewModel.handleCalendarSelected(selectedDay, focusedDay);
+                    },
+                    onFormatChanged: (_) {
+                      // NOTE:Week選択時のエラーを回避
+                      return;
+                    },
+                    calendarFormat: CalendarFormat.twoWeeks,
+                    calendarStyle: CalendarStyle(
+                      todayDecoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Theme.of(context).colorScheme.inversePrimary),
+                      todayTextStyle: TextStyle(
+                          color: Theme.of(context).colorScheme.secondaryFixed),
+                      rangeStartDecoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Theme.of(context).colorScheme.primary),
+                      rangeEndDecoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Theme.of(context).colorScheme.primary),
+                      rangeStartTextStyle: TextStyle(
+                          color: Theme.of(context).colorScheme.onPrimary),
+                      rangeEndTextStyle: TextStyle(
+                          color: Theme.of(context).colorScheme.onPrimary),
+                      rangeHighlightColor:
+                          Theme.of(context).colorScheme.secondaryContainer,
                     ),
-                    const SizedBox(height: 10),
-                    viewModel.selectedDateTime != null
-                        ? TimeRangeLabel(
-                            date: viewModel.selectedDateTime,
-                            onTap: () {
-                              showModalBottomSheet(
-                                context: context,
-                                isScrollControlled: true,
-                                backgroundColor: Colors.transparent,
-                                builder: (context) => TimePickerSheet(
-                                  l10n: l10n,
-                                  initialDate: viewModel.selectedDateTime,
-                                  onSelected: (date) {
-                                    if (date == null) return;
-                                    viewModel.handleSelectedDateTime(date);
-                                    Navigator.pop(context);
-                                  },
-                                ),
-                              );
-                              HapticHelper.light();
-                            },
-                            onClearTime: () async {
-                              viewModel.clearTime();
-                              await HapticHelper.light();
-                            },
-                          )
-                        :
-                        // 高さが変わらないようにする
-                        const SizedBox(height: 44),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 10),
+                  viewModel.selectedDateTime != null
+                      ? TimeRangeLabel(
+                          date: viewModel.selectedDateTime,
+                          onTap: () {
+                            showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              backgroundColor: Colors.transparent,
+                              builder: (context) => TimePickerSheet(
+                                l10n: l10n,
+                                initialDate: viewModel.selectedDateTime,
+                                onSelected: (date) {
+                                  if (date == null) return;
+                                  viewModel.handleSelectedDateTime(date);
+                                  Navigator.pop(context);
+                                },
+                              ),
+                            );
+                          },
+                          onClearTime: () async {
+                            viewModel.clearTime();
+                          },
+                        )
+                      :
+                      // 高さが変わらないようにする
+                      const SizedBox(height: 44),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         );
       },
     );

@@ -49,6 +49,7 @@ class TaskListTile extends HookConsumerWidget {
             borderRadius: BorderRadius.circular(12),
           ),
           context: context,
+          isScrollControlled: true,
           builder: (context) {
             return TaskSheet(
               initialDueDate: task.dueDate,
@@ -68,7 +69,6 @@ class TaskListTile extends HookConsumerWidget {
             );
           },
         );
-        HapticHelper.light();
       },
       leading: Checkbox(
         value: checked.value,
@@ -83,15 +83,12 @@ class TaskListTile extends HookConsumerWidget {
           if (willComplete == null) return;
           if (willComplete) {
             HapticHelper.success();
-
             // タスク完了時に音を鳴らす
             final soundSettings = ref.read(soundSettingsViewModelProvider);
             if (soundSettings.enabled && soundSettings.soundType != 'none') {
               final soundService = ref.read(soundServiceProvider);
               await soundService.playSound(soundSettings.soundType);
             }
-          } else {
-            HapticHelper.light();
           }
           checked.value = willComplete;
           await taskViewModel.updateCompleteStatus(task, willComplete);

@@ -65,7 +65,6 @@ class TaskBaseScaffold extends StatelessWidget {
                                 color: Theme.of(context).colorScheme.onSurface),
                           ),
                     onPressed: () {
-                      HapticHelper.selection();
                       Navigator.restorablePushNamed(
                           context, SettingsPage.routeName);
                     },
@@ -77,7 +76,7 @@ class TaskBaseScaffold extends StatelessWidget {
         bottomNavigationBar: NavigationBar(
           selectedIndex: currentIndex,
           onDestinationSelected: (index) {
-            HapticHelper.light();
+            HapticHelper.selection();
             onIndexChanged(index);
           },
           labelBehavior: hideNavigationLabel
@@ -106,6 +105,7 @@ class TaskBaseScaffold extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     context: context,
+                    isScrollControlled: true,
                     builder: (context) => TaskSheet(
                       initialDueDate: isToday
                           ? TaskDate(
@@ -123,7 +123,7 @@ class TaskBaseScaffold extends StatelessWidget {
                       },
                     ),
                   );
-                  HapticHelper.selection();
+                  HapticHelper.light();
                 },
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(100),
