@@ -27,6 +27,7 @@ class TaskSheet extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final titleController = useTextEditingController(text: initialTitle);
+    final focusNode = useFocusNode();
     final selectedDueDate = useState<TaskDate?>(initialDueDate);
     final isValidTitle = useState<bool>(initialTitle?.isNotEmpty ?? false);
     final l = AppLocalizations.of(context)!;
@@ -54,6 +55,30 @@ class TaskSheet extends HookConsumerWidget {
       [selectedDueDate],
     );
 
+    final submitHandler = useCallback(() {
+      final willClose = !isNewTask || !continuousTaskAddition;
+      final value = titleController.text;
+      if (value.trim().isNotEmpty) {
+        HapticHelper.selection();
+        onSubmitted(value, selectedDueDate.value,
+            needSnackbarFloating: !willClose);
+      }
+      if (willClose) {
+        Navigator.pop(context);
+      } else {
+        titleController.clear();
+        Future.microtask(() => focusNode.requestFocus());
+      }
+    }, [
+      isNewTask,
+      continuousTaskAddition,
+      context,
+      focusNode,
+      titleController,
+      selectedDueDate,
+      onSubmitted
+    ]);
+
     return Padding(
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -65,24 +90,13 @@ class TaskSheet extends HookConsumerWidget {
             children: [
               TextField(
                 controller: titleController,
+                focusNode: focusNode,
                 autofocus: isNewTask,
                 textInputAction: TextInputAction.done,
                 decoration: InputDecoration(
                   hintText: l.task_sheet_title_hint,
                 ),
-                onSubmitted: (value) {
-                  // Enterキーを押したとき
-                  final willClose = !isNewTask || !continuousTaskAddition;
-                  if (value.trim().isNotEmpty) {
-                    HapticHelper.selection();
-                    onSubmitted(value, selectedDueDate.value,
-                        needSnackbarFloating: !willClose);
-                  }
-                  if (willClose) {
-                    Navigator.pop(context);
-                  }
-                  titleController.clear();
-                },
+                onEditingComplete: submitHandler,
               ),
               const SizedBox(height: 8),
               Row(
@@ -116,20 +130,7 @@ class TaskSheet extends HookConsumerWidget {
                   ),
                   const SizedBox(width: 4),
                   IconButton.filled(
-                    onPressed: isValidTitle.value
-                        ? () async {
-                            await HapticHelper.selection();
-                            final willClose =
-                                !isNewTask || !continuousTaskAddition;
-                            onSubmitted(
-                                titleController.text, selectedDueDate.value,
-                                needSnackbarFloating: !willClose);
-                            if (willClose) {
-                              Navigator.pop(context);
-                            }
-                            titleController.clear();
-                          }
-                        : null,
+                    onPressed: isValidTitle.value ? submitHandler : null,
                     icon: const Icon(Icons.arrow_forward_rounded),
                   ),
                 ],
