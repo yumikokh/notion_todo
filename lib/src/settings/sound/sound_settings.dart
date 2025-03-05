@@ -7,7 +7,7 @@ part 'sound_settings.g.dart';
 class SoundSettings with _$SoundSettings {
   const factory SoundSettings({
     @Default(true) bool enabled,
-    @Default('success') String soundType,
+    @Default('cute') String soundType,
   }) = _SoundSettings;
 
   factory SoundSettings.fromJson(Map<String, dynamic> json) =>

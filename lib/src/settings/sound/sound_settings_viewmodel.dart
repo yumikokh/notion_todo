@@ -9,7 +9,9 @@ part 'sound_settings_viewmodel.g.dart';
 class SoundSettingsViewModel extends _$SoundSettingsViewModel {
   @override
   SoundSettings build() {
-    _loadSettings();
+    // 初期値として空のSoundSettingsを返す
+    // _loadSettings()が完了すると、stateが更新される
+    Future.microtask(() => _loadSettings());
     return const SoundSettings();
   }
 
@@ -19,7 +21,7 @@ class SoundSettingsViewModel extends _$SoundSettingsViewModel {
   Future<void> _loadSettings() async {
     final prefs = await SharedPreferences.getInstance();
     final enabled = prefs.getBool(_enabledKey) ?? true;
-    final soundType = prefs.getString(_soundTypeKey) ?? 'success';
+    final soundType = prefs.getString(_soundTypeKey) ?? 'cute';
     state = SoundSettings(enabled: enabled, soundType: soundType);
   }
 

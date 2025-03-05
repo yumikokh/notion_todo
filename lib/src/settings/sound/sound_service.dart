@@ -1,5 +1,5 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'sound_service.g.dart';
@@ -12,10 +12,10 @@ class SoundService {
 
     try {
       final assetPath = _getSoundAssetPath(soundType);
-      // 保留
-      // await _audioPlayer.setAsset(assetPath);
-      await _audioPlayer.setAudioSource(AudioSource.asset(assetPath));
-      await _audioPlayer.play();
+      print('Playing sound from asset: $assetPath');
+
+      // audioplayers パッケージを使用してアセットから音声を再生
+      await _audioPlayer.play(AssetSource(assetPath));
     } catch (e) {
       print('Error playing sound: $e');
     }
@@ -24,13 +24,13 @@ class SoundService {
   String _getSoundAssetPath(String soundType) {
     switch (soundType) {
       case 'cute':
-        return 'assets/sounds/cute.mp3';
+        return 'sounds/cute.mp3';
       case 'mokkin':
-        return 'assets/sounds/mokkin.mp3';
+        return 'sounds/mokkin.mp3';
       case 'mokugyo':
-        return 'assets/sounds/mokugyo.mp3';
+        return 'sounds/mokugyo.mp3';
       default:
-        return 'assets/sounds/cute.mp3';
+        return 'sounds/cute.mp3';
     }
   }
 
