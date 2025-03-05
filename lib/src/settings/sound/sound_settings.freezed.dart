@@ -116,7 +116,7 @@ class __$$SoundSettingsImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$SoundSettingsImpl implements _SoundSettings {
-  const _$SoundSettingsImpl({this.enabled = true, this.soundType = 'success'});
+  const _$SoundSettingsImpl({this.enabled = true, this.soundType = 'cute'});
 
   factory _$SoundSettingsImpl.fromJson(Map<String, dynamic> json) =>
       _$$SoundSettingsImplFromJson(json);

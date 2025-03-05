@@ -4,9 +4,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../helpers/haptic_helper.dart';
 import '../sound_constants.dart';
-import '../sound_service.dart';
 import '../sound_settings.dart';
-import '../sound_settings_viewmodel.dart';
+import '../sound_viewmodel.dart';
 
 class SoundSettingsView extends HookConsumerWidget {
   static const routeName = '/settings/sound';
@@ -18,9 +17,9 @@ class SoundSettingsView extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final soundSettings = ref.watch(soundSettingsViewModelProvider);
+    final soundSettings = ref.watch(soundViewModelProvider);
     final l = AppLocalizations.of(context)!;
-    final viewModel = ref.read(soundSettingsViewModelProvider.notifier);
+    final viewModel = ref.read(soundViewModelProvider.notifier);
 
     return Scaffold(
       appBar: AppBar(
@@ -106,12 +105,8 @@ class SoundSettingsView extends HookConsumerWidget {
               child: ElevatedButton.icon(
                 onPressed: () async {
                   final soundSettings =
-                      ref.read(soundSettingsViewModelProvider);
-                  if (soundSettings.enabled &&
-                      soundSettings.soundType != 'none') {
-                    final soundService = ref.read(soundServiceProvider);
-                    await soundService.playSound(soundSettings.soundType);
-                  }
+                      ref.read(soundViewModelProvider.notifier);
+                  await soundSettings.playSound();
                   HapticHelper.light();
                 },
                 icon: const Icon(Icons.play_arrow),

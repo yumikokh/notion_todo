@@ -1,6 +1,4 @@
 PODS:
-  - audio_session (0.0.1):
-    - Flutter
   - audioplayers_darwin (0.0.1):
     - Flutter
   - background_fetch (1.3.7):
@@ -109,9 +107,6 @@ PODS:
     - Flutter
   - in_app_review (2.0.0):
     - Flutter
-  - just_audio (0.0.1):
-    - Flutter
-    - FlutterMacOS
   - nanopb (2.30910.0):
     - nanopb/decode (= 2.30910.0)
     - nanopb/encode (= 2.30910.0)
@@ -137,7 +132,6 @@ PODS:
     - Flutter
 
 DEPENDENCIES:
-  - audio_session (from `.symlinks/plugins/audio_session/ios`)
   - audioplayers_darwin (from `.symlinks/plugins/audioplayers_darwin/ios`)
   - background_fetch (from `.symlinks/plugins/background_fetch/ios`)
   - firebase_analytics (from `.symlinks/plugins/firebase_analytics/ios`)
@@ -149,7 +143,6 @@ DEPENDENCIES:
   - flutter_web_auth_2 (from `.symlinks/plugins/flutter_web_auth_2/ios`)
   - haptic_feedback (from `.symlinks/plugins/haptic_feedback/ios`)
   - in_app_review (from `.symlinks/plugins/in_app_review/ios`)
-  - just_audio (from `.symlinks/plugins/just_audio/darwin`)
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
   - sentry_flutter (from `.symlinks/plugins/sentry_flutter/ios`)
@@ -171,8 +164,6 @@ SPEC REPOS:
     - Sentry
 
 EXTERNAL SOURCES:
-  audio_session:
-    :path: ".symlinks/plugins/audio_session/ios"
   audioplayers_darwin:
     :path: ".symlinks/plugins/audioplayers_darwin/ios"
   background_fetch:
@@ -195,8 +186,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/haptic_feedback/ios"
   in_app_review:
     :path: ".symlinks/plugins/in_app_review/ios"
-  just_audio:
-    :path: ".symlinks/plugins/just_audio/darwin"
   package_info_plus:
     :path: ".symlinks/plugins/package_info_plus/ios"
   path_provider_foundation:
@@ -211,7 +200,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/wakelock_plus/ios"
 
 SPEC CHECKSUMS:
-  audio_session: 19e9480dbdd4e5f6c4543826b2e8b0e4ab6145fe
   audioplayers_darwin: 877d9a4d06331c5c374595e46e16453ac7eafa40
   background_fetch: 39f11371c0dce04b001c4bfd5e782bcccb0a85e2
   Firebase: 0312a2352584f782ea56f66d91606891d4607f06
@@ -230,7 +218,6 @@ SPEC CHECKSUMS:
   GoogleUtilities: ea963c370a38a8069cc5f7ba4ca849a60b6d7d15
   haptic_feedback: 8cb3ee0cb6b797946c2b0df9c99ebc8f7ed79c71
   in_app_review: a31b5257259646ea78e0e35fc914979b0031d011
-  just_audio: a42c63806f16995daf5b219ae1d679deb76e6a79
   nanopb: 438bc412db1928dac798aa6fd75726007be04262
   package_info_plus: c0502532a26c7662a62a356cebe2692ec5fe4ec4
   path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46

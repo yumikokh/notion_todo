@@ -1,27 +1,26 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'sound_settings_viewmodel.dart';
+part of 'sound_viewmodel.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$soundSettingsViewModelHash() =>
-    r'd9c22904971abd2b8a6bd8c35c0bdbba39422174';
+String _$soundViewModelHash() => r'af60142db5716ad899f4d2e3a44f0cdfc44e40c7';
 
-/// See also [SoundSettingsViewModel].
-@ProviderFor(SoundSettingsViewModel)
-final soundSettingsViewModelProvider =
-    AutoDisposeNotifierProvider<SoundSettingsViewModel, SoundSettings>.internal(
-  SoundSettingsViewModel.new,
-  name: r'soundSettingsViewModelProvider',
+/// See also [SoundViewModel].
+@ProviderFor(SoundViewModel)
+final soundViewModelProvider =
+    NotifierProvider<SoundViewModel, SoundSettings>.internal(
+  SoundViewModel.new,
+  name: r'soundViewModelProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$soundSettingsViewModelHash,
+      : _$soundViewModelHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$SoundSettingsViewModel = AutoDisposeNotifier<SoundSettings>;
+typedef _$SoundViewModel = Notifier<SoundSettings>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
