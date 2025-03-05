@@ -61,9 +61,8 @@ class TaskListView extends HookConsumerWidget {
           Text(
             // Todayページの場合は時間に応じたメッセージを表示
             isToday ? getTimeBasedMessage() : l.no_task,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  height: 1.6, // 行間を1.5倍に設定
-                ),
+            style:
+                Theme.of(context).textTheme.titleMedium?.copyWith(height: 1.6),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 12),
