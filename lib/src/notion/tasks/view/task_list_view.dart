@@ -58,12 +58,17 @@ class TaskListView extends HookConsumerWidget {
       centerOverlay = Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(
-            // Todayページの場合は時間に応じたメッセージを表示
-            isToday ? getTimeBasedMessage() : l.no_task,
-            style:
-                Theme.of(context).textTheme.titleMedium?.copyWith(height: 1.6),
-            textAlign: TextAlign.center,
+          Container(
+            height: 60,
+            alignment: Alignment.bottomCenter,
+            child: Text(
+              isToday ? getTimeBasedMessage() : l.no_task,
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium
+                  ?.copyWith(height: 1.6),
+              textAlign: TextAlign.center,
+            ),
           ),
           const SizedBox(height: 12),
           Image.asset(
