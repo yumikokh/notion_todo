@@ -4,7 +4,7 @@ description: Simple Task manager made for Notion
 # Prevent accidental publishing to pub.dev.
 publish_to: "none"
 
-version: 1.5.2+2
+version: 1.6.0+1
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
@@ -69,13 +69,13 @@ flutter:
 flutter_launcher_icons:
   ios: true
   remove_alpha_ios: true
-  image_path_ios: "assets/images/app_icon.png"
-  image_path_ios_dark_transparent: "assets/images/app_icon_dark.png"
-  image_path_ios_tinted_grayscale: "assets/images/app_icon_gray.png"
+  image_path_ios: "assets/images/app_icon/app_icon.png"
+  image_path_ios_dark_transparent: "assets/images/app_icon/app_icon_dark.png"
+  image_path_ios_tinted_grayscale: "assets/images/app_icon/app_icon_gray.png"
 
 flutter_native_splash:
   color: "#FAF9F6"
-  image: "assets/images/splash_light.png"
+  image: "assets/images/splash/splash_light.png"
   color_dark: "#3D3D3C"
-  image_dark: "assets/images/splash_dark.png"
+  image_dark: "assets/images/splash/splash_dark.png"
   fullscreen: true

@@ -250,5 +250,8 @@
   "sound_enabled_description": "Play a sound when a task is completed",
   "sound_type": "Sound Type",
   "sound_type_description": "Select the sound to play when a task is completed",
-  "play_sound": "Play Sound"
+  "play_sound": "Play Sound",
+  "morning_message": "A new day begins.\nWhat would you like to start with?",
+  "afternoon_message": "Good afternoon!\nWhat would you like to start with?",
+  "evening_message": "Good evening.\nWhat would you like to accomplish today?"
 }
