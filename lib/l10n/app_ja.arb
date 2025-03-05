@@ -158,5 +158,8 @@
         "type": "int"
       }
     }
-  }
+  },
+  "morning_message": "新しい一日の始まりです。\n何から始めますか？",
+  "afternoon_message": "こんにちは！\n何から始めますか？",
+  "evening_message": "こんばんは。\n何か今日取り組みたいことはありますか？"
 }

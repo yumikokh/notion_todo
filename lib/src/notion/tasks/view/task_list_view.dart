@@ -7,6 +7,7 @@ import '../../../settings/font/font_constants.dart';
 import '../../../settings/font/font_settings_viewmodel.dart';
 import '../../../settings/settings_viewmodel.dart';
 import '../../model/task.dart';
+import '../../repository/notion_task_repository.dart';
 import '../task_viewmodel.dart';
 import './task_dismissible.dart';
 
@@ -32,8 +33,23 @@ class TaskListView extends HookConsumerWidget {
     final completedTasks = list.where((task) => task.isCompleted).toList();
     final fontSettings = ref.watch(fontSettingsViewModelProvider);
     final themeMode = ref.watch(settingsViewModelProvider).themeMode;
+    final isToday = taskViewModel.filterType == FilterType.today;
 
     final l = AppLocalizations.of(context)!;
+
+    // 時間に応じたメッセージを取得（Todayページの場合）
+    String getTimeBasedMessage() {
+      final now = DateTime.now();
+      final hour = now.hour;
+
+      if (hour < 12) {
+        return l.morning_message;
+      } else if (hour < 18) {
+        return l.afternoon_message;
+      } else {
+        return l.evening_message;
+      }
+    }
 
     // タスクなし/全て完了の場合のイラスト+テキスト
     Widget? centerOverlay;
@@ -43,8 +59,12 @@ class TaskListView extends HookConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            l.no_task,
-            style: Theme.of(context).textTheme.titleMedium,
+            // Todayページの場合は時間に応じたメッセージを表示
+            isToday ? getTimeBasedMessage() : l.no_task,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  height: 1.6, // 行間を1.5倍に設定
+                ),
+            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 12),
           Image.asset(
