@@ -294,12 +294,11 @@ class TaskViewModel extends _$TaskViewModel {
         return;
       }
 
-      // TODO: endの反映
       TaskDate? updatedDueDate;
-      final inputDueDateStart = task.dueDate;
+      final inputDueDate = task.dueDate;
       // 入力された日付がある場合のみ
-      if (inputDueDateStart != null) {
-        updatedDueDate = inputDueDateStart;
+      if (inputDueDate != null) {
+        updatedDueDate = inputDueDate;
       }
 
       final snackbar = ref.read(snackbarProvider.notifier);
