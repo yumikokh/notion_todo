@@ -47,6 +47,10 @@ class SoundService {
     }
   }
 
+  Future<void> stopSound() async {
+    await _audioPlayer.stop();
+  }
+
   String _getSoundAssetPath(String soundType) {
     switch (soundType) {
       case 'cute':

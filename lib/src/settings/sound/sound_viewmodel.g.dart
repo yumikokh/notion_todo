@@ -6,7 +6,7 @@ part of 'sound_viewmodel.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$soundViewModelHash() => r'af60142db5716ad899f4d2e3a44f0cdfc44e40c7';
+String _$soundViewModelHash() => r'67131a7b81b5fc23955ca9827d580956b455f599';
 
 /// See also [SoundViewModel].
 @ProviderFor(SoundViewModel)

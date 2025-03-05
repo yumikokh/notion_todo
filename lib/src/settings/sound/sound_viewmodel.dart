@@ -40,6 +40,7 @@ class SoundViewModel extends _$SoundViewModel {
 
   Future<void> playSound() async {
     if (!state.enabled) return;
+    await _soundService.stopSound();
     await _soundService.playSound(state.soundType);
   }
 }
