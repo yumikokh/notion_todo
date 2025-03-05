@@ -124,7 +124,7 @@ class TaskListTile extends HookConsumerWidget {
                   date: task.dueDate,
                   showToday: taskViewModel.filterType != FilterType.today,
                   context: context,
-                  showColor: true,
+                  showColor: !task.isCompleted,
                   showIcon: true,
                 ),
               ),
