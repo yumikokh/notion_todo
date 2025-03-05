@@ -42,14 +42,42 @@ class TaskListView extends HookConsumerWidget {
           SizedBox(
             height: MediaQuery.of(context).size.height *
                 0.8, // NOTE: pullできるようにサイズ指定
-            child: Center(child: Text(l.no_task)),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  l.no_task,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 12), // テキストと画像の間隔
+                Image.asset(
+                  'assets/images/illust_standup.png',
+                  fit: BoxFit.contain,
+                  width: MediaQuery.of(context).size.width * 0.7,
+                ),
+              ],
+            ),
           )
         else if (notCompletedTasks.isEmpty &&
             completedTasks.isNotEmpty &&
             !showCompleted)
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.8,
-            child: Center(child: Text(l.no_task_description)),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  l.no_task_description,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 12), // テキストと画像の間隔
+                Image.asset(
+                  'assets/images/illust_complete.png',
+                  fit: BoxFit.contain,
+                  width: MediaQuery.of(context).size.width * 0.7,
+                ),
+              ],
+            ),
           )
         else ...[
           if (title != null)
