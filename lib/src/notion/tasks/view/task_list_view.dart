@@ -35,101 +35,127 @@ class TaskListView extends HookConsumerWidget {
 
     final l = AppLocalizations.of(context)!;
 
-    return ListView(
-      key: key,
+    // タスクなし/全て完了の場合のイラスト+テキスト
+    Widget? centerOverlay;
+    if (notCompletedTasks.isEmpty && completedTasks.isEmpty) {
+      // タスクがない場合
+      centerOverlay = Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            l.no_task,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: 12),
+          Image.asset(
+            'assets/images/illust_standup.png',
+            fit: BoxFit.contain,
+            width: MediaQuery.of(context).size.width * 0.7,
+          ),
+        ],
+      );
+    } else if (notCompletedTasks.isEmpty &&
+        completedTasks.isNotEmpty &&
+        !showCompleted) {
+      // タスクがすべて完了している場合
+      centerOverlay = Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            l.no_task_description,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: 12),
+          Image.asset(
+            'assets/images/illust_complete.png',
+            fit: BoxFit.contain,
+            width: MediaQuery.of(context).size.width * 0.7,
+          ),
+        ],
+      );
+    }
+
+    return Stack(
       children: [
-        if (notCompletedTasks.isEmpty && completedTasks.isEmpty)
-          SizedBox(
-            height: MediaQuery.of(context).size.height *
-                0.8, // NOTE: pullできるようにサイズ指定
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  l.no_task,
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                const SizedBox(height: 12), // テキストと画像の間隔
-                Image.asset(
-                  'assets/images/illust_standup.png',
-                  fit: BoxFit.contain,
-                  width: MediaQuery.of(context).size.width * 0.7,
-                ),
-              ],
+        // イラスト+テキスト部分（条件に応じて中央に固定表示）
+        if (centerOverlay != null)
+          Positioned.fill(
+            child: Center(
+              child: centerOverlay,
             ),
-          )
-        else if (notCompletedTasks.isEmpty &&
-            completedTasks.isNotEmpty &&
-            !showCompleted)
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.8,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  l.no_task_description,
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                const SizedBox(height: 12), // テキストと画像の間隔
-                Image.asset(
-                  'assets/images/illust_complete.png',
-                  fit: BoxFit.contain,
-                  width: MediaQuery.of(context).size.width * 0.7,
-                ),
-              ],
-            ),
-          )
-        else ...[
-          if (title != null)
-            fontSettings.when(
-              data: (settings) => Padding(
-                padding: const EdgeInsets.fromLTRB(32, 0, 32, 20),
-                child: Text(
-                  title!,
-                  style: FontConstants.getFont(settings.fontFamily).copyWith(
-                    fontSize: settings.fontSize,
-                    fontStyle:
-                        settings.isItalic ? FontStyle.italic : FontStyle.normal,
-                    letterSpacing: settings.letterSpacing,
-                    fontWeight: settings.isBold ? FontWeight.bold : null,
+          ),
+
+        // リスト部分（常に表示、スクロール可能）
+        ListView(
+          key: key,
+          children: [
+            // MEMO: Indexで上線が隠れるため必要
+            const SizedBox(height: 1),
+
+            // タイトル
+            if (title != null)
+              fontSettings.when(
+                data: (settings) => Padding(
+                  padding: const EdgeInsets.fromLTRB(32, 0, 32, 20),
+                  child: Text(
+                    title!,
+                    style: FontConstants.getFont(settings.fontFamily).copyWith(
+                      fontSize: settings.fontSize,
+                      fontStyle: settings.isItalic
+                          ? FontStyle.italic
+                          : FontStyle.normal,
+                      letterSpacing: settings.letterSpacing,
+                      fontWeight: settings.isBold ? FontWeight.bold : null,
+                    ),
                   ),
                 ),
+                loading: () => const SizedBox(),
+                error: (_, __) => const SizedBox(),
               ),
-              loading: () => const SizedBox(),
-              error: (_, __) => const SizedBox(),
-            ),
-          ...notCompletedTasks
-              .map((task) => TaskDismissible(
-                  taskViewModel: taskViewModel,
-                  task: task,
-                  themeMode: themeMode))
-              .toList(),
-          if (showCompleted && completedTasks.isNotEmpty)
-            ...completedTasks
+
+            // 未完了タスク
+            ...notCompletedTasks
                 .map((task) => TaskDismissible(
                     taskViewModel: taskViewModel,
                     task: task,
                     themeMode: themeMode))
                 .toList(),
-          const Divider(height: 0),
-          if (taskViewModel.hasMore)
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Center(
-                child: FilledButton.tonal(
-                  onPressed: () async {
-                    await taskViewModel.loadMore();
-                  },
-                  child: Text(l.load_more),
+
+            // 完了タスク
+            if (showCompleted && completedTasks.isNotEmpty)
+              ...completedTasks
+                  .map((task) => TaskDismissible(
+                      taskViewModel: taskViewModel,
+                      task: task,
+                      themeMode: themeMode))
+                  .toList(),
+
+            if (centerOverlay == null) const Divider(height: 0),
+
+            // ロードボタン
+            if (taskViewModel.hasMore)
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Center(
+                  child: FilledButton.tonal(
+                    onPressed: () async {
+                      await taskViewModel.loadMore();
+                    },
+                    child: Text(l.load_more),
+                  ),
                 ),
               ),
-            ),
-          if (taskViewModel.isLoading)
-            const Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Center(child: CircularProgressIndicator.adaptive())),
-          const SizedBox(height: 100) // ボタンとかぶらないように
-        ],
+
+            // ローディング中
+            if (taskViewModel.isLoading)
+              const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Center(child: CircularProgressIndicator.adaptive())),
+
+            // ボタンとかぶらないように
+            const SizedBox(height: 100)
+          ],
+        ),
       ],
     );
   }
