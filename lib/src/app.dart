@@ -88,6 +88,7 @@ class MyApp extends ConsumerWidget {
                     return const BehaviorSettingsPage();
                   case TaskMainPage.routeName:
                     return const TaskMainPage();
+
                   default:
                     return const TaskMainPage();
                 }

@@ -28,6 +28,7 @@ dependencies:
   http: ^1.2.2
   intl: ^0.19.0
   json_annotation: ^4.9.0
+  audioplayers: ^5.2.1
   riverpod_annotation: ^2.6.1
   shared_preferences: ^2.3.2
   table_calendar: ^3.1.2
@@ -60,10 +61,10 @@ flutter:
 
   # Enable generation of localized Strings from arb files.
   generate: true
-
   assets:
     - assets/images/
     - assets/google_fonts/
+    - assets/sounds/
 
 flutter_launcher_icons:
   ios: true

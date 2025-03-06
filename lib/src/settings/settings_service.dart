@@ -11,6 +11,7 @@ class SettingsService {
   static const _hideNavigationLabelKey = 'hide_navigation_label';
   static const _showNotificationBadgeKey = 'show_notification_badge';
   static const _continuousTaskAdditionKey = 'continuous_task_addition';
+  static const _soundEnabledKey = 'sound_enabled';
 
   /* themeMode */
   Future<ThemeMode> themeMode() async {
@@ -97,5 +98,16 @@ class SettingsService {
   Future<void> updateContinuousTaskAddition(bool value) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_continuousTaskAdditionKey, value);
+  }
+
+  /* soundEnabled */
+  Future<bool> loadSoundEnabled() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_soundEnabledKey) ?? true;
+  }
+
+  Future<void> updateSoundEnabled(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_soundEnabledKey, value);
   }
 }
