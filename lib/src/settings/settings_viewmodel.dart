@@ -13,6 +13,7 @@ class SettingsViewModel with ChangeNotifier {
     _themeMode = ThemeMode.system;
     _locale = const Locale('en');
     _wakelock = false;
+    _soundEnabled = true;
     _loadSettings();
   }
 
@@ -24,6 +25,7 @@ class SettingsViewModel with ChangeNotifier {
     _showNotificationBadge = await _settingsService.loadShowNotificationBadge();
     _continuousTaskAddition =
         await _settingsService.loadContinuousTaskAddition();
+    _soundEnabled = await _settingsService.loadSoundEnabled();
     notifyListeners();
   }
 
@@ -131,6 +133,22 @@ class SettingsViewModel with ChangeNotifier {
     await _settingsService.updateContinuousTaskAddition(value);
     await _analytics.logSettingsChanged(
       settingName: 'continuous_task_addition',
+      value: value ? 'enabled' : 'disabled',
+    );
+  }
+
+  /// Sound Enabled
+  late bool _soundEnabled;
+  bool get soundEnabled => _soundEnabled;
+  Future<void> updateSoundEnabled(bool value) async {
+    if (value == _soundEnabled) return;
+
+    _soundEnabled = value;
+    notifyListeners();
+
+    await _settingsService.updateSoundEnabled(value);
+    await _analytics.logSettingsChanged(
+      settingName: 'sound_enabled',
       value: value ? 'enabled' : 'disabled',
     );
   }

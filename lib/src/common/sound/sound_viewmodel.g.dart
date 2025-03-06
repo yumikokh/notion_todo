@@ -6,13 +6,12 @@ part of 'sound_viewmodel.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$soundViewModelHash() => r'67131a7b81b5fc23955ca9827d580956b455f599';
+String _$soundViewModelHash() => r'cbd2e88b9fa532749fecdd17d346d37541d16fe2';
 
-/// See also [SoundViewModel].
-@ProviderFor(SoundViewModel)
-final soundViewModelProvider =
-    NotifierProvider<SoundViewModel, SoundSettings>.internal(
-  SoundViewModel.new,
+/// See also [soundViewModel].
+@ProviderFor(soundViewModel)
+final soundViewModelProvider = Provider<SoundViewModel>.internal(
+  soundViewModel,
   name: r'soundViewModelProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
@@ -21,6 +20,8 @@ final soundViewModelProvider =
   allTransitiveDependencies: null,
 );
 
-typedef _$SoundViewModel = Notifier<SoundSettings>;
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef SoundViewModelRef = ProviderRef<SoundViewModel>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

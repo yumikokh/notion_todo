@@ -4,9 +4,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../helpers/haptic_helper.dart';
 import '../settings_viewmodel.dart';
-import '../sound/sound_constants.dart';
-import '../sound/sound_viewmodel.dart';
-import '../sound/view/sound_settings_view.dart';
 import '../../common/analytics/analytics_service.dart';
 
 class BehaviorSettingsPage extends ConsumerWidget {
@@ -87,25 +84,19 @@ class BehaviorSettingsPage extends ConsumerWidget {
                   ),
                 ],
               ),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (ref.watch(soundViewModelProvider).enabled &&
-                      ref.watch(soundViewModelProvider).soundType != 'none')
-                    Icon(
-                      SoundConstants.getSoundIcon(
-                        ref.watch(soundViewModelProvider).soundType,
-                      ),
-                      size: 16,
-                    ),
-                  const SizedBox(width: 8),
-                  const Icon(Icons.chevron_right),
-                ],
+              trailing: Switch(
+                value: ref.watch(settingsViewModelProvider).soundEnabled,
+                onChanged: (value) {
+                  ref
+                      .read(settingsViewModelProvider.notifier)
+                      .updateSoundEnabled(value);
+                  analytics.logSettingsChanged(
+                    settingName: 'sound_enabled',
+                    value: value ? 'enabled' : 'disabled',
+                  );
+                  HapticHelper.light();
+                },
               ),
-              onTap: () {
-                analytics.logScreenView(screenName: 'SoundSettings');
-                Navigator.pushNamed(context, SoundSettingsView.routeName);
-              },
             ),
 
             // 将来的に追加される他のふるまい設定

@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'common/snackbar/view/snackbar_listener.dart';
 import 'helpers/date.dart';
 import 'common/app_version/view/app_version_notifier.dart';
-import 'settings/sound/view/sound_settings_view.dart';
 import 'settings/task_database/view/task_database_setting_page.dart';
 import 'notion/tasks/view/task_main_page.dart';
 import 'settings/view/appearance_settings_page.dart';
@@ -77,8 +76,6 @@ class MyApp extends ConsumerWidget {
                     return const NotionSettingsPage();
                   case ThemeSettingsPage.routeName:
                     return const ThemeSettingsPage();
-                  case SoundSettingsView.routeName:
-                    return const SoundSettingsView();
                   case LanguageSettingsPage.routeName:
                     return const LanguageSettingsPage();
                   case TaskDatabaseSettingPage.routeName:
