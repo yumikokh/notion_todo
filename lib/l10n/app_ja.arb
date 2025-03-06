@@ -166,5 +166,9 @@
   },
   "morning_message": "新しい一日の始まりです。\n何から始めますか？",
   "afternoon_message": "こんにちは！\n何から始めますか？",
-  "evening_message": "こんばんは。\n今日中に取り組みたいことはありますか？"
+  "evening_message": "こんばんは。\n今日中に取り組みたいことはありますか？",
+  "licenses_page_title": "ライセンス",
+  "licenses_page_no_licenses": "ライセンス情報がありません。",
+  "sound_credit_title": "サウンド提供",
+  "sound_credit_description": "OtoLogic (CC BY 4.0)"
 }

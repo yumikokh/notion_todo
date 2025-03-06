@@ -14,6 +14,7 @@ import '../../common/analytics/analytics_service.dart';
 import '../../common/app_version/app_version_viewmodel.dart';
 import 'appearance_settings_page.dart';
 import 'behavior_settings_page.dart';
+import 'licenses_page.dart';
 
 class SettingsPage extends ConsumerWidget {
   static const routeName = '/settings';
@@ -175,6 +176,15 @@ class SettingsPage extends ConsumerWidget {
                       await launchUrl(Uri.parse(url));
                       analytics.logScreenView(screenName: 'PrivacyPolicy');
                     }
+                  },
+                ),
+                ListTile(
+                  dense: true,
+                  title: Text(l.licenses_page_title, style: _supportFontStyle),
+                  trailing: const Icon(Icons.description_outlined, size: 16),
+                  onTap: () {
+                    analytics.logScreenView(screenName: 'Licenses');
+                    Navigator.of(context).pushNamed(LicensesPage.routeName);
                   },
                 ),
               ],
