@@ -250,5 +250,8 @@
   "sound_enabled_description": "Play a sound when a task is completed",
   "morning_message": "A new day begins.\nWhat would you like to start with?",
   "afternoon_message": "Good afternoon!\nWhat would you like to start with?",
-  "evening_message": "Good evening.\nWhat would you like to accomplish today?"
+  "evening_message": "Good evening.\nWhat would you like to accomplish today?",
+  "licenses_page_title": "Licenses",
+  "licenses_page_description": "License information for packages used in this app.",
+  "licenses_page_no_licenses": "No license information available."
 }
