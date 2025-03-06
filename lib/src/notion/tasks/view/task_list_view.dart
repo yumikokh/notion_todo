@@ -88,6 +88,7 @@ class TaskListView extends HookConsumerWidget {
           Text(
             l.no_task_description,
             style: Theme.of(context).textTheme.titleMedium,
+            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 12),
           Image.asset(

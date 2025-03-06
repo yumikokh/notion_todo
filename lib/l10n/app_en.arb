@@ -63,7 +63,7 @@
   "undetermined": "Not set",
   "select_date": "Select Date",
   "no_task": "No task found",
-  "no_task_description": "Have a good day!",
+  "no_task_description": "Excellent job!\nHave a good day.",
   "add_task_success": "\"{title}\" Added.",
   "@add_task_success": {
     "placeholders": {
