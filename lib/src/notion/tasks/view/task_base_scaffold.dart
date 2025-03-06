@@ -35,6 +35,7 @@ class TaskBaseScaffold extends StatelessWidget {
 
     return Scaffold(
         key: key,
+        resizeToAvoidBottomInset: false,
         appBar: AppBar(
             title: !isToday
                 ? Text(l.navigation_index, style: const TextStyle(fontSize: 20))
