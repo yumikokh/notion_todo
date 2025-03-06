@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import '../../common/analytics/analytics_service.dart';
 
 class LicensesPage extends ConsumerWidget {
   static const routeName = '/licenses';
@@ -11,7 +10,6 @@ class LicensesPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final analytics = ref.read(analyticsServiceProvider);
     final l = AppLocalizations.of(context)!;
 
     return Scaffold(
@@ -21,11 +19,21 @@ class LicensesPage extends ConsumerWidget {
       ),
       body: ListView(
         children: [
+          // 完了音のクレジット情報
           Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              l.licenses_page_description,
-              style: Theme.of(context).textTheme.bodyMedium,
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(l.sound_credit_title,
+                    style: Theme.of(context).textTheme.titleSmall),
+                Text(
+                  l.sound_credit_description,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ],
             ),
           ),
           const Divider(),
@@ -65,8 +73,6 @@ class LicensesPage extends ConsumerWidget {
                     title: Text(packageName),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () {
-                      analytics.logScreenView(
-                          screenName: 'PackageLicense_$packageName');
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) => _PackageLicenseDetailsPage(
@@ -118,8 +124,6 @@ class _PackageLicenseDetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context)!;
-
     return Scaffold(
       appBar: AppBar(
         title: Text(packageName, style: const TextStyle(fontSize: 18)),
@@ -154,7 +158,6 @@ class _PackageLicenseDetailsPage extends StatelessWidget {
                     ),
                   );
                 }),
-                const Divider(height: 32),
               ],
             ),
           );
