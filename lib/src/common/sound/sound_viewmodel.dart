@@ -22,7 +22,7 @@ class SoundViewModel {
   final SoundService _soundService;
   final bool _soundEnabled;
 
-  static const soundPath = 'sounds/cute.mp3';
+  static const soundPath = 'sounds/complete.mp3';
 
   SoundViewModel(this._soundService, this._soundEnabled);
 
