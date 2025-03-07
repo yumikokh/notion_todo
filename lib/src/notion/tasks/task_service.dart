@@ -207,12 +207,11 @@ class TaskService {
         }
 
         final optionId = data['properties'][property.name]['status']['id'];
-        final group = status.groups.firstWhere(
-          (group) => group.optionIds.contains(optionId),
-        );
-        final option = status.options.firstWhere(
-          (option) => option.id == optionId,
-        );
+        final group = status.groups
+            .where((group) => group.optionIds.contains(optionId))
+            .firstOrNull;
+        final option =
+            status.options.where((option) => option.id == optionId).firstOrNull;
 
         return TaskStatus.status(group: group, option: option);
     }

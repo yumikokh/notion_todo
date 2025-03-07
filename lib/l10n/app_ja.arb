@@ -30,9 +30,9 @@
   "status_property_in_progress_option": "進行中オプション",
   "status_property_complete_option": "完了オプション",
   "date_property": "日付プロパティ",
-  "todo_option_description": "未完了時として指定するステータス",
-  "in_progress_option_description": "進行中時として指定するステータス",
-  "complete_option_description": "完了時として指定するステータス",
+  "todo_option_description": "未完了として指定するステータス",
+  "in_progress_option_description": "進行中として指定するステータス",
+  "complete_option_description": "完了として指定するステータス",
   "status_property_description": "種類: Status, Checkbox",
   "date_property_description": "種類: Date",
   "save": "保存",
@@ -63,7 +63,7 @@
   "undetermined": "未定",
   "select_date": "日付を選択",
   "no_task": "タスクがありません",
-  "no_task_description": "よい1日をお過ごしください！",
+  "no_task_description": "おつかれさまでした。\nよい1日をお過ごしください！",
   "add_task_success": "「{title}」を追加しました",
   "task_add_failed": "「{title}」の追加に失敗しました",
   "task_update_success": "「{title}」を変更しました",
@@ -100,6 +100,11 @@
   "continuous_task_addition_title": "連続タスク追加",
   "continuous_task_addition_description": "連続で新規タスクを追加できるようにします",
   "behavior_settings_title": "振る舞い",
+  "task_completion_sound_title": "タスク完了時の音",
+  "task_completion_sound_description": "タスク完了時に音を鳴らします",
+  "sound_settings_title": "タスク完了時の音",
+  "sound_enabled": "音を有効にする",
+  "sound_enabled_description": "タスク完了時に音を鳴らします",
   "font_settings": "タイトルのフォントスタイル",
   "font_language": "フォントの言語",
   "font_family": "フォント",
@@ -158,5 +163,12 @@
         "type": "int"
       }
     }
-  }
+  },
+  "morning_message": "新しい一日の始まりです。\n何から始めますか？",
+  "afternoon_message": "こんにちは！\n何から始めますか？",
+  "evening_message": "こんばんは。\n今日中に取り組みたいことはありますか？",
+  "licenses_page_title": "ライセンス",
+  "licenses_page_no_licenses": "ライセンス情報がありません。",
+  "sound_credit_title": "サウンド提供",
+  "sound_credit_description": "OtoLogic (CC BY 4.0)"
 }

@@ -294,12 +294,11 @@ class TaskViewModel extends _$TaskViewModel {
         return;
       }
 
-      // TODO: endの反映
       TaskDate? updatedDueDate;
-      final inputDueDateStart = task.dueDate;
+      final inputDueDate = task.dueDate;
       // 入力された日付がある場合のみ
-      if (inputDueDateStart != null) {
-        updatedDueDate = inputDueDateStart;
+      if (inputDueDate != null) {
+        updatedDueDate = inputDueDate;
       }
 
       final snackbar = ref.read(snackbarProvider.notifier);
@@ -374,12 +373,17 @@ class TaskViewModel extends _$TaskViewModel {
         ]);
         ref.invalidateSelf();
 
-        // [レビューポップアップ] 今日のタスクが全て完了したかチェック
+        // 今日のタスクが全て完了したかチェック
         if (!fromUndo && isCompleted && _filterType == FilterType.today) {
           final tasks = state.valueOrNull ?? [];
           final allTasksCompleted = tasks.every((t) => t.isCompleted);
 
           if (allTasksCompleted && tasks.isNotEmpty) {
+            // showCompletedをオフにする
+            if (_taskService != null) {
+              await _taskService!.saveShowCompleted(false);
+            }
+            // レビューポップアップ
             final reviewService = AppReviewService.instance;
             await reviewService.incrementCompletedDaysCount();
 

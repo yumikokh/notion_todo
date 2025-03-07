@@ -206,8 +206,9 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
             .where((group) => group.name == groupType.value)
             .firstOrNull
             ?.optionIds
-            .map((id) =>
-                property.status.options.firstWhere((option) => option.id == id))
+            .map((id) => property.status.options
+                .where((option) => option.id == id)
+                .first)
             .toList() ??
         [];
   }
@@ -221,7 +222,7 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
       if (value == null || p is! StatusCompleteStatusProperty) return value;
 
       final option =
-          p.status.options.firstWhere((option) => option.id == optionId);
+          p.status.options.where((option) => option.id == optionId).firstOrNull;
 
       return value.copyWith(
         status: switch (optionType) {

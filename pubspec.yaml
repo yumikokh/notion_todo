@@ -4,7 +4,7 @@ description: Simple Task manager made for Notion
 # Prevent accidental publishing to pub.dev.
 publish_to: "none"
 
-version: 1.5.2+2
+version: 1.6.0+3
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
@@ -28,6 +28,7 @@ dependencies:
   http: ^1.2.2
   intl: ^0.19.0
   json_annotation: ^4.9.0
+  audioplayers: ^5.2.1
   riverpod_annotation: ^2.6.1
   shared_preferences: ^2.3.2
   table_calendar: ^3.1.2
@@ -60,21 +61,21 @@ flutter:
 
   # Enable generation of localized Strings from arb files.
   generate: true
-
   assets:
     - assets/images/
     - assets/google_fonts/
+    - assets/sounds/
 
 flutter_launcher_icons:
   ios: true
   remove_alpha_ios: true
-  image_path_ios: "assets/images/app_icon.png"
-  image_path_ios_dark_transparent: "assets/images/app_icon_dark.png"
-  image_path_ios_tinted_grayscale: "assets/images/app_icon_gray.png"
+  image_path_ios: "assets/images/app_icon/app_icon.png"
+  image_path_ios_dark_transparent: "assets/images/app_icon/app_icon_dark.png"
+  image_path_ios_tinted_grayscale: "assets/images/app_icon/app_icon_gray.png"
 
 flutter_native_splash:
   color: "#FAF9F6"
-  image: "assets/images/splash_light.png"
+  image: "assets/images/splash/splash_light.png"
   color_dark: "#3D3D3C"
-  image_dark: "assets/images/splash_dark.png"
+  image_dark: "assets/images/splash/splash_dark.png"
   fullscreen: true

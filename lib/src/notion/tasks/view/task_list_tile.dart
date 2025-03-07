@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../helpers/haptic_helper.dart';
+import '../../../common/sound/sound_viewmodel.dart';
 import '../../../settings/task_database/task_database_viewmodel.dart';
 import '../../model/property.dart';
 import '../../model/task.dart';
@@ -80,8 +81,10 @@ class TaskListTile extends HookConsumerWidget {
           if (task.isTemp) return;
           if (willComplete == null) return;
           if (willComplete) {
-            HapticHelper.light();
-            // TODO: 音を鳴らす
+            HapticHelper.success();
+            // タスク完了時に音を鳴らす
+            final soundSettings = ref.read(soundViewModelProvider);
+            await soundSettings.playSound();
           }
           checked.value = willComplete;
           await taskViewModel.updateCompleteStatus(task, willComplete);
@@ -124,7 +127,7 @@ class TaskListTile extends HookConsumerWidget {
                   date: task.dueDate,
                   showToday: taskViewModel.filterType != FilterType.today,
                   context: context,
-                  showColor: true,
+                  showColor: !task.isCompleted,
                   showIcon: true,
                 ),
               ),

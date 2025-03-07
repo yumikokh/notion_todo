@@ -63,7 +63,7 @@
   "undetermined": "Not set",
   "select_date": "Select Date",
   "no_task": "No task found",
-  "no_task_description": "Have a good day!",
+  "no_task_description": "Excellent job!\nHave a good day.",
   "add_task_success": "\"{title}\" Added.",
   "@add_task_success": {
     "placeholders": {
@@ -242,5 +242,17 @@
   },
   "continuous_task_addition_title": "Continuous Task Addition",
   "continuous_task_addition_description": "Allow continuous task addition",
-  "behavior_settings_title": "Behavior"
+  "behavior_settings_title": "Behavior",
+  "task_completion_sound_title": "Task Completion Sound",
+  "task_completion_sound_description": "Play a sound when a task is completed",
+  "sound_settings_title": "Task Completion Sound",
+  "sound_enabled": "Enable Sound",
+  "sound_enabled_description": "Play a sound when a task is completed",
+  "morning_message": "A new day begins.\nWhat would you like to start with?",
+  "afternoon_message": "Good afternoon!\nWhat would you like to start with?",
+  "evening_message": "Good evening.\nWhat would you like to accomplish today?",
+  "licenses_page_title": "Licenses",
+  "licenses_page_no_licenses": "No license information available.",
+  "sound_credit_title": "Sound Credit",
+  "sound_credit_description": "OtoLogic (CC BY 4.0)"
 }

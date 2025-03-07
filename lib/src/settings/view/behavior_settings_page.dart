@@ -71,6 +71,34 @@ class BehaviorSettingsPage extends ConsumerWidget {
               ),
             ),
 
+            // タスク完了時の音設定
+            ListTile(
+              title: Text(l.task_completion_sound_title),
+              subtitle: Row(
+                children: [
+                  Flexible(
+                    child: Text(
+                      l.task_completion_sound_description,
+                      style: const TextStyle(fontSize: 10),
+                    ),
+                  ),
+                ],
+              ),
+              trailing: Switch(
+                value: ref.watch(settingsViewModelProvider).soundEnabled,
+                onChanged: (value) {
+                  ref
+                      .read(settingsViewModelProvider.notifier)
+                      .updateSoundEnabled(value);
+                  analytics.logSettingsChanged(
+                    settingName: 'sound_enabled',
+                    value: value ? 'enabled' : 'disabled',
+                  );
+                  HapticHelper.light();
+                },
+              ),
+            ),
+
             // 将来的に追加される他のふるまい設定
           ],
         ),
