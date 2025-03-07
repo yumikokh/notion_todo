@@ -9,6 +9,7 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:background_fetch/background_fetch.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:home_widget/home_widget.dart';
 
 import 'src/app.dart';
 import 'src/env/env.dart';
@@ -28,6 +29,9 @@ void main() async {
   );
   await FirebaseAnalytics.instance
       .setAnalyticsCollectionEnabled(trackingEnabled);
+
+  // HomeWidgetの初期化
+  await HomeWidget.setAppGroupId('group.com.ymkokh.notionTodo');
 
   final app = ProviderScope(
     observers: trackingEnabled ? [SentryProviderObserver()] : [],
@@ -103,6 +107,12 @@ class BackgroundFetchInitializer extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     useEffect(() {
+      // HomeWidgetのコールバックを設定
+      HomeWidget.widgetClicked.listen((uri) {
+        // ウィジェットがクリックされたときの処理
+        print('[HomeWidget] Widget clicked: $uri');
+      });
+
       BackgroundFetch.configure(
         BackgroundFetchConfig(minimumFetchInterval: 15),
         (String taskId) async {
