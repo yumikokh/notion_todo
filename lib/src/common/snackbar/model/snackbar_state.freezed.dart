@@ -19,6 +19,7 @@ mixin _$SnackbarState {
   String get message => throw _privateConstructorUsedError;
   SnackbarType get type => throw _privateConstructorUsedError;
   VoidCallback? get onUndo => throw _privateConstructorUsedError;
+  bool get isFloating => throw _privateConstructorUsedError;
 
   /// Create a copy of SnackbarState
   /// with the given fields replaced by the non-null parameter values.
@@ -33,7 +34,11 @@ abstract class $SnackbarStateCopyWith<$Res> {
           SnackbarState value, $Res Function(SnackbarState) then) =
       _$SnackbarStateCopyWithImpl<$Res, SnackbarState>;
   @useResult
-  $Res call({String message, SnackbarType type, VoidCallback? onUndo});
+  $Res call(
+      {String message,
+      SnackbarType type,
+      VoidCallback? onUndo,
+      bool isFloating});
 }
 
 /// @nodoc
@@ -54,6 +59,7 @@ class _$SnackbarStateCopyWithImpl<$Res, $Val extends SnackbarState>
     Object? message = null,
     Object? type = null,
     Object? onUndo = freezed,
+    Object? isFloating = null,
   }) {
     return _then(_value.copyWith(
       message: null == message
@@ -68,6 +74,10 @@ class _$SnackbarStateCopyWithImpl<$Res, $Val extends SnackbarState>
           ? _value.onUndo
           : onUndo // ignore: cast_nullable_to_non_nullable
               as VoidCallback?,
+      isFloating: null == isFloating
+          ? _value.isFloating
+          : isFloating // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -80,7 +90,11 @@ abstract class _$$SnackbarStateImplCopyWith<$Res>
       __$$SnackbarStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String message, SnackbarType type, VoidCallback? onUndo});
+  $Res call(
+      {String message,
+      SnackbarType type,
+      VoidCallback? onUndo,
+      bool isFloating});
 }
 
 /// @nodoc
@@ -99,6 +113,7 @@ class __$$SnackbarStateImplCopyWithImpl<$Res>
     Object? message = null,
     Object? type = null,
     Object? onUndo = freezed,
+    Object? isFloating = null,
   }) {
     return _then(_$SnackbarStateImpl(
       message: null == message
@@ -113,6 +128,10 @@ class __$$SnackbarStateImplCopyWithImpl<$Res>
           ? _value.onUndo
           : onUndo // ignore: cast_nullable_to_non_nullable
               as VoidCallback?,
+      isFloating: null == isFloating
+          ? _value.isFloating
+          : isFloating // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -121,7 +140,10 @@ class __$$SnackbarStateImplCopyWithImpl<$Res>
 
 class _$SnackbarStateImpl implements _SnackbarState {
   const _$SnackbarStateImpl(
-      {required this.message, this.type = SnackbarType.info, this.onUndo});
+      {required this.message,
+      this.type = SnackbarType.info,
+      this.onUndo,
+      this.isFloating = false});
 
   @override
   final String message;
@@ -130,10 +152,13 @@ class _$SnackbarStateImpl implements _SnackbarState {
   final SnackbarType type;
   @override
   final VoidCallback? onUndo;
+  @override
+  @JsonKey()
+  final bool isFloating;
 
   @override
   String toString() {
-    return 'SnackbarState(message: $message, type: $type, onUndo: $onUndo)';
+    return 'SnackbarState(message: $message, type: $type, onUndo: $onUndo, isFloating: $isFloating)';
   }
 
   @override
@@ -143,11 +168,14 @@ class _$SnackbarStateImpl implements _SnackbarState {
             other is _$SnackbarStateImpl &&
             (identical(other.message, message) || other.message == message) &&
             (identical(other.type, type) || other.type == type) &&
-            (identical(other.onUndo, onUndo) || other.onUndo == onUndo));
+            (identical(other.onUndo, onUndo) || other.onUndo == onUndo) &&
+            (identical(other.isFloating, isFloating) ||
+                other.isFloating == isFloating));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, message, type, onUndo);
+  int get hashCode =>
+      Object.hash(runtimeType, message, type, onUndo, isFloating);
 
   /// Create a copy of SnackbarState
   /// with the given fields replaced by the non-null parameter values.
@@ -162,7 +190,8 @@ abstract class _SnackbarState implements SnackbarState {
   const factory _SnackbarState(
       {required final String message,
       final SnackbarType type,
-      final VoidCallback? onUndo}) = _$SnackbarStateImpl;
+      final VoidCallback? onUndo,
+      final bool isFloating}) = _$SnackbarStateImpl;
 
   @override
   String get message;
@@ -170,6 +199,8 @@ abstract class _SnackbarState implements SnackbarState {
   SnackbarType get type;
   @override
   VoidCallback? get onUndo;
+  @override
+  bool get isFloating;
 
   /// Create a copy of SnackbarState
   /// with the given fields replaced by the non-null parameter values.

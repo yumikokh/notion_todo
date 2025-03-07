@@ -4,6 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../helpers/date.dart';
+import '../../../helpers/haptic_helper.dart';
 import '../font_constants.dart';
 import '../font_settings_viewmodel.dart';
 
@@ -35,6 +36,7 @@ class FontSettingsView extends HookConsumerWidget {
             IconButton(
               onPressed: () async {
                 await viewModel.resetTemporarySettings();
+                HapticHelper.light();
               },
               icon: const Icon(Icons.refresh),
               tooltip: l.reset,
@@ -42,6 +44,7 @@ class FontSettingsView extends HookConsumerWidget {
             IconButton(
               onPressed: () async {
                 await viewModel.saveSettings();
+                HapticHelper.selection();
                 if (context.mounted) {
                   Navigator.of(context).popUntil((route) => route.isFirst);
                 }
@@ -76,11 +79,17 @@ class FontSettingsView extends HookConsumerWidget {
                           children: [
                             ListTile(
                               title: Text(l.language_settings_language_en),
-                              onTap: () => Navigator.pop(context, 'en'),
+                              onTap: () {
+                                Navigator.pop(context, 'en');
+                                HapticHelper.light();
+                              },
                             ),
                             ListTile(
                               title: Text(l.language_settings_language_ja),
-                              onTap: () => Navigator.pop(context, 'ja'),
+                              onTap: () {
+                                Navigator.pop(context, 'ja');
+                                HapticHelper.light();
+                              },
                             ),
                           ],
                         ),
@@ -124,7 +133,10 @@ class FontSettingsView extends HookConsumerWidget {
                                   font,
                                   style: FontConstants.getFont(font),
                                 ),
-                                onTap: () => Navigator.pop(context, font),
+                                onTap: () {
+                                  Navigator.pop(context, font);
+                                  HapticHelper.light();
+                                },
                               );
                             },
                           ),
@@ -145,6 +157,7 @@ class FontSettingsView extends HookConsumerWidget {
                     await viewModel.updateTemporarySettings(
                       settings.copyWith(isItalic: value),
                     );
+                    HapticHelper.light();
                   },
                 ),
                 SwitchListTile(
@@ -154,6 +167,7 @@ class FontSettingsView extends HookConsumerWidget {
                     await viewModel.updateTemporarySettings(
                       settings.copyWith(isBold: value),
                     );
+                    HapticHelper.light();
                   },
                 ),
                 ListTile(
@@ -188,6 +202,7 @@ class FontSettingsView extends HookConsumerWidget {
                     child: FilledButton.icon(
                       onPressed: () async {
                         await viewModel.resetToDefault();
+                        HapticHelper.light();
                       },
                       icon: const Icon(Icons.settings_backup_restore),
                       label: Text(l.reset_to_default),

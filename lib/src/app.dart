@@ -8,7 +8,9 @@ import 'common/app_version/view/app_version_notifier.dart';
 import 'settings/task_database/view/task_database_setting_page.dart';
 import 'notion/tasks/view/task_main_page.dart';
 import 'settings/view/appearance_settings_page.dart';
+import 'settings/view/behavior_settings_page.dart';
 import 'settings/view/language_settings_page.dart';
+import 'settings/view/licenses_page.dart';
 import 'settings/view/notification_settings_page.dart';
 import 'settings/view/notion_settings_page.dart';
 import 'settings/settings_viewmodel.dart';
@@ -83,8 +85,13 @@ class MyApp extends ConsumerWidget {
                     return const AppearanceSettingsPage();
                   case NotificationSettingsPage.routeName:
                     return const NotificationSettingsPage();
+                  case BehaviorSettingsPage.routeName:
+                    return const BehaviorSettingsPage();
+                  case LicensesPage.routeName:
+                    return const LicensesPage();
                   case TaskMainPage.routeName:
                     return const TaskMainPage();
+
                   default:
                     return const TaskMainPage();
                 }

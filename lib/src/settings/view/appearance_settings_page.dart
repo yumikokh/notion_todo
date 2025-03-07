@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../common/analytics/analytics_service.dart';
+import '../../helpers/haptic_helper.dart';
 import '../font/view/font_settings_view.dart';
 import '../settings_viewmodel.dart';
 import 'theme_settings_page.dart';
@@ -60,6 +61,7 @@ class AppearanceSettingsPage extends ConsumerWidget {
                     settingName: 'hideNavigationLabel',
                     value: value.toString());
                 settingsViewModel.updateHideNavigationLabel(value);
+                HapticHelper.light();
               },
             ),
           ),

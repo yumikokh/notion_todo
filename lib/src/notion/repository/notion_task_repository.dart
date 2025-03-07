@@ -60,19 +60,50 @@ class NotionTaskRepository {
       filter = {
         "or": [
           // 今日のタスク
-          {
-            "and": [
-              {
-                "property": dateProperty.name,
-                "date": {"on_or_after": todayStart}
-              },
-              {
-                "property": dateProperty.name,
-                "date": {"on_or_before": todayEnd}
-              },
-              if (!hasCompleted) ...getNotCompleteStatusFilter(statusProperty)
-            ]
-          },
+          if (hasCompleted) ...[
+            {
+              "and": [
+                {
+                  "property": dateProperty.name,
+                  "date": {"on_or_after": todayStart}
+                },
+                {
+                  "property": dateProperty.name,
+                  "date": {"on_or_before": todayEnd}
+                },
+                ...getCompleteStatusFilter(statusProperty, onlyComplete: true),
+              ],
+            },
+            {
+              "and": [
+                {
+                  "property": dateProperty.name,
+                  "date": {"on_or_after": todayStart}
+                },
+                {
+                  "property": dateProperty.name,
+                  "date": {"on_or_before": todayEnd}
+                },
+                ...getNotCompleteStatusFilter(statusProperty,
+                    onlyNotComplete: true),
+              ],
+            }
+          ],
+          if (!hasCompleted)
+            {
+              "and": [
+                {
+                  "property": dateProperty.name,
+                  "date": {"on_or_after": todayStart}
+                },
+                {
+                  "property": dateProperty.name,
+                  "date": {"on_or_before": todayEnd}
+                },
+                ...getNotCompleteStatusFilter(statusProperty,
+                    onlyNotComplete: true),
+              ],
+            },
           // 期限切れで未完了のタスク
           {
             "and": [
@@ -80,7 +111,8 @@ class NotionTaskRepository {
                 "property": dateProperty.name,
                 "date": {"before": todayStart}
               },
-              ...getNotCompleteStatusFilter(statusProperty)
+              ...getNotCompleteStatusFilter(statusProperty,
+                  onlyNotComplete: true)
             ]
           },
           // 進行中のタスク
@@ -285,9 +317,61 @@ class NotionTaskRepository {
   }
 }
 
-List<dynamic> getNotCompleteStatusFilter(CompleteStatusProperty property) {
-  switch (property) {
-    case StatusCompleteStatusProperty(status: var status):
+List<dynamic> getCompleteStatusFilter(CompleteStatusProperty property,
+    {bool onlyComplete = false}) {
+  switch ((property, onlyComplete)) {
+    case (
+        StatusCompleteStatusProperty(completeOption: var completeOption),
+        true
+      ):
+      return [
+        {
+          "property": property.name,
+          "status": {"equals": completeOption?.name}
+        }
+      ];
+    case (StatusCompleteStatusProperty(status: var status), false):
+      // 完了グループ, or条件
+      final optionIds = status.groups
+              .where(
+                  (e) => e.name.toLowerCase() == StatusGroupType.complete.name)
+              .firstOrNull
+              ?.optionIds ??
+          [];
+      return optionIds.map((id) {
+        final completeOptionName =
+            status.options.where((e) => e.id == id).firstOrNull?.name;
+        if (completeOptionName == null) {
+          throw Exception('Complete option name not found');
+        }
+        return {
+          "property": property.name,
+          "status": {"equals": completeOptionName}
+        };
+      }).toList();
+    case (CheckboxCompleteStatusProperty(), _):
+      return [
+        {
+          "property": property.name,
+          "checkbox": {"equals": true}
+        }
+      ];
+  }
+}
+
+List<dynamic> getNotCompleteStatusFilter(CompleteStatusProperty property,
+    {bool onlyNotComplete = false}) {
+  switch ((property, onlyNotComplete)) {
+    case (StatusCompleteStatusProperty(todoOption: var todoOption), true):
+      // 未完了に指定されたオプションステータスのみ
+      return [
+        {
+          "property": property.name,
+          "status": {"equals": todoOption?.name}
+        }
+      ];
+    case (StatusCompleteStatusProperty(status: var status), false):
+      // 完了グループ以外, and条件
       final optionIds = status.groups
               .where(
                   (e) => e.name.toLowerCase() == StatusGroupType.complete.name)
@@ -305,7 +389,7 @@ List<dynamic> getNotCompleteStatusFilter(CompleteStatusProperty property) {
           "status": {"does_not_equal": completeOptionName}
         };
       }).toList();
-    case CheckboxCompleteStatusProperty():
+    case (CheckboxCompleteStatusProperty(), _):
       return [
         {
           "property": property.name,

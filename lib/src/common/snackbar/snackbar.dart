@@ -10,11 +10,14 @@ class Snackbar extends _$Snackbar {
   SnackbarState? build() => null;
 
   void show(String message,
-      {SnackbarType type = SnackbarType.info, VoidCallback? onUndo}) {
+      {SnackbarType type = SnackbarType.info,
+      bool isFloating = false,
+      VoidCallback? onUndo}) {
     state = SnackbarState(
       message: message,
       type: type,
       onUndo: onUndo,
+      isFloating: isFloating,
     );
   }
 

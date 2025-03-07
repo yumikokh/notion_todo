@@ -1,21 +1,37 @@
 ---
 description: 
 globs: 
+alwaysApply: true
 ---
-# Coding Guideline
+# Coding Guideline  
+  
+## コード変更時の留意点
+- 指示した内容以外に修正したい内容があった場合、勝手にコードを書き換えないでください
+- コメントは削除しないこと
   
 ## 設計
 - MVVM + Repositoryパターンを採用する    
-- グローバルステート管理はRiverpodを採用し、ViewModelをProviderとする
+- グローバルステート管理はRiverpodを採用し、ViewModelをProviderとする  
+  - Providerを作成するときは、 @riverpod アノテーションを優先して使用する
 - 簡単なローカルステートは flutter_hooks を使用する。StatefulWidgetは使わない
 - 複雑なローカルステートロジックが必要な場合はChangeNotifierを拡張したViewModelを作成し、View（Widget）でロジックは持たせない 
 
 ## ローカライズ 
 - ローカライズ辞書は [app_en.arb](mdc:lib/l10n/app_en.arb) [app_ja.arb](mdc:lib/l10n/app_ja.arb) で管理する  
 - Widgetでの実装は [task_date_sheet.dart](mdc:lib/src/notion/tasks/view/task_sheet/task_date_sheet.dart), Context をもたないProvider管理下の実装は [task_viewmodel.dart](mdc:lib/src/notion/tasks/task_viewmodel.dart) を参考にすること。それ以外の場合は、クラスにAppLocalizations型をもつパラメータを渡すようにする
+
+## Haptic    
+- よりよいユーザー体験のために、適度なHapticフィードバックを加える
+- 使用側のWidgetで [haptic_helper.dart](mdc:lib/src/helpers/haptic_helper.dart) を利用する    
+  - `await` する必要はない  
+    
+### `HapticHelper.light()`
+- RadioやSwitchのようなインプット要素で変更があったことを示す  
+- 閾値をもつUI（Pull to Refresh、スワイプ、長押し）で閾値を超えたことを示す  
+  - アクションの種類によってわかりづらければ、 `HapticHelper.medium()` を使う
+- FABのような象徴的なボタンのタップ時
   
-# Prompt
-- 指示した内容以外に修正したい内容があった場合、勝手にコードを書き換えず、応答の文言内で補足してください  
-- コメントは削除しないこと
+### `HapticHelper.selection()`  
+- 確定要素のあるテキストボタンやアイコンボタンのタップ時  
 
 
