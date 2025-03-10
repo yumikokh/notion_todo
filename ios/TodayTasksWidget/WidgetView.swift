@@ -39,11 +39,11 @@ struct ProgressCircleView: View {
 
 // MARK: - 共通タスク一覧表示コンポーネント
 struct TaskListView: View {
-  var tasks: [String]
+  var tasks: [WidgetTask]
   var maxCount: Int
 
   var body: some View {
-    if tasks.first == "タスクがありません" {
+    if tasks.isEmpty {
       Spacer()
       HStack {
         Spacer()
@@ -61,14 +61,20 @@ struct TaskListView: View {
     } else {
       VStack(alignment: .leading, spacing: 8) {
         ForEach(0..<min(maxCount, tasks.count), id: \.self) { index in
+          let task = tasks[index]
+
           HStack(alignment: .top, spacing: 10) {
-            Image(systemName: "circle")
+            // 完了/未完了によってアイコンを変更
+            Image(systemName: task.isCompleted ? "checkmark.circle.fill" : "circle")
               .font(.system(size: 14))
-              .foregroundColor(.blue)
-            Text(tasks[index])
+              .foregroundColor(task.isCompleted ? .green : .blue)
+
+            // 完了したタスクは取り消し線と薄い色で表示
+            Text(task.title)
               .font(.system(size: 14))
               .lineLimit(1)
-              .foregroundColor(.primary)
+              .foregroundColor(task.isCompleted ? .secondary : .primary)
+              .strikethrough(task.isCompleted)
           }
         }
 
@@ -80,6 +86,7 @@ struct TaskListView: View {
               .foregroundColor(.secondary)
               .padding(.leading, 24)  // circleアイコンの幅+間隔分だけインデント
           }
+          .padding(.top, 2)
         }
       }
       .padding(.top, 4)
@@ -141,7 +148,7 @@ struct TaskProgressWidgetEntryView: View {
 
         // 右側：タスク一覧（左寄せ）
         VStack(alignment: .leading) {
-          TaskListView(tasks: entry.tasks, maxCount: 5)
+          TaskListView(tasks: entry.remainingTasks, maxCount: 5)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 10)
@@ -169,7 +176,7 @@ struct TaskProgressWidgetEntryView: View {
 
         // 下部：タスク一覧
         VStack(alignment: .leading) {
-          TaskListView(tasks: entry.tasks, maxCount: 10)
+          TaskListView(tasks: entry.remainingTasks, maxCount: 10)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 10)
@@ -205,7 +212,7 @@ struct TodayTasksWidgetEntryView: View {
       .padding(.bottom, 4)
 
       // 共通コンポーネントを使用
-      TaskListView(tasks: entry.tasks, maxCount: getMaxTaskCount())
+      TaskListView(tasks: entry.remainingTasks, maxCount: getMaxTaskCount())
 
       Spacer()
     }

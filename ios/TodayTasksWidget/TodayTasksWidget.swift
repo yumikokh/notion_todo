@@ -1,6 +1,19 @@
 import SwiftUI
 import WidgetKit
 
+// MARK: - WidgetTask
+// ウィジェットで表示するタスクデータ構造
+struct WidgetTask: Codable, Identifiable {
+  var id: String
+  var title: String
+  var isCompleted: Bool
+
+  // タスクがない場合の特別なケース
+  static var empty: WidgetTask {
+    return WidgetTask(id: "empty", title: "タスクがありません", isCompleted: false)
+  }
+}
+
 // MARK: - TodayTasksWidget
 // タスク一覧ウィジェットの定義
 struct TodayTasksWidget: Widget {
@@ -35,27 +48,37 @@ struct TaskProgressWidget: Widget {
 // Widgetに表示するデータモデル
 struct SimpleEntry: TimelineEntry {
   let date: Date
-  let tasks: [String]
+  let tasks: [WidgetTask]
 
-  // 完了したタスクの数を計算（タスクがない場合は0を返す）
-  var completedTasksCount: Int {
-    if tasks.count == 1 && tasks[0] == "タスクがありません" {
-      return 0
-    }
-    return 0  // 実際のアプリでは完了したタスクの数を返す
+  // タスクがない場合の特別なケース
+  var isEmpty: Bool {
+    return tasks.isEmpty
   }
 
-  // 全タスクの数を計算（タスクがない場合は0を返す）
+  // 完了したタスクの数を計算
+  var completedTasksCount: Int {
+    if isEmpty {
+      return 0
+    }
+    return tasks.filter { $0.isCompleted }.count
+  }
+
+  // 全タスクの数を計算
   var totalTasksCount: Int {
-    if tasks.count == 1 && tasks[0] == "タスクがありません" {
+    if isEmpty {
       return 0
     }
     return tasks.count
   }
 
+  // 残りのタスク
+  var remainingTasks: [WidgetTask] {
+    return tasks.filter { !$0.isCompleted }
+  }
+
   // 残りのタスク数を計算
   var remainingTasksCount: Int {
-    return totalTasksCount - completedTasksCount
+    return remainingTasks.count
   }
 
   // 進捗率を計算（0.0〜1.0）
@@ -75,14 +98,26 @@ struct Provider: TimelineProvider {
   // Widgetが最初に表示される際やプレビュー時に使用されるサンプルデータを提供する
   // システムがWidgetを表示する準備をしている間に表示される一時的なエントリー
   func placeholder(in context: Context) -> SimpleEntry {
-    SimpleEntry(date: Date(), tasks: ["サンプルタスク1", "サンプルタスク2", "サンプルタスク3"])
+    SimpleEntry(
+      date: Date(),
+      tasks: [
+        WidgetTask(id: "1", title: "完了したタスク", isCompleted: true),
+        WidgetTask(id: "2", title: "進行中のタスク1", isCompleted: false),
+        WidgetTask(id: "3", title: "進行中のタスク2", isCompleted: false),
+      ])
   }
 
   // MARK: getSnapshot
   // Widgetギャラリーでの表示やプレビュー用のデータを提供する
   // ユーザーがWidgetを選択する際に表示される内容を定義
   func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> Void) {
-    let entry = SimpleEntry(date: Date(), tasks: ["サンプルタスク1", "サンプルタスク2", "サンプルタスク3"])
+    let entry = SimpleEntry(
+      date: Date(),
+      tasks: [
+        WidgetTask(id: "1", title: "完了したタスク", isCompleted: true),
+        WidgetTask(id: "2", title: "進行中のタスク1", isCompleted: false),
+        WidgetTask(id: "3", title: "進行中のタスク2", isCompleted: false),
+      ])
     completion(entry)
   }
 
@@ -95,25 +130,20 @@ struct Provider: TimelineProvider {
     // ユーザーデフォルトからタスクを取得
     // App GroupのUserDefaultsを使用してアプリとWidget間でデータを共有
     let sharedDefaults = UserDefaults(suiteName: "group.com.ymkokh.notionTodo")
-    var tasks: [String] = []
+    var tasks: [WidgetTask] = []
 
     // データ形式がDataの場合の処理
     if let tasksData = sharedDefaults?.object(forKey: "today_tasks") as? Data {
-      if let decodedTasks = try? JSONDecoder().decode([String].self, from: tasksData) {
+      if let decodedTasks = try? JSONDecoder().decode([WidgetTask].self, from: tasksData) {
         tasks = decodedTasks
       }
     } else if let tasksString = sharedDefaults?.string(forKey: "today_tasks") {
       // データ形式が文字列の場合の処理
       if let data = tasksString.data(using: .utf8),
-        let decodedTasks = try? JSONDecoder().decode([String].self, from: data)
+        let decodedTasks = try? JSONDecoder().decode([WidgetTask].self, from: data)
       {
         tasks = decodedTasks
       }
-    }
-
-    // タスクが空の場合のデフォルトメッセージ
-    if tasks.isEmpty {
-      tasks = ["タスクがありません"]
     }
 
     // 現在の日付でエントリーを作成

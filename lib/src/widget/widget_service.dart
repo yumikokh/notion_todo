@@ -15,11 +15,17 @@ class WidgetService {
 
   Future<void> updateTodayTasks(List<Task> tasks) async {
     try {
-      // タスクのタイトルのみを抽出
-      final taskTitles = tasks.map((task) => task.title).toList();
+      // タスクのタイトルと完了状態を含むマップを作成
+      final taskMaps = tasks
+          .map((task) => {
+                'id': task.id,
+                'title': task.title,
+                'isCompleted': task.isCompleted,
+              })
+          .toList();
 
-      // タスクのタイトルをJSONに変換
-      final tasksJson = jsonEncode(taskTitles);
+      // タスクデータをJSONに変換
+      final tasksJson = jsonEncode(taskMaps);
 
       // ウィジェットにデータを送信
       await HomeWidget.saveWidgetData(
