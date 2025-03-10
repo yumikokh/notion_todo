@@ -138,6 +138,46 @@ struct ProgressCircleView: View {
   }
 }
 
+// MARK: - 共通タスク一覧表示コンポーネント
+struct TaskListView: View {
+  var tasks: [String]
+  var maxCount: Int
+
+  var body: some View {
+    if tasks.first == "タスクがありません" {
+      Spacer()
+      HStack {
+        Spacer()
+        VStack {
+          Image(systemName: "checkmark.circle")
+            .font(.system(size: 30))
+            .foregroundColor(.gray)
+          Text("タスク完了！")
+            .font(.subheadline)
+            .foregroundColor(.gray)
+        }
+        Spacer()
+      }
+      Spacer()
+    } else {
+      VStack(alignment: .leading, spacing: 8) {
+        ForEach(0..<min(maxCount, tasks.count), id: \.self) { index in
+          HStack(alignment: .top, spacing: 10) {
+            Image(systemName: "circle")
+              .font(.system(size: 14))
+              .foregroundColor(.blue)
+            Text(tasks[index])
+              .font(.system(size: 14))
+              .lineLimit(1)
+              .foregroundColor(.primary)
+          }
+        }
+      }
+      .padding(.top, 4)
+    }
+  }
+}
+
 // MARK: - TaskProgressWidgetEntryView
 // 進捗ウィジェットのビュー
 struct TaskProgressWidgetEntryView: View {
@@ -168,7 +208,7 @@ struct TaskProgressWidgetEntryView: View {
 
     case .systemMedium:
       // ミディアムサイズ：左に進捗円、右にタスク一覧
-      HStack {
+      HStack(alignment: .center) {
         // 左側：進捗円
         VStack {
           Text("Today")
@@ -190,108 +230,43 @@ struct TaskProgressWidgetEntryView: View {
 
         Divider()
 
-        // 右側：タスク一覧
-        VStack(alignment: .leading, spacing: 8) {
-          if entry.tasks.first == "タスクがありません" {
-            Spacer()
-            HStack {
-              Spacer()
-              Text("タスク完了！")
-                .font(.subheadline)
-                .foregroundColor(.gray)
-              Spacer()
-            }
-            Spacer()
-          } else {
-            ScrollView {
-              VStack(alignment: .leading, spacing: 8) {
-                ForEach(
-                  Array(entry.tasks.prefix(3).enumerated()),
-                  id: \.offset
-                ) { index, task in
-                  HStack(alignment: .top, spacing: 10) {
-                    Image(systemName: "circle")
-                      .font(.system(size: 14))
-                      .foregroundColor(.blue)
-                    Text(task)
-                      .font(.system(size: 14))
-                      .lineLimit(1)
-                      .foregroundColor(.primary)
-                  }
-                }
-              }
-            }
-          }
+        // 右側：タスク一覧（左寄せ）
+        VStack(alignment: .leading) {
+          TaskListView(tasks: entry.tasks, maxCount: 5)
         }
+        .padding(.horizontal, 16)
         .padding(.vertical, 10)
-        .frame(maxWidth: .infinity)
+        .frame(maxWidth: .infinity, alignment: .leading)
       }
       .containerBackground(.fill.tertiary, for: .widget)
 
     case .systemLarge:
-      // ラージサイズ：左に進捗円、右にタスク一覧（より多くのタスクを表示）
-      HStack {
-        // 左側：進捗円
+      // ラージサイズ：上に進捗円、下にタスク一覧
+      VStack {
+        // 上部：進捗円と日付
         VStack {
           Text("Today")
             .font(.headline)
             .padding(.top, 8)
 
-          Spacer()
-
           ProgressCircleView(entry: entry, size: 120)
-
-          Spacer()
+            .padding(.vertical, 10)
 
           Text("\(entry.date, style: .date)")
             .font(.caption)
             .foregroundColor(.secondary)
-            .padding(.bottom, 8)
         }
-        .frame(maxWidth: .infinity)
+        .frame(maxHeight: 180)  // 固定の高さを設定
 
         Divider()
 
-        // 右側：タスク一覧
-        VStack(alignment: .leading, spacing: 8) {
-          if entry.tasks.first == "タスクがありません" {
-            Spacer()
-            HStack {
-              Spacer()
-              VStack {
-                Image(systemName: "checkmark.circle")
-                  .font(.system(size: 30))
-                  .foregroundColor(.gray)
-                Text("タスク完了！")
-                  .font(.subheadline)
-                  .foregroundColor(.gray)
-              }
-              Spacer()
-            }
-            Spacer()
-          } else {
-            ScrollView {
-              VStack(alignment: .leading, spacing: 8) {
-                ForEach(
-                  Array(entry.tasks.prefix(10).enumerated()),
-                  id: \.offset
-                ) { index, task in
-                  HStack(alignment: .top, spacing: 10) {
-                    Image(systemName: "circle")
-                      .font(.system(size: 14))
-                      .foregroundColor(.blue)
-                    Text(task)
-                      .font(.system(size: 14))
-                      .lineLimit(1)
-                      .foregroundColor(.primary)
-                  }
-                }
-              }
-            }
-          }
+        // 下部：タスク一覧
+        VStack(alignment: .leading) {
+          TaskListView(tasks: entry.tasks, maxCount: 10)
         }
+        .padding(.horizontal, 16)
         .padding(.vertical, 10)
-        .frame(maxWidth: .infinity)
+        .frame(maxWidth: .infinity, alignment: .leading)
       }
       .containerBackground(.fill.tertiary, for: .widget)
 
@@ -322,38 +297,8 @@ struct TodayTasksWidgetEntryView: View {
       }
       .padding(.bottom, 4)
 
-      // タスクリストの表示
-      if entry.tasks.first == "タスクがありません" {
-        HStack {
-          Spacer()
-          VStack {
-            Image(systemName: "checkmark.circle")
-              .font(.system(size: 30))
-              .foregroundColor(.gray)
-            Text("タスク完了！")
-              .font(.subheadline)
-              .foregroundColor(.gray)
-          }
-          Spacer()
-        }
-        .padding(.top, 10)
-      } else {
-        // タスクリストの表示
-        // Widgetサイズに応じて表示数を制限
-        ForEach(Array(entry.tasks.prefix(getMaxTaskCount()).enumerated()), id: \.offset) {
-          index, task in
-          HStack(alignment: .top, spacing: 10) {
-            Image(systemName: "circle")
-              .font(.system(size: 14))
-              .foregroundColor(.blue)
-            Text(task)
-              .font(.system(size: 14))
-              .lineLimit(1)
-              .foregroundColor(.primary)
-          }
-          .padding(.vertical, 1)
-        }
-      }
+      // 共通コンポーネントを使用
+      TaskListView(tasks: entry.tasks, maxCount: getMaxTaskCount())
 
       Spacer()
     }
