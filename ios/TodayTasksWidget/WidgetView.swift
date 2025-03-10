@@ -71,6 +71,16 @@ struct TaskListView: View {
               .foregroundColor(.primary)
           }
         }
+
+        // 表示しきれないタスクがある場合は「他◯件」と表示
+        if tasks.count > maxCount {
+          HStack {
+            Text("他\(tasks.count - maxCount)件")
+              .font(.system(size: 13))
+              .foregroundColor(.secondary)
+              .padding(.leading, 24)  // circleアイコンの幅+間隔分だけインデント
+          }
+        }
       }
       .padding(.top, 4)
     }
@@ -110,7 +120,7 @@ struct TaskProgressWidgetEntryView: View {
       HStack(alignment: .center) {
         // 左側：進捗円
         VStack {
-          Text("Today")
+          Text("Today!")
             .font(.headline)
             .padding(.top, 8)
 
