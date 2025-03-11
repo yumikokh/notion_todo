@@ -75,5 +75,18 @@
 	<array>
 		<string>group.com.ymkokh.notionTodo</string>
 	</array>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>com.ymkokh.notionTodo</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>notionTodo</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

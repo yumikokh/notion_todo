@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,11 +11,13 @@ import 'package:background_fetch/background_fetch.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:home_widget/home_widget.dart';
+import 'package:uni_links/uni_links.dart';
 
 import 'src/app.dart';
 import 'src/env/env.dart';
 import 'src/notion/repository/notion_task_repository.dart';
 import 'src/notion/tasks/task_viewmodel.dart';
+import 'src/widget/widget_service.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -32,6 +35,9 @@ void main() async {
 
   // HomeWidgetの初期化
   await HomeWidget.setAppGroupId('group.com.ymkokh.notionTodo');
+
+  // URLスキームハンドラの初期化（アプリ起動時に実行）
+  await initUniLinks();
 
   final app = ProviderScope(
     observers: trackingEnabled ? [SentryProviderObserver()] : [],
@@ -111,7 +117,17 @@ class BackgroundFetchInitializer extends HookConsumerWidget {
       HomeWidget.widgetClicked.listen((uri) {
         // ウィジェットがクリックされたときの処理
         print('[HomeWidget] Widget clicked: $uri');
+        if (uri != null) {
+          try {
+            _processWidgetUrl(Uri.parse(uri.toString()), ref);
+          } catch (e) {
+            print('ウィジェットURLのパースに失敗: $e');
+          }
+        }
       });
+
+      // グローバルなURLスキームハンドラからのURLを処理
+      _setupUrlHandling(ref);
 
       BackgroundFetch.configure(
         BackgroundFetchConfig(minimumFetchInterval: 15),
@@ -131,5 +147,95 @@ class BackgroundFetchInitializer extends HookConsumerWidget {
     }, []);
 
     return child;
+  }
+
+  // URLハンドリングのセットアップ
+  void _setupUrlHandling(WidgetRef ref) {
+    // 初期リンクを処理
+    getInitialLink().then((initialLink) {
+      if (initialLink != null) {
+        print('初期リンクを処理: $initialLink');
+        _processWidgetUrl(Uri.parse(initialLink), ref);
+      }
+    }).catchError((e) {
+      print('初期リンクの取得に失敗: $e');
+    });
+
+    // グローバルなURLスキームハンドラからのURLを処理
+    if (_uriLinkSubscription != null) {
+      print('グローバルURLハンドラが設定済み');
+    } else {
+      print('ローカルURLハンドラを設定');
+      // バックアップとしてローカルハンドラを設定
+      try {
+        uriLinkStream.listen((Uri? uri) {
+          if (uri != null) {
+            print('ローカルハンドラで受信したURL: $uri');
+            _processWidgetUrl(uri, ref);
+          }
+        }, onError: (error) {
+          print('ローカルURLハンドラエラー: $error');
+        });
+      } catch (e) {
+        print('ローカルURLハンドラの設定に失敗: $e');
+      }
+    }
+  }
+
+  // ウィジェットからのURLを処理
+  void _processWidgetUrl(Uri uri, WidgetRef ref) async {
+    print('処理するウィジェットURL: $uri');
+
+    try {
+      // ウィジェットサービスを使用してURLを処理
+      final widgetService = ref.read(widgetServiceProvider);
+      if (widgetService != null) {
+        final handled = await widgetService.handleWidgetURL(uri);
+
+        if (handled) {
+          print('ウィジェットURLを正常に処理しました: $uri');
+
+          // タスクリストを更新
+          ref.invalidate(taskViewModelProvider(filterType: FilterType.today));
+        } else {
+          print('ウィジェットURLの処理に失敗しました: $uri');
+        }
+      } else {
+        print('ウィジェットサービスが見つかりません');
+      }
+    } catch (e) {
+      print('ウィジェットURL処理中にエラーが発生: $e');
+    }
+  }
+}
+
+// グローバルなURLスキームハンドラ
+StreamSubscription? _uriLinkSubscription;
+
+// URLスキームハンドラの初期化（グローバル）
+Future<void> initUniLinks() async {
+  // 既存のサブスクリプションをキャンセル
+  await _uriLinkSubscription?.cancel();
+
+  try {
+    // 初期リンクを取得
+    final initialLink = await getInitialLink();
+    if (initialLink != null) {
+      print('初期リンク: $initialLink');
+      // 初期リンクは後でアプリが起動した後に処理
+    }
+
+    // リンクのリスナーを設定
+    _uriLinkSubscription = uriLinkStream.listen((Uri? uri) {
+      if (uri != null) {
+        print('受信したURL (グローバル): $uri');
+        // URLを受信したことをログに記録するだけ
+        // 実際の処理はアプリ内で行う
+      }
+    }, onError: (error) {
+      print('URLスキームリスナーエラー (グローバル): $error');
+    });
+  } catch (e) {
+    print('URLスキームハンドラの初期化に失敗しました (グローバル): $e');
   }
 }

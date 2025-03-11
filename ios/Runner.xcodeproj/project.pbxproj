@@ -83,7 +83,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		A87512022D6EEC870075DFF8 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+		A87512022D6EEC870075DFF8 /* Exceptions for "TodayTasksWidget" folder in "TodayTasksWidgetExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -93,7 +93,14 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		A87511EF2D6EEC850075DFF8 /* TodayTasksWidget */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (A87512022D6EEC870075DFF8 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = TodayTasksWidget; sourceTree = "<group>"; };
+		A87511EF2D6EEC850075DFF8 /* TodayTasksWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				A87512022D6EEC870075DFF8 /* Exceptions for "TodayTasksWidget" folder in "TodayTasksWidgetExtension" target */,
+			);
+			path = TodayTasksWidget;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -257,7 +264,6 @@
 				};
 			};
 			buildConfigurationList = 97C146E91CF9000F007C117D /* Build configuration list for PBXProject "Runner" */;
-			compatibilityVersion = "Xcode 12.0";
 			developmentRegion = ja;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -266,6 +272,7 @@
 				ja,
 			);
 			mainGroup = 97C146E51CF9000F007C117D;
+			preferredProjectObjectVersion = 77;
 			productRefGroup = 97C146EF1CF9000F007C117D /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
