@@ -6,6 +6,12 @@
 	<dict>
 		<key>NSExtensionPointIdentifier</key>
 		<string>com.apple.widgetkit-extension</string>
+		<key>NSWidgetAllowsEditing</key>
+		<true/>
+		<key>NSWidgetWantsLocation</key>
+		<true/>
+		<key>NSWidgetInteractive</key>
+		<true/>
 	</dict>
 </dict>
 </plist>

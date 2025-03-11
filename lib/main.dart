@@ -20,6 +20,50 @@ import 'src/notion/tasks/task_viewmodel.dart';
 import 'src/widget/widget_service.dart';
 import 'firebase_options.dart';
 
+// バックグラウンドコールバック関数（iOS 17のインタラクティブウィジェット用）
+@pragma('vm:entry-point')
+Future<void> interactivityCallback(Uri? uri) async {
+  print('[HomeWidget] Interactivity callback called with URI: $uri');
+  if (uri == null) return;
+
+  // App Groupからデータを取得
+  final sharedDefaults = await HomeWidget.getWidgetData<String>('appGroupId');
+  if (sharedDefaults == null) return;
+
+  try {
+    // URLからタスクIDと完了状態を取得
+    final pathSegments = uri.pathSegments;
+    if (pathSegments.length >= 3 && pathSegments[0] == 'toggle') {
+      final taskId = pathSegments[1];
+      String isCompletedStr = pathSegments[2];
+
+      // homeWidgetパラメータが含まれている場合は除去
+      if (isCompletedStr.contains('&')) {
+        isCompletedStr = isCompletedStr.split('&')[0];
+      }
+
+      final isCompleted = isCompletedStr.toLowerCase() == 'true';
+      print('[HomeWidget] Updating task $taskId to $isCompleted');
+
+      // ここでNotionのタスク状態を更新する処理を実装
+      // 注意: このコンテキストではProviderは使用できないため、直接APIを呼び出す必要がある
+
+      // バックグラウンド更新フラグを設定
+      await HomeWidget.saveWidgetData('needs_background_update', true);
+      await HomeWidget.saveWidgetData('last_updated_task_id', taskId);
+      await HomeWidget.saveWidgetData('last_updated_task_state', isCompleted);
+
+      // 処理完了を示すフラグを設定
+      await HomeWidget.saveWidgetData('interactivity_completed', 'true');
+      await HomeWidget.updateWidget(
+        iOSName: 'TodayTasksWidget',
+      );
+    }
+  } catch (e) {
+    print('[HomeWidget] Error in interactivity callback: $e');
+  }
+}
+
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
@@ -35,6 +79,9 @@ void main() async {
 
   // HomeWidgetの初期化
   await HomeWidget.setAppGroupId('group.com.ymkokh.notionTodo');
+
+  // インタラクティブウィジェット用のコールバックを登録
+  await HomeWidget.registerInteractivityCallback(interactivityCallback);
 
   // URLスキームハンドラの初期化（アプリ起動時に実行）
   await initUniLinks();
@@ -119,7 +166,14 @@ class BackgroundFetchInitializer extends HookConsumerWidget {
         print('[HomeWidget] Widget clicked: $uri');
         if (uri != null) {
           try {
-            _processWidgetUrl(Uri.parse(uri.toString()), ref);
+            // homeWidgetパラメータがある場合は、WidgetServiceを使用して処理
+            if (uri.toString().contains('homeWidget')) {
+              print('[HomeWidget] Processing widget URL: $uri');
+              _processWidgetUrl(Uri.parse(uri.toString()), ref);
+            } else {
+              print(
+                  '[HomeWidget] URL does not contain homeWidget parameter: $uri');
+            }
           } catch (e) {
             print('ウィジェットURLのパースに失敗: $e');
           }
@@ -128,6 +182,9 @@ class BackgroundFetchInitializer extends HookConsumerWidget {
 
       // グローバルなURLスキームハンドラからのURLを処理
       _setupUrlHandling(ref);
+
+      // アプリがアクティブになったときにバックグラウンド処理フラグをチェック
+      _checkBackgroundUpdateFlag(ref);
 
       BackgroundFetch.configure(
         BackgroundFetchConfig(minimumFetchInterval: 15),
@@ -147,6 +204,43 @@ class BackgroundFetchInitializer extends HookConsumerWidget {
     }, []);
 
     return child;
+  }
+
+  // バックグラウンド処理フラグをチェックする
+  Future<void> _checkBackgroundUpdateFlag(WidgetRef ref) async {
+    try {
+      // App Groupからデータを取得
+      final needsUpdate =
+          await HomeWidget.getWidgetData<bool>('needs_background_update') ??
+              false;
+
+      if (needsUpdate) {
+        print('[HomeWidget] Background update flag detected');
+
+        // タスクIDと状態を取得
+        final taskId =
+            await HomeWidget.getWidgetData<String>('last_updated_task_id');
+        final isCompleted =
+            await HomeWidget.getWidgetData<bool>('last_updated_task_state');
+
+        if (taskId != null && isCompleted != null) {
+          print(
+              '[HomeWidget] Updating task $taskId to $isCompleted from background');
+
+          // Notionのタスク状態を更新
+          final widgetService = ref.read(widgetServiceProvider);
+          await widgetService.updateTaskCompletionInNotion(taskId, isCompleted);
+
+          // フラグをリセット
+          await HomeWidget.saveWidgetData('needs_background_update', false);
+
+          // タスクリストを更新
+          ref.invalidate(taskViewModelProvider(filterType: FilterType.today));
+        }
+      }
+    } catch (e) {
+      print('[HomeWidget] Error checking background update flag: $e');
+    }
   }
 
   // URLハンドリングのセットアップ
@@ -194,9 +288,6 @@ class BackgroundFetchInitializer extends HookConsumerWidget {
 
         if (handled) {
           print('ウィジェットURLを正常に処理しました: $uri');
-
-          // タスクリストを更新
-          ref.invalidate(taskViewModelProvider(filterType: FilterType.today));
         } else {
           print('ウィジェットURLの処理に失敗しました: $uri');
         }

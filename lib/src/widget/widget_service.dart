@@ -18,7 +18,7 @@ class WidgetService {
 
   static const String appGroupId = 'group.com.ymkokh.notionTodo';
   static const String todayTasksKey = 'today_tasks';
-  static const String widgetURLScheme = 'notionTodo://widget/toggleTask';
+  static const String widgetURLScheme = 'notiontodo://widget/toggleTask';
 
   Future<void> updateTodayTasks(List<Task> tasks) async {
     try {
@@ -53,7 +53,7 @@ class WidgetService {
   }
 
   // ウィジェットからのURLスキームを処理する
-  Future<bool> handleWidgetURL(Uri uri) async {
+  Future<bool> handleWidgetURL(Uri uri, {bool isBackground = false}) async {
     try {
       print('処理するURL: ${uri.toString()}');
 
@@ -62,7 +62,13 @@ class WidgetService {
       final pathSegments = uri.pathSegments;
       if (pathSegments.length >= 3 && pathSegments[0] == 'toggle') {
         final taskId = pathSegments[1];
-        final isCompletedStr = pathSegments[2];
+        // isCompletedStrにはhomeWidgetパラメータが含まれている可能性があるため、分割して処理
+        String isCompletedStr = pathSegments[2];
+
+        // homeWidgetパラメータが含まれている場合は除去
+        if (isCompletedStr.contains('&')) {
+          isCompletedStr = isCompletedStr.split('&')[0];
+        }
 
         print('単純化URLスキーム - タスクID: $taskId, 完了状態: $isCompletedStr');
 
@@ -70,24 +76,7 @@ class WidgetService {
           final isCompleted = isCompletedStr.toLowerCase() == 'true';
 
           // Notionのタスク状態を更新
-          await _updateTaskCompletionInNotion(taskId, isCompleted);
-          return true;
-        }
-      }
-
-      // 従来のクエリパラメータ形式も処理（後方互換性のため）
-      if (uri.toString().contains('toggleTask')) {
-        // パラメータを取得
-        final taskId = uri.queryParameters['id'];
-        final isCompletedStr = uri.queryParameters['completed'];
-
-        print('従来形式 - タスクID: $taskId, 完了状態: $isCompletedStr');
-
-        if (taskId != null && isCompletedStr != null) {
-          final isCompleted = isCompletedStr.toLowerCase() == 'true';
-
-          // Notionのタスク状態を更新
-          await _updateTaskCompletionInNotion(taskId, isCompleted);
+          await updateTaskCompletionInNotion(taskId, isCompleted);
           return true;
         }
       }
@@ -100,7 +89,7 @@ class WidgetService {
   }
 
   // Notionのタスク状態を更新する
-  Future<void> _updateTaskCompletionInNotion(
+  Future<void> updateTaskCompletionInNotion(
       String taskId, bool isCompleted) async {
     try {
       final repository = _ref.read(notionTaskRepositoryProvider);

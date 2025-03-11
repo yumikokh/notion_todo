@@ -41,8 +41,6 @@ struct ProgressCircleView: View {
 struct TaskListView: View {
   var tasks: [WidgetTask]
   var maxCount: Int
-
-  // 環境変数からURLを開くアクションを取得
   @Environment(\.openURL) private var openURL
 
   var body: some View {
@@ -68,15 +66,19 @@ struct TaskListView: View {
 
           HStack(alignment: .top, spacing: 10) {
             // 完了/未完了によってアイコンを変更
-            // タップ可能なチェックボックス
-            Image(systemName: task.isCompleted ? "checkmark.circle.fill" : "circle")
-              .font(.system(size: 14))
-              .foregroundColor(task.isCompleted ? .green : .blue)
-              .contentShape(Rectangle())  // タップ領域を拡大
-              .onTapGesture {
-                // タスク状態変更処理
-                toggleTaskCompletion(task)
-              }
+            // iOS 17のインタラクティブウィジェット用にBackgroundIntentを使用
+            Button(
+              intent: BackgroundIntent(
+                url: URL(string: "notiontodo://toggle/\(task.id)/\(!task.isCompleted)"),
+                appGroup: "group.com.ymkokh.notionTodo")
+            ) {
+              Image(systemName: task.isCompleted ? "checkmark.circle.fill" : "circle")
+                .font(.system(size: 14))
+                .foregroundColor(task.isCompleted ? .green : .blue)
+            }
+            .onAppear {
+              print("TaskListView: タスク \(task.id) を表示")
+            }
 
             // 完了したタスクは取り消し線と薄い色で表示
             Text(task.title)
@@ -99,53 +101,6 @@ struct TaskListView: View {
         }
       }
       .padding(.top, 4)
-    }
-  }
-
-  // タスクの完了状態を切り替える関数
-  private func toggleTaskCompletion(_ task: WidgetTask) {
-    // 状態を反転
-    let newCompletionState = !task.isCompleted
-
-    // 1. App Groupを使用してデータを直接更新
-    updateTaskInSharedDefaults(task.id, isCompleted: newCompletionState)
-
-    // 2. ウィジェットを更新
-    WidgetCenter.shared.reloadTimelines(ofKind: "TodayTasksWidget")
-    WidgetCenter.shared.reloadTimelines(ofKind: "TaskProgressWidget")
-
-    // 3. URLスキームを使用してアプリに通知（最後に実行）
-    // より単純なURLスキームを使用
-    let urlString = "notionTodo://toggle/\(task.id)/\(newCompletionState)"
-
-    if let url = URL(string: urlString) {
-      // ディスパッチキューを使用して少し遅延させる（ウィジェットの更新が先に行われるようにするため）
-      DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-        // WidgetKit環境でのURL処理
-        openURL(url)
-      }
-    }
-  }
-
-  // App Groupを使用してタスクデータを更新する関数
-  private func updateTaskInSharedDefaults(_ taskId: String, isCompleted: Bool) {
-    let sharedDefaults = UserDefaults(suiteName: "group.com.ymkokh.notionTodo")
-
-    // 最新のタスクデータを取得
-    if let tasksData = sharedDefaults?.object(forKey: "today_tasks") as? Data,
-      let tasks = try? JSONDecoder().decode([WidgetTask].self, from: tasksData)
-    {
-
-      // タスクの状態を更新
-      var updatedTasks = tasks
-      if let index = updatedTasks.firstIndex(where: { $0.id == taskId }) {
-        updatedTasks[index].isCompleted = isCompleted
-
-        // 更新したデータを保存
-        if let encodedData = try? JSONEncoder().encode(updatedTasks) {
-          sharedDefaults?.set(encodedData, forKey: "today_tasks")
-        }
-      }
     }
   }
 }
