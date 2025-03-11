@@ -35,13 +35,9 @@ target 'Runner' do
   # target 'RunnerTests' do
   #   inherit! :search_paths
   # end
-end
-
-target 'TodayTasksWidgetExtension' do
-   use_frameworks!
-   use_modular_headers!
-
-   pod 'home_widget', :path => '.symlinks/plugins/home_widget/ios'
+  target 'TodayTasksWidgetExtension' do
+    inherit! :search_paths
+  end
 end
 
 post_install do |installer|

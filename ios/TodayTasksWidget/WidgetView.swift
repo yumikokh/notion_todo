@@ -69,8 +69,8 @@ struct TaskListView: View {
             // iOS 17のインタラクティブウィジェット用にBackgroundIntentを使用
             Button(
               intent: BackgroundIntent(
-                url: URL(string: "notiontodo://toggle/\(task.id)/\(!task.isCompleted)"),
-                appGroup: "group.com.ymkokh.notionTodo")
+                url: URL(string: "notionTodoWidget://toggle/\(task.id)/\(!task.isCompleted)")
+              )
             ) {
               Image(systemName: task.isCompleted ? "checkmark.circle.fill" : "circle")
                 .font(.system(size: 14))
