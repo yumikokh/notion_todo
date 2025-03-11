@@ -223,7 +223,7 @@ struct TodayTasksWidgetEntryView: View {
       .padding(.bottom, 4)
 
       // 共通コンポーネントを使用
-      TaskListView(tasks: entry.remainingTasks, maxCount: getMaxTaskCount())
+      TaskListView(tasks: entry.tasks, maxCount: getMaxTaskCount())
 
       Spacer()
     }

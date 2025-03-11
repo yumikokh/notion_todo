@@ -10,8 +10,6 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:background_fetch/background_fetch.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:home_widget/home_widget.dart';
-import 'package:uni_links/uni_links.dart';
 
 import 'src/app.dart';
 import 'src/env/env.dart';
@@ -20,50 +18,7 @@ import 'src/notion/tasks/task_viewmodel.dart';
 import 'src/widget/widget_service.dart';
 import 'firebase_options.dart';
 
-// バックグラウンドコールバック関数（iOS 17のインタラクティブウィジェット用）
-@pragma('vm:entry-point')
-Future<void> interactivityCallback(Uri? uri) async {
-  print('[HomeWidget] Interactivity callback called with URI: $uri');
-  if (uri == null) return;
-
-  // App Groupからデータを取得
-  final sharedDefaults = await HomeWidget.getWidgetData<String>('appGroupId');
-  if (sharedDefaults == null) return;
-
-  try {
-    // URLからタスクIDと完了状態を取得
-    final pathSegments = uri.pathSegments;
-    if (pathSegments.length >= 3 && pathSegments[0] == 'toggle') {
-      final taskId = pathSegments[1];
-      String isCompletedStr = pathSegments[2];
-
-      // homeWidgetパラメータが含まれている場合は除去
-      if (isCompletedStr.contains('&')) {
-        isCompletedStr = isCompletedStr.split('&')[0];
-      }
-
-      final isCompleted = isCompletedStr.toLowerCase() == 'true';
-      print('[HomeWidget] Updating task $taskId to $isCompleted');
-
-      // ここでNotionのタスク状態を更新する処理を実装
-      // 注意: このコンテキストではProviderは使用できないため、直接APIを呼び出す必要がある
-
-      // バックグラウンド更新フラグを設定
-      await HomeWidget.saveWidgetData('needs_background_update', true);
-      await HomeWidget.saveWidgetData('last_updated_task_id', taskId);
-      await HomeWidget.saveWidgetData('last_updated_task_state', isCompleted);
-
-      // 処理完了を示すフラグを設定
-      await HomeWidget.saveWidgetData('interactivity_completed', 'true');
-      await HomeWidget.updateWidget(
-        iOSName: 'TodayTasksWidget',
-      );
-    }
-  } catch (e) {
-    print('[HomeWidget] Error in interactivity callback: $e');
-  }
-}
-
+final widgetService = WidgetService();
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
@@ -77,14 +32,7 @@ void main() async {
   await FirebaseAnalytics.instance
       .setAnalyticsCollectionEnabled(trackingEnabled);
 
-  // HomeWidgetの初期化
-  await HomeWidget.setAppGroupId('group.com.ymkokh.notionTodo');
-
-  // インタラクティブウィジェット用のコールバックを登録
-  await HomeWidget.registerInteractivityCallback(interactivityCallback);
-
-  // URLスキームハンドラの初期化（アプリ起動時に実行）
-  await initUniLinks();
+  await widgetService.initialize(interactivityCallback);
 
   final app = ProviderScope(
     observers: trackingEnabled ? [SentryProviderObserver()] : [],
@@ -160,32 +108,6 @@ class BackgroundFetchInitializer extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     useEffect(() {
-      // HomeWidgetのコールバックを設定
-      HomeWidget.widgetClicked.listen((uri) {
-        // ウィジェットがクリックされたときの処理
-        print('[HomeWidget] Widget clicked: $uri');
-        if (uri != null) {
-          try {
-            // homeWidgetパラメータがある場合は、WidgetServiceを使用して処理
-            if (uri.toString().contains('homeWidget')) {
-              print('[HomeWidget] Processing widget URL: $uri');
-              _processWidgetUrl(Uri.parse(uri.toString()), ref);
-            } else {
-              print(
-                  '[HomeWidget] URL does not contain homeWidget parameter: $uri');
-            }
-          } catch (e) {
-            print('ウィジェットURLのパースに失敗: $e');
-          }
-        }
-      });
-
-      // グローバルなURLスキームハンドラからのURLを処理
-      _setupUrlHandling(ref);
-
-      // アプリがアクティブになったときにバックグラウンド処理フラグをチェック
-      _checkBackgroundUpdateFlag(ref);
-
       BackgroundFetch.configure(
         BackgroundFetchConfig(minimumFetchInterval: 15),
         (String taskId) async {
@@ -205,128 +127,28 @@ class BackgroundFetchInitializer extends HookConsumerWidget {
 
     return child;
   }
-
-  // バックグラウンド処理フラグをチェックする
-  Future<void> _checkBackgroundUpdateFlag(WidgetRef ref) async {
-    try {
-      // App Groupからデータを取得
-      final needsUpdate =
-          await HomeWidget.getWidgetData<bool>('needs_background_update') ??
-              false;
-
-      if (needsUpdate) {
-        print('[HomeWidget] Background update flag detected');
-
-        // タスクIDと状態を取得
-        final taskId =
-            await HomeWidget.getWidgetData<String>('last_updated_task_id');
-        final isCompleted =
-            await HomeWidget.getWidgetData<bool>('last_updated_task_state');
-
-        if (taskId != null && isCompleted != null) {
-          print(
-              '[HomeWidget] Updating task $taskId to $isCompleted from background');
-
-          // Notionのタスク状態を更新
-          final widgetService = ref.read(widgetServiceProvider);
-          await widgetService.updateTaskCompletionInNotion(taskId, isCompleted);
-
-          // フラグをリセット
-          await HomeWidget.saveWidgetData('needs_background_update', false);
-
-          // タスクリストを更新
-          ref.invalidate(taskViewModelProvider(filterType: FilterType.today));
-        }
-      }
-    } catch (e) {
-      print('[HomeWidget] Error checking background update flag: $e');
-    }
-  }
-
-  // URLハンドリングのセットアップ
-  void _setupUrlHandling(WidgetRef ref) {
-    // 初期リンクを処理
-    getInitialLink().then((initialLink) {
-      if (initialLink != null) {
-        print('初期リンクを処理: $initialLink');
-        _processWidgetUrl(Uri.parse(initialLink), ref);
-      }
-    }).catchError((e) {
-      print('初期リンクの取得に失敗: $e');
-    });
-
-    // グローバルなURLスキームハンドラからのURLを処理
-    if (_uriLinkSubscription != null) {
-      print('グローバルURLハンドラが設定済み');
-    } else {
-      print('ローカルURLハンドラを設定');
-      // バックアップとしてローカルハンドラを設定
-      try {
-        uriLinkStream.listen((Uri? uri) {
-          if (uri != null) {
-            print('ローカルハンドラで受信したURL: $uri');
-            _processWidgetUrl(uri, ref);
-          }
-        }, onError: (error) {
-          print('ローカルURLハンドラエラー: $error');
-        });
-      } catch (e) {
-        print('ローカルURLハンドラの設定に失敗: $e');
-      }
-    }
-  }
-
-  // ウィジェットからのURLを処理
-  void _processWidgetUrl(Uri uri, WidgetRef ref) async {
-    print('処理するウィジェットURL: $uri');
-
-    try {
-      // ウィジェットサービスを使用してURLを処理
-      final widgetService = ref.read(widgetServiceProvider);
-      if (widgetService != null) {
-        final handled = await widgetService.handleWidgetURL(uri);
-
-        if (handled) {
-          print('ウィジェットURLを正常に処理しました: $uri');
-        } else {
-          print('ウィジェットURLの処理に失敗しました: $uri');
-        }
-      } else {
-        print('ウィジェットサービスが見つかりません');
-      }
-    } catch (e) {
-      print('ウィジェットURL処理中にエラーが発生: $e');
-    }
-  }
 }
 
-// グローバルなURLスキームハンドラ
-StreamSubscription? _uriLinkSubscription;
+// バックグラウンドコールバック関数（iOS 17のインタラクティブウィジェット用）
+@pragma('vm:entry-point')
+Future<void> interactivityCallback(Uri? uri) async {
+  print('[HomeWidget] Interactivity callback called with URI: $uri');
+  if (uri == null) return;
 
-// URLスキームハンドラの初期化（グローバル）
-Future<void> initUniLinks() async {
-  // 既存のサブスクリプションをキャンセル
-  await _uriLinkSubscription?.cancel();
-
+  final action = uri.host;
   try {
-    // 初期リンクを取得
-    final initialLink = await getInitialLink();
-    if (initialLink != null) {
-      print('初期リンク: $initialLink');
-      // 初期リンクは後でアプリが起動した後に処理
-    }
+    // URLからタスクIDと完了状態を取得
+    final pathSegments = uri.pathSegments;
+    if (action == 'toggle') {
+      final taskId = pathSegments[0];
+      String isCompletedStr = pathSegments[1];
+      final isCompleted = isCompletedStr.toLowerCase() == 'true';
+      print('[HomeWidget] Updating task $taskId to $isCompleted');
+      await widgetService.completeTask(taskId, isCompleted);
 
-    // リンクのリスナーを設定
-    _uriLinkSubscription = uriLinkStream.listen((Uri? uri) {
-      if (uri != null) {
-        print('受信したURL (グローバル): $uri');
-        // URLを受信したことをログに記録するだけ
-        // 実際の処理はアプリ内で行う
-      }
-    }, onError: (error) {
-      print('URLスキームリスナーエラー (グローバル): $error');
-    });
+      // TODO: APIリクエスト
+    }
   } catch (e) {
-    print('URLスキームハンドラの初期化に失敗しました (グローバル): $e');
+    print('[HomeWidget] Error in interactivity callback: $e');
   }
 }

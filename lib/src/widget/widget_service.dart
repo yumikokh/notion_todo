@@ -1,110 +1,72 @@
 import 'dart:convert';
-
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:home_widget/home_widget.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter/services.dart';
 
 import '../notion/model/task.dart';
-import '../notion/repository/notion_task_repository.dart';
 
-final widgetServiceProvider = Provider<WidgetService>((ref) {
-  return WidgetService(ref);
-});
+part 'widget_service.g.dart';
+
+@JsonSerializable()
+class WidgetTask {
+  final String id;
+  final String title;
+  final bool isCompleted;
+
+  WidgetTask({
+    required this.id,
+    required this.title,
+    required this.isCompleted,
+  });
+
+  factory WidgetTask.fromJson(Map<String, dynamic> json) =>
+      _$WidgetTaskFromJson(json);
+
+  Map<String, dynamic> toJson() => _$WidgetTaskToJson(this);
+}
 
 class WidgetService {
-  final Ref _ref;
-
-  WidgetService(this._ref);
-
   static const String appGroupId = 'group.com.ymkokh.notionTodo';
   static const String todayTasksKey = 'today_tasks';
-  static const String widgetURLScheme = 'notiontodo://widget/toggleTask';
+  static const String widgetURLScheme = 'notionTodoWidget://toggle';
 
-  Future<void> updateTodayTasks(List<Task> tasks) async {
-    try {
-      // タスクのタイトルと完了状態を含むマップを作成
-      final taskMaps = tasks
-          .map((task) => {
-                'id': task.id,
-                'title': task.title,
-                'isCompleted': task.isCompleted,
-              })
-          .toList();
-
-      // タスクデータをJSONに変換
-      final tasksJson = jsonEncode(taskMaps);
-
-      // ウィジェットにデータを送信
-      await HomeWidget.saveWidgetData(
-        todayTasksKey,
-        tasksJson,
-      );
-
-      // ウィジェットを更新
-      await HomeWidget.updateWidget(
-        name: 'TodayTasksWidgetProvider',
-        androidName: 'TodayTasksWidgetProvider',
-        iOSName: 'TodayTasksWidget',
-        qualifiedAndroidName: 'com.ymkokh.notionTodo.TodayTasksWidgetProvider',
-      );
-    } catch (e) {
-      print('ウィジェットの更新に失敗しました: $e');
-    }
+  initialize(Function(Uri?) interactivityCallback) async {
+    await HomeWidget.setAppGroupId(appGroupId);
+    await HomeWidget.registerInteractivityCallback(interactivityCallback);
   }
 
-  // ウィジェットからのURLスキームを処理する
-  Future<bool> handleWidgetURL(Uri uri, {bool isBackground = false}) async {
-    try {
-      print('処理するURL: ${uri.toString()}');
+  Future<void> applyTasks(List<Task> tasks) async {
+    final widgetTasks = tasks
+        .map((task) => WidgetTask(
+            id: task.id, title: task.title, isCompleted: task.isCompleted))
+        .toList();
 
-      // 単純化したURLスキーム形式を処理
-      // notionTodo://toggle/{taskId}/{isCompleted}
-      final pathSegments = uri.pathSegments;
-      if (pathSegments.length >= 3 && pathSegments[0] == 'toggle') {
-        final taskId = pathSegments[1];
-        // isCompletedStrにはhomeWidgetパラメータが含まれている可能性があるため、分割して処理
-        String isCompletedStr = pathSegments[2];
-
-        // homeWidgetパラメータが含まれている場合は除去
-        if (isCompletedStr.contains('&')) {
-          isCompletedStr = isCompletedStr.split('&')[0];
-        }
-
-        print('単純化URLスキーム - タスクID: $taskId, 完了状態: $isCompletedStr');
-
-        if (taskId.isNotEmpty) {
-          final isCompleted = isCompletedStr.toLowerCase() == 'true';
-
-          // Notionのタスク状態を更新
-          await updateTaskCompletionInNotion(taskId, isCompleted);
-          return true;
-        }
-      }
-
-      return false;
-    } catch (e) {
-      print('ウィジェットURLの処理に失敗しました: $e');
-      return false;
-    }
+    await _sendAndUpdate(widgetTasks);
   }
 
-  // Notionのタスク状態を更新する
-  Future<void> updateTaskCompletionInNotion(
-      String taskId, bool isCompleted) async {
-    try {
-      final repository = _ref.read(notionTaskRepositoryProvider);
-      if (repository != null) {
-        await repository.updateCompleteStatus(taskId, isCompleted);
+  Future<void> completeTask(String id, bool isCompleted) async {
+    final value = await HomeWidget.getWidgetData(todayTasksKey);
+    final taskMaps = jsonDecode(value) as List<dynamic>;
+    print('taskMaps: $taskMaps');
+    final updatedTaskMaps = taskMaps
+        .map((task) => task['id'] == id
+            ? WidgetTask(id: id, title: task['title'], isCompleted: isCompleted)
+            : WidgetTask(
+                id: task['id'],
+                title: task['title'],
+                isCompleted: task['isCompleted']))
+        .toList();
 
-        // 更新成功時にハプティックフィードバックを提供
-        await HapticFeedback.mediumImpact();
+    await _sendAndUpdate(updatedTaskMaps);
+  }
 
-        print('タスク $taskId の完了状態を $isCompleted に更新しました');
-      } else {
-        print('Notionリポジトリが見つかりません');
-      }
-    } catch (e) {
-      print('Notionタスクの更新に失敗しました: $e');
-    }
+  _sendAndUpdate(List<WidgetTask> tasks) async {
+    final value = tasks.map((task) => task.toJson()).toList();
+    final tasksJson = jsonEncode(value);
+    await HomeWidget.saveWidgetData(todayTasksKey, tasksJson);
+    // ウィジェットを更新
+    await HomeWidget.updateWidget(
+      androidName: 'TodayTasksWidgetProvider',
+      iOSName: 'TodayTasksWidget',
+    );
   }
 }

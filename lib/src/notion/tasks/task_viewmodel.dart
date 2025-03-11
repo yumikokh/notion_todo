@@ -34,6 +34,7 @@ class TaskViewModel extends _$TaskViewModel {
   bool get showCompleted => _showCompleted;
 
   static final DateHelper d = DateHelper();
+  static final WidgetService widgetService = WidgetService();
 
   @override
   Future<List<Task>> build({
@@ -57,14 +58,15 @@ class TaskViewModel extends _$TaskViewModel {
         ref.watch(taskDatabaseViewModelProvider).valueOrNull?.status;
     final tasks = await _fetchTasks(isFirstFetch: true);
 
-    // バッジ更新
     if (filterType == FilterType.today) {
+      // バッジ更新
       final showBadge =
           ref.watch(settingsViewModelProvider).showNotificationBadge;
       _updateBadge(tasks, showBadge);
 
       // ウィジェット更新
-      _updateWidget(tasks);
+      final widgetTasks = tasks.where((task) => !task.isCompleted).toList();
+      widgetService.applyTasks(widgetTasks);
     }
 
     if (statusProperty is StatusCompleteStatusProperty) {
@@ -575,13 +577,5 @@ class TaskViewModel extends _$TaskViewModel {
     }
     final notCompletedCount = tasks.where((task) => !task.isCompleted).length;
     await FlutterAppBadger.updateBadgeCount(notCompletedCount);
-  }
-
-  // ウィジェットを更新する
-  void _updateWidget(List<Task> tasks) {
-    final widgetService = ref.read(widgetServiceProvider);
-    // 未完了のタスクのみをウィジェットに表示
-    final incompleteTasks = tasks.where((task) => !task.isCompleted).toList();
-    widgetService.updateTodayTasks(incompleteTasks);
   }
 }
