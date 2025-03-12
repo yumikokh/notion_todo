@@ -122,7 +122,20 @@ class WidgetService {
     await _sendTasks(updatedTasks);
     _updateTaskInNotion(id, isCompleted);
 
-    // TODO: 1s後ウィジェットから削除
+    // 完了したタスクは1秒後にウィジェットから削除
+    if (isCompleted) {
+      Future.delayed(const Duration(seconds: 1), () async {
+        final currentTasks = (await this.value).tasks;
+        if (currentTasks == null) return;
+
+        final filteredTasks = currentTasks
+            .where((task) => task.id != id || !task.isCompleted)
+            .toList();
+        if (filteredTasks.length != currentTasks.length) {
+          await _sendTasks(filteredTasks);
+        }
+      });
+    }
   }
 
   // Notionリポジトリを直接使用してタスクを更新するメソッド
