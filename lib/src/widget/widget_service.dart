@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:async';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:home_widget/home_widget.dart';
 
@@ -55,6 +56,12 @@ class WidgetService {
   factory WidgetService() => _instance;
   WidgetService._();
 
+  // アプリバックグラウンド復帰時に使用するストリームコントローラー
+  StreamSubscription<Uri?>? _widgetClickedSubscription;
+
+  // アプリが起動中にウィジェットクリックを検出するためのストリームを取得
+  Stream<Uri?> get widgetClicked => HomeWidget.widgetClicked;
+
   Future<WidgetValue> get value async {
     final rowTasks = await HomeWidget.getWidgetData(todayTasksKey);
     final accessToken = await HomeWidget.getWidgetData<String?>(accessTokenKey,
@@ -80,6 +87,38 @@ class WidgetService {
   initialize(Function(Uri?) interactivityCallback) async {
     await HomeWidget.setAppGroupId(appGroupId);
     await HomeWidget.registerInteractivityCallback(interactivityCallback);
+  }
+
+  void _checkAndExec(Uri? uri, String action, Function() callback) {
+    if (uri == null) return;
+    if (uri.scheme == 'notiontodo' && uri.host == action) {
+      callback();
+    }
+  }
+
+  // ウィジェットから起動されたかどうかを確認するメソッド
+  Future<Uri?> registerInitialLaunchFromWidget(
+      String action, Function() callback) async {
+    final uri = await HomeWidget.initiallyLaunchedFromHomeWidget();
+    _checkAndExec(uri, action, callback);
+    return uri;
+  }
+
+  // ウィジェットからのクリックを監視開始
+  void startListeningWidgetClicks(String action, Function() callback) {
+    print('[WidgetService] startListeningWidgetClicks');
+    // 既存のサブスクリプションがあれば解除
+    _widgetClickedSubscription?.cancel();
+    _widgetClickedSubscription = HomeWidget.widgetClicked.listen((uri) {
+      _checkAndExec(uri, action, callback);
+    });
+  }
+
+  // ウィジェットからのクリック監視を停止
+  void stopListeningWidgetClicks() {
+    print('[WidgetService] Stopping widget click listener');
+    _widgetClickedSubscription?.cancel();
+    _widgetClickedSubscription = null;
   }
 
   Future<void> interactivityCallback(Uri? uri) async {
