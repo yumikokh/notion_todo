@@ -76,9 +76,7 @@ struct TaskListView: View {
                 .font(.system(size: 14))
                 .foregroundColor(task.isCompleted ? .green : .blue)
             }
-            .onAppear {
-              print("TaskListView: タスク \(task.id) を表示")
-            }
+            .buttonStyle(.plain)
 
             // 完了したタスクは取り消し線と薄い色で表示
             Text(task.title)
@@ -153,10 +151,19 @@ struct TodayTasksWidgetEntryView: View {
         Text("Today")
           .font(.headline)
           .foregroundColor(.primary)
+
         Spacer()
-        Text(entry.date, style: .date)
-          .font(.caption)
-          .foregroundColor(.secondary)
+
+        // Medium と Large サイズの場合は + ボタンを表示
+        if widgetFamily != .systemSmall {
+          Link(destination: URL(string: "notiontodo://add_task?homeWidget")!) {
+            Image(systemName: "plus.circle.fill")
+              .font(.system(size: 30))
+              .foregroundColor(.blue)
+              .buttonStyle(.plain)
+              .padding(.trailing, 4)
+          }
+        }
       }
       .padding(.bottom, 4)
 
