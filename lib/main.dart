@@ -12,6 +12,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 
 import 'src/app.dart';
+import 'src/common/app_lifecycle_observer.dart';
 import 'src/env/env.dart';
 import 'src/notion/repository/notion_task_repository.dart';
 import 'src/notion/tasks/task_viewmodel.dart';
@@ -122,6 +123,33 @@ class BackgroundFetchInitializer extends HookConsumerWidget {
         },
       );
       return null;
+    }, []);
+
+    // アプリ復帰時にウィジェットでの更新を反映
+    useEffect(() {
+      Future<void> applyWidgetChanges() async {
+        final lastUpdated = await widgetService.getLastUpdatedTask();
+        if (lastUpdated == null) return;
+
+        // 今日のタスクとすべてのタスク両方に適用
+        ref.invalidate(taskViewModelProvider(filterType: FilterType.today));
+        ref.invalidate(taskViewModelProvider(filterType: FilterType.all));
+
+        await widgetService.clearLastUpdatedTask();
+      }
+
+      applyWidgetChanges();
+
+      final observer = AppLifecycleObserver(() {
+        print('[TaskMainPage] App resumed via lifecycle observer');
+        applyWidgetChanges();
+      });
+
+      WidgetsBinding.instance.addObserver(observer);
+
+      return () {
+        WidgetsBinding.instance.removeObserver(observer);
+      };
     }, []);
 
     return child;

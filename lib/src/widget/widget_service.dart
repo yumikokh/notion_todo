@@ -48,6 +48,7 @@ class WidgetService {
   static const String todayTasksKey = 'today_tasks';
   static const String accessTokenKey = 'access_token';
   static const String taskDatabaseKey = 'task_database';
+  static const String lastUpdatedTaskKey = 'last_updated_task';
 
   // ウィジェットのURLスキーム
   static const String widgetURLScheme = 'notiontodo://toggle';
@@ -120,7 +121,6 @@ class WidgetService {
             : task)
         .toList();
     await _sendTasks(updatedTasks);
-    _updateTaskInNotion(id, isCompleted);
 
     // 完了したタスクは1秒後にウィジェットから削除
     if (isCompleted) {
@@ -136,6 +136,10 @@ class WidgetService {
         }
       });
     }
+
+    await _saveLastUpdatedTask(id, isCompleted);
+
+    _updateTaskInNotion(id, isCompleted);
   }
 
   // Notionリポジトリを直接使用してタスクを更新するメソッド
@@ -174,5 +178,34 @@ class WidgetService {
       androidName: 'TaskProgressWidgetProvider',
       iOSName: 'TaskProgressWidget',
     );
+  }
+
+  // 最後に更新したタスク情報を保存
+  Future<void> _saveLastUpdatedTask(String taskId, bool isCompleted) async {
+    final data = jsonEncode({
+      'id': taskId,
+      'isCompleted': isCompleted,
+      'timestamp': DateTime.now().millisecondsSinceEpoch,
+    });
+    await HomeWidget.saveWidgetData(lastUpdatedTaskKey, data);
+  }
+
+  // 最後に更新したタスク情報を取得
+  Future<Map<String, dynamic>?> getLastUpdatedTask() async {
+    final data = await HomeWidget.getWidgetData<String?>(lastUpdatedTaskKey);
+    if (data == null) return null;
+
+    try {
+      final Map<String, dynamic> taskInfo = jsonDecode(data);
+      return taskInfo;
+    } catch (e) {
+      print('[WidgetService] Error parsing last updated task: $e');
+      return null;
+    }
+  }
+
+  // 最後に更新したタスク情報をクリア
+  Future<void> clearLastUpdatedTask() async {
+    await HomeWidget.saveWidgetData(lastUpdatedTaskKey, null);
   }
 }
