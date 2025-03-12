@@ -50,9 +50,6 @@ class WidgetService {
   static const String taskDatabaseKey = 'task_database';
   static const String lastUpdatedTaskKey = 'last_updated_task';
 
-  // ウィジェットのURLスキーム
-  static const String widgetURLScheme = 'notiontodo://toggle';
-
   static final WidgetService _instance = WidgetService._();
 
   factory WidgetService() => _instance;
@@ -85,6 +82,21 @@ class WidgetService {
     await HomeWidget.registerInteractivityCallback(interactivityCallback);
   }
 
+  Future<void> interactivityCallback(Uri? uri) async {
+    if (uri == null || uri.scheme != 'notiontodo') return;
+    final action = uri.host;
+    final pathSegments = uri.pathSegments;
+    try {
+      if (action == 'toggle') {
+        final [taskId, isCompletedStr] = pathSegments;
+        final isCompleted = isCompletedStr.toLowerCase() == 'true';
+        await _completeTask(taskId, isCompleted);
+      }
+    } catch (e) {
+      print('[HomeWidget] Error in interactivity callback: $e');
+    }
+  }
+
   sendDatabaseSettings(String? accessToken, TaskDatabase? taskDatabase) async {
     await HomeWidget.saveWidgetData<String?>(
       accessTokenKey,
@@ -107,7 +119,7 @@ class WidgetService {
     await _sendTasks(widgetTasks);
   }
 
-  Future<void> completeTask(String id, bool isCompleted) async {
+  Future<void> _completeTask(String id, bool isCompleted) async {
     final value = await this.value;
     final tasks = value.tasks;
     if (tasks == null) {

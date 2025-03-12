@@ -130,26 +130,17 @@ class BackgroundFetchInitializer extends HookConsumerWidget {
       Future<void> applyWidgetChanges() async {
         final lastUpdated = await widgetService.getLastUpdatedTask();
         if (lastUpdated == null) return;
-
         // 今日のタスクとすべてのタスク両方に適用
         ref.invalidate(taskViewModelProvider(filterType: FilterType.today));
         ref.invalidate(taskViewModelProvider(filterType: FilterType.all));
-
         await widgetService.clearLastUpdatedTask();
       }
 
       applyWidgetChanges();
 
-      final observer = AppLifecycleObserver(() {
-        print('[TaskMainPage] App resumed via lifecycle observer');
-        applyWidgetChanges();
-      });
-
+      final observer = AppLifecycleObserver(applyWidgetChanges);
       WidgetsBinding.instance.addObserver(observer);
-
-      return () {
-        WidgetsBinding.instance.removeObserver(observer);
-      };
+      return () => WidgetsBinding.instance.removeObserver(observer);
     }, []);
 
     return child;
@@ -159,21 +150,5 @@ class BackgroundFetchInitializer extends HookConsumerWidget {
 // バックグラウンドコールバック関数（iOS 17のインタラクティブウィジェット用）
 @pragma('vm:entry-point')
 Future<void> interactivityCallback(Uri? uri) async {
-  if (uri == null) return;
-  final scheme = uri.scheme;
-  if (scheme != 'notiontodo') {
-    return;
-  }
-  final action = uri.host;
-  try {
-    final pathSegments = uri.pathSegments;
-    if (action == 'toggle') {
-      final taskId = pathSegments[0];
-      String isCompletedStr = pathSegments[1];
-      final isCompleted = isCompletedStr.toLowerCase() == 'true';
-      await widgetService.completeTask(taskId, isCompleted);
-    }
-  } catch (e) {
-    print('[HomeWidget] Error in interactivity callback: $e');
-  }
+  await widgetService.interactivityCallback(uri);
 }
