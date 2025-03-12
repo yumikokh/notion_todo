@@ -48,23 +48,6 @@ let sampleTasks = [
     tasks: sampleTasks)
 }
 
-// タスク数を増やして複雑なケースをテスト
-#Preview("Progress Medium", as: .systemMedium) {
-  TaskProgressWidget()
-} timeline: {
-  SimpleEntry(
-    date: Date(),
-    tasks: sampleTasks)
-}
-
-#Preview("Progress Large", as: .systemLarge) {
-  TaskProgressWidget()
-} timeline: {
-  SimpleEntry(
-    date: Date(),
-    tasks: sampleTasks)
-}
-
 // タスクなしのプレビューも追加
 #Preview("Tasks Empty", as: .systemMedium) {
   TodayTasksWidget()

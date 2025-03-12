@@ -40,7 +40,7 @@ struct TaskProgressWidget: Widget {
     }
     .configurationDisplayName("タスク進捗")
     .description("今日のタスクの進捗状況を表示します")
-    .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
+    .supportedFamilies([.systemSmall])
   }
 }
 

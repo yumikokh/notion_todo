@@ -133,68 +133,6 @@ struct TaskProgressWidgetEntryView: View {
       }
       .containerBackground(.fill.tertiary, for: .widget)
 
-    case .systemMedium:
-      // ミディアムサイズ：左に進捗円、右にタスク一覧
-      HStack(alignment: .center) {
-        // 左側：進捗円
-        VStack {
-          Text("Today!")
-            .font(.headline)
-            .padding(.top, 8)
-
-          Spacer()
-
-          ProgressCircleView(entry: entry, size: 80)
-
-          Spacer()
-
-          Text("\(entry.date, style: .date)")
-            .font(.caption)
-            .foregroundColor(.secondary)
-            .padding(.bottom, 8)
-        }
-        .frame(maxWidth: .infinity)
-
-        Divider()
-
-        // 右側：タスク一覧（左寄せ）
-        VStack(alignment: .leading) {
-          TaskListView(tasks: entry.remainingTasks, maxCount: 5)
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 10)
-        .frame(maxWidth: .infinity, alignment: .leading)
-      }
-      .containerBackground(.fill.tertiary, for: .widget)
-
-    case .systemLarge:
-      // ラージサイズ：上に進捗円、下にタスク一覧
-      VStack {
-        // 上部：進捗円と日付
-        VStack {
-          ProgressCircleView(entry: entry, size: 80)
-            .padding(.vertical, 5)
-            .padding(.top, 12)
-
-          Text("\(entry.date, style: .date)")
-            .font(.caption)
-            .foregroundColor(.secondary)
-            .padding(.bottom, 12)
-        }
-        .frame(maxHeight: 120)  // 固定の高さを設定
-
-        Divider()
-
-        // 下部：タスク一覧
-        VStack(alignment: .leading) {
-          TaskListView(tasks: entry.remainingTasks, maxCount: 10)
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 10)
-        .frame(maxWidth: .infinity, alignment: .leading)
-      }
-      .containerBackground(.fill.tertiary, for: .widget)
-
     default:
       Text("Unsupported widget size")
         .containerBackground(.fill.tertiary, for: .widget)
