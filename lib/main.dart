@@ -132,21 +132,19 @@ class BackgroundFetchInitializer extends HookConsumerWidget {
 // バックグラウンドコールバック関数（iOS 17のインタラクティブウィジェット用）
 @pragma('vm:entry-point')
 Future<void> interactivityCallback(Uri? uri) async {
-  print('[HomeWidget] Interactivity callback called with URI: $uri');
   if (uri == null) return;
-
+  final scheme = uri.scheme;
+  if (scheme != 'notiontodo') {
+    return;
+  }
   final action = uri.host;
   try {
-    // URLからタスクIDと完了状態を取得
     final pathSegments = uri.pathSegments;
     if (action == 'toggle') {
       final taskId = pathSegments[0];
       String isCompletedStr = pathSegments[1];
       final isCompleted = isCompletedStr.toLowerCase() == 'true';
-      print('[HomeWidget] Updating task $taskId to $isCompleted');
       await widgetService.completeTask(taskId, isCompleted);
-
-      // TODO: APIリクエスト
     }
   } catch (e) {
     print('[HomeWidget] Error in interactivity callback: $e');

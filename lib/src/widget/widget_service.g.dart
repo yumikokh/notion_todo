@@ -18,3 +18,20 @@ Map<String, dynamic> _$WidgetTaskToJson(WidgetTask instance) =>
       'title': instance.title,
       'isCompleted': instance.isCompleted,
     };
+
+WidgetValue _$WidgetValueFromJson(Map<String, dynamic> json) => WidgetValue(
+      tasks: (json['tasks'] as List<dynamic>?)
+          ?.map((e) => WidgetTask.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      accessToken: json['accessToken'] as String?,
+      taskDatabase: json['taskDatabase'] == null
+          ? null
+          : TaskDatabase.fromJson(json['taskDatabase'] as Map<String, dynamic>),
+    );
+
+Map<String, dynamic> _$WidgetValueToJson(WidgetValue instance) =>
+    <String, dynamic>{
+      'tasks': instance.tasks,
+      'accessToken': instance.accessToken,
+      'taskDatabase': instance.taskDatabase,
+    };

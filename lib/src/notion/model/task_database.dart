@@ -12,6 +12,7 @@ Map<String, dynamic> _toJson(CompleteStatusProperty status) => status.toJson();
 // 決定されたタスクDB情報
 @freezed
 class TaskDatabase with _$TaskDatabase {
+  @JsonSerializable(explicitToJson: true)
   const factory TaskDatabase({
     required String id,
     required String name,

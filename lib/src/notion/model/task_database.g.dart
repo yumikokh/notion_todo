@@ -19,7 +19,7 @@ Map<String, dynamic> _$$TaskDatabaseImplToJson(_$TaskDatabaseImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
-      'title': instance.title,
+      'title': instance.title.toJson(),
       'status': _toJson(instance.status),
-      'date': instance.date,
+      'date': instance.date.toJson(),
     };
