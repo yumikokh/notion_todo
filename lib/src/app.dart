@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'common/snackbar/view/snackbar_listener.dart';
 import 'helpers/date.dart';
 import 'common/app_version/view/app_version_notifier.dart';
+import 'notion/tasks/view/task_sheet/task_sheet.dart';
 import 'settings/task_database/view/task_database_setting_page.dart';
 import 'notion/tasks/view/task_main_page.dart';
 import 'settings/view/appearance_settings_page.dart';
@@ -18,12 +19,15 @@ import 'settings/view/settings_page.dart';
 import 'settings/theme/theme.dart';
 import 'settings/theme/util.dart';
 import 'settings/view/theme_settings_page.dart';
+import 'widget/widget_service.dart';
 
 /// The Widget that configures your application.
 class MyApp extends ConsumerWidget {
   const MyApp({
     super.key,
   });
+
+  static WidgetService widgetService = WidgetService();
 
   @override
   Widget build(BuildContext context, ref) {
@@ -35,6 +39,8 @@ class MyApp extends ConsumerWidget {
     final MaterialTheme theme = MaterialTheme(textTheme);
 
     DateHelper().setup(settings.locale.languageCode);
+
+    final globalNavigatorKey = GlobalKey<NavigatorState>();
 
     return AnimatedBuilder(
       animation: settingsViewModel,
@@ -63,6 +69,8 @@ class MyApp extends ConsumerWidget {
           theme: theme.light(),
           darkTheme: theme.dark(),
           themeMode: settings.themeMode,
+
+          navigatorKey: globalNavigatorKey,
 
           // Define a function to handle named routes in order to support
           // Flutter web url navigation and deep linking.
@@ -100,10 +108,28 @@ class MyApp extends ConsumerWidget {
           },
           home: Builder(
             builder: (context) {
-              // アプリ起動時にアップデートチェックを実行
               WidgetsBinding.instance.addPostFrameCallback((_) {
+                // アプリ起動時にアップデートチェックを実行
                 AppVersionNotifier.checkAndShow(context, ref);
+
+                // ウィジェットからの起動処理
+                Future<void> checkWidgetLaunch() async {
+                  globalNavigatorKey.currentState!.pushNamedAndRemoveUntil(
+                      TaskMainPage.routeName, (route) => false);
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    final context = globalNavigatorKey.currentContext;
+                    if (context != null) {
+                      showTaskSheet(context, ref, true);
+                    }
+                  });
+                }
+
+                widgetService.registerInitialLaunchFromWidget(
+                    'add_task', checkWidgetLaunch);
+                widgetService.startListeningWidgetClicks(
+                    'add_task', checkWidgetLaunch);
               });
+
               return const TaskMainPage();
             },
           ),

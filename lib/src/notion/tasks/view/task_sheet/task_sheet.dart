@@ -5,6 +5,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../model/task.dart';
 import '../../../../helpers/haptic_helper.dart';
+import '../../../repository/notion_task_repository.dart';
+import '../../task_viewmodel.dart';
 import 'date_chip.dart';
 import 'task_date_sheet.dart';
 import '../../../../settings/settings_viewmodel.dart';
@@ -143,4 +145,41 @@ class TaskSheet extends HookConsumerWidget {
       ]),
     );
   }
+}
+
+// タスクシートを表示するメソッド
+Future<void> showTaskSheet(
+    BuildContext context, WidgetRef ref, bool isToday) async {
+  final todayViewModel =
+      ref.read(taskViewModelProvider(filterType: FilterType.today).notifier);
+  final allViewModel =
+      ref.read(taskViewModelProvider(filterType: FilterType.all).notifier);
+
+  await showModalBottomSheet(
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(12),
+    ),
+    context: context,
+    isScrollControlled: true,
+    builder: (context) => TaskSheet(
+      initialDueDate: isToday
+          ? TaskDate(
+              start: NotionDateTime(
+                datetime: DateTime.now(),
+                isAllDay: true,
+              ),
+            )
+          : null,
+      initialTitle: null,
+      onSubmitted: (title, dueDate, {bool? needSnackbarFloating}) {
+        switch (isToday) {
+          case true:
+            todayViewModel.addTask(
+                title, dueDate, needSnackbarFloating ?? false);
+          case false:
+            allViewModel.addTask(title, dueDate, needSnackbarFloating ?? false);
+        }
+      },
+    ),
+  );
 }

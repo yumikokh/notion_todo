@@ -16,9 +16,6 @@ import '../task_viewmodel.dart';
 import 'task_list_view.dart';
 import 'task_base_scaffold.dart';
 import '../../../settings/font/font_settings_viewmodel.dart';
-import '../../../widget/widget_service.dart';
-import '../../../notion/model/task.dart';
-import 'task_sheet/task_sheet.dart';
 
 const int updateIntervalSec = 60;
 
@@ -27,43 +24,6 @@ class TaskMainPage extends HookConsumerWidget {
 
   static const routeName = '/';
   static final DateHelper d = DateHelper();
-
-  // タスクシートを表示するメソッド
-  void _showTaskSheet(BuildContext context, WidgetRef ref, bool isToday) {
-    final todayViewModel =
-        ref.read(taskViewModelProvider(filterType: FilterType.today).notifier);
-    final allViewModel =
-        ref.read(taskViewModelProvider(filterType: FilterType.all).notifier);
-
-    showModalBottomSheet(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      context: context,
-      isScrollControlled: true,
-      builder: (context) => TaskSheet(
-        initialDueDate: isToday
-            ? TaskDate(
-                start: NotionDateTime(
-                  datetime: DateTime.now(),
-                  isAllDay: true,
-                ),
-              )
-            : null,
-        initialTitle: null,
-        onSubmitted: (title, dueDate, {bool? needSnackbarFloating}) {
-          switch (isToday) {
-            case true:
-              todayViewModel.addTask(
-                  title, dueDate, needSnackbarFloating ?? false);
-            case false:
-              allViewModel.addTask(
-                  title, dueDate, needSnackbarFloating ?? false);
-          }
-        },
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context, ref) {
@@ -84,24 +44,7 @@ class TaskMainPage extends HookConsumerWidget {
 
     final l = AppLocalizations.of(context)!;
 
-    // ウィジェットからの起動チェック（初回起動時）
-    useEffect(() {
-      final widgetService = WidgetService();
-      Future<void> checkWidgetLaunch() async {
-        // "Today" タブを選択
-        currentIndex.value = 0;
-        // タスク追加シートを表示（少し遅延させて確実に表示）
-        Future.microtask(() {
-          _showTaskSheet(context, ref, true);
-        });
-      }
-
-      widgetService.registerInitialLaunchFromWidget(
-          'add_task', checkWidgetLaunch);
-      widgetService.startListeningWidgetClicks('add_task', checkWidgetLaunch);
-      return () => widgetService.stopListeningWidgetClicks();
-    }, const []);
-
+    // アナリティクス
     useEffect(() {
       final analytics = ref.read(analyticsServiceProvider);
       final screenName = isToday ? 'Today' : 'All';

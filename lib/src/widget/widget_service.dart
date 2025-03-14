@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:async';
+import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:home_widget/home_widget.dart';
 
@@ -51,6 +52,8 @@ class WidgetService {
   static const String taskDatabaseKey = 'task_database';
   static const String lastUpdatedTaskKey = 'last_updated_task';
 
+  static const String widgetScheme = 'notiontodo';
+
   static final WidgetService _instance = WidgetService._();
 
   factory WidgetService() => _instance;
@@ -89,18 +92,22 @@ class WidgetService {
     await HomeWidget.registerInteractivityCallback(interactivityCallback);
   }
 
-  void _checkAndExec(Uri? uri, String action, Function() callback) {
+  Future<void> _checkAndExec(
+      Uri? uri, String action, Function() callback) async {
     if (uri == null) return;
-    if (uri.scheme == 'notiontodo' && uri.host == action) {
-      callback();
+    if (uri.scheme == widgetScheme && uri.host == action) {
+      return WidgetsBinding.instance.addPostFrameCallback((_) {
+        callback();
+      });
     }
   }
 
   // ウィジェットから起動されたかどうかを確認するメソッド
   Future<Uri?> registerInitialLaunchFromWidget(
       String action, Function() callback) async {
+    print('[WidgetService] registerInitialLaunchFromWidget');
     final uri = await HomeWidget.initiallyLaunchedFromHomeWidget();
-    _checkAndExec(uri, action, callback);
+    await _checkAndExec(uri, action, callback);
     return uri;
   }
 
@@ -108,8 +115,9 @@ class WidgetService {
   void startListeningWidgetClicks(String action, Function() callback) {
     print('[WidgetService] startListeningWidgetClicks');
     // 既存のサブスクリプションがあれば解除
-    _widgetClickedSubscription?.cancel();
+    // _widgetClickedSubscription?.cancel();
     _widgetClickedSubscription = HomeWidget.widgetClicked.listen((uri) {
+      print('[WidgetService] widgetClicked: $uri');
       _checkAndExec(uri, action, callback);
     });
   }
@@ -122,7 +130,7 @@ class WidgetService {
   }
 
   Future<void> interactivityCallback(Uri? uri) async {
-    if (uri == null || uri.scheme != 'notiontodo') return;
+    if (uri == null || uri.scheme != widgetScheme) return;
     final action = uri.host;
     final pathSegments = uri.pathSegments;
     try {
