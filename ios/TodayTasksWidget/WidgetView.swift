@@ -156,7 +156,7 @@ struct TodayTasksWidgetEntryView: View {
 
         // Medium と Large サイズの場合は + ボタンを表示
         if widgetFamily != .systemSmall {
-          Link(destination: URL(string: "notiontodo://add_task?homeWidget")!) {
+          Link(destination: URL(string: "notiontodo://add_task/today?homeWidget")!) {
             Image(systemName: "plus.circle.fill")
               .font(.system(size: 30))
               .foregroundColor(.blue)

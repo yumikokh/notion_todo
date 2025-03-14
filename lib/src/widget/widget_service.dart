@@ -72,8 +72,8 @@ class WidgetService {
   // ウィジェットから起動されたかどうかを確認するメソッド
   Future<Uri?> registerInitialLaunchFromWidget(
       GlobalKey<NavigatorState> globalNavigatorKey, WidgetRef ref) async {
-    print('[WidgetService] registerInitialLaunchFromWidget');
     final uri = await HomeWidget.initiallyLaunchedFromHomeWidget();
+    print('[WidgetService] registerInitialLaunchFromWidget: $uri');
     await _handleWidgetLaunch(uri, globalNavigatorKey, ref);
     return uri;
   }
@@ -101,10 +101,13 @@ class WidgetService {
       GlobalKey<NavigatorState> globalNavigatorKey, WidgetRef ref) async {
     if (uri == null || uri.scheme != widgetScheme) return;
 
-    if (uri.host == "add_task") {
-      return WidgetsBinding.instance.addPostFrameCallback((_) {
-        _handleWidgetLaunchAddTaskToToday(globalNavigatorKey, ref);
-      });
+    final action = uri.host;
+    if (action == "add_task") {
+      if (uri.pathSegments.first == "today") {
+        return WidgetsBinding.instance.addPostFrameCallback((_) {
+          _handleWidgetLaunchAddTaskToToday(globalNavigatorKey, ref);
+        });
+      }
     }
   }
 
