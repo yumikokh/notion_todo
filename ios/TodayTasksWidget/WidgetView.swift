@@ -130,7 +130,7 @@ struct TaskProgressWidgetEntryView: View {
           .padding(.bottom, 8)
       }
       .containerBackground(.fill.tertiary, for: .widget)
-
+      .widgetURL(URL(string: "notiontodo://open/today?homeWidget")!)
     default:
       Text("Unsupported widget size")
         .containerBackground(.fill.tertiary, for: .widget)
@@ -174,6 +174,7 @@ struct TodayTasksWidgetEntryView: View {
     }
     .padding([.leading, .trailing], widgetFamily == .systemSmall ? 2 : 10)
     .containerBackground(.fill.tertiary, for: .widget)  // iOS 17以降のWidget背景スタイル
+    .widgetURL(URL(string: "notiontodo://open/today?homeWidget")!)
   }
 
   // Widgetサイズに応じて表示するタスク数を決定する関数

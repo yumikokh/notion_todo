@@ -108,6 +108,12 @@ class WidgetService {
           _handleWidgetLaunchAddTaskToToday(globalNavigatorKey, ref);
         });
       }
+    } else if (action == "open") {
+      if (uri.pathSegments.first == "today") {
+        return WidgetsBinding.instance.addPostFrameCallback((_) {
+          _navigateToTodayPage(globalNavigatorKey);
+        });
+      }
     }
   }
 
