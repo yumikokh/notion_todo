@@ -1,12 +1,16 @@
 import 'dart:convert';
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:home_widget/home_widget.dart';
 
 import '../notion/model/task.dart';
 import '../notion/model/task_database.dart';
 import '../notion/repository/notion_task_repository.dart';
+import '../notion/tasks/task_viewmodel.dart';
+import '../notion/tasks/view/task_main_page.dart';
+import '../notion/tasks/view/task_sheet/task_sheet.dart';
 
 part 'widget_service.g.dart';
 
@@ -65,6 +69,96 @@ class WidgetService {
   // アプリが起動中にウィジェットクリックを検出するためのストリームを取得
   Stream<Uri?> get widgetClicked => HomeWidget.widgetClicked;
 
+  // ウィジェットから起動されたかどうかを確認するメソッド
+  Future<Uri?> registerInitialLaunchFromWidget(
+      GlobalKey<NavigatorState> globalNavigatorKey, WidgetRef ref) async {
+    print('[WidgetService] registerInitialLaunchFromWidget');
+    final uri = await HomeWidget.initiallyLaunchedFromHomeWidget();
+    await _handleWidgetLaunch(uri, globalNavigatorKey, ref);
+    return uri;
+  }
+
+  // ウィジェットからのクリックを監視開始
+  void startListeningWidgetClicks(
+      GlobalKey<NavigatorState> globalNavigatorKey, WidgetRef ref) {
+    print('[WidgetService] startListeningWidgetClicks');
+    // 既存のサブスクリプションがあれば解除
+    _widgetClickedSubscription?.cancel();
+    _widgetClickedSubscription = HomeWidget.widgetClicked.listen((uri) {
+      print('[WidgetService] widgetClicked: $uri');
+      _handleWidgetLaunch(uri, globalNavigatorKey, ref);
+    });
+  }
+
+  // ウィジェットからのクリック監視を停止
+  void stopListeningWidgetClicks() {
+    print('[WidgetService] Stopping widget click listener');
+    _widgetClickedSubscription?.cancel();
+    _widgetClickedSubscription = null;
+  }
+
+  Future<void> _handleWidgetLaunch(Uri? uri,
+      GlobalKey<NavigatorState> globalNavigatorKey, WidgetRef ref) async {
+    if (uri == null || uri.scheme != widgetScheme) return;
+
+    if (uri.host == "add_task") {
+      return WidgetsBinding.instance.addPostFrameCallback((_) {
+        _handleWidgetLaunchAddTaskToToday(globalNavigatorKey, ref);
+      });
+    }
+  }
+
+  // ウィジェットからの起動処理
+  Future<void> _handleWidgetLaunchAddTaskToToday(
+      GlobalKey<NavigatorState> globalNavigatorKey, WidgetRef ref) async {
+    _navigateToTodayPage(globalNavigatorKey);
+
+    final context = globalNavigatorKey.currentContext;
+    final todayViewModel =
+        ref.read(taskViewModelProvider(filterType: FilterType.today).notifier);
+    final initialDueDate = TaskDate(
+      start: NotionDateTime(
+        datetime: DateTime.now(),
+        isAllDay: true,
+      ),
+    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (context != null) {
+        _showTaskSheet(context, todayViewModel.addTask, initialDueDate);
+      }
+    });
+  }
+
+  _navigateToTodayPage(GlobalKey<NavigatorState> globalNavigatorKey) {
+    final currentState = globalNavigatorKey.currentState;
+    if (currentState == null) return;
+    currentState.pushNamedAndRemoveUntil(
+        TaskMainPage.routeName, (route) => false);
+  }
+
+  Future<void> _showTaskSheet(
+      BuildContext context,
+      Future<void> Function(String, TaskDate?, bool needSnackbarFloating)
+          onAddTask,
+      TaskDate? initialDueDate) async {
+    await showModalBottomSheet(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => TaskSheet(
+        initialDueDate: initialDueDate,
+        initialTitle: null,
+        onSubmitted: (title, dueDate, {bool? needSnackbarFloating}) {
+          onAddTask(title, dueDate, needSnackbarFloating ?? false);
+        },
+      ),
+    );
+  }
+
+  /////////////////////////
+
   Future<WidgetValue> get value async {
     final rowTasks = await HomeWidget.getWidgetData(todayTasksKey);
     final accessToken = await HomeWidget.getWidgetData<String?>(accessTokenKey,
@@ -92,43 +186,7 @@ class WidgetService {
     await HomeWidget.registerInteractivityCallback(interactivityCallback);
   }
 
-  Future<void> _checkAndExec(
-      Uri? uri, String action, Function() callback) async {
-    if (uri == null) return;
-    if (uri.scheme == widgetScheme && uri.host == action) {
-      return WidgetsBinding.instance.addPostFrameCallback((_) {
-        callback();
-      });
-    }
-  }
-
-  // ウィジェットから起動されたかどうかを確認するメソッド
-  Future<Uri?> registerInitialLaunchFromWidget(
-      String action, Function() callback) async {
-    print('[WidgetService] registerInitialLaunchFromWidget');
-    final uri = await HomeWidget.initiallyLaunchedFromHomeWidget();
-    await _checkAndExec(uri, action, callback);
-    return uri;
-  }
-
-  // ウィジェットからのクリックを監視開始
-  void startListeningWidgetClicks(String action, Function() callback) {
-    print('[WidgetService] startListeningWidgetClicks');
-    // 既存のサブスクリプションがあれば解除
-    // _widgetClickedSubscription?.cancel();
-    _widgetClickedSubscription = HomeWidget.widgetClicked.listen((uri) {
-      print('[WidgetService] widgetClicked: $uri');
-      _checkAndExec(uri, action, callback);
-    });
-  }
-
-  // ウィジェットからのクリック監視を停止
-  void stopListeningWidgetClicks() {
-    print('[WidgetService] Stopping widget click listener');
-    _widgetClickedSubscription?.cancel();
-    _widgetClickedSubscription = null;
-  }
-
+  // ウィジェットのインタラクティブコールバック
   Future<void> interactivityCallback(Uri? uri) async {
     if (uri == null || uri.scheme != widgetScheme) return;
     final action = uri.host;

@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'common/snackbar/view/snackbar_listener.dart';
 import 'helpers/date.dart';
 import 'common/app_version/view/app_version_notifier.dart';
-import 'notion/tasks/view/task_sheet/task_sheet.dart';
 import 'settings/task_database/view/task_database_setting_page.dart';
 import 'notion/tasks/view/task_main_page.dart';
 import 'settings/view/appearance_settings_page.dart';
@@ -113,21 +112,10 @@ class MyApp extends ConsumerWidget {
                 AppVersionNotifier.checkAndShow(context, ref);
 
                 // ウィジェットからの起動処理
-                Future<void> checkWidgetLaunch() async {
-                  globalNavigatorKey.currentState!.pushNamedAndRemoveUntil(
-                      TaskMainPage.routeName, (route) => false);
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    final context = globalNavigatorKey.currentContext;
-                    if (context != null) {
-                      showTaskSheet(context, ref, true);
-                    }
-                  });
-                }
-
                 widgetService.registerInitialLaunchFromWidget(
-                    'add_task', checkWidgetLaunch);
+                    globalNavigatorKey, ref);
                 widgetService.startListeningWidgetClicks(
-                    'add_task', checkWidgetLaunch);
+                    globalNavigatorKey, ref);
               });
 
               return const TaskMainPage();
