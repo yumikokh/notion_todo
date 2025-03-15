@@ -92,6 +92,7 @@ struct TaskListView: View {
   var maxCount: Int
   var locale: String
   @Environment(\.openURL) private var openURL
+  @Environment(\.widgetFamily) var widgetFamily
 
   var body: some View {
     if tasks.isEmpty {
@@ -117,6 +118,7 @@ struct TaskListView: View {
           HStack(alignment: .top, spacing: 10) {
             // 完了/未完了によってアイコンを変更
             // iOS 17のインタラクティブウィジェット用にBackgroundIntentを使用
+            if widgetFamily != .systemSmall {
               Button(
                 intent: BackgroundIntent(
                   url: URL(string: "notiontodo://toggle/\(task.id)/\(!task.isCompleted)")
@@ -127,6 +129,7 @@ struct TaskListView: View {
                   .foregroundColor(task.isCompleted ? Color(red: 0.18, green: 0.5, blue: 0.5) : Color(red: 0.49, green: 0.46, blue: 0.43))
               }
               .buttonStyle(.plain)
+            }
 
             // 完了したタスクは取り消し線と薄い色で表示
             Text(task.title)
@@ -146,7 +149,7 @@ struct TaskListView: View {
             )
             .font(.system(size: 13))
             .foregroundColor(.secondary)
-            .padding(.leading, 24)  // circleアイコンの幅+間隔分だけインデント
+            .padding(.leading, widgetFamily == .systemSmall ? 0 : 24)
           }
           .padding(.top, 2)
         }
