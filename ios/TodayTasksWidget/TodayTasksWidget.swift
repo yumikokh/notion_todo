@@ -20,7 +20,8 @@ struct LocalizedStrings {
   // 日本語
   static let ja = [
     "widget_today": "今日",
-    "widget_tasks_completed": "タスク完了！",
+    "widget_tasks_completed": "完了！",
+    "widget_tasks_empty": "No tasks",
     "widget_others_count": "他%d件",
     "widget_progress_title": "タスク進捗",
     "widget_progress_description": "今日のタスクの進捗状況を表示します",
@@ -32,6 +33,7 @@ struct LocalizedStrings {
   static let en = [
     "widget_today": "Today",
     "widget_tasks_completed": "All Done!",
+    "widget_tasks_empty": "No tasks",
     "widget_others_count": "%d more",
     "widget_progress_title": "Task Progress",
     "widget_progress_description": "Shows your daily task progress",
@@ -103,6 +105,10 @@ struct SimpleEntry: TimelineEntry {
     return tasks.isEmpty
   }
 
+  var isCompleted: Bool {
+    return isEmpty ? false : completedTasksCount == totalTasksCount
+  }
+
   // 完了したタスクの数を計算
   var completedTasksCount: Int {
     if isEmpty {
@@ -132,7 +138,7 @@ struct SimpleEntry: TimelineEntry {
   // 進捗率を計算（0.0〜1.0）
   var progressPercentage: Double {
     if totalTasksCount == 0 {
-      return 1.0  // タスクがない場合は100%完了とみなす
+      return 0.0  // タスクがない場合は0%完了とみなす
     }
     return Double(completedTasksCount) / Double(totalTasksCount)
   }

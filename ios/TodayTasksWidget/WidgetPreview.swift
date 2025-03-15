@@ -6,8 +6,8 @@ import WidgetKit
 
 // サンプルタスクデータ
 let sampleTasks = [
-  WidgetTask(id: "1", title: "朝のミーティング", isCompleted: false),
-  WidgetTask(id: "2", title: "レポート提出", isCompleted: true),
+  WidgetTask(id: "1", title: "朝のミーティング", isCompleted: true),
+  WidgetTask(id: "2", title: "レポート提出", isCompleted: false),
   WidgetTask(id: "3", title: "買い物", isCompleted: false),
   WidgetTask(id: "4", title: "デザインの作成", isCompleted: false),
   WidgetTask(id: "5", title: "コードレビュー", isCompleted: false),
@@ -46,33 +46,40 @@ let noTasksEntry = SimpleEntry(
   sampleEntry
 }
 
+// タスクなしのプレビューも追加
+#Preview("Tasks Empty Small", as: .systemSmall) {
+  TodayTasksWidget()
+} timeline: {
+  noTasksEntry
+}
+
+#Preview("Tasks Empty Medium", as: .systemMedium) {
+  TodayTasksWidget()
+} timeline: {
+  noTasksEntry
+}
+
+#Preview("Tasks Empty Large", as: .systemLarge) {
+  TodayTasksWidget()
+} timeline: {
+  noTasksEntry
+}
+
 #Preview("Progress Small", as: .systemSmall) {
   TaskProgressWidget()
 } timeline: {
   sampleEntry
 }
 
-// タスクなしのプレビューも追加
-#Preview("Tasks Empty", as: .systemSmall) {
-  TodayTasksWidget()
-} timeline: {
-  noTasksEntry
-}
-
-#Preview("Tasks Empty", as: .systemMedium) {
-  TodayTasksWidget()
-} timeline: {
-  noTasksEntry
-}
-
-#Preview("Tasks Empty", as: .systemLarge) {
-  TodayTasksWidget()
-} timeline: {
-  noTasksEntry
-}
-
-#Preview("Progress Small", as: .systemSmall) {
+#Preview("Progress Small Tasks Empty", as: .systemSmall) {
   TaskProgressWidget()
 } timeline: {
   noTasksEntry
+}
+
+#Preview("Progress Small All Completed", as: .systemSmall) {
+  TaskProgressWidget()
+} timeline: {
+  // 全て完了している場合
+  SimpleEntry(date: Date(), tasks: sampleTasks.map { WidgetTask(id: $0.id, title: $0.title, isCompleted: true) }, locale: "ja")
 }
