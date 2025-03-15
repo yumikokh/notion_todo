@@ -37,8 +37,9 @@ class WidgetValue {
   final List<WidgetTask>? tasks;
   final String? accessToken;
   final TaskDatabase? taskDatabase;
+  final String? locale;
 
-  WidgetValue({this.tasks, this.accessToken, this.taskDatabase});
+  WidgetValue({this.tasks, this.accessToken, this.taskDatabase, this.locale});
 
   factory WidgetValue.fromJson(Map<String, dynamic> json) =>
       _$WidgetValueFromJson(json);
@@ -55,6 +56,7 @@ class WidgetService {
   static const String accessTokenKey = 'access_token';
   static const String taskDatabaseKey = 'task_database';
   static const String lastUpdatedTaskKey = 'last_updated_task';
+  static const String localeKey = 'widget_locale';
 
   static const String widgetScheme = 'notiontodo';
 
@@ -174,6 +176,7 @@ class WidgetService {
         defaultValue: null);
     final rowTaskDatabase =
         await HomeWidget.getWidgetData<String?>(taskDatabaseKey);
+    final locale = await getWidgetLocale();
 
     final List<dynamic>? tasksJson =
         rowTasks != null ? jsonDecode(rowTasks) as List<dynamic> : null;
@@ -187,7 +190,10 @@ class WidgetService {
         : null;
 
     return WidgetValue(
-        tasks: tasks, accessToken: accessToken, taskDatabase: taskDatabase);
+        tasks: tasks,
+        accessToken: accessToken,
+        taskDatabase: taskDatabase,
+        locale: locale);
   }
 
   initialize(Function(Uri?) interactivityCallback) async {
@@ -333,5 +339,19 @@ class WidgetService {
   // 最後に更新したタスク情報をクリア
   Future<void> clearLastUpdatedTask() async {
     await HomeWidget.saveWidgetData(lastUpdatedTaskKey, null);
+  }
+
+  // ロケール情報をウィジェットと共有する
+  Future<void> updateLocaleForWidget(String languageCode) async {
+    await HomeWidget.saveWidgetData(localeKey, languageCode);
+    // ウィジェットの更新をトリガー
+    await HomeWidget.updateWidget();
+  }
+
+  // ウィジェットからロケール情報を取得する
+  Future<String> getWidgetLocale() async {
+    final locale =
+        await HomeWidget.getWidgetData<String?>(localeKey, defaultValue: 'en');
+    return locale ?? 'en';
   }
 }

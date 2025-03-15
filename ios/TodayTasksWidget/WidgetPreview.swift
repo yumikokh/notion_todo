@@ -16,47 +16,63 @@ let sampleTasks = [
   WidgetTask(id: "8", title: "顧客対応", isCompleted: false),
 ]
 
+let sampleEntry = SimpleEntry(
+  date: Date(),
+  tasks: sampleTasks,
+  locale: "ja"
+)
+
+let noTasksEntry = SimpleEntry(
+  date: Date(),
+  tasks: [],
+  locale: "ja"
+)
+
 #Preview("Today Small", as: .systemSmall) {
   TodayTasksWidget()
 } timeline: {
-  SimpleEntry(
-    date: Date(),
-    tasks: sampleTasks)
+  sampleEntry
 }
 
 #Preview("Today Medium", as: .systemMedium) {
   TodayTasksWidget()
 } timeline: {
-  SimpleEntry(
-    date: Date(),
-    tasks: sampleTasks)
+  sampleEntry
 }
 
 #Preview("Today Large", as: .systemLarge) {
   TodayTasksWidget()
 } timeline: {
-  SimpleEntry(
-    date: Date(),
-    tasks: sampleTasks)
+  sampleEntry
 }
 
 #Preview("Progress Small", as: .systemSmall) {
   TaskProgressWidget()
 } timeline: {
-  SimpleEntry(
-    date: Date(),
-    tasks: sampleTasks)
+  sampleEntry
 }
 
 // タスクなしのプレビューも追加
+#Preview("Tasks Empty", as: .systemSmall) {
+  TodayTasksWidget()
+} timeline: {
+  noTasksEntry
+}
+
 #Preview("Tasks Empty", as: .systemMedium) {
   TodayTasksWidget()
 } timeline: {
-  SimpleEntry(date: Date(), tasks: [])
+  noTasksEntry
 }
 
-#Preview("Progress Complete", as: .systemMedium) {
+#Preview("Tasks Empty", as: .systemLarge) {
+  TodayTasksWidget()
+} timeline: {
+  noTasksEntry
+}
+
+#Preview("Progress Small", as: .systemSmall) {
   TaskProgressWidget()
 } timeline: {
-  SimpleEntry(date: Date(), tasks: [])
+  noTasksEntry
 }

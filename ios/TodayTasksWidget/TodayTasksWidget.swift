@@ -14,6 +14,44 @@ struct WidgetTask: Codable, Identifiable {
   }
 }
 
+// MARK: - Localization
+// ウィジェットのローカライズ用
+struct LocalizedStrings {
+  // 日本語
+  static let ja = [
+    "widget_today": "今日",
+    "widget_tasks_completed": "タスク完了！",
+    "widget_others_count": "他%d件",
+    "widget_progress_title": "タスク進捗",
+    "widget_progress_description": "今日のタスクの進捗状況を表示します",
+    "widget_today_description": "今日のタスク一覧",
+    "widget_no_tasks": "タスクがありません",
+  ]
+
+  // 英語
+  static let en = [
+    "widget_today": "Today",
+    "widget_tasks_completed": "All Done!",
+    "widget_others_count": "%d more",
+    "widget_progress_title": "Task Progress",
+    "widget_progress_description": "Shows your daily task progress",
+    "widget_today_description": "Today's tasks",
+    "widget_no_tasks": "No tasks",
+  ]
+
+  static func getLocalizedString(for key: String, locale: String, args: CVarArg...) -> String {
+    let strings = locale == "ja" ? ja : en
+    if let format = strings[key] {
+      if args.isEmpty {
+        return format
+      } else {
+        return String(format: format, arguments: args)
+      }
+    }
+    return key
+  }
+}
+
 // MARK: - TodayTasksWidget
 // タスク一覧ウィジェットの定義
 struct TodayTasksWidget: Widget {
@@ -24,7 +62,10 @@ struct TodayTasksWidget: Widget {
       TodayTasksWidgetEntryView(entry: entry)
     }
     .configurationDisplayName("Today")  // Widgetギャラリーでの表示名
-    .description("Today's tasks")  // Widgetの説明
+    .description(
+      LocalizedStrings.getLocalizedString(
+        for: "widget_today_description", locale: Provider().getCurrentLocale())
+    )  // Widgetの説明
     .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])  // サポートするWidgetサイズ
   }
 }
@@ -38,8 +79,14 @@ struct TaskProgressWidget: Widget {
     StaticConfiguration(kind: kind, provider: Provider()) { entry in
       TaskProgressWidgetEntryView(entry: entry)
     }
-    .configurationDisplayName("タスク進捗")
-    .description("今日のタスクの進捗状況を表示します")
+    .configurationDisplayName(
+      LocalizedStrings.getLocalizedString(
+        for: "widget_progress_title", locale: Provider().getCurrentLocale())
+    )
+    .description(
+      LocalizedStrings.getLocalizedString(
+        for: "widget_progress_description", locale: Provider().getCurrentLocale())
+    )
     .supportedFamilies([.systemSmall])
   }
 }
@@ -49,6 +96,7 @@ struct TaskProgressWidget: Widget {
 struct SimpleEntry: TimelineEntry {
   let date: Date
   let tasks: [WidgetTask]
+  let locale: String
 
   // タスクがない場合の特別なケース
   var isEmpty: Bool {
@@ -94,6 +142,13 @@ struct SimpleEntry: TimelineEntry {
 // TimelineProviderはWidgetの表示内容とその更新タイミングを管理するプロトコル
 // Widgetの表示内容と更新タイミングを制御する3つのメソッドを実装する必要がある
 struct Provider: TimelineProvider {
+  // 現在のロケールを取得
+  func getCurrentLocale() -> String {
+    let sharedDefaults = UserDefaults(suiteName: "group.com.ymkokh.notionTodo")
+    let locale = sharedDefaults?.string(forKey: "widget_locale") ?? "en"
+    return locale
+  }
+
   // MARK: placeholder
   // Widgetが最初に表示される際やプレビュー時に使用されるサンプルデータを提供する
   // システムがWidgetを表示する準備をしている間に表示される一時的なエントリー
@@ -104,20 +159,23 @@ struct Provider: TimelineProvider {
         WidgetTask(id: "1", title: "完了したタスク", isCompleted: true),
         WidgetTask(id: "2", title: "進行中のタスク1", isCompleted: false),
         WidgetTask(id: "3", title: "進行中のタスク2", isCompleted: false),
-      ])
+      ],
+      locale: getCurrentLocale())
   }
 
   // MARK: getSnapshot
   // Widgetギャラリーでの表示やプレビュー用のデータを提供する
   // ユーザーがWidgetを選択する際に表示される内容を定義
   func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> Void) {
+    let locale = getCurrentLocale()
     let entry = SimpleEntry(
       date: Date(),
       tasks: [
         WidgetTask(id: "1", title: "完了したタスク", isCompleted: true),
         WidgetTask(id: "2", title: "進行中のタスク1", isCompleted: false),
         WidgetTask(id: "3", title: "進行中のタスク2", isCompleted: false),
-      ])
+      ],
+      locale: locale)
     completion(entry)
   }
 
@@ -131,6 +189,7 @@ struct Provider: TimelineProvider {
     // App GroupのUserDefaultsを使用してアプリとWidget間でデータを共有
     let sharedDefaults = UserDefaults(suiteName: "group.com.ymkokh.notionTodo")
     var tasks: [WidgetTask] = []
+    let locale = getCurrentLocale()
 
     // データ形式がDataの場合の処理
     if let tasksData = sharedDefaults?.object(forKey: "today_tasks") as? Data {
@@ -148,7 +207,7 @@ struct Provider: TimelineProvider {
 
     // 現在の日付でエントリーを作成
     let currentDate = Date()
-    let entry = SimpleEntry(date: currentDate, tasks: tasks)
+    let entry = SimpleEntry(date: currentDate, tasks: tasks, locale: locale)
     entries.append(entry)
 
     // 次の更新時間（1時間後）を設定

@@ -41,6 +41,7 @@ struct ProgressCircleView: View {
 struct TaskListView: View {
   var tasks: [WidgetTask]
   var maxCount: Int
+  var locale: String
   @Environment(\.openURL) private var openURL
 
   var body: some View {
@@ -52,7 +53,7 @@ struct TaskListView: View {
           Image(systemName: "checkmark.circle")
             .font(.system(size: 30))
             .foregroundColor(.gray)
-          Text("タスク完了！")
+          Text(LocalizedStrings.getLocalizedString(for: "widget_tasks_completed", locale: locale))
             .font(.subheadline)
             .foregroundColor(.gray)
         }
@@ -67,16 +68,16 @@ struct TaskListView: View {
           HStack(alignment: .top, spacing: 10) {
             // 完了/未完了によってアイコンを変更
             // iOS 17のインタラクティブウィジェット用にBackgroundIntentを使用
-            Button(
-              intent: BackgroundIntent(
-                url: URL(string: "notiontodo://toggle/\(task.id)/\(!task.isCompleted)")
-              )
-            ) {
-              Image(systemName: task.isCompleted ? "checkmark.circle.fill" : "circle")
-                .font(.system(size: 14))
-                .foregroundColor(task.isCompleted ? .green : .blue)
-            }
-            .buttonStyle(.plain)
+              Button(
+                intent: BackgroundIntent(
+                  url: URL(string: "notiontodo://toggle/\(task.id)/\(!task.isCompleted)")
+                )
+              ) {
+                Image(systemName: task.isCompleted ? "checkmark.circle.fill" : "circle")
+                  .font(.system(size: 14))
+                  .foregroundColor(task.isCompleted ? .green : .blue)
+              }
+              .buttonStyle(.plain)
 
             // 完了したタスクは取り消し線と薄い色で表示
             Text(task.title)
@@ -90,10 +91,13 @@ struct TaskListView: View {
         // 表示しきれないタスクがある場合は「他◯件」と表示
         if tasks.count > maxCount {
           HStack {
-            Text("他\(tasks.count - maxCount)件")
-              .font(.system(size: 13))
-              .foregroundColor(.secondary)
-              .padding(.leading, 24)  // circleアイコンの幅+間隔分だけインデント
+            Text(
+              LocalizedStrings.getLocalizedString(
+                for: "widget_others_count", locale: locale, args: tasks.count - maxCount)
+            )
+            .font(.system(size: 13))
+            .foregroundColor(.secondary)
+            .padding(.leading, 24)  // circleアイコンの幅+間隔分だけインデント
           }
           .padding(.top, 2)
         }
@@ -114,7 +118,7 @@ struct TaskProgressWidgetEntryView: View {
     case .systemSmall:
       // スモールサイズ：進捗円のみ
       VStack {
-        Text("Today")
+        Text(LocalizedStrings.getLocalizedString(for: "widget_today", locale: entry.locale))
           .font(.headline)
           .padding(.top, 8)
 
@@ -148,7 +152,7 @@ struct TodayTasksWidgetEntryView: View {
     VStack(alignment: .leading, spacing: 8) {
       // ヘッダー部分：タイトルと日付
       HStack {
-        Text("Today")
+        Text(LocalizedStrings.getLocalizedString(for: "widget_today", locale: entry.locale))
           .font(.headline)
           .foregroundColor(.primary)
 
@@ -168,7 +172,7 @@ struct TodayTasksWidgetEntryView: View {
       .padding(.bottom, 4)
 
       // 共通コンポーネントを使用
-      TaskListView(tasks: entry.tasks, maxCount: getMaxTaskCount())
+      TaskListView(tasks: entry.tasks, maxCount: getMaxTaskCount(), locale: entry.locale)
 
       Spacer()
     }
