@@ -345,7 +345,7 @@ class WidgetService {
   Future<void> updateLocaleForWidget(String languageCode) async {
     await HomeWidget.saveWidgetData(localeKey, languageCode);
     // ウィジェットの更新をトリガー
-    await HomeWidget.updateWidget();
+    await _updateWidget();
   }
 
   // ウィジェットからロケール情報を取得する
