@@ -104,8 +104,10 @@ struct TaskListView: View {
             .font(.system(size: 30))
             .foregroundColor(.gray)
           Text(LocalizedStrings.getLocalizedString(for: "widget_tasks_completed", locale: locale))
-            .font(.subheadline)
+            .font(.system(size: 12))
             .foregroundColor(.gray)
+            .padding(.top, 2)
+            .padding(.bottom, 8)
         }
         Spacer()
       }
@@ -125,8 +127,8 @@ struct TaskListView: View {
                 )
               ) {
                 Image(systemName: task.isCompleted ? "checkmark.square.fill" : "square")
-                  .font(.system(size: 14))
-                  .foregroundColor(task.isCompleted ? Color(red: 0.18, green: 0.5, blue: 0.5) : Color(red: 0.49, green: 0.46, blue: 0.43))
+                  .font(.system(size: 16))
+                  .foregroundColor(Color(red: 0.49, green: 0.46, blue: 0.43))
               }
               .buttonStyle(.plain)
             }
@@ -149,7 +151,7 @@ struct TaskListView: View {
             )
             .font(.system(size: 13))
             .foregroundColor(.secondary)
-            .padding(.leading, widgetFamily == .systemSmall ? 0 : 24)
+            .padding(.leading, widgetFamily == .systemSmall ? 0 : 30)
           }
           .padding(.top, 2)
         }
@@ -189,31 +191,40 @@ struct TodayTasksWidgetEntryView: View {
   @Environment(\.widgetFamily) var widgetFamily
 
   var body: some View {
-    VStack(alignment: .leading, spacing: 8) {
-      // ヘッダー部分：タイトルと日付
-      HStack {
-        Text(LocalizedStrings.getLocalizedString(for: "widget_today", locale: entry.locale))
-          .font(.headline)
-          .foregroundColor(.primary)
+    ZStack(alignment: .topLeading) {
+      // メインコンテンツ
+      VStack(alignment: .leading, spacing: 8) {
+        // ヘッダー部分：タイトル
+        HStack {
+          Text(LocalizedStrings.getLocalizedString(for: "widget_today", locale: entry.locale))
+            .font(.headline)
+            .foregroundColor(.primary)
+          
+          Spacer()
+        }
 
-        Spacer()
-
-        // Medium と Large サイズの場合は + ボタンを表示
-        if widgetFamily != .systemSmall {
-          Link(destination: URL(string: "notiontodo://add_task/today?homeWidget")!) {
-            Image(systemName: "plus.circle.fill")
-              .font(.system(size: 30))
-              .foregroundColor(.primary)
-              .buttonStyle(.plain)
-              .padding(.trailing, 4)
+        // 共通コンポーネントを使用
+        TaskListView(tasks: entry.tasks, maxCount: getMaxTaskCount(), locale: entry.locale)
+      }
+      .padding([.leading, .trailing], widgetFamily == .systemSmall ? 2 : 10)
+      
+      // Medium と Large サイズの場合は + ボタンを右上に絶対配置
+      if widgetFamily != .systemSmall {
+        VStack {
+          HStack {
+            Spacer()
+            Link(destination: URL(string: "notiontodo://add_task/today?homeWidget")!) {
+              Image(systemName: "plus.circle.fill")
+                .font(.system(size: 30))
+                .foregroundColor(.primary)
+            }
+            .padding(.trailing, -2)
+            .padding(.top, -8)
           }
+          Spacer()
         }
       }
-
-      // 共通コンポーネントを使用
-      TaskListView(tasks: entry.tasks, maxCount: getMaxTaskCount(), locale: entry.locale)
     }
-    .padding([.leading, .trailing], widgetFamily == .systemSmall ? 2 : 10)
     .containerBackground(.fill.tertiary, for: .widget)  // iOS 17以降のWidget背景スタイル
     .widgetURL(URL(string: "notiontodo://open/today?homeWidget")!)
   }
@@ -226,7 +237,7 @@ struct TodayTasksWidgetEntryView: View {
     case .systemMedium:
       return 3  // 中サイズでは最大3つ
     case .systemLarge:
-      return 10  // 大サイズでは最大10つ
+      return 11  // 大サイズでは最大11つ
     default:
       return 3  // その他のサイズでは3つをデフォルトとする
     }

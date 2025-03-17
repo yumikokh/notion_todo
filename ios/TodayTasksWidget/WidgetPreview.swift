@@ -6,7 +6,7 @@ import WidgetKit
 
 // サンプルタスクデータ
 let sampleTasks = [
-  WidgetTask(id: "1", title: "朝のミーティング", isCompleted: true),
+  WidgetTask(id: "1", title: "朝のミーティング朝のミーティング朝のミーティング朝のミーティング", isCompleted: true),
   WidgetTask(id: "2", title: "レポート提出", isCompleted: false),
   WidgetTask(id: "3", title: "買い物", isCompleted: false),
   WidgetTask(id: "4", title: "デザインの作成", isCompleted: false),
@@ -14,6 +14,12 @@ let sampleTasks = [
   WidgetTask(id: "6", title: "週報作成", isCompleted: false),
   WidgetTask(id: "7", title: "プレゼン準備", isCompleted: false),
   WidgetTask(id: "8", title: "顧客対応", isCompleted: false),
+  WidgetTask(id: "9", title: "ミーティング", isCompleted: false),
+  WidgetTask(id: "10", title: "ミーティング", isCompleted: false),
+  WidgetTask(id: "11", title: "ミーティング", isCompleted: false),
+  WidgetTask(id: "12", title: "ミーティング", isCompleted: false),
+  WidgetTask(id: "13", title: "ミーティング", isCompleted: false),
+  WidgetTask(id: "14", title: "ミーティング", isCompleted: false),
 ]
 
 let sampleEntry = SimpleEntry(
@@ -25,6 +31,12 @@ let sampleEntry = SimpleEntry(
 let noTasksEntry = SimpleEntry(
   date: Date(),
   tasks: [],
+  locale: "ja"
+)
+
+let allCompletedEntry = SimpleEntry(
+  date: Date(),
+  tasks: sampleTasks.map { WidgetTask(id: $0.id, title: $0.title, isCompleted: true) },
   locale: "ja"
 )
 
@@ -46,20 +58,19 @@ let noTasksEntry = SimpleEntry(
   sampleEntry
 }
 
-// タスクなしのプレビューも追加
-#Preview("Tasks Empty Small", as: .systemSmall) {
+#Preview("Today Small No Tasks", as: .systemSmall) {
   TodayTasksWidget()
 } timeline: {
   noTasksEntry
 }
 
-#Preview("Tasks Empty Medium", as: .systemMedium) {
+#Preview("Today Medium No Tasks", as: .systemMedium) {
   TodayTasksWidget()
 } timeline: {
   noTasksEntry
 }
 
-#Preview("Tasks Empty Large", as: .systemLarge) {
+#Preview("Today Large No Tasks", as: .systemLarge) {
   TodayTasksWidget()
 } timeline: {
   noTasksEntry
@@ -80,6 +91,5 @@ let noTasksEntry = SimpleEntry(
 #Preview("Progress Small All Completed", as: .systemSmall) {
   TaskProgressWidget()
 } timeline: {
-  // 全て完了している場合
-  SimpleEntry(date: Date(), tasks: sampleTasks.map { WidgetTask(id: $0.id, title: $0.title, isCompleted: true) }, locale: "ja")
+  allCompletedEntry
 }
