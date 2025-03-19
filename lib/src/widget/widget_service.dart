@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:home_widget/home_widget.dart';
+import 'package:page_transition/page_transition.dart';
 
 import '../notion/model/task.dart';
 import '../notion/model/task_database.dart';
@@ -125,9 +126,6 @@ class WidgetService {
   // ウィジェットからの起動処理
   Future<void> _handleWidgetLaunchAddTaskToToday(
       GlobalKey<NavigatorState> globalNavigatorKey, WidgetRef ref) async {
-    _navigateToTodayPage(globalNavigatorKey);
-
-    final context = globalNavigatorKey.currentContext;
     final todayViewModel =
         ref.read(taskViewModelProvider(filterType: FilterType.today).notifier);
     final initialDueDate = TaskDate(
@@ -136,9 +134,16 @@ class WidgetService {
         isAllDay: true,
       ),
     );
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (context != null) {
-        _showTaskSheet(context, todayViewModel.addTask, initialDueDate);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final currentState = globalNavigatorKey.currentState;
+      if (currentState == null) return;
+
+      await _navigateToTodayPage(globalNavigatorKey);
+
+      final context = globalNavigatorKey.currentContext;
+      if (context != null && context.mounted) {
+        await _showTaskSheet(context, todayViewModel.addTask, initialDueDate);
       }
     });
   }
@@ -146,8 +151,15 @@ class WidgetService {
   _navigateToTodayPage(GlobalKey<NavigatorState> globalNavigatorKey) {
     final currentState = globalNavigatorKey.currentState;
     if (currentState == null) return;
-    currentState.pushNamedAndRemoveUntil(
-        TaskMainPage.routeName, (route) => false);
+
+    currentState.pushAndRemoveUntil(
+      PageTransition(
+        type: PageTransitionType.fade,
+        duration: const Duration(milliseconds: 0),
+        child: const TaskMainPage(initialTab: 'today'),
+      ),
+      (route) => false,
+    );
   }
 
   Future<void> _showTaskSheet(
