@@ -145,6 +145,7 @@ struct SimpleEntry: TimelineEntry {
 
   // 進捗率を計算（0.0〜1.0）
   var progressPercentage: Double {
+      return 0.7
     if totalTasksCount == 0 {
       return 0.0  // タスクがない場合は0%完了とみなす
     }
@@ -256,14 +257,13 @@ struct ProgressCircleView: View {
         .stroke(
           AngularGradient(
             gradient: Gradient(colors: [
-              Color(red: 0.52, green: 0.83, blue: 0.83),  // 最も明るい青緑（開始点）
-              Color(red: 0.33, green: 0.65, blue: 0.65),  // 明るめの青緑
-              Color(red: 0.18, green: 0.5, blue: 0.5),  // 中間の青緑
-              Color(red: 0.08, green: 0.42, blue: 0.42),  // 暗めの青緑（終了点）
+              Color(white: 0.5),  // 薄いグレー（開始点）
+              Color(white: 0.2),  // 中間のグレー
+              Color(white: 0),  // 濃い黒（終了点）
             ]),
             center: .center,
-            startAngle: .degrees(-10),  // 開始角度を少し手前にして、丸い部分からグラデーションが始まるようにする
-            endAngle: .degrees(360 - 10)  // 終了角度も調整
+            startAngle: .degrees(-10),
+            endAngle: .degrees(360 - 10)
           ),
           style: StrokeStyle(lineWidth: 10, lineCap: .round)
         )
@@ -277,8 +277,8 @@ struct ProgressCircleView: View {
           .stroke(
             AngularGradient(
               gradient: Gradient(colors: [
-                Color(red: 0.08, green: 0.42, blue: 0.42),
-                Color(red: 0.08, green: 0.42, blue: 0.42),
+                Color(white: 0),  // 濃い黒
+                Color(white: 0),  // 濃い黒
               ]),
               center: .center,
               startAngle: .degrees(0),
