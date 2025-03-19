@@ -145,7 +145,6 @@ struct SimpleEntry: TimelineEntry {
 
   // 進捗率を計算（0.0〜1.0）
   var progressPercentage: Double {
-      return 0.7
     if totalTasksCount == 0 {
       return 0.0  // タスクがない場合は0%完了とみなす
     }
@@ -246,48 +245,27 @@ struct ProgressCircleView: View {
 
   var body: some View {
     ZStack {
-      // 背景の円（グレー）
-      Circle()
-        .stroke(Color.gray.opacity(0.3), lineWidth: 10)
-        .frame(width: size, height: size)
-
-      // 進捗を表す円弧（グラデーション）
-      Circle()
-        .trim(from: 0, to: min(1.01, CGFloat(entry.progressPercentage)))
-        .stroke(
-          AngularGradient(
-            gradient: Gradient(colors: [
-              Color(white: 0.5),  // 薄いグレー（開始点）
-              Color(white: 0.2),  // 中間のグレー
-              Color(white: 0),  // 濃い黒（終了点）
-            ]),
-            center: .center,
-            startAngle: .degrees(-10),
-            endAngle: .degrees(360 - 10)
-          ),
-          style: StrokeStyle(lineWidth: 10, lineCap: .round)
-        )
-        .frame(width: size, height: size)
-        .rotationEffect(.degrees(-90))  // 12時の位置から開始
-
-      // 進捗率100%のときに、始点に食い込む円弧を追加
-      if entry.progressPercentage >= 0.99 {
+      if (entry.isEmpty || entry.isCompleted) {
+        var color = entry.isEmpty ? Color.gray.opacity(0.3) : Color.black;
         Circle()
-          .trim(from: 0, to: 0.02)  // 約10度分の円弧
+          .stroke(color, lineWidth: 10)
+          .frame(width: size, height: size)
+      } else {
+      // タスクの数だけ円弧を描画
+      let edge = 0.003;
+      ForEach(0..<entry.totalTasksCount, id: \.self) { index in
+        Circle()
+          .trim(
+            from: CGFloat(index) / CGFloat(entry.totalTasksCount) + edge,  // 開始位置に間隔を追加
+            to: CGFloat(index + 1) / CGFloat(entry.totalTasksCount) - edge  // 終了位置に間隔を追加
+          )
           .stroke(
-            AngularGradient(
-              gradient: Gradient(colors: [
-                Color(white: 0),  // 濃い黒
-                Color(white: 0),  // 濃い黒
-              ]),
-              center: .center,
-              startAngle: .degrees(0),
-              endAngle: .degrees(10)
-            ),
-            style: StrokeStyle(lineWidth: 10, lineCap: .round)
+            index < entry.completedTasksCount ? Color.black : Color.gray.opacity(0.3),
+            style: StrokeStyle(lineWidth: 13, lineCap: .butt)  // 両端を丸く
           )
           .frame(width: size, height: size)
-          .rotationEffect(.degrees(-90 - 10))  // 12時の位置から開始
+          .rotationEffect(.degrees(-90))  // 12時の位置から開始
+      }
       }
 
       // 中央のテキストまたはアイコン
@@ -309,6 +287,7 @@ struct ProgressCircleView: View {
           Text("\(entry.remainingTasksCount)")
             .font(.system(size: size * 0.3, weight: .bold))
             .foregroundColor(.primary)
+            .padding(.bottom, -2)
         }
 
         // タイトルを表示
@@ -524,8 +503,8 @@ struct TodayTasksWidgetEntryView: View {
 let sampleTasks = [
   WidgetTask(
     id: "1", title: "朝のミーティング朝のミーティング朝のミーティング朝のミーティング", isCompleted: true, isSubmitted: true),
-  WidgetTask(id: "2", title: "レポート提出", isCompleted: false, isSubmitted: true),
-  WidgetTask(id: "3", title: "買い物", isCompleted: false, isSubmitted: true),
+  WidgetTask(id: "2", title: "レポート提出", isCompleted: true, isSubmitted: true),
+  WidgetTask(id: "3", title: "買い物", isCompleted: true, isSubmitted: true),
   WidgetTask(id: "4", title: "デザインの作成", isCompleted: false, isSubmitted: true),
   WidgetTask(id: "5", title: "コードレビュー", isCompleted: false, isSubmitted: true),
   WidgetTask(id: "6", title: "週報作成", isCompleted: false, isSubmitted: true),
