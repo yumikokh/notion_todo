@@ -27,6 +27,21 @@ class MyApp extends ConsumerWidget {
   });
 
   static WidgetService widgetService = WidgetService();
+  static bool _isInitialized = false;
+
+  void _initializeApp(BuildContext context, WidgetRef ref,
+      GlobalKey<NavigatorState> globalNavigatorKey) {
+    if (_isInitialized) return;
+
+    // アプリ起動時にアップデートチェックを実行
+    AppVersionNotifier.checkAndShow(context, ref);
+
+    // ウィジェットからの起動処理
+    widgetService.registerInitialLaunchFromWidget(globalNavigatorKey, ref);
+    widgetService.startListeningWidgetClicks(globalNavigatorKey, ref);
+
+    _isInitialized = true;
+  }
 
   @override
   Widget build(BuildContext context, ref) {
@@ -71,6 +86,15 @@ class MyApp extends ConsumerWidget {
 
           navigatorKey: globalNavigatorKey,
 
+          builder: (context, child) {
+            if (!_isInitialized) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                _initializeApp(context, ref, globalNavigatorKey);
+              });
+            }
+            return child ?? const SizedBox.shrink();
+          },
+
           // Define a function to handle named routes in order to support
           // Flutter web url navigation and deep linking.
           onGenerateRoute: (RouteSettings routeSettings) {
@@ -107,22 +131,6 @@ class MyApp extends ConsumerWidget {
               },
             );
           },
-          home: Builder(
-            builder: (context) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                // アプリ起動時にアップデートチェックを実行
-                AppVersionNotifier.checkAndShow(context, ref);
-
-                // ウィジェットからの起動処理
-                widgetService.registerInitialLaunchFromWidget(
-                    globalNavigatorKey, ref);
-                widgetService.startListeningWidgetClicks(
-                    globalNavigatorKey, ref);
-              });
-
-              return const TaskMainPage();
-            },
-          ),
         ),
       ),
     );
