@@ -427,9 +427,9 @@ struct TodayTasksWidgetEntryView: View {
         }
         .padding(.bottom, 4)
         
-        // タスク一覧（残りの空間いっぱいに広げる）
+        // タスク一覧（常に一定の高さを確保）
         TaskListView(entry: entry, tasks: entry.displayTasks, maxCount: getMaxTaskCount(), locale: entry.locale)
-          .frame(maxHeight: .infinity)
+          .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
       }
       .containerBackground(.fill.tertiary, for: .widget)
       .widgetURL(URL(string: "notiontodo://open/today?homeWidget")!)
@@ -437,7 +437,7 @@ struct TodayTasksWidgetEntryView: View {
     // メディアム、ラージサイズ
     default:
       ZStack(alignment: .topLeading) {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 0) {
           HStack(alignment: .bottom) {
             // ヘッダー部分：タイトル
             Text(LocalizedStrings.getLocalizedString(for: "widget_today", locale: entry.locale))
@@ -450,13 +450,14 @@ struct TodayTasksWidgetEntryView: View {
               .foregroundColor(.secondary)
               .padding(.bottom, 2)
           }
+          .padding(.bottom, widgetFamily == .systemMedium ? 8 : 10)
 
           // タスク一覧
           TaskListView(
             entry: entry, tasks: entry.displayTasks, maxCount: getMaxTaskCount(),
             locale: entry.locale)
         }
-        .padding([.leading, .trailing], 10)
+        .padding([.leading, .trailing], 4)
 
         // Medium と Large サイズの場合は + ボタンを右上に絶対配置
         VStack {
@@ -517,9 +518,21 @@ let sampleTasks = [
   WidgetTask(id: "14", title: "ミーティング", isCompleted: false, isSubmitted: true, isOverdue: false),
 ]
 
+let sampleOneTask = [
+  WidgetTask(id: "1", title: "朝のミーティング朝のミーティング朝のミーティング朝のミーティング", isCompleted: false, isSubmitted: true, isOverdue: false),
+  WidgetTask(id: "1", title: "朝のミーティング朝のミーティング朝のミーティング朝のミーティング", isCompleted: false, isSubmitted: true, isOverdue: false),
+]
+
+
 let sampleEntry = SimpleEntry(
   date: Date(),
   tasks: sampleTasks,
+  locale: "ja"
+)
+
+let sampleOneEntry = SimpleEntry(
+  date: Date(),
+  tasks: sampleOneTask,
   locale: "ja"
 )
 
@@ -541,6 +554,7 @@ let allCompletedEntry = SimpleEntry(
   TodayTasksWidget()
 } timeline: {
   sampleEntry
+  sampleOneEntry
   noTasksEntry
   allCompletedEntry
 }
@@ -549,6 +563,7 @@ let allCompletedEntry = SimpleEntry(
   TodayTasksWidget()
 } timeline: {
   sampleEntry
+  sampleOneEntry
   noTasksEntry
   allCompletedEntry
 }
@@ -557,6 +572,7 @@ let allCompletedEntry = SimpleEntry(
   TodayTasksWidget()
 } timeline: {
   sampleEntry
+  sampleOneEntry
   noTasksEntry
   allCompletedEntry
 }
@@ -565,6 +581,7 @@ let allCompletedEntry = SimpleEntry(
   TaskProgressWidget()
 } timeline: {
   sampleEntry
+  sampleOneEntry
   noTasksEntry
   allCompletedEntry
 }
