@@ -97,8 +97,10 @@ class MyApp extends ConsumerWidget {
                   case LicensesPage.routeName:
                     return const LicensesPage();
                   case TaskMainPage.routeName:
-                    return const TaskMainPage();
-
+                    final arguments =
+                        routeSettings.arguments as Map<String, dynamic>?;
+                    final tab = arguments?['tab'] as String?;
+                    return TaskMainPage(initialTab: tab);
                   default:
                     return const TaskMainPage();
                 }
