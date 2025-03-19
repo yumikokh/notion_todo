@@ -20,11 +20,13 @@ class WidgetTask {
   final String title;
   final bool isCompleted;
   final bool isSubmitted;
+  final bool isOverdue;
   WidgetTask({
     required this.id,
     required this.title,
     required this.isCompleted,
     required this.isSubmitted,
+    required this.isOverdue,
   });
 
   factory WidgetTask.fromJson(Map<String, dynamic> json) =>
@@ -237,7 +239,8 @@ class WidgetService {
             id: task.id,
             title: task.title,
             isCompleted: task.isCompleted,
-            isSubmitted: true))
+            isSubmitted: true,
+            isOverdue: task.isOverdue))
         .toList();
 
     await _sendTasks(widgetTasks);
@@ -257,7 +260,8 @@ class WidgetService {
                 id: id,
                 title: task.title,
                 isCompleted: isCompleted,
-                isSubmitted: false)
+                isSubmitted: false,
+                isOverdue: false)
             : task)
         .toList();
     await _sendTasks(updatedTasks);

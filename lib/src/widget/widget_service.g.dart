@@ -11,6 +11,7 @@ WidgetTask _$WidgetTaskFromJson(Map<String, dynamic> json) => WidgetTask(
       title: json['title'] as String,
       isCompleted: json['isCompleted'] as bool,
       isSubmitted: json['isSubmitted'] as bool,
+      isOverdue: json['isOverdue'] as bool,
     );
 
 Map<String, dynamic> _$WidgetTaskToJson(WidgetTask instance) =>
@@ -19,6 +20,7 @@ Map<String, dynamic> _$WidgetTaskToJson(WidgetTask instance) =>
       'title': instance.title,
       'isCompleted': instance.isCompleted,
       'isSubmitted': instance.isSubmitted,
+      'isOverdue': instance.isOverdue,
     };
 
 WidgetValue _$WidgetValueFromJson(Map<String, dynamic> json) => WidgetValue(

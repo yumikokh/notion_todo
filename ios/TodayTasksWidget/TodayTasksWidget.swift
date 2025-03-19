@@ -8,10 +8,11 @@ struct WidgetTask: Codable, Identifiable {
   var title: String
   var isCompleted: Bool
   var isSubmitted: Bool
+  var isOverdue: Bool
 
   // タスクがない場合の特別なケース
   static var empty: WidgetTask {
-    return WidgetTask(id: "empty", title: "タスクがありません", isCompleted: false, isSubmitted: false)
+    return WidgetTask(id: "empty", title: "タスクがありません", isCompleted: false, isSubmitted: false, isOverdue: false)
   }
 }
 
@@ -168,9 +169,9 @@ struct Provider: TimelineProvider {
     SimpleEntry(
       date: Date(),
       tasks: [
-        WidgetTask(id: "1", title: "完了したタスク", isCompleted: true, isSubmitted: true),
-        WidgetTask(id: "2", title: "進行中のタスク1", isCompleted: false, isSubmitted: true),
-        WidgetTask(id: "3", title: "進行中のタスク2", isCompleted: false, isSubmitted: true),
+        WidgetTask(id: "1", title: "完了したタスク", isCompleted: true, isSubmitted: true, isOverdue: false),
+        WidgetTask(id: "2", title: "進行中のタスク1", isCompleted: false, isSubmitted: true, isOverdue: false),
+        WidgetTask(id: "3", title: "進行中のタスク2", isCompleted: false, isSubmitted: true, isOverdue: false),
       ],
       locale: getCurrentLocale())
   }
@@ -183,9 +184,9 @@ struct Provider: TimelineProvider {
     let entry = SimpleEntry(
       date: Date(),
       tasks: [
-        WidgetTask(id: "1", title: "完了したタスク", isCompleted: true, isSubmitted: true),
-        WidgetTask(id: "2", title: "進行中のタスク1", isCompleted: false, isSubmitted: true),
-        WidgetTask(id: "3", title: "進行中のタスク2", isCompleted: false, isSubmitted: true),
+        WidgetTask(id: "1", title: "完了したタスク", isCompleted: true, isSubmitted: true, isOverdue: false),
+        WidgetTask(id: "2", title: "進行中のタスク1", isCompleted: false, isSubmitted: true, isOverdue: false),
+        WidgetTask(id: "3", title: "進行中のタスク2", isCompleted: false, isSubmitted: true, isOverdue: false),
       ],
       locale: locale)
     completion(entry)
@@ -362,11 +363,10 @@ struct TaskListView: View {
               .buttonStyle(.plain)
             }
 
-            // 完了したタスクは取り消し線と薄い色で表示
             Text(task.title)
               .font(.system(size: 14))
               .lineLimit(1)
-              .foregroundColor(task.isCompleted ? .secondary : .primary)
+              .foregroundColor(task.isOverdue ? .red : task.isCompleted ? .secondary : .primary)
               .strikethrough(task.isCompleted)
           }
         }
@@ -501,20 +501,20 @@ struct TodayTasksWidgetEntryView: View {
 // サンプルタスクデータ
 let sampleTasks = [
   WidgetTask(
-    id: "1", title: "朝のミーティング朝のミーティング朝のミーティング朝のミーティング", isCompleted: true, isSubmitted: true),
-  WidgetTask(id: "2", title: "レポート提出", isCompleted: true, isSubmitted: true),
-  WidgetTask(id: "3", title: "買い物", isCompleted: true, isSubmitted: true),
-  WidgetTask(id: "4", title: "デザインの作成", isCompleted: false, isSubmitted: true),
-  WidgetTask(id: "5", title: "コードレビュー", isCompleted: false, isSubmitted: true),
-  WidgetTask(id: "6", title: "週報作成", isCompleted: false, isSubmitted: true),
-  WidgetTask(id: "7", title: "プレゼン準備", isCompleted: false, isSubmitted: true),
-  WidgetTask(id: "8", title: "顧客対応", isCompleted: false, isSubmitted: true),
-  WidgetTask(id: "9", title: "ミーティング", isCompleted: false, isSubmitted: true),
-  WidgetTask(id: "10", title: "ミーティング", isCompleted: false, isSubmitted: true),
-  WidgetTask(id: "11", title: "ミーティング", isCompleted: false, isSubmitted: true),
-  WidgetTask(id: "12", title: "ミーティング", isCompleted: false, isSubmitted: true),
-  WidgetTask(id: "13", title: "ミーティング", isCompleted: false, isSubmitted: true),
-  WidgetTask(id: "14", title: "ミーティング", isCompleted: false, isSubmitted: true),
+    id: "1", title: "朝のミーティング朝のミーティング朝のミーティング朝のミーティング", isCompleted: false, isSubmitted: true, isOverdue: false),
+  WidgetTask(id: "2", title: "レポート提出", isCompleted: false, isSubmitted: true, isOverdue: true),
+  WidgetTask(id: "3", title: "買い物", isCompleted: true, isSubmitted: false, isOverdue: false),
+  WidgetTask(id: "4", title: "デザインの作成", isCompleted: false, isSubmitted: true, isOverdue: false),
+  WidgetTask(id: "5", title: "コードレビュー", isCompleted: false, isSubmitted: true, isOverdue: false),
+  WidgetTask(id: "6", title: "週報作成", isCompleted: false, isSubmitted: true, isOverdue: false),
+  WidgetTask(id: "7", title: "プレゼン準備", isCompleted: false, isSubmitted: true, isOverdue: false),
+  WidgetTask(id: "8", title: "顧客対応", isCompleted: false, isSubmitted: true, isOverdue: false),
+  WidgetTask(id: "9", title: "ミーティング", isCompleted: false, isSubmitted: true, isOverdue: false),
+  WidgetTask(id: "10", title: "ミーティング", isCompleted: false, isSubmitted: true, isOverdue: false),
+  WidgetTask(id: "11", title: "ミーティング", isCompleted: false, isSubmitted: true, isOverdue: false),
+  WidgetTask(id: "12", title: "ミーティング", isCompleted: false, isSubmitted: true, isOverdue: false ),
+  WidgetTask(id: "13", title: "ミーティング", isCompleted: false, isSubmitted: true, isOverdue: false),
+  WidgetTask(id: "14", title: "ミーティング", isCompleted: false, isSubmitted: true, isOverdue: false),
 ]
 
 let sampleEntry = SimpleEntry(
@@ -532,7 +532,7 @@ let noTasksEntry = SimpleEntry(
 let allCompletedEntry = SimpleEntry(
   date: Date(),
   tasks: sampleTasks.map {
-    WidgetTask(id: $0.id, title: $0.title, isCompleted: true, isSubmitted: true)
+    WidgetTask(id: $0.id, title: $0.title, isCompleted: true, isSubmitted: true, isOverdue: false)
   },
   locale: "ja"
 )
