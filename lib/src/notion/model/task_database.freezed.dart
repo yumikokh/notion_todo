@@ -160,7 +160,8 @@ class __$$TaskDatabaseImplCopyWithImpl<$Res>
 }
 
 /// @nodoc
-@JsonSerializable()
+
+@JsonSerializable(explicitToJson: true)
 class _$TaskDatabaseImpl implements _TaskDatabase {
   const _$TaskDatabaseImpl(
       {required this.id,

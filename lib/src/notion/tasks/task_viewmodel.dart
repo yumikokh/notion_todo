@@ -16,6 +16,7 @@ import '../repository/notion_task_repository.dart';
 import 'task_service.dart';
 import '../../common/analytics/analytics_service.dart';
 import '../../common/app_review/app_review_service.dart';
+import '../../widget/widget_service.dart';
 
 part 'task_viewmodel.g.dart';
 
@@ -33,6 +34,7 @@ class TaskViewModel extends _$TaskViewModel {
   bool get showCompleted => _showCompleted;
 
   static final DateHelper d = DateHelper();
+  static final WidgetService widgetService = WidgetService();
 
   @override
   Future<List<Task>> build({
@@ -56,11 +58,14 @@ class TaskViewModel extends _$TaskViewModel {
         ref.watch(taskDatabaseViewModelProvider).valueOrNull?.status;
     final tasks = await _fetchTasks(isFirstFetch: true);
 
-    // バッジ更新
     if (filterType == FilterType.today) {
+      // バッジ更新
       final showBadge =
           ref.watch(settingsViewModelProvider).showNotificationBadge;
       _updateBadge(tasks, showBadge);
+
+      // ウィジェット更新
+      widgetService.applyTasks(tasks);
     }
 
     if (statusProperty is StatusCompleteStatusProperty) {

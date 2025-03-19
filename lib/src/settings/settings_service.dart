@@ -4,6 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl_standalone.dart' as intl_standalone;
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../widget/widget_service.dart';
+
 class SettingsService {
   static const _themeModeKey = 'themeMode';
   static const _languageKey = 'language';
@@ -12,6 +14,8 @@ class SettingsService {
   static const _showNotificationBadgeKey = 'show_notification_badge';
   static const _continuousTaskAdditionKey = 'continuous_task_addition';
   static const _soundEnabledKey = 'sound_enabled';
+
+  static WidgetService widgetService = WidgetService();
 
   /* themeMode */
   Future<ThemeMode> themeMode() async {
@@ -36,12 +40,16 @@ class SettingsService {
         (supportedLocales.any((l) => l.languageCode == systemLanguageCode)
             ? systemLanguageCode
             : 'en');
+
+    widgetService.updateLocaleForWidget(languageCode);
     return Locale(languageCode);
   }
 
   Future<void> updateLocale(Locale locale) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_languageKey, locale.languageCode);
+    final languageCode = locale.languageCode;
+    await prefs.setString(_languageKey, languageCode);
+    widgetService.updateLocaleForWidget(languageCode);
   }
 
   /* wakelock */

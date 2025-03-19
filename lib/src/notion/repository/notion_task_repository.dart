@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../common/error.dart';
 import '../../helpers/date.dart';
+import '../../widget/widget_service.dart';
 import '../model/property.dart';
 import '../model/task_database.dart';
 import '../oauth/notion_oauth_viewmodel.dart';
@@ -427,5 +428,10 @@ NotionTaskRepository? notionTaskRepository(Ref ref) {
   if (accessToken == null || taskDatabase == null) {
     return null;
   }
+
+  // ウィジェットの設定を保存
+  final service = WidgetService();
+  service.sendDatabaseSettings(accessToken, taskDatabase);
+
   return NotionTaskRepository(accessToken, taskDatabase);
 }

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,11 +12,14 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 
 import 'src/app.dart';
+import 'src/common/app_lifecycle_observer.dart';
 import 'src/env/env.dart';
 import 'src/notion/repository/notion_task_repository.dart';
 import 'src/notion/tasks/task_viewmodel.dart';
+import 'src/widget/widget_service.dart';
 import 'firebase_options.dart';
 
+final widgetService = WidgetService();
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
@@ -28,6 +32,8 @@ void main() async {
   );
   await FirebaseAnalytics.instance
       .setAnalyticsCollectionEnabled(trackingEnabled);
+
+  await widgetService.initialize(interactivityCallback);
 
   final app = ProviderScope(
     observers: trackingEnabled ? [SentryProviderObserver()] : [],
@@ -108,8 +114,7 @@ class BackgroundFetchInitializer extends HookConsumerWidget {
         (String taskId) async {
           print("[BackgroundFetch] Event received $taskId");
           // fetchとバッジ更新
-          await ref
-              .read(taskViewModelProvider(filterType: FilterType.today).future);
+          ref.invalidate(taskViewModelProvider(filterType: FilterType.today));
           BackgroundFetch.finish(taskId);
         },
         (String taskId) {
@@ -120,6 +125,30 @@ class BackgroundFetchInitializer extends HookConsumerWidget {
       return null;
     }, []);
 
+    // アプリ復帰時にウィジェットでの更新を反映
+    useEffect(() {
+      Future<void> applyWidgetChanges() async {
+        final lastUpdated = await widgetService.getLastUpdatedTask();
+        if (lastUpdated == null) return;
+        // 今日のタスクとすべてのタスク両方に適用
+        ref.invalidate(taskViewModelProvider(filterType: FilterType.today));
+        ref.invalidate(taskViewModelProvider(filterType: FilterType.all));
+        await widgetService.clearLastUpdatedTask();
+      }
+
+      applyWidgetChanges();
+
+      final observer = AppLifecycleObserver(applyWidgetChanges);
+      WidgetsBinding.instance.addObserver(observer);
+      return () => WidgetsBinding.instance.removeObserver(observer);
+    }, []);
+
     return child;
   }
+}
+
+// バックグラウンドコールバック関数（iOS 17のインタラクティブウィジェット用）
+@pragma('vm:entry-point')
+Future<void> interactivityCallback(Uri? uri) async {
+  await widgetService.interactivityCallback(uri);
 }

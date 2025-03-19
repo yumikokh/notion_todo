@@ -18,12 +18,30 @@ import 'settings/view/settings_page.dart';
 import 'settings/theme/theme.dart';
 import 'settings/theme/util.dart';
 import 'settings/view/theme_settings_page.dart';
+import 'widget/widget_service.dart';
 
 /// The Widget that configures your application.
 class MyApp extends ConsumerWidget {
   const MyApp({
     super.key,
   });
+
+  static WidgetService widgetService = WidgetService();
+  static bool _isInitialized = false;
+
+  void _initializeApp(BuildContext context, WidgetRef ref,
+      GlobalKey<NavigatorState> globalNavigatorKey) {
+    if (_isInitialized) return;
+
+    // アプリ起動時にアップデートチェックを実行
+    AppVersionNotifier.checkAndShow(context, ref);
+
+    // ウィジェットからの起動処理
+    widgetService.registerInitialLaunchFromWidget(globalNavigatorKey, ref);
+    widgetService.startListeningWidgetClicks(globalNavigatorKey, ref);
+
+    _isInitialized = true;
+  }
 
   @override
   Widget build(BuildContext context, ref) {
@@ -35,6 +53,8 @@ class MyApp extends ConsumerWidget {
     final MaterialTheme theme = MaterialTheme(textTheme);
 
     DateHelper().setup(settings.locale.languageCode);
+
+    final globalNavigatorKey = GlobalKey<NavigatorState>();
 
     return AnimatedBuilder(
       animation: settingsViewModel,
@@ -64,6 +84,17 @@ class MyApp extends ConsumerWidget {
           darkTheme: theme.dark(),
           themeMode: settings.themeMode,
 
+          navigatorKey: globalNavigatorKey,
+
+          builder: (context, child) {
+            if (!_isInitialized) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                _initializeApp(context, ref, globalNavigatorKey);
+              });
+            }
+            return child ?? const SizedBox.shrink();
+          },
+
           // Define a function to handle named routes in order to support
           // Flutter web url navigation and deep linking.
           onGenerateRoute: (RouteSettings routeSettings) {
@@ -90,23 +121,16 @@ class MyApp extends ConsumerWidget {
                   case LicensesPage.routeName:
                     return const LicensesPage();
                   case TaskMainPage.routeName:
-                    return const TaskMainPage();
-
+                    final arguments =
+                        routeSettings.arguments as Map<String, dynamic>?;
+                    final tab = arguments?['tab'] as String?;
+                    return TaskMainPage(initialTab: tab);
                   default:
                     return const TaskMainPage();
                 }
               },
             );
           },
-          home: Builder(
-            builder: (context) {
-              // アプリ起動時にアップデートチェックを実行
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                AppVersionNotifier.checkAndShow(context, ref);
-              });
-              return const TaskMainPage();
-            },
-          ),
         ),
       ),
     );

@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../helpers/date.dart';
 import 'property.dart';
 
 part 'task.freezed.dart';
@@ -71,6 +72,8 @@ class Task with _$Task {
     // required String updatedTime,
   }) = _Task;
 
+  static final DateHelper d = DateHelper();
+
   bool get isCompleted => switch (status) {
         TaskStatusCheckbox(checked: var checked) => checked,
         TaskStatusStatus(group: var group) =>
@@ -82,6 +85,29 @@ class Task with _$Task {
         TaskStatusStatus(option: var option) =>
           option?.id == inProgressOption.id,
       };
+
+  bool get isOverdue {
+    final now = DateTime.now();
+    final dueDateStart = dueDate?.start.datetime;
+    final dueDateEnd = dueDate?.end?.datetime;
+
+    // 終日かつ今日
+    if (dueDateEnd == null &&
+        d.isToday(dueDateStart) &&
+        dueDate?.start.isAllDay == true) {
+      return false;
+    }
+
+    // 時間があり、すぎている
+    if ((dueDateEnd != null && dueDateEnd.isBefore(now)) ||
+        (dueDateEnd == null &&
+            dueDateStart != null &&
+            dueDateStart.isBefore(now))) {
+      return true;
+    }
+
+    return false;
+  }
 
   bool get isTemp => id.startsWith("temp_");
 

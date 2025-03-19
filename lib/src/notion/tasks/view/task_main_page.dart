@@ -4,6 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:page_transition/page_transition.dart';
 
 import '../../../common/analytics/analytics_service.dart';
 import '../../../helpers/date.dart';
@@ -20,14 +21,21 @@ import '../../../settings/font/font_settings_viewmodel.dart';
 const int updateIntervalSec = 60;
 
 class TaskMainPage extends HookConsumerWidget {
-  const TaskMainPage({Key? key}) : super(key: key);
+  const TaskMainPage({
+    Key? key,
+    this.initialTab,
+  }) : super(key: key);
 
   static const routeName = '/';
   static final DateHelper d = DateHelper();
 
+  // タブの種類を定義
+  static const String tabToday = 'today';
+  static const String tabAll = 'all';
+  final String? initialTab;
+
   @override
-  Widget build(BuildContext context, ref) {
-    final currentIndex = useState(0);
+  Widget build(BuildContext context, WidgetRef ref) {
     final todayProvider = taskViewModelProvider(filterType: FilterType.today);
     final allProvider = taskViewModelProvider(filterType: FilterType.all);
     final todayTasks = ref.watch(todayProvider);
@@ -40,10 +48,12 @@ class TaskMainPage extends HookConsumerWidget {
         ref.watch(settingsViewModelProvider).hideNavigationLabel;
     final fontSettings = ref.watch(fontSettingsViewModelProvider);
 
-    final isToday = currentIndex.value == 0;
+    final isToday = initialTab == tabToday;
+    final currentIndex = useMemoized(() => isToday ? 0 : 1);
 
     final l = AppLocalizations.of(context)!;
 
+    // アナリティクス
     useEffect(() {
       final analytics = ref.read(analyticsServiceProvider);
       final screenName = isToday ? 'Today' : 'All';
@@ -86,12 +96,20 @@ class TaskMainPage extends HookConsumerWidget {
 
     return TaskBaseScaffold(
       key: Key('taskMainPage/${isToday ? 'Today' : 'All'}'),
-      currentIndex: currentIndex.value,
+      currentIndex: currentIndex,
       showCompleted: isToday ? todayViewModel.showCompleted : null,
       showSettingBadge: taskDatabase.valueOrNull != null,
       hideNavigationLabel: hideNavigationLabel,
       onIndexChanged: (index) {
-        currentIndex.value = index;
+        final nextTab = index == 0 ? tabToday : tabAll;
+        Navigator.pushReplacement(
+          context,
+          PageTransition(
+            type: PageTransitionType.fade,
+            duration: const Duration(milliseconds: 0),
+            child: TaskMainPage(initialTab: nextTab),
+          ),
+        );
       },
       onShowCompletedChanged: (value) async {
         todayViewModel.toggleShowCompleted();
@@ -107,7 +125,7 @@ class TaskMainPage extends HookConsumerWidget {
       body: taskDatabase.when(
         data: (db) => db != null
             ? IndexedStack(
-                index: currentIndex.value,
+                index: currentIndex,
                 children: [
                   // Today Tasks
                   TaskRefreshIndicator(
