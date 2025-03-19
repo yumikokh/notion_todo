@@ -65,8 +65,7 @@ class TaskViewModel extends _$TaskViewModel {
       _updateBadge(tasks, showBadge);
 
       // ウィジェット更新
-      final widgetTasks = tasks.where((task) => !task.isCompleted).toList();
-      widgetService.applyTasks(widgetTasks);
+      widgetService.applyTasks(tasks);
     }
 
     if (statusProperty is StatusCompleteStatusProperty) {

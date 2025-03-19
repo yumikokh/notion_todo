@@ -10,6 +10,7 @@ WidgetTask _$WidgetTaskFromJson(Map<String, dynamic> json) => WidgetTask(
       id: json['id'] as String,
       title: json['title'] as String,
       isCompleted: json['isCompleted'] as bool,
+      isSubmitted: json['isSubmitted'] as bool,
     );
 
 Map<String, dynamic> _$WidgetTaskToJson(WidgetTask instance) =>
@@ -17,6 +18,7 @@ Map<String, dynamic> _$WidgetTaskToJson(WidgetTask instance) =>
       'id': instance.id,
       'title': instance.title,
       'isCompleted': instance.isCompleted,
+      'isSubmitted': instance.isSubmitted,
     };
 
 WidgetValue _$WidgetValueFromJson(Map<String, dynamic> json) => WidgetValue(
@@ -27,6 +29,7 @@ WidgetValue _$WidgetValueFromJson(Map<String, dynamic> json) => WidgetValue(
       taskDatabase: json['taskDatabase'] == null
           ? null
           : TaskDatabase.fromJson(json['taskDatabase'] as Map<String, dynamic>),
+      locale: json['locale'] as String?,
     );
 
 Map<String, dynamic> _$WidgetValueToJson(WidgetValue instance) =>
@@ -34,4 +37,5 @@ Map<String, dynamic> _$WidgetValueToJson(WidgetValue instance) =>
       'tasks': instance.tasks,
       'accessToken': instance.accessToken,
       'taskDatabase': instance.taskDatabase,
+      'locale': instance.locale,
     };

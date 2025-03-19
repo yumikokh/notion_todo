@@ -19,11 +19,12 @@ class WidgetTask {
   final String id;
   final String title;
   final bool isCompleted;
-
+  final bool isSubmitted;
   WidgetTask({
     required this.id,
     required this.title,
     required this.isCompleted,
+    required this.isSubmitted,
   });
 
   factory WidgetTask.fromJson(Map<String, dynamic> json) =>
@@ -233,7 +234,10 @@ class WidgetService {
   Future<void> applyTasks(List<Task> tasks) async {
     final widgetTasks = tasks
         .map((task) => WidgetTask(
-            id: task.id, title: task.title, isCompleted: task.isCompleted))
+            id: task.id,
+            title: task.title,
+            isCompleted: task.isCompleted,
+            isSubmitted: true))
         .toList();
 
     await _sendTasks(widgetTasks);
@@ -249,7 +253,11 @@ class WidgetService {
 
     final updatedTasks = tasks
         .map((task) => task.id == id
-            ? WidgetTask(id: id, title: task.title, isCompleted: isCompleted)
+            ? WidgetTask(
+                id: id,
+                title: task.title,
+                isCompleted: isCompleted,
+                isSubmitted: false)
             : task)
         .toList();
     await _sendTasks(updatedTasks);
@@ -350,8 +358,7 @@ class WidgetService {
 
   // ウィジェットからロケール情報を取得する
   Future<String> getWidgetLocale() async {
-    final locale =
-        await HomeWidget.getWidgetData<String?>(localeKey, defaultValue: 'en');
+    final locale = await HomeWidget.getWidgetData<String?>(localeKey);
     return locale ?? 'en';
   }
 }

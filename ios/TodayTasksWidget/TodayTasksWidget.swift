@@ -7,10 +7,11 @@ struct WidgetTask: Codable, Identifiable {
   var id: String
   var title: String
   var isCompleted: Bool
+  var isSubmitted: Bool
 
   // タスクがない場合の特別なケース
   static var empty: WidgetTask {
-    return WidgetTask(id: "empty", title: "タスクがありません", isCompleted: false)
+    return WidgetTask(id: "empty", title: "タスクがありません", isCompleted: false, isSubmitted: false)
   }
 }
 
@@ -61,7 +62,7 @@ struct TodayTasksWidget: Widget {
 
   var body: some WidgetConfiguration {
     StaticConfiguration(kind: kind, provider: Provider()) { entry in
-      TodayTasksWidgetEntryView(entry: entry)
+        TodayTasksWidgetEntryView(entry: entry)
     }
     .configurationDisplayName("Today")  // Widgetギャラリーでの表示名
     .description(
@@ -99,6 +100,11 @@ struct SimpleEntry: TimelineEntry {
   let date: Date
   let tasks: [WidgetTask]
   let locale: String
+
+  // 表示するタスク
+  var displayTasks: [WidgetTask] {
+    return tasks.filter { ($0.isSubmitted && !$0.isCompleted) || (!$0.isSubmitted && $0.isCompleted) }
+  }
 
   // タスクがない場合の特別なケース
   var isEmpty: Bool {
@@ -162,9 +168,9 @@ struct Provider: TimelineProvider {
     SimpleEntry(
       date: Date(),
       tasks: [
-        WidgetTask(id: "1", title: "完了したタスク", isCompleted: true),
-        WidgetTask(id: "2", title: "進行中のタスク1", isCompleted: false),
-        WidgetTask(id: "3", title: "進行中のタスク2", isCompleted: false),
+        WidgetTask(id: "1", title: "完了したタスク", isCompleted: true, isSubmitted: true),
+        WidgetTask(id: "2", title: "進行中のタスク1", isCompleted: false, isSubmitted: true),
+        WidgetTask(id: "3", title: "進行中のタスク2", isCompleted: false, isSubmitted: true),
       ],
       locale: getCurrentLocale())
   }
@@ -177,9 +183,9 @@ struct Provider: TimelineProvider {
     let entry = SimpleEntry(
       date: Date(),
       tasks: [
-        WidgetTask(id: "1", title: "完了したタスク", isCompleted: true),
-        WidgetTask(id: "2", title: "進行中のタスク1", isCompleted: false),
-        WidgetTask(id: "3", title: "進行中のタスク2", isCompleted: false),
+        WidgetTask(id: "1", title: "完了したタスク", isCompleted: true, isSubmitted: true),
+        WidgetTask(id: "2", title: "進行中のタスク1", isCompleted: false, isSubmitted: true),
+        WidgetTask(id: "3", title: "進行中のタスク2", isCompleted: false, isSubmitted: true),
       ],
       locale: locale)
     completion(entry)

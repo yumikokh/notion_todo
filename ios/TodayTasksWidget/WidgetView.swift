@@ -88,6 +88,7 @@ struct ProgressCircleView: View {
 
 // MARK: - 共通タスク一覧表示コンポーネント
 struct TaskListView: View {
+  var entry: SimpleEntry
   var tasks: [WidgetTask]
   var maxCount: Int
   var locale: String
@@ -95,19 +96,32 @@ struct TaskListView: View {
   @Environment(\.widgetFamily) var widgetFamily
 
   var body: some View {
-    if tasks.isEmpty {
+    if entry.isCompleted {
       Spacer()
       HStack {
         Spacer()
         VStack {
           Image(systemName: "checkmark.circle")
             .font(.system(size: 30))
-            .foregroundColor(.gray)
+            .foregroundColor(.secondary)
           Text(LocalizedStrings.getLocalizedString(for: "widget_tasks_completed", locale: locale))
             .font(.system(size: 12))
-            .foregroundColor(.gray)
+            .foregroundColor(.secondary)
             .padding(.top, 2)
             .padding(.bottom, 8)
+        }
+        Spacer()
+      }
+      Spacer()
+    } else if entry.isEmpty {
+      Spacer()
+      HStack {
+        Spacer()
+        VStack {
+          Text(LocalizedStrings.getLocalizedString(for: "widget_tasks_empty", locale: locale))
+            .font(.subheadline)
+            .foregroundColor(.secondary)
+            // .padding(.bottom, 4)
         }
         Spacer()
       }
@@ -141,22 +155,8 @@ struct TaskListView: View {
               .strikethrough(task.isCompleted)
           }
         }
-
-        // 表示しきれないタスクがある場合は「他◯件」と表示
-        if tasks.count > maxCount {
-          HStack {
-            Text(
-              LocalizedStrings.getLocalizedString(
-                for: "widget_others_count", locale: locale, args: tasks.count - maxCount)
-            )
-            .font(.system(size: 13))
-            .foregroundColor(.secondary)
-            .padding(.leading, widgetFamily == .systemSmall ? 0 : 30)
-          }
-          .padding(.top, 2)
-        }
       }
-      .padding(.top, 4)
+      .padding(.top, 2)
     }
   }
 }
@@ -191,25 +191,56 @@ struct TodayTasksWidgetEntryView: View {
   @Environment(\.widgetFamily) var widgetFamily
 
   var body: some View {
-    ZStack(alignment: .topLeading) {
-      // メインコンテンツ
+    switch widgetFamily {
+    case .systemSmall:
       VStack(alignment: .leading, spacing: 8) {
-        // ヘッダー部分：タイトル
-        HStack {
+        HStack(alignment: .bottom) {
+          // ヘッダー部分：タイトル
           Text(LocalizedStrings.getLocalizedString(for: "widget_today", locale: entry.locale))
             .font(.headline)
             .foregroundColor(.primary)
           
+          // タスクの完了状況を分数形式で表示
+          Text("\(entry.completedTasksCount)\u{2009}/\u{2009}\(entry.totalTasksCount)")
+            .font(.system(size: 12))
+            .foregroundColor(.secondary)
+            .padding(.bottom, 2)
+
           Spacer()
         }
-
-        // 共通コンポーネントを使用
-        TaskListView(tasks: entry.tasks, maxCount: getMaxTaskCount(), locale: entry.locale)
+        
+        // タスク一覧
+        TaskListView(entry: entry, tasks: entry.displayTasks, maxCount: getMaxTaskCount(), locale: entry.locale)
+        
+        Spacer()
       }
-      .padding([.leading, .trailing], widgetFamily == .systemSmall ? 2 : 10)
-      
-      // Medium と Large サイズの場合は + ボタンを右上に絶対配置
-      if widgetFamily != .systemSmall {
+      .padding(.horizontal, 6)
+      .padding(.top, 12)
+      .containerBackground(.fill.tertiary, for: .widget)
+      .widgetURL(URL(string: "notiontodo://open/today?homeWidget")!)
+
+    default:
+      ZStack(alignment: .topLeading) {
+        VStack(alignment: .leading, spacing: 8) {
+          HStack(alignment: .bottom) {
+           // ヘッダー部分：タイトル
+            Text(LocalizedStrings.getLocalizedString(for: "widget_today", locale: entry.locale))
+              .font(.headline)
+              .foregroundColor(.primary)
+            
+            // タスクの完了状況を分数形式で表示
+            Text("\(entry.completedTasksCount)\u{2009}/\u{2009}\(entry.totalTasksCount)")
+              .font(.system(size: 12))
+              .foregroundColor(.secondary)
+              .padding(.bottom, 2)
+          }
+
+          // タスク一覧
+          TaskListView(entry: entry, tasks: entry.displayTasks, maxCount: getMaxTaskCount(), locale: entry.locale)
+        }
+        .padding([.leading, .trailing],  10)
+        
+        // Medium と Large サイズの場合は + ボタンを右上に絶対配置
         VStack {
           HStack {
             Spacer()
@@ -224,22 +255,22 @@ struct TodayTasksWidgetEntryView: View {
           Spacer()
         }
       }
+      .containerBackground(.fill.tertiary, for: .widget)  // iOS 17以降のWidget背景スタイル
+      .widgetURL(URL(string: "notiontodo://open/today?homeWidget")!)
     }
-    .containerBackground(.fill.tertiary, for: .widget)  // iOS 17以降のWidget背景スタイル
-    .widgetURL(URL(string: "notiontodo://open/today?homeWidget")!)
   }
 
   // Widgetサイズに応じて表示するタスク数を決定する関数
   func getMaxTaskCount() -> Int {
     switch widgetFamily {
     case .systemSmall:
-      return 3  // 小サイズでは最大3つ
+      return 4  // 小サイズでは最大4つ
     case .systemMedium:
-      return 3  // 中サイズでは最大3つ
+      return 4  // 中サイズでは最大4つ
     case .systemLarge:
-      return 11  // 大サイズでは最大11つ
+      return 12  // 大サイズでは最大12つ
     default:
-      return 3  // その他のサイズでは3つをデフォルトとする
+      return 4  // その他のサイズでは4つをデフォルトとする
     }
   }
 }
