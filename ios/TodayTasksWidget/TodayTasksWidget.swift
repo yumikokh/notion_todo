@@ -21,9 +21,8 @@ struct LocalizedStrings {
   // 日本語
   static let ja = [
     "widget_today": "今日",
-    "widget_tasks_completed": "完了！",
+    "widget_tasks_completed": "完了",
     "widget_tasks_empty": "No tasks",
-    "widget_others_count": "他%d件",
     "widget_progress_title": "タスク進捗",
     "widget_progress_description": "今日のタスクの進捗状況を表示します",
     "widget_today_description": "今日のタスク一覧",
@@ -33,9 +32,8 @@ struct LocalizedStrings {
   // 英語
   static let en = [
     "widget_today": "Today",
-    "widget_tasks_completed": "All Done!",
+    "widget_tasks_completed": "All Done",
     "widget_tasks_empty": "No tasks",
-    "widget_others_count": "%d more",
     "widget_progress_title": "Task Progress",
     "widget_progress_description": "Shows your daily task progress",
     "widget_today_description": "Today's tasks",
@@ -271,9 +269,10 @@ struct ProgressCircleView: View {
       // 中央のテキストまたはアイコン
       VStack(spacing: 2) {
         if entry.isCompleted {
-          Text("🎉")
-            .font(.system(size: size * 0.18))
-            .foregroundColor(.primary)
+          Text(LocalizedStrings.getLocalizedString(for: "widget_tasks_completed", locale: entry.locale))
+            .font(.subheadline)
+            .foregroundColor(.secondary)
+            .padding(.top, 4)
             .padding(.bottom, 4)
         } else if entry.isEmpty {
           // タスクがない場合は空の表示
