@@ -302,6 +302,7 @@ struct ProgressCircleView: View {
           Text(LocalizedStrings.getLocalizedString(for: "widget_tasks_empty", locale: entry.locale))
             .font(.subheadline)
             .foregroundColor(.secondary)
+            .padding(.top, 4)
             .padding(.bottom, 4)
         } else {
           // 残りタスク数を表示
@@ -357,7 +358,7 @@ struct TaskListView: View {
           Text(LocalizedStrings.getLocalizedString(for: "widget_tasks_empty", locale: locale))
             .font(.subheadline)
             .foregroundColor(.secondary)
-          // .padding(.bottom, 4)
+          .padding(.bottom, 10)
         }
         Spacer()
       }
@@ -414,7 +415,7 @@ struct TaskProgressWidgetEntryView: View {
       .containerBackground(.fill.tertiary, for: .widget)
       .widgetURL(URL(string: "notiontodo://open/today?homeWidget")!)
     default:
-      Text("Unsupported widget size")
+        Text("Unsupported widget size")
         .containerBackground(.fill.tertiary, for: .widget)
     }
   }
@@ -428,35 +429,34 @@ struct TodayTasksWidgetEntryView: View {
 
   var body: some View {
     switch widgetFamily {
+
+    // スモールサイズ
     case .systemSmall:
-      VStack(alignment: .leading, spacing: 8) {
+      VStack(alignment: .leading, spacing: 0) {
+        // ヘッダー部分：タイトル
         HStack(alignment: .bottom) {
-          // ヘッダー部分：タイトル
           Text(LocalizedStrings.getLocalizedString(for: "widget_today", locale: entry.locale))
             .font(.headline)
             .foregroundColor(.primary)
-
+          
           // タスクの完了状況を分数形式で表示
           Text("\(entry.completedTasksCount)\u{2009}/\u{2009}\(entry.totalTasksCount)")
             .font(.system(size: 12))
             .foregroundColor(.secondary)
             .padding(.bottom, 2)
-
+          
           Spacer()
         }
-
-        // タスク一覧
-        TaskListView(
-          entry: entry, tasks: entry.displayTasks, maxCount: getMaxTaskCount(), locale: entry.locale
-        )
-
-        Spacer()
+        .padding(.bottom, 4)
+        
+        // タスク一覧（残りの空間いっぱいに広げる）
+        TaskListView(entry: entry, tasks: entry.displayTasks, maxCount: getMaxTaskCount(), locale: entry.locale)
+          .frame(maxHeight: .infinity)
       }
-      .padding(.horizontal, 6)
-      .padding(.top, 12)
       .containerBackground(.fill.tertiary, for: .widget)
       .widgetURL(URL(string: "notiontodo://open/today?homeWidget")!)
 
+    // メディアム、ラージサイズ
     default:
       ZStack(alignment: .topLeading) {
         VStack(alignment: .leading, spacing: 8) {
