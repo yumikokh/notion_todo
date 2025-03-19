@@ -169,9 +169,9 @@ struct Provider: TimelineProvider {
     SimpleEntry(
       date: Date(),
       tasks: [
-        WidgetTask(id: "1", title: "完了したタスク", isCompleted: true, isSubmitted: true, isOverdue: false),
-        WidgetTask(id: "2", title: "進行中のタスク1", isCompleted: false, isSubmitted: true, isOverdue: false),
-        WidgetTask(id: "3", title: "進行中のタスク2", isCompleted: false, isSubmitted: true, isOverdue: false),
+        WidgetTask(id: "1", title: "朝のストレッチ", isCompleted: true, isSubmitted: true, isOverdue: false),
+        WidgetTask(id: "2", title: "新しいレシピを試す", isCompleted: false, isSubmitted: true, isOverdue: false),
+        WidgetTask(id: "3", title: "公園でランニング", isCompleted: false, isSubmitted: true, isOverdue: false),
       ],
       locale: getCurrentLocale())
   }
@@ -181,14 +181,32 @@ struct Provider: TimelineProvider {
   // ユーザーがWidgetを選択する際に表示される内容を定義
   func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> Void) {
     let locale = getCurrentLocale()
-    let entry = SimpleEntry(
-      date: Date(),
-      tasks: [
-        WidgetTask(id: "1", title: "完了したタスク", isCompleted: true, isSubmitted: true, isOverdue: false),
-        WidgetTask(id: "2", title: "進行中のタスク1", isCompleted: false, isSubmitted: true, isOverdue: false),
-        WidgetTask(id: "3", title: "進行中のタスク2", isCompleted: false, isSubmitted: true, isOverdue: false),
-      ],
-      locale: locale)
+    let sharedDefaults = UserDefaults(suiteName: "group.com.ymkokh.notionTodo")
+    var tasks: [WidgetTask] = []
+
+    // 実際のデータの取得を試みる
+    if let tasksData = sharedDefaults?.object(forKey: "today_tasks") as? Data {
+      if let decodedTasks = try? JSONDecoder().decode([WidgetTask].self, from: tasksData) {
+        tasks = decodedTasks
+      }
+    } else if let tasksString = sharedDefaults?.string(forKey: "today_tasks") {
+      if let data = tasksString.data(using: .utf8),
+        let decodedTasks = try? JSONDecoder().decode([WidgetTask].self, from: data)
+      {
+        tasks = decodedTasks
+      }
+    }
+
+    // 実際のデータがない場合は、現実的なダミーデータを使用
+    if tasks.isEmpty {
+      tasks = [
+        WidgetTask(id: "1", title: "朝のストレッチ", isCompleted: true, isSubmitted: true, isOverdue: false),
+        WidgetTask(id: "2", title: "新しいレシピを試す", isCompleted: false, isSubmitted: true, isOverdue: false),
+        WidgetTask(id: "3", title: "公園でランニング", isCompleted: false, isSubmitted: true, isOverdue: false),
+      ]
+    }
+
+    let entry = SimpleEntry(date: Date(), tasks: tasks, locale: locale)
     completion(entry)
   }
 
@@ -245,7 +263,7 @@ struct ProgressCircleView: View {
   var body: some View {
     ZStack {
       if (entry.isEmpty || entry.isCompleted) {
-        var color = entry.isEmpty ? Color.gray.opacity(0.3) : Color.black;
+        let color = entry.isEmpty ? Color.gray.opacity(0.15) : Color.black;
         Circle()
           .stroke(color, lineWidth: 10)
           .frame(width: size, height: size)
@@ -259,7 +277,7 @@ struct ProgressCircleView: View {
             to: CGFloat(index + 1) / CGFloat(entry.totalTasksCount) - edge  // 終了位置に間隔を追加
           )
           .stroke(
-            index < entry.completedTasksCount ? Color.black : Color.gray.opacity(0.3),
+            index < entry.completedTasksCount ? Color.black : Color.gray.opacity(0.15),
             style: StrokeStyle(lineWidth: 13, lineCap: .butt)  // 両端を丸く
           )
           .frame(width: size, height: size)
@@ -368,6 +386,7 @@ struct TaskListView: View {
               .lineLimit(1)
               .foregroundColor(task.isOverdue ? .red : task.isCompleted ? .secondary : .primary)
               .strikethrough(task.isCompleted)
+              .frame(maxWidth: .infinity, alignment: .leading)
           }
         }
       }
@@ -519,8 +538,8 @@ let sampleTasks = [
 ]
 
 let sampleOneTask = [
-  WidgetTask(id: "1", title: "朝のミーティング朝のミーティング朝のミーティング朝のミーティング", isCompleted: false, isSubmitted: true, isOverdue: false),
-  WidgetTask(id: "1", title: "朝のミーティング朝のミーティング朝のミーティング朝のミーティング", isCompleted: false, isSubmitted: true, isOverdue: false),
+  WidgetTask(id: "1", title: "ヨガ", isCompleted: false, isSubmitted: true, isOverdue: false),
+  
 ]
 
 
