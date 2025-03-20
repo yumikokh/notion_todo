@@ -24,10 +24,4 @@ import workmanager
     GeneratedPluginRegistrant.register(with: self)
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
-  
-  // バックグラウンドでURLを処理するためのメソッド
-  override func application(_ application: UIApplication, handleEventsForBackgroundURLSession identifier: String, completionHandler: @escaping () -> Void) {
-    // HomeWidgetのバックグラウンド処理を呼び出す
-    HomeWidgetBackgroundWorker.handleBackgroundURLSession(identifier: identifier, completionHandler: completionHandler)
-  }
 }
