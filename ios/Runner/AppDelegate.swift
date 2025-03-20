@@ -1,7 +1,6 @@
 import Flutter
 import UIKit
 import home_widget
-import workmanager
 
 @main
 @objc class AppDelegate: FlutterAppDelegate {
@@ -11,11 +10,6 @@ import workmanager
   ) -> Bool {
     // HomeWidgetのプラグイン登録コールバックを設定
     HomeWidgetBackgroundWorker.setPluginRegistrantCallback { registry in
-      GeneratedPluginRegistrant.register(with: registry)
-    }
-    
-    // Workmanagerのプラグイン登録コールバックを設定
-    WorkmanagerPlugin.setPluginRegistrantCallback { registry in
       GeneratedPluginRegistrant.register(with: registry)
     }
     

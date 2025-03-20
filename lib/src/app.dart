@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'common/snackbar/view/snackbar_listener.dart';
 import 'helpers/date.dart';
+import 'common/app_lifecycle_observer.dart';
 import 'common/app_version/view/app_version_notifier.dart';
 import 'settings/task_database/view/task_database_setting_page.dart';
 import 'notion/tasks/view/task_main_page.dart';
@@ -19,12 +22,12 @@ import 'settings/theme/theme.dart';
 import 'settings/theme/util.dart';
 import 'settings/view/theme_settings_page.dart';
 import 'widget/widget_service.dart';
+import 'notion/tasks/task_viewmodel.dart';
+import 'notion/repository/notion_task_repository.dart';
 
 /// The Widget that configures your application.
-class MyApp extends ConsumerWidget {
-  const MyApp({
-    super.key,
-  });
+class MyApp extends HookConsumerWidget {
+  const MyApp({Key? key}) : super(key: key);
 
   static WidgetService widgetService = WidgetService();
   static bool _isInitialized = false;
@@ -55,6 +58,24 @@ class MyApp extends ConsumerWidget {
     DateHelper().setup(settings.locale.languageCode);
 
     final globalNavigatorKey = GlobalKey<NavigatorState>();
+
+    // アプリのライフサイクル管理
+    useEffect(() {
+      Future<void> applyWidgetChanges() async {
+        final lastUpdated = await widgetService.getLastUpdatedTask();
+        if (lastUpdated == null) return;
+        // 今日のタスクとすべてのタスク両方に適用
+        ref.invalidate(taskViewModelProvider(filterType: FilterType.today));
+        ref.invalidate(taskViewModelProvider(filterType: FilterType.all));
+        await widgetService.clearLastUpdatedTask();
+      }
+
+      applyWidgetChanges();
+
+      final observer = AppLifecycleObserver(applyWidgetChanges);
+      WidgetsBinding.instance.addObserver(observer);
+      return () => WidgetsBinding.instance.removeObserver(observer);
+    }, []);
 
     return AnimatedBuilder(
       animation: settingsViewModel,

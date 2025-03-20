@@ -3,12 +3,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
-import 'package:workmanager/workmanager.dart';
+import 'package:background_fetch/background_fetch.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 
@@ -17,14 +16,36 @@ import 'src/notion/model/task_database.dart';
 import 'src/notion/model/property.dart';
 
 import 'src/app.dart';
-import 'src/common/app_lifecycle_observer.dart';
 import 'src/env/env.dart';
 import 'src/notion/repository/notion_task_repository.dart';
-import 'src/notion/tasks/task_viewmodel.dart';
 import 'src/widget/widget_service.dart';
 import 'firebase_options.dart';
 
 final widgetService = WidgetService();
+
+// バックグラウンドフェッチのイベントハンドラ
+@pragma('vm:entry-point')
+void backgroundFetchHeadlessTask(HeadlessTask task) async {
+  var taskId = task.taskId;
+  var timeout = task.timeout;
+  if (timeout) {
+    print("[BackgroundFetch] Headless task timed-out: $taskId");
+    BackgroundFetch.finish(taskId);
+    return;
+  }
+  print("[BackgroundFetch] Headless event received: $taskId");
+
+  await _refreshTodayTasks();
+
+  BackgroundFetch.finish(taskId);
+}
+
+// バックグラウンドコールバック関数（iOS 17のインタラクティブウィジェット用）
+@pragma('vm:entry-point')
+Future<void> interactivityCallback(Uri? uri) async {
+  await widgetService.interactivityCallback(uri);
+}
+
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
@@ -40,11 +61,12 @@ void main() async {
 
   await widgetService.initialize(interactivityCallback);
 
+  // BackgroundFetchの初期化
+  await initBackgroundFetch();
+
   final app = ProviderScope(
     observers: trackingEnabled ? [SentryProviderObserver()] : [],
-    child: const WorkmanagerInitializer(
-      child: MyApp(),
-    ),
+    child: const MyApp(),
   );
 
   if (trackingEnabled) {
@@ -72,107 +94,44 @@ void main() async {
   FlutterNativeSplash.remove();
 }
 
-class SentryProviderObserver extends ProviderObserver {
-  void handleError(
-    ProviderBase provider,
-    Object error,
-    StackTrace? stackTrace,
-    ProviderContainer container,
-  ) {
-    // 特定のエラーを除外
-    if (_shouldIgnoreError(error, provider)) return;
-
-    Sentry.captureException(
-      error,
-      stackTrace: stackTrace,
-      withScope: (scope) {
-        scope.setTag(
-            'provider', provider.name ?? provider.runtimeType.toString());
-      },
+// BackgroundFetchの初期化
+Future<void> initBackgroundFetch() async {
+  try {
+    // バックグラウンドフェッチの設定
+    var status = await BackgroundFetch.configure(
+      BackgroundFetchConfig(
+        minimumFetchInterval: 15, // 15分間隔
+        stopOnTerminate: false,
+        enableHeadless: true,
+        requiresBatteryNotLow: false,
+        requiresCharging: false,
+        requiresStorageNotLow: false,
+        requiresDeviceIdle: false,
+        startOnBoot: true,
+      ),
+      _onBackgroundFetch,
+      _onBackgroundFetchTimeout,
     );
-  }
+    print("[BackgroundFetch] configure success: $status");
 
-  bool _shouldIgnoreError(Object error, ProviderBase provider) {
-    // Provider破棄時のStateErrorを無視
-    if (error is StateError) {
-      return true;
-    }
-
-    // BackgroundFetchのPlatformExceptionを無視
-    if (error is PlatformException && error.code == '1') {
-      return true;
-    }
-
-    return false;
+    // バックグラウンドフェッチの開始
+    BackgroundFetch.start();
+  } catch (e) {
+    print("[BackgroundFetch] configure error: $e");
   }
 }
 
-class WorkmanagerInitializer extends HookConsumerWidget {
-  final Widget child;
-  const WorkmanagerInitializer({super.key, required this.child});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    useEffect(() {
-      // Workmanagerの初期化
-      Workmanager().initialize(
-        callbackDispatcher,
-        isInDebugMode: !kReleaseMode,
-      );
-
-      // debugModeでは登録できない
-      if (kReleaseMode) {
-        // 15分ごとのタスク更新を登録
-        Workmanager().registerPeriodicTask(
-          'com.ymkokh.notionTodo.refreshTasks',
-          'refreshTasks',
-          frequency: const Duration(minutes: 15),
-          constraints: Constraints(
-            networkType: NetworkType.connected,
-          ),
-        );
-      }
-
-      return null;
-    }, []);
-
-    // アプリ復帰時にウィジェットでの更新を反映
-    useEffect(() {
-      Future<void> applyWidgetChanges() async {
-        final lastUpdated = await widgetService.getLastUpdatedTask();
-        if (lastUpdated == null) return;
-        // 今日のタスクとすべてのタスク両方に適用
-        ref.invalidate(taskViewModelProvider(filterType: FilterType.today));
-        ref.invalidate(taskViewModelProvider(filterType: FilterType.all));
-        await widgetService.clearLastUpdatedTask();
-      }
-
-      applyWidgetChanges();
-
-      final observer = AppLifecycleObserver(applyWidgetChanges);
-      WidgetsBinding.instance.addObserver(observer);
-      return () => WidgetsBinding.instance.removeObserver(observer);
-    }, []);
-
-    return child;
-  }
+// バックグラウンドフェッチのコールバック
+void _onBackgroundFetch(String taskId) async {
+  print("[BackgroundFetch] Event received: $taskId");
+  await _refreshTodayTasks();
+  BackgroundFetch.finish(taskId);
 }
 
-// Workmanagerのコールバック関数（トップレベルで定義する必要がある）
-@pragma('vm:entry-point')
-void callbackDispatcher() {
-  Workmanager().executeTask((taskName, inputData) async {
-    print("[Workmanager] Executing task: $taskName");
-    try {
-      if (taskName == 'refreshTasks') {
-        await _refreshTodayTasks();
-      }
-      return true;
-    } catch (e) {
-      print("[Workmanager] Error executing task: $e");
-      return false;
-    }
-  });
+// タイムアウト時のコールバック
+void _onBackgroundFetchTimeout(String taskId) {
+  print("[BackgroundFetch] TIMEOUT: $taskId");
+  BackgroundFetch.finish(taskId);
 }
 
 // タスク更新処理を集約したメソッド
@@ -183,7 +142,7 @@ Future<void> _refreshTodayTasks() async {
   final taskDatabase = widgetValue.taskDatabase;
 
   if (accessToken == null || taskDatabase == null) {
-    print("[Workmanager] No access token or task database found");
+    print("[BackgroundFetch] No access token or task database found");
     return;
   }
 
@@ -204,9 +163,10 @@ Future<void> _refreshTodayTasks() async {
     final notCompletedCount = tasks.where((task) => !task.isCompleted).length;
     await FlutterAppBadger.updateBadgeCount(notCompletedCount);
 
-    print("[Workmanager] Tasks refreshed successfully: ${tasks.length} tasks");
+    print(
+        "[BackgroundFetch] Tasks refreshed successfully: ${tasks.length} tasks");
   } catch (e) {
-    print("[Workmanager] Error refreshing tasks: $e");
+    print("[BackgroundFetch] Error refreshing tasks: $e");
   }
 }
 
@@ -273,8 +233,37 @@ TaskStatus _extractStatus(
   }
 }
 
-// バックグラウンドコールバック関数（iOS 17のインタラクティブウィジェット用）
-@pragma('vm:entry-point')
-Future<void> interactivityCallback(Uri? uri) async {
-  await widgetService.interactivityCallback(uri);
+class SentryProviderObserver extends ProviderObserver {
+  void handleError(
+    ProviderBase provider,
+    Object error,
+    StackTrace? stackTrace,
+    ProviderContainer container,
+  ) {
+    // 特定のエラーを除外
+    if (_shouldIgnoreError(error, provider)) return;
+
+    Sentry.captureException(
+      error,
+      stackTrace: stackTrace,
+      withScope: (scope) {
+        scope.setTag(
+            'provider', provider.name ?? provider.runtimeType.toString());
+      },
+    );
+  }
+
+  bool _shouldIgnoreError(Object error, ProviderBase provider) {
+    // Provider破棄時のStateErrorを無視
+    if (error is StateError) {
+      return true;
+    }
+
+    // BackgroundFetchのPlatformExceptionを無視
+    if (error is PlatformException && error.code == '1') {
+      return true;
+    }
+
+    return false;
+  }
 }
