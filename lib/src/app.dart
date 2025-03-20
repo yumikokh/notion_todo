@@ -126,7 +126,7 @@ class MyApp extends ConsumerWidget {
                     final tab = arguments?['tab'] as String?;
                     return TaskMainPage(initialTab: tab);
                   default:
-                    return const TaskMainPage();
+                    return const TaskMainPage(initialTab: 'today');
                 }
               },
             );
