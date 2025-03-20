@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 77;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -95,20 +95,12 @@
 			);
 			target = A87511E92D6EEC850075DFF8 /* TodayTasksWidgetExtension */;
 		};
-		A8ED17482D8022F600DA9585 /* Exceptions for "TodayTasksWidget" folder in "Runner" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				BackgroundIntent.swift,
-			);
-			target = 97C146ED1CF9000F007C117D /* Runner */;
-		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		A87511EF2D6EEC850075DFF8 /* TodayTasksWidget */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				A8ED17482D8022F600DA9585 /* Exceptions for "TodayTasksWidget" folder in "Runner" target */,
 				A87512022D6EEC870075DFF8 /* Exceptions for "TodayTasksWidget" folder in "TodayTasksWidgetExtension" target */,
 			);
 			path = TodayTasksWidget;
