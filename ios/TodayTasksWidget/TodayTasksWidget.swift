@@ -180,33 +180,7 @@ struct Provider: TimelineProvider {
   // Widgetギャラリーでの表示やプレビュー用のデータを提供する
   // ユーザーがWidgetを選択する際に表示される内容を定義
   func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> Void) {
-    let locale = getCurrentLocale()
-    let sharedDefaults = UserDefaults(suiteName: "group.com.ymkokh.notionTodo")
-    var tasks: [WidgetTask] = []
-
-    // 実際のデータの取得を試みる
-    if let tasksData = sharedDefaults?.object(forKey: "today_tasks") as? Data {
-      if let decodedTasks = try? JSONDecoder().decode([WidgetTask].self, from: tasksData) {
-        tasks = decodedTasks
-      }
-    } else if let tasksString = sharedDefaults?.string(forKey: "today_tasks") {
-      if let data = tasksString.data(using: .utf8),
-        let decodedTasks = try? JSONDecoder().decode([WidgetTask].self, from: data)
-      {
-        tasks = decodedTasks
-      }
-    }
-
-    // 実際のデータがない場合は、現実的なダミーデータを使用
-    if tasks.isEmpty {
-      tasks = [
-        WidgetTask(id: "1", title: "朝のストレッチ", isCompleted: true, isSubmitted: true, isOverdue: false),
-        WidgetTask(id: "2", title: "新しいレシピを試す", isCompleted: false, isSubmitted: true, isOverdue: false),
-        WidgetTask(id: "3", title: "公園でランニング", isCompleted: false, isSubmitted: true, isOverdue: false),
-      ]
-    }
-
-    let entry = SimpleEntry(date: Date(), tasks: tasks, locale: locale)
+    let entry = loadCurrentEntry()
     completion(entry)
   }
 
@@ -216,11 +190,32 @@ struct Provider: TimelineProvider {
   func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> Void) {
     var entries: [SimpleEntry] = []
 
-    // ユーザーデフォルトからタスクを取得
-    // App GroupのUserDefaultsを使用してアプリとWidget間でデータを共有
+    // 現在のエントリーを読み込む
+    let entry = loadCurrentEntry()
+    entries.append(entry)
+
+    // 次の更新時間（15分後）を設定
+    // この設定により、Widgetは15分ごとに更新される
+    let nextUpdateDate = Calendar.current.date(byAdding: .minute, value: 15, to: Date())!
+
+    // タイムラインを作成して完了ハンドラを呼び出す
+    // .after(nextUpdateDate)は指定した時間後に更新することを示す
+    let timeline = Timeline(entries: entries, policy: .after(nextUpdateDate))
+    completion(timeline)
+  }
+  
+  // 現在のエントリーを読み込むヘルパーメソッド
+  func loadCurrentEntry() -> SimpleEntry {
     let sharedDefaults = UserDefaults(suiteName: "group.com.ymkokh.notionTodo")
     var tasks: [WidgetTask] = []
     let locale = getCurrentLocale()
+    
+    // ペンディング中のタスク更新があれば処理
+    if let taskUpdateInfo = sharedDefaults?.object(forKey: "pending_task_update") as? [String: Any] {
+      // 処理済みなのでクリア
+      sharedDefaults?.removeObject(forKey: "pending_task_update")
+      sharedDefaults?.synchronize()
+    }
 
     // データ形式がDataの場合の処理
     if let tasksData = sharedDefaults?.object(forKey: "today_tasks") as? Data {
@@ -235,20 +230,17 @@ struct Provider: TimelineProvider {
         tasks = decodedTasks
       }
     }
+    
+    // 実際のデータがない場合は、現実的なダミーデータを使用
+    if tasks.isEmpty {
+      tasks = [
+        WidgetTask(id: "1", title: "朝のストレッチ", isCompleted: true, isSubmitted: true, isOverdue: false),
+        WidgetTask(id: "2", title: "新しいレシピを試す", isCompleted: false, isSubmitted: true, isOverdue: false),
+        WidgetTask(id: "3", title: "公園でランニング", isCompleted: false, isSubmitted: true, isOverdue: false),
+      ]
+    }
 
-    // 現在の日付でエントリーを作成
-    let currentDate = Date()
-    let entry = SimpleEntry(date: currentDate, tasks: tasks, locale: locale)
-    entries.append(entry)
-
-    // 次の更新時間（1時間後）を設定
-    // この設定により、Widgetは1時間ごとに更新される
-    let nextUpdateDate = Calendar.current.date(byAdding: .hour, value: 1, to: currentDate)!
-
-    // タイムラインを作成して完了ハンドラを呼び出す
-    // .after(nextUpdateDate)は指定した時間後に更新することを示す
-    let timeline = Timeline(entries: entries, policy: .after(nextUpdateDate))
-    completion(timeline)
+    return SimpleEntry(date: Date(), tasks: tasks, locale: locale)
   }
 }
 
