@@ -7,6 +7,18 @@ import WidgetKit
 public struct BackgroundIntent: AppIntent {
   static public var title: LocalizedStringResource = "HomeWidget Background Intent"
 
+  // ウィジェットの更新を確実に行うためのヘルパー関数
+  private func reloadWidgets() {
+    WidgetCenter.shared.reloadTimelines(ofKind: "TodayTasksWidget")
+    WidgetCenter.shared.reloadTimelines(ofKind: "TaskProgressWidget")
+    
+    // 確実に更新されるよう、少し遅延させて再度更新
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+      WidgetCenter.shared.reloadTimelines(ofKind: "TodayTasksWidget")
+      WidgetCenter.shared.reloadTimelines(ofKind: "TaskProgressWidget")
+    }
+  }
+
   @Parameter(title: "Widget URI")
   var url: URL?
 
@@ -40,57 +52,64 @@ public struct BackgroundIntent: AppIntent {
         
         // ウィジェットの見た目を即座に更新するために、タスクデータを直接更新
         if let tasksData = sharedDefaults?.object(forKey: "today_tasks") as? Data,
-           let decodedTasks = try? JSONSerialization.jsonObject(with: tasksData) as? [[String: Any]] {
+           let decodedTasks = try? JSONDecoder().decode([WidgetTask].self, from: tasksData) {
           
           // タスクを更新
-          var updatedTasks = [[String: Any]]()
-          for var task in decodedTasks {
-            if let id = task["id"] as? String, id == taskId {
-              task["isCompleted"] = isCompleted
-              task["isSubmitted"] = false
-              task["isOverdue"] = false
+          var updatedTasks = decodedTasks.map { task -> WidgetTask in
+            if task.id == taskId {
+              return WidgetTask(
+                id: taskId,
+                title: task.title,
+                isCompleted: isCompleted,
+                isSubmitted: false,
+                isOverdue: false
+              )
             }
-            updatedTasks.append(task)
+            return task
           }
           
           // 完了したタスクは1秒後に削除（widget_service.dartの_completeTaskと同様）
           if isCompleted {
             // まず更新だけ行う
-            if let encodedTasks = try? JSONSerialization.data(withJSONObject: updatedTasks) {
+            if let encodedTasks = try? JSONEncoder().encode(updatedTasks) {
               sharedDefaults?.set(encodedTasks, forKey: "today_tasks")
+              sharedDefaults?.synchronize()
+              
+              // 両方のウィジェットを更新
+              reloadWidgets()
             }
             
             // 1秒後に削除処理を実行
             let taskId = taskId // キャプチャ用にローカル変数に保存
-            let delayTime = DispatchTime.now() + 1.0
-            DispatchQueue.main.asyncAfter(deadline: delayTime, execute: DispatchWorkItem(block: {
+            DispatchQueue.global(qos: .background).asyncAfter(deadline: .now() + 1.0) {
               if let tasksData = sharedDefaults?.object(forKey: "today_tasks") as? Data,
-                 let currentTasks = try? JSONSerialization.jsonObject(with: tasksData) as? [[String: Any]] {
+                 let currentTasks = try? JSONDecoder().decode([WidgetTask].self, from: tasksData) {
                 
                 // 完了したタスクを削除
                 let filteredTasks = currentTasks.filter { task in
-                  if let id = task["id"] as? String,
-                     let completed = task["isCompleted"] as? Bool {
-                    return id != taskId || !completed
-                  }
-                  return true
+                  return task.id != taskId || !task.isCompleted
                 }
                 
                 // 更新したタスクデータを保存
-                if let encodedTasks = try? JSONSerialization.data(withJSONObject: filteredTasks) {
+                if let encodedTasks = try? JSONEncoder().encode(filteredTasks) {
                   sharedDefaults?.set(encodedTasks, forKey: "today_tasks")
                   sharedDefaults?.synchronize()
                   
-                  // 両方のウィジェットを更新
-                  WidgetCenter.shared.reloadTimelines(ofKind: "TodayTasksWidget")
-                  WidgetCenter.shared.reloadTimelines(ofKind: "TaskProgressWidget")
+                  // メインスレッドでウィジェットを更新
+                  DispatchQueue.main.async {
+                    reloadWidgets()
+                  }
                 }
               }
-            }))
+            }
           } else {
             // 更新したタスクデータを保存
-            if let encodedTasks = try? JSONSerialization.data(withJSONObject: updatedTasks) {
+            if let encodedTasks = try? JSONEncoder().encode(updatedTasks) {
               sharedDefaults?.set(encodedTasks, forKey: "today_tasks")
+              sharedDefaults?.synchronize()
+              
+              // 両方のウィジェットを更新
+              reloadWidgets()
             }
           }
         }
@@ -98,8 +117,7 @@ public struct BackgroundIntent: AppIntent {
         sharedDefaults?.synchronize()
         
         // 両方のウィジェットを更新
-        WidgetCenter.shared.reloadTimelines(ofKind: "TodayTasksWidget")
-        WidgetCenter.shared.reloadTimelines(ofKind: "TaskProgressWidget")
+        reloadWidgets()
       }
     }
     
