@@ -2,14 +2,19 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
-import 'package:background_fetch/background_fetch.dart';
+import 'package:workmanager/workmanager.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+
+import 'src/notion/model/task.dart';
+import 'src/notion/model/task_database.dart';
+import 'src/notion/model/property.dart';
 
 import 'src/app.dart';
 import 'src/common/app_lifecycle_observer.dart';
@@ -37,7 +42,7 @@ void main() async {
 
   final app = ProviderScope(
     observers: trackingEnabled ? [SentryProviderObserver()] : [],
-    child: const BackgroundFetchInitializer(
+    child: const WorkmanagerInitializer(
       child: MyApp(),
     ),
   );
@@ -102,26 +107,29 @@ class SentryProviderObserver extends ProviderObserver {
   }
 }
 
-class BackgroundFetchInitializer extends HookConsumerWidget {
+class WorkmanagerInitializer extends HookConsumerWidget {
   final Widget child;
-  const BackgroundFetchInitializer({super.key, required this.child});
+  const WorkmanagerInitializer({super.key, required this.child});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     useEffect(() {
-      BackgroundFetch.configure(
-        BackgroundFetchConfig(minimumFetchInterval: 15),
-        (String taskId) async {
-          print("[BackgroundFetch] Event received $taskId");
-          // fetchとバッジ更新
-          ref.invalidate(taskViewModelProvider(filterType: FilterType.today));
-          BackgroundFetch.finish(taskId);
-        },
-        (String taskId) {
-          print("[BackgroundFetch] TASK TIMEOUT taskId: $taskId");
-          BackgroundFetch.finish(taskId);
-        },
+      // Workmanagerの初期化
+      Workmanager().initialize(
+        callbackDispatcher,
+        isInDebugMode: !kReleaseMode,
       );
+
+      // 15分ごとのタスク更新を登録
+      Workmanager().registerPeriodicTask(
+        'com.ymkokh.notionTodo.refreshTasks',
+        'refreshTasks',
+        frequency: const Duration(minutes: 15),
+        constraints: Constraints(
+          networkType: NetworkType.connected,
+        ),
+      );
+
       return null;
     }, []);
 
@@ -144,6 +152,106 @@ class BackgroundFetchInitializer extends HookConsumerWidget {
     }, []);
 
     return child;
+  }
+}
+
+// Workmanagerのコールバック関数（トップレベルで定義する必要がある）
+@pragma('vm:entry-point')
+void callbackDispatcher() {
+  Workmanager().executeTask((taskName, inputData) async {
+    print("[Workmanager] Executing task: $taskName");
+    try {
+      if (taskName == 'refreshTasks') {
+        // WidgetRefを使わずに直接リポジトリを使用してタスクを更新
+        final widgetValue = await widgetService.value;
+        final accessToken = widgetValue.accessToken;
+        final taskDatabase = widgetValue.taskDatabase;
+
+        if (accessToken != null && taskDatabase != null) {
+          final repository = NotionTaskRepository(accessToken, taskDatabase);
+
+          // タスクを取得
+          final result = await repository.fetchPages(FilterType.today, true);
+
+          // タスクをTaskオブジェクトに変換
+          final tasks = (result['results'] as List)
+              .map((page) => Task(
+                    id: page['id'],
+                    title: _extractTitle(page, taskDatabase),
+                    status: _extractStatus(page, taskDatabase),
+                    dueDate: _extractDate(page, taskDatabase),
+                    url: page['url'],
+                  ))
+              .toList();
+
+          // ウィジェットを更新
+          await widgetService.applyTasks(tasks);
+
+          // バッジを更新
+          final notCompletedCount =
+              tasks.where((task) => !task.isCompleted).length;
+          await FlutterAppBadger.updateBadgeCount(notCompletedCount);
+
+          print(
+              "[Workmanager] Tasks refreshed successfully: ${tasks.length} tasks");
+        } else {
+          print("[Workmanager] No access token or task database found");
+        }
+      }
+      return true;
+    } catch (e) {
+      print("[Workmanager] Error executing task: $e");
+      return false;
+    }
+  });
+}
+
+// TaskServiceのヘルパーメソッドをコピー
+String _extractTitle(Map<String, dynamic> data, TaskDatabase taskDatabase) {
+  final titleProperty = data['properties']
+      .entries
+      .firstWhere((e) => e.value['type'] == 'title')
+      .value['title'];
+  return titleProperty?.length > 0 ? titleProperty[0]['plain_text'] : '';
+}
+
+TaskDate? _extractDate(Map<String, dynamic> data, TaskDatabase taskDatabase) {
+  final dateProperty = taskDatabase.date.name;
+  final datePropertyData = data['properties'][dateProperty];
+  if (datePropertyData == null) {
+    return null;
+  }
+  final date = datePropertyData['date'];
+  if (date == null) {
+    return null;
+  }
+  return TaskDate(
+    start: NotionDateTime.fromString(date['start']),
+    end: date['end'] != null ? NotionDateTime.fromString(date['end']) : null,
+  );
+}
+
+TaskStatus _extractStatus(
+    Map<String, dynamic> data, TaskDatabase taskDatabase) {
+  final property = taskDatabase.status;
+  switch (property) {
+    case CheckboxCompleteStatusProperty():
+      return TaskStatus.checkbox(
+          checked: data['properties'][property.name]['checkbox']);
+    case StatusCompleteStatusProperty(status: var status):
+      // statusが未指定の場合がある
+      if (data['properties'][property.name]['status'] == null) {
+        return const TaskStatus.status(group: null, option: null);
+      }
+
+      final optionId = data['properties'][property.name]['status']['id'];
+      final group = status.groups
+          .where((group) => group.optionIds.contains(optionId))
+          .firstOrNull;
+      final option =
+          status.options.where((option) => option.id == optionId).firstOrNull;
+
+      return TaskStatus.status(group: group, option: option);
   }
 }
 
