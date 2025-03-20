@@ -444,7 +444,7 @@ struct TodayTasksWidgetEntryView: View {
           
           Spacer()
         }
-        .padding(.bottom, 4)
+        .padding(.bottom, 8)
         
         // タスク一覧（常に一定の高さを確保）
         TaskListView(entry: entry, tasks: entry.displayTasks, maxCount: getMaxTaskCount(), locale: entry.locale)
