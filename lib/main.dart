@@ -162,41 +162,7 @@ void callbackDispatcher() {
     print("[Workmanager] Executing task: $taskName");
     try {
       if (taskName == 'refreshTasks') {
-        // WidgetRefを使わずに直接リポジトリを使用してタスクを更新
-        final widgetValue = await widgetService.value;
-        final accessToken = widgetValue.accessToken;
-        final taskDatabase = widgetValue.taskDatabase;
-
-        if (accessToken != null && taskDatabase != null) {
-          final repository = NotionTaskRepository(accessToken, taskDatabase);
-
-          // タスクを取得
-          final result = await repository.fetchPages(FilterType.today, true);
-
-          // タスクをTaskオブジェクトに変換
-          final tasks = (result['results'] as List)
-              .map((page) => Task(
-                    id: page['id'],
-                    title: _extractTitle(page, taskDatabase),
-                    status: _extractStatus(page, taskDatabase),
-                    dueDate: _extractDate(page, taskDatabase),
-                    url: page['url'],
-                  ))
-              .toList();
-
-          // ウィジェットを更新
-          await widgetService.applyTasks(tasks);
-
-          // バッジを更新
-          final notCompletedCount =
-              tasks.where((task) => !task.isCompleted).length;
-          await FlutterAppBadger.updateBadgeCount(notCompletedCount);
-
-          print(
-              "[Workmanager] Tasks refreshed successfully: ${tasks.length} tasks");
-        } else {
-          print("[Workmanager] No access token or task database found");
-        }
+        await _refreshTodayTasks();
       }
       return true;
     } catch (e) {
@@ -204,6 +170,55 @@ void callbackDispatcher() {
       return false;
     }
   });
+}
+
+// タスク更新処理を集約したメソッド
+Future<void> _refreshTodayTasks() async {
+  // WidgetServiceからアクセストークンとデータベース情報を取得
+  final widgetValue = await widgetService.value;
+  final accessToken = widgetValue.accessToken;
+  final taskDatabase = widgetValue.taskDatabase;
+
+  if (accessToken == null || taskDatabase == null) {
+    print("[Workmanager] No access token or task database found");
+    return;
+  }
+
+  try {
+    // リポジトリを初期化
+    final repository = NotionTaskRepository(accessToken, taskDatabase);
+
+    // 今日のタスクを取得
+    final result = await repository.fetchPages(FilterType.today, true);
+
+    // 結果をTaskオブジェクトに変換
+    final tasks = _convertToTasks(result, taskDatabase);
+
+    // ウィジェットを更新
+    await widgetService.applyTasks(tasks);
+
+    // バッジを更新
+    final notCompletedCount = tasks.where((task) => !task.isCompleted).length;
+    await FlutterAppBadger.updateBadgeCount(notCompletedCount);
+
+    print("[Workmanager] Tasks refreshed successfully: ${tasks.length} tasks");
+  } catch (e) {
+    print("[Workmanager] Error refreshing tasks: $e");
+  }
+}
+
+// APIレスポンスをTaskオブジェクトに変換するヘルパーメソッド
+List<Task> _convertToTasks(
+    Map<String, dynamic> result, TaskDatabase taskDatabase) {
+  return (result['results'] as List)
+      .map((page) => Task(
+            id: page['id'],
+            title: _extractTitle(page, taskDatabase),
+            status: _extractStatus(page, taskDatabase),
+            dueDate: _extractDate(page, taskDatabase),
+            url: page['url'],
+          ))
+      .toList();
 }
 
 // TaskServiceのヘルパーメソッドをコピー

@@ -9,13 +9,8 @@ import workmanager
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    // HomeWidgetのプラグイン登録コールバックを設定
+    // HomeWidgetのプラグイン登録コールバックを設定（iOS 17以上）
     if #available(iOS 17, *) {
-      HomeWidgetBackgroundWorker.setPluginRegistrantCallback { registry in
-        GeneratedPluginRegistrant.register(with: registry)
-      }
-    } else {
-      // iOS 17未満でもバックグラウンド処理を有効にする
       HomeWidgetBackgroundWorker.setPluginRegistrantCallback { registry in
         GeneratedPluginRegistrant.register(with: registry)
       }
