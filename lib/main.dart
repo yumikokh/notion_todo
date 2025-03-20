@@ -120,15 +120,18 @@ class WorkmanagerInitializer extends HookConsumerWidget {
         isInDebugMode: !kReleaseMode,
       );
 
-      // 15分ごとのタスク更新を登録
-      Workmanager().registerPeriodicTask(
-        'com.ymkokh.notionTodo.refreshTasks',
-        'refreshTasks',
-        frequency: const Duration(minutes: 15),
-        constraints: Constraints(
-          networkType: NetworkType.connected,
-        ),
-      );
+      // debugModeでは登録できない
+      if (kReleaseMode) {
+        // 15分ごとのタスク更新を登録
+        Workmanager().registerPeriodicTask(
+          'com.ymkokh.notionTodo.refreshTasks',
+          'refreshTasks',
+          frequency: const Duration(minutes: 15),
+          constraints: Constraints(
+            networkType: NetworkType.connected,
+          ),
+        );
+      }
 
       return null;
     }, []);
