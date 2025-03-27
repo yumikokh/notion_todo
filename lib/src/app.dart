@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -29,19 +28,21 @@ import 'notion/repository/notion_task_repository.dart';
 class MyApp extends HookConsumerWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  static WidgetService widgetService = WidgetService();
   static bool _isInitialized = false;
+  static GlobalKey<NavigatorState> globalNavigatorKey =
+      GlobalKey<NavigatorState>();
+  static GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
+      GlobalKey<ScaffoldMessengerState>();
 
-  void _initializeApp(BuildContext context, WidgetRef ref,
-      GlobalKey<NavigatorState> globalNavigatorKey) {
+  void _initializeApp(BuildContext context, WidgetRef ref) {
     if (_isInitialized) return;
 
     // アプリ起動時にアップデートチェックを実行
     AppVersionNotifier.checkAndShow(context, ref);
 
     // ウィジェットからの起動処理
-    widgetService.registerInitialLaunchFromWidget(globalNavigatorKey, ref);
-    widgetService.startListeningWidgetClicks(globalNavigatorKey, ref);
+    WidgetService.registerInitialLaunchFromWidget(globalNavigatorKey, ref);
+    WidgetService.startListeningWidgetClicks(globalNavigatorKey, ref);
 
     _isInitialized = true;
   }
@@ -50,24 +51,21 @@ class MyApp extends HookConsumerWidget {
   Widget build(BuildContext context, ref) {
     final settings = ref.watch(settingsViewModelProvider);
     final settingsViewModel = ref.read(settingsViewModelProvider.notifier);
-    final scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
 
     final TextTheme textTheme = createTextTheme(context, "Roboto", "Roboto");
     final MaterialTheme theme = MaterialTheme(textTheme);
 
     DateHelper().setup(settings.locale.languageCode);
 
-    final globalNavigatorKey = GlobalKey<NavigatorState>();
-
     // アプリのライフサイクル管理
     useEffect(() {
       Future<void> applyWidgetChanges() async {
-        final lastUpdated = await widgetService.getLastUpdatedTask();
+        final lastUpdated = await WidgetService.getLastUpdatedTask();
         if (lastUpdated == null) return;
         // 今日のタスクとすべてのタスク両方に適用
         ref.invalidate(taskViewModelProvider(filterType: FilterType.today));
         ref.invalidate(taskViewModelProvider(filterType: FilterType.all));
-        await widgetService.clearLastUpdatedTask();
+        await WidgetService.clearLastUpdatedTask();
       }
 
       applyWidgetChanges();
@@ -110,7 +108,7 @@ class MyApp extends HookConsumerWidget {
           builder: (context, child) {
             if (!_isInitialized) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
-                _initializeApp(context, ref, globalNavigatorKey);
+                _initializeApp(context, ref);
               });
             }
             return child ?? const SizedBox.shrink();

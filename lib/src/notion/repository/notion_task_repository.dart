@@ -430,8 +430,7 @@ NotionTaskRepository? notionTaskRepository(Ref ref) {
   }
 
   // ウィジェットの設定を保存
-  final service = WidgetService();
-  service.sendDatabaseSettings(accessToken, taskDatabase);
+  WidgetService.sendDatabaseSettings(accessToken, taskDatabase);
 
   return NotionTaskRepository(accessToken, taskDatabase);
 }

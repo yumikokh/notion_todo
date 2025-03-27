@@ -21,8 +21,6 @@ import 'src/notion/repository/notion_task_repository.dart';
 import 'src/widget/widget_service.dart';
 import 'firebase_options.dart';
 
-final widgetService = WidgetService();
-
 // バックグラウンドフェッチのイベントハンドラ
 @pragma('vm:entry-point')
 void backgroundFetchHeadlessTask(HeadlessTask task) async {
@@ -43,7 +41,7 @@ void backgroundFetchHeadlessTask(HeadlessTask task) async {
 // バックグラウンドコールバック関数（iOS 17のインタラクティブウィジェット用）
 @pragma('vm:entry-point')
 Future<void> interactivityCallback(Uri? uri) async {
-  await widgetService.interactivityCallback(uri);
+  await WidgetService.interactivityCallback(uri);
 }
 
 void main() async {
@@ -59,7 +57,8 @@ void main() async {
   await FirebaseAnalytics.instance
       .setAnalyticsCollectionEnabled(trackingEnabled);
 
-  await widgetService.initialize(interactivityCallback);
+  // ウィジェットの初期化
+  await WidgetService.initialize(interactivityCallback);
 
   // BackgroundFetchの初期化
   await initBackgroundFetch();
@@ -136,37 +135,25 @@ void _onBackgroundFetchTimeout(String taskId) {
 
 // タスク更新処理を集約したメソッド
 Future<void> _refreshTodayTasks() async {
-  // WidgetServiceからアクセストークンとデータベース情報を取得
-  final widgetValue = await widgetService.value;
-  final accessToken = widgetValue.accessToken;
-  final taskDatabase = widgetValue.taskDatabase;
+  // ウィジェットの更新
+  final widgetValue = await WidgetService.value;
+  if (widgetValue.accessToken != null && widgetValue.taskDatabase != null) {
+    try {
+      final repository = NotionTaskRepository(
+          widgetValue.accessToken!, widgetValue.taskDatabase!);
+      final result = await repository.fetchPages(FilterType.today, true);
+      final tasks = _convertToTasks(result, widgetValue.taskDatabase!);
+      await WidgetService.applyTasks(tasks);
 
-  if (accessToken == null || taskDatabase == null) {
-    print("[BackgroundFetch] No access token or task database found");
-    return;
-  }
+      // バッジを更新
+      final notCompletedCount = tasks.where((task) => !task.isCompleted).length;
+      await FlutterAppBadger.updateBadgeCount(notCompletedCount);
 
-  try {
-    // リポジトリを初期化
-    final repository = NotionTaskRepository(accessToken, taskDatabase);
-
-    // 今日のタスクを取得
-    final result = await repository.fetchPages(FilterType.today, true);
-
-    // 結果をTaskオブジェクトに変換
-    final tasks = _convertToTasks(result, taskDatabase);
-
-    // ウィジェットを更新
-    await widgetService.applyTasks(tasks);
-
-    // バッジを更新
-    final notCompletedCount = tasks.where((task) => !task.isCompleted).length;
-    await FlutterAppBadger.updateBadgeCount(notCompletedCount);
-
-    print(
-        "[BackgroundFetch] Tasks refreshed successfully: ${tasks.length} tasks");
-  } catch (e) {
-    print("[BackgroundFetch] Error refreshing tasks: $e");
+      print(
+          "[BackgroundFetch] Tasks refreshed successfully: ${tasks.length} tasks");
+    } catch (e) {
+      print("[BackgroundFetch] Error refreshing tasks: $e");
+    }
   }
 }
 
