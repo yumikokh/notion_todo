@@ -266,6 +266,8 @@ class WidgetService {
       return;
     }
 
+    print('[WidgetService] _completeTask 1: $id, $isCompleted');
+
     final updatedTasks = tasks
         .map((task) => task.id == id
             ? WidgetTask(
@@ -278,24 +280,36 @@ class WidgetService {
         .toList();
     await _sendTasks(updatedTasks);
 
-    // 完了したタスクは1秒後にウィジェットから削除
-    if (isCompleted) {
-      Future.delayed(const Duration(seconds: 1), () async {
-        final currentTasks = (await this.value).tasks;
-        if (currentTasks == null) return;
-
-        final filteredTasks = currentTasks
-            .where((task) => task.id != id || !task.isCompleted)
-            .toList();
-        if (filteredTasks.length != currentTasks.length) {
-          await _sendTasks(filteredTasks);
-        }
-      });
-    }
+    print('[WidgetService] _completeTask 2: $id, $isCompleted');
 
     await _saveLastUpdatedTask(id, isCompleted);
 
     _updateTaskInNotion(id, isCompleted);
+
+    // 完了したタスクは1秒後にウィジェットから削除
+    if (isCompleted) {
+      Future.delayed(const Duration(seconds: 1), () async {
+        print('[WidgetService] _completeTask 3: $id, $isCompleted');
+        final currentTasks = (await this.value).tasks;
+        if (currentTasks == null) return;
+        print('[WidgetService] _completeTask 4: $id, $isCompleted');
+
+        final updatedTasks = currentTasks
+            .map((task) => task.id == id
+                ? !task.isOverdue
+                    ? WidgetTask(
+                        id: id,
+                        title: task.title,
+                        isCompleted: true,
+                        isSubmitted: true,
+                        isOverdue: false)
+                    : null
+                : task)
+            .whereType<WidgetTask>()
+            .toList();
+        await _sendTasks(updatedTasks);
+      });
+    }
   }
 
   // Notionリポジトリを直接使用してタスクを更新するメソッド
@@ -326,11 +340,14 @@ class WidgetService {
   }
 
   _updateWidget() async {
+    // iOSでは = WidgetCenter.shared.reloadTimelines
     await HomeWidget.updateWidget(
+      name: 'TodayTasksWidgetProvider',
       androidName: 'TodayTasksWidgetProvider',
       iOSName: 'TodayTasksWidget',
     );
     await HomeWidget.updateWidget(
+      name: 'TaskProgressWidgetProvider',
       androidName: 'TaskProgressWidgetProvider',
       iOSName: 'TaskProgressWidget',
     );
