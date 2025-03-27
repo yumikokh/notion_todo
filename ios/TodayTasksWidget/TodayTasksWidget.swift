@@ -198,11 +198,11 @@ struct Provider: TimelineProvider {
   // 実際のWidgetデータと更新スケジュールを提供する最も重要なメソッド
   // いつ、どのようなデータでWidgetを更新するかを定義
   func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> Void) {
-    var entries: [SimpleEntry] = []
+    // log
+    NSLog("LOG: getTimeline \(Date())")
 
     // 現在のエントリーを読み込む
     let entry = loadCurrentEntry()
-    entries.append(entry)
 
     // 次の更新時間（15分後）を設定
     // この設定により、Widgetは15分ごとに更新される
@@ -210,7 +210,7 @@ struct Provider: TimelineProvider {
 
     // タイムラインを作成して完了ハンドラを呼び出す
     // .after(nextUpdateDate)は指定した時間後に更新することを示す
-    let timeline = Timeline(entries: entries, policy: .after(nextUpdateDate))
+    let timeline = Timeline(entries: [entry], policy: .after(nextUpdateDate))
     completion(timeline)
   }
   
@@ -242,6 +242,7 @@ struct Provider: TimelineProvider {
     }
     
     // 実際のデータがない場合は、現実的なダミーデータを使用
+    // TODO: DB未設定時の表示
     if tasks.isEmpty {
       tasks = [
         WidgetTask(id: "1", title: "朝のストレッチ", isCompleted: true, isSubmitted: true, isOverdue: false),
@@ -250,7 +251,10 @@ struct Provider: TimelineProvider {
       ]
     }
 
-    return SimpleEntry(date: Date(), tasks: tasks, locale: locale)
+    let entry = SimpleEntry(date: Date(), tasks: tasks, locale: locale)
+    NSLog("LOG: tasks \(tasks.count) \(entry.displayTasks.count)")
+
+    return entry
   }
 }
 
@@ -325,9 +329,7 @@ struct ProgressCircleView: View {
 // MARK: - 共通タスク一覧表示コンポーネント
 struct TaskListView: View {
   var entry: SimpleEntry
-  var tasks: [WidgetTask]
   var maxCount: Int
-  var locale: String
   @Environment(\.openURL) private var openURL
   @Environment(\.widgetFamily) var widgetFamily
 
@@ -340,7 +342,7 @@ struct TaskListView: View {
           Image(systemName: "checkmark.circle")
             .font(.system(size: 30))
             .foregroundColor(.secondary)
-          Text(LocalizedStrings.getLocalizedString(for: "widget_tasks_completed", locale: locale))
+          Text(LocalizedStrings.getLocalizedString(for: "widget_tasks_completed", locale: entry.locale))
             .font(.system(size: 12))
             .foregroundColor(.secondary)
             .padding(.top, 2)
@@ -354,7 +356,7 @@ struct TaskListView: View {
       HStack {
         Spacer()
         VStack {
-          Text(LocalizedStrings.getLocalizedString(for: "widget_tasks_empty", locale: locale))
+          Text(LocalizedStrings.getLocalizedString(for: "widget_tasks_empty", locale: entry.locale))
             .font(.subheadline)
             .foregroundColor(.secondary)
           .padding(.bottom, 10)
@@ -363,6 +365,7 @@ struct TaskListView: View {
       }
       Spacer()
     } else {
+        let tasks = entry.displayTasks
       VStack(alignment: .leading, spacing: 8) {
         ForEach(0..<min(maxCount, tasks.count), id: \.self) { index in
           let task = tasks[index]
@@ -449,7 +452,7 @@ struct TodayTasksWidgetEntryView: View {
         .padding(.bottom, 8)
         
         // タスク一覧（常に一定の高さを確保）
-        TaskListView(entry: entry, tasks: entry.displayTasks, maxCount: getMaxTaskCount(), locale: entry.locale)
+        TaskListView(entry: entry, maxCount: getMaxTaskCount())
           .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
       }
       .containerBackground(.fill.tertiary, for: .widget)
@@ -475,8 +478,7 @@ struct TodayTasksWidgetEntryView: View {
 
           // タスク一覧
           TaskListView(
-            entry: entry, tasks: entry.displayTasks, maxCount: getMaxTaskCount(),
-            locale: entry.locale)
+            entry: entry, maxCount: getMaxTaskCount())
         }
         .padding([.leading, .trailing], 4)
 
