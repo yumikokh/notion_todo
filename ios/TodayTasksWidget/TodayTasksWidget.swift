@@ -676,27 +676,36 @@ struct LockScreenProgressView: View {
   var entry: SimpleEntry
 
   var body: some View {
+    let lineWidth: CGFloat = 6
+    let opacity: CGFloat = 0.2
     if entry.hasTaskDatabase {
-      if entry.isCompleted {
-        // 全タスク完了時
-        Image(systemName: "checkmark")
-          .font(.system(size: 20))
-      } else if entry.isEmpty {
-        // タスクなし
-        Text("0")
-          .font(.system(size: 20, weight: .medium))
-      } else {
-        // 進捗表示
-        Gauge(value: entry.progressPercentage) {
-          Text("\(entry.remainingTasksCount)")
-            .font(.system(size: 20, weight: .medium))
-        }
-        .gaugeStyle(.accessoryCircular)
+      // 進捗表示
+      ZStack {
+        // 背景の円
+        Circle()
+          .stroke(.white.opacity(opacity), lineWidth: lineWidth)
+
+        // 進捗を示す円
+        Circle()
+          .trim(from: 0, to: entry.progressPercentage)
+          .stroke(.white, style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
+          .rotationEffect(.degrees(-90))
+          .opacity(0.5)
+
+        // ロゴ
+        Image("logo").opacity(0.8).scaleEffect(1.1)
+
       }
     } else {
       // データベース未設定時
-      Image(systemName: "exclamationmark.triangle")
-        .font(.system(size: 20))
+      ZStack {
+        Circle()
+          .stroke(.white.opacity(opacity), lineWidth: lineWidth)
+        Image(systemName: "exclamationmark.triangle")
+          .font(.system(size: 24))
+          .padding(EdgeInsets(top: 0, leading: 0, bottom: 4, trailing: 0))
+          .opacity(0.8)
+      }
     }
   }
 }
@@ -791,7 +800,6 @@ let sampleTasks = [
 
 let sampleOneTask = [
   WidgetTask(id: "1", title: "ヨガ", isCompleted: false, isSubmitted: true, isOverdue: false)
-
 ]
 
 let sampleEntry = SimpleEntry(
