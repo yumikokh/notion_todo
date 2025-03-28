@@ -1,5 +1,8 @@
+import AppIntents
+import Foundation
 import SwiftUI
 import WidgetKit
+import home_widget
 
 // MARK: - WidgetTask
 // ウィジェットで表示するタスクデータ構造
@@ -12,7 +15,8 @@ struct WidgetTask: Codable, Identifiable {
 
   // タスクがない場合の特別なケース
   static var empty: WidgetTask {
-    return WidgetTask(id: "empty", title: "タスクがありません", isCompleted: false, isSubmitted: false, isOverdue: false)
+    return WidgetTask(
+      id: "empty", title: "タスクがありません", isCompleted: false, isSubmitted: false, isOverdue: false)
   }
 }
 
@@ -59,11 +63,6 @@ struct LocalizedStrings {
 struct TodayTasksWidget: Widget {
   let kind: String = "TodayTasksWidget"
 
-  init() {
-    // ウィジェット初期化時のログ
-    NSLog("TodayTasksWidget initialized")
-  }
-
   var body: some WidgetConfiguration {
     StaticConfiguration(kind: kind, provider: Provider()) { entry in
       TodayTasksWidgetEntryView(entry: entry)
@@ -81,11 +80,6 @@ struct TodayTasksWidget: Widget {
 // 進捗ウィジェットの定義
 struct TaskProgressWidget: Widget {
   let kind: String = "TaskProgressWidget"
-
-  init() {
-    // ウィジェット初期化時のログ
-    NSLog("TaskProgressWidget initialized")
-  }
 
   var body: some WidgetConfiguration {
     StaticConfiguration(kind: kind, provider: Provider()) { entry in
@@ -179,9 +173,12 @@ struct Provider: TimelineProvider {
     SimpleEntry(
       date: Date(),
       tasks: [
-        WidgetTask(id: "1", title: "朝のストレッチ", isCompleted: true, isSubmitted: true, isOverdue: false),
-        WidgetTask(id: "2", title: "新しいレシピを試す", isCompleted: false, isSubmitted: true, isOverdue: false),
-        WidgetTask(id: "3", title: "公園でランニング", isCompleted: false, isSubmitted: true, isOverdue: false),
+        WidgetTask(
+          id: "1", title: "朝のストレッチ", isCompleted: true, isSubmitted: true, isOverdue: false),
+        WidgetTask(
+          id: "2", title: "新しいレシピを試す", isCompleted: false, isSubmitted: true, isOverdue: false),
+        WidgetTask(
+          id: "3", title: "公園でランニング", isCompleted: false, isSubmitted: true, isOverdue: false),
       ],
       locale: getCurrentLocale())
   }
@@ -198,9 +195,6 @@ struct Provider: TimelineProvider {
   // 実際のWidgetデータと更新スケジュールを提供する最も重要なメソッド
   // いつ、どのようなデータでWidgetを更新するかを定義
   func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> Void) {
-    // log
-    NSLog("LOG: getTimeline \(Date())")
-
     // 現在のエントリーを読み込む
     let entry = loadCurrentEntry()
 
@@ -213,15 +207,15 @@ struct Provider: TimelineProvider {
     let timeline = Timeline(entries: [entry], policy: .after(nextUpdateDate))
     completion(timeline)
   }
-  
+
   // 現在のエントリーを読み込むヘルパーメソッド
   func loadCurrentEntry() -> SimpleEntry {
     let sharedDefaults = UserDefaults(suiteName: "group.com.ymkokh.notionTodo")
     var tasks: [WidgetTask] = []
     let locale = getCurrentLocale()
-    
+
     // ペンディング中のタスク更新があれば処理
-    if let taskUpdateInfo = sharedDefaults?.object(forKey: "pending_task_update") as? [String: Any] {
+    if sharedDefaults?.object(forKey: "pending_task_update") != nil {
       // 処理済みなのでクリア
       sharedDefaults?.removeObject(forKey: "pending_task_update")
       sharedDefaults?.synchronize()
@@ -240,23 +234,51 @@ struct Provider: TimelineProvider {
         tasks = decodedTasks
       }
     }
-    
+
     // 実際のデータがない場合は、現実的なダミーデータを使用
     // TODO: DB未設定時の表示
     if tasks.isEmpty {
       tasks = [
-        WidgetTask(id: "1", title: "朝のストレッチ", isCompleted: true, isSubmitted: true, isOverdue: false),
-        WidgetTask(id: "2", title: "新しいレシピを試す", isCompleted: false, isSubmitted: true, isOverdue: false),
-        WidgetTask(id: "3", title: "公園でランニング", isCompleted: false, isSubmitted: true, isOverdue: false),
+        WidgetTask(
+          id: "1", title: "朝のストレッチ", isCompleted: true, isSubmitted: true, isOverdue: false),
+        WidgetTask(
+          id: "2", title: "新しいレシピを試す", isCompleted: false, isSubmitted: true, isOverdue: false),
+        WidgetTask(
+          id: "3", title: "公園でランニング", isCompleted: false, isSubmitted: true, isOverdue: false),
       ]
     }
 
     let entry = SimpleEntry(date: Date(), tasks: tasks, locale: locale)
-    NSLog("LOG: tasks \(tasks.count) \(entry.displayTasks.count)")
 
     return entry
   }
 }
+
+////////
+/// @available(iOS 17, *)
+public struct BackgroundIntent: AppIntent {
+  static public var title: LocalizedStringResource = "HomeWidget Background Intent"
+
+  @Parameter(title: "Widget URI")
+  var url: URL?
+
+  public init(url: URL?) {
+    self.url = url
+  }
+
+  public func perform() async throws -> some IntentResult {
+    await HomeWidgetBackgroundWorker.run(
+      url: url,
+      appGroup: "group.com.ymkokh.notionTodo")
+
+    return .result()
+  }
+}
+
+// アプリをバックグラウンドから起動するための拡張
+@available(iOS 17, *)
+@available(iOSApplicationExtension, unavailable)
+extension BackgroundIntent: ForegroundContinuableIntent {}
 
 ///////
 
@@ -268,37 +290,39 @@ struct ProgressCircleView: View {
 
   var body: some View {
     ZStack {
-      if (entry.isEmpty || entry.isCompleted) {
-        let color = entry.isEmpty ? Color.gray.opacity(0.15) : Color.black;
+      if entry.isEmpty || entry.isCompleted {
+        let color = entry.isEmpty ? Color.gray.opacity(0.15) : Color.black
         Circle()
           .stroke(color, lineWidth: 10)
           .frame(width: size, height: size)
       } else {
-      // タスクの数だけ円弧を描画
-      let edge = 0.003;
-      ForEach(0..<entry.totalTasksCount, id: \.self) { index in
-        Circle()
-          .trim(
-            from: CGFloat(index) / CGFloat(entry.totalTasksCount) + edge,  // 開始位置に間隔を追加
-            to: CGFloat(index + 1) / CGFloat(entry.totalTasksCount) - edge  // 終了位置に間隔を追加
-          )
-          .stroke(
-            index < entry.completedTasksCount ? Color.black : Color.gray.opacity(0.15),
-            style: StrokeStyle(lineWidth: 13, lineCap: .butt)  // 両端を丸く
-          )
-          .frame(width: size, height: size)
-          .rotationEffect(.degrees(-90))  // 12時の位置から開始
-      }
+        // タスクの数だけ円弧を描画
+        let edge = 0.003
+        ForEach(0..<entry.totalTasksCount, id: \.self) { index in
+          Circle()
+            .trim(
+              from: CGFloat(index) / CGFloat(entry.totalTasksCount) + edge,  // 開始位置に間隔を追加
+              to: CGFloat(index + 1) / CGFloat(entry.totalTasksCount) - edge  // 終了位置に間隔を追加
+            )
+            .stroke(
+              index < entry.completedTasksCount ? Color.black : Color.gray.opacity(0.15),
+              style: StrokeStyle(lineWidth: 13, lineCap: .butt)  // 両端を丸く
+            )
+            .frame(width: size, height: size)
+            .rotationEffect(.degrees(-90))  // 12時の位置から開始
+        }
       }
 
       // 中央のテキストまたはアイコン
       VStack(spacing: 2) {
         if entry.isCompleted {
-          Text(LocalizedStrings.getLocalizedString(for: "widget_tasks_completed", locale: entry.locale))
-            .font(.subheadline)
-            .foregroundColor(.secondary)
-            .padding(.top, 4)
-            .padding(.bottom, 4)
+          Text(
+            LocalizedStrings.getLocalizedString(for: "widget_tasks_completed", locale: entry.locale)
+          )
+          .font(.subheadline)
+          .foregroundColor(.secondary)
+          .padding(.top, 4)
+          .padding(.bottom, 4)
         } else if entry.isEmpty {
           // タスクがない場合は空の表示
           Text(LocalizedStrings.getLocalizedString(for: "widget_tasks_empty", locale: entry.locale))
@@ -342,11 +366,13 @@ struct TaskListView: View {
           Image(systemName: "checkmark.circle")
             .font(.system(size: 30))
             .foregroundColor(.secondary)
-          Text(LocalizedStrings.getLocalizedString(for: "widget_tasks_completed", locale: entry.locale))
-            .font(.system(size: 12))
-            .foregroundColor(.secondary)
-            .padding(.top, 2)
-            .padding(.bottom, 8)
+          Text(
+            LocalizedStrings.getLocalizedString(for: "widget_tasks_completed", locale: entry.locale)
+          )
+          .font(.system(size: 12))
+          .foregroundColor(.secondary)
+          .padding(.top, 2)
+          .padding(.bottom, 8)
         }
         Spacer()
       }
@@ -359,13 +385,13 @@ struct TaskListView: View {
           Text(LocalizedStrings.getLocalizedString(for: "widget_tasks_empty", locale: entry.locale))
             .font(.subheadline)
             .foregroundColor(.secondary)
-          .padding(.bottom, 10)
+            .padding(.bottom, 10)
         }
         Spacer()
       }
       Spacer()
     } else {
-        let tasks = entry.displayTasks
+      let tasks = entry.displayTasks
       VStack(alignment: .leading, spacing: 8) {
         ForEach(0..<min(maxCount, tasks.count), id: \.self) { index in
           let task = tasks[index]
@@ -417,7 +443,7 @@ struct TaskProgressWidgetEntryView: View {
       .containerBackground(.fill.tertiary, for: .widget)
       .widgetURL(URL(string: "notiontodo://open/today?homeWidget")!)
     default:
-        Text("Unsupported widget size")
+      Text("Unsupported widget size")
         .containerBackground(.fill.tertiary, for: .widget)
     }
   }
@@ -440,17 +466,17 @@ struct TodayTasksWidgetEntryView: View {
           Text(LocalizedStrings.getLocalizedString(for: "widget_today", locale: entry.locale))
             .font(.headline)
             .foregroundColor(.primary)
-          
+
           // タスクの完了状況を分数形式で表示
           Text("\(entry.completedTasksCount)\u{2009}/\u{2009}\(entry.totalTasksCount)")
             .font(.system(size: 12))
             .foregroundColor(.secondary)
             .padding(.bottom, 2)
-          
+
           Spacer()
         }
         .padding(.bottom, 8)
-        
+
         // タスク一覧（常に一定の高さを確保）
         TaskListView(entry: entry, maxCount: getMaxTaskCount())
           .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
@@ -525,7 +551,8 @@ struct TodayTasksWidgetEntryView: View {
 // サンプルタスクデータ
 let sampleTasks = [
   WidgetTask(
-    id: "1", title: "朝のミーティング朝のミーティング朝のミーティング朝のミーティング", isCompleted: false, isSubmitted: true, isOverdue: false),
+    id: "1", title: "朝のミーティング朝のミーティング朝のミーティング朝のミーティング", isCompleted: false, isSubmitted: true,
+    isOverdue: false),
   WidgetTask(id: "2", title: "レポート提出", isCompleted: false, isSubmitted: true, isOverdue: true),
   WidgetTask(id: "3", title: "買い物", isCompleted: true, isSubmitted: false, isOverdue: false),
   WidgetTask(id: "4", title: "デザインの作成", isCompleted: false, isSubmitted: true, isOverdue: false),
@@ -536,16 +563,15 @@ let sampleTasks = [
   WidgetTask(id: "9", title: "ミーティング", isCompleted: false, isSubmitted: true, isOverdue: false),
   WidgetTask(id: "10", title: "ミーティング", isCompleted: false, isSubmitted: true, isOverdue: false),
   WidgetTask(id: "11", title: "ミーティング", isCompleted: false, isSubmitted: true, isOverdue: false),
-  WidgetTask(id: "12", title: "ミーティング", isCompleted: false, isSubmitted: true, isOverdue: false ),
+  WidgetTask(id: "12", title: "ミーティング", isCompleted: false, isSubmitted: true, isOverdue: false),
   WidgetTask(id: "13", title: "ミーティング", isCompleted: false, isSubmitted: true, isOverdue: false),
   WidgetTask(id: "14", title: "ミーティング", isCompleted: false, isSubmitted: true, isOverdue: false),
 ]
 
 let sampleOneTask = [
-  WidgetTask(id: "1", title: "ヨガ", isCompleted: false, isSubmitted: true, isOverdue: false),
-  
-]
+  WidgetTask(id: "1", title: "ヨガ", isCompleted: false, isSubmitted: true, isOverdue: false)
 
+]
 
 let sampleEntry = SimpleEntry(
   date: Date(),
@@ -608,7 +634,3 @@ let allCompletedEntry = SimpleEntry(
   noTasksEntry
   allCompletedEntry
 }
-
-
-
-
