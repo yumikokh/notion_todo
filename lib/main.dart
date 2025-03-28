@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -11,15 +11,39 @@ import 'package:background_fetch/background_fetch.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 
+import 'src/notion/model/task.dart';
+import 'src/notion/model/task_database.dart';
+import 'src/notion/model/property.dart';
+
 import 'src/app.dart';
-import 'src/common/app_lifecycle_observer.dart';
 import 'src/env/env.dart';
 import 'src/notion/repository/notion_task_repository.dart';
-import 'src/notion/tasks/task_viewmodel.dart';
 import 'src/widget/widget_service.dart';
 import 'firebase_options.dart';
 
-final widgetService = WidgetService();
+// バックグラウンドフェッチのイベントハンドラ
+@pragma('vm:entry-point')
+void backgroundFetchHeadlessTask(HeadlessTask task) async {
+  var taskId = task.taskId;
+  var timeout = task.timeout;
+  if (timeout) {
+    print("[BackgroundFetch] Headless task timed-out: $taskId");
+    BackgroundFetch.finish(taskId);
+    return;
+  }
+  print("[BackgroundFetch] Headless event received: $taskId");
+
+  await _refreshTodayTasks();
+
+  BackgroundFetch.finish(taskId);
+}
+
+// バックグラウンドコールバック関数（iOS 17のインタラクティブウィジェット用）
+@pragma('vm:entry-point')
+Future<void> interactivityCallback(Uri? uri) async {
+  await WidgetService.interactivityCallback(uri);
+}
+
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
@@ -33,13 +57,15 @@ void main() async {
   await FirebaseAnalytics.instance
       .setAnalyticsCollectionEnabled(trackingEnabled);
 
-  await widgetService.initialize(interactivityCallback);
+  // ウィジェットの初期化
+  await WidgetService.initialize(interactivityCallback);
+
+  // BackgroundFetchの初期化
+  await initBackgroundFetch();
 
   final app = ProviderScope(
     observers: trackingEnabled ? [SentryProviderObserver()] : [],
-    child: const BackgroundFetchInitializer(
-      child: MyApp(),
-    ),
+    child: const MyApp(),
   );
 
   if (trackingEnabled) {
@@ -65,6 +91,133 @@ void main() async {
   }
 
   FlutterNativeSplash.remove();
+}
+
+// BackgroundFetchの初期化
+Future<void> initBackgroundFetch() async {
+  try {
+    // バックグラウンドフェッチの設定
+    var status = await BackgroundFetch.configure(
+      BackgroundFetchConfig(
+        minimumFetchInterval: 15, // 15分間隔
+        stopOnTerminate: false,
+        enableHeadless: true,
+        requiresBatteryNotLow: false,
+        requiresCharging: false,
+        requiresStorageNotLow: false,
+        requiresDeviceIdle: false,
+        startOnBoot: true,
+      ),
+      _onBackgroundFetch,
+      _onBackgroundFetchTimeout,
+    );
+    print("[BackgroundFetch] configure success: $status");
+
+    // バックグラウンドフェッチの開始
+    BackgroundFetch.start();
+  } catch (e) {
+    print("[BackgroundFetch] configure error: $e");
+  }
+}
+
+// バックグラウンドフェッチのコールバック
+void _onBackgroundFetch(String taskId) async {
+  print("[BackgroundFetch] Event received: $taskId");
+  await _refreshTodayTasks();
+  BackgroundFetch.finish(taskId);
+}
+
+// タイムアウト時のコールバック
+void _onBackgroundFetchTimeout(String taskId) {
+  print("[BackgroundFetch] TIMEOUT: $taskId");
+  BackgroundFetch.finish(taskId);
+}
+
+// タスク更新処理を集約したメソッド
+Future<void> _refreshTodayTasks() async {
+  // ウィジェットの更新
+  final widgetValue = await WidgetService.value;
+  if (widgetValue.accessToken != null && widgetValue.taskDatabase != null) {
+    try {
+      final repository = NotionTaskRepository(
+          widgetValue.accessToken!, widgetValue.taskDatabase!);
+      final result = await repository.fetchPages(FilterType.today, true);
+      final tasks = _convertToTasks(result, widgetValue.taskDatabase!);
+      await WidgetService.applyTasks(tasks);
+
+      // バッジを更新
+      final notCompletedCount = tasks.where((task) => !task.isCompleted).length;
+      await FlutterAppBadger.updateBadgeCount(notCompletedCount);
+
+      print(
+          "[BackgroundFetch] Tasks refreshed successfully: ${tasks.length} tasks");
+    } catch (e) {
+      print("[BackgroundFetch] Error refreshing tasks: $e");
+    }
+  }
+}
+
+// APIレスポンスをTaskオブジェクトに変換するヘルパーメソッド
+List<Task> _convertToTasks(
+    Map<String, dynamic> result, TaskDatabase taskDatabase) {
+  return (result['results'] as List)
+      .map((page) => Task(
+            id: page['id'],
+            title: _extractTitle(page, taskDatabase),
+            status: _extractStatus(page, taskDatabase),
+            dueDate: _extractDate(page, taskDatabase),
+            url: page['url'],
+          ))
+      .toList();
+}
+
+// TaskServiceのヘルパーメソッドをコピー
+String _extractTitle(Map<String, dynamic> data, TaskDatabase taskDatabase) {
+  final titleProperty = data['properties']
+      .entries
+      .firstWhere((e) => e.value['type'] == 'title')
+      .value['title'];
+  return titleProperty?.length > 0 ? titleProperty[0]['plain_text'] : '';
+}
+
+TaskDate? _extractDate(Map<String, dynamic> data, TaskDatabase taskDatabase) {
+  final dateProperty = taskDatabase.date.name;
+  final datePropertyData = data['properties'][dateProperty];
+  if (datePropertyData == null) {
+    return null;
+  }
+  final date = datePropertyData['date'];
+  if (date == null) {
+    return null;
+  }
+  return TaskDate(
+    start: NotionDateTime.fromString(date['start']),
+    end: date['end'] != null ? NotionDateTime.fromString(date['end']) : null,
+  );
+}
+
+TaskStatus _extractStatus(
+    Map<String, dynamic> data, TaskDatabase taskDatabase) {
+  final property = taskDatabase.status;
+  switch (property) {
+    case CheckboxCompleteStatusProperty():
+      return TaskStatus.checkbox(
+          checked: data['properties'][property.name]['checkbox']);
+    case StatusCompleteStatusProperty(status: var status):
+      // statusが未指定の場合がある
+      if (data['properties'][property.name]['status'] == null) {
+        return const TaskStatus.status(group: null, option: null);
+      }
+
+      final optionId = data['properties'][property.name]['status']['id'];
+      final group = status.groups
+          .where((group) => group.optionIds.contains(optionId))
+          .firstOrNull;
+      final option =
+          status.options.where((option) => option.id == optionId).firstOrNull;
+
+      return TaskStatus.status(group: group, option: option);
+  }
 }
 
 class SentryProviderObserver extends ProviderObserver {
@@ -100,55 +253,4 @@ class SentryProviderObserver extends ProviderObserver {
 
     return false;
   }
-}
-
-class BackgroundFetchInitializer extends HookConsumerWidget {
-  final Widget child;
-  const BackgroundFetchInitializer({super.key, required this.child});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    useEffect(() {
-      BackgroundFetch.configure(
-        BackgroundFetchConfig(minimumFetchInterval: 15),
-        (String taskId) async {
-          print("[BackgroundFetch] Event received $taskId");
-          // fetchとバッジ更新
-          ref.invalidate(taskViewModelProvider(filterType: FilterType.today));
-          BackgroundFetch.finish(taskId);
-        },
-        (String taskId) {
-          print("[BackgroundFetch] TASK TIMEOUT taskId: $taskId");
-          BackgroundFetch.finish(taskId);
-        },
-      );
-      return null;
-    }, []);
-
-    // アプリ復帰時にウィジェットでの更新を反映
-    useEffect(() {
-      Future<void> applyWidgetChanges() async {
-        final lastUpdated = await widgetService.getLastUpdatedTask();
-        if (lastUpdated == null) return;
-        // 今日のタスクとすべてのタスク両方に適用
-        ref.invalidate(taskViewModelProvider(filterType: FilterType.today));
-        ref.invalidate(taskViewModelProvider(filterType: FilterType.all));
-        await widgetService.clearLastUpdatedTask();
-      }
-
-      applyWidgetChanges();
-
-      final observer = AppLifecycleObserver(applyWidgetChanges);
-      WidgetsBinding.instance.addObserver(observer);
-      return () => WidgetsBinding.instance.removeObserver(observer);
-    }, []);
-
-    return child;
-  }
-}
-
-// バックグラウンドコールバック関数（iOS 17のインタラクティブウィジェット用）
-@pragma('vm:entry-point')
-Future<void> interactivityCallback(Uri? uri) async {
-  await widgetService.interactivityCallback(uri);
 }

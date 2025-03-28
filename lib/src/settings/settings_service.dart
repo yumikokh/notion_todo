@@ -15,8 +15,6 @@ class SettingsService {
   static const _continuousTaskAdditionKey = 'continuous_task_addition';
   static const _soundEnabledKey = 'sound_enabled';
 
-  static WidgetService widgetService = WidgetService();
-
   /* themeMode */
   Future<ThemeMode> themeMode() async {
     final prefs = await SharedPreferences.getInstance();
@@ -41,7 +39,7 @@ class SettingsService {
             ? systemLanguageCode
             : 'en');
 
-    widgetService.updateLocaleForWidget(languageCode);
+    WidgetService.updateLocaleForWidget(languageCode);
     return Locale(languageCode);
   }
 
@@ -49,7 +47,7 @@ class SettingsService {
     final prefs = await SharedPreferences.getInstance();
     final languageCode = locale.languageCode;
     await prefs.setString(_languageKey, languageCode);
-    widgetService.updateLocaleForWidget(languageCode);
+    WidgetService.updateLocaleForWidget(languageCode);
   }
 
   /* wakelock */
@@ -117,5 +115,20 @@ class SettingsService {
   Future<void> updateSoundEnabled(bool value) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_soundEnabledKey, value);
+  }
+
+  // 言語設定を保存
+  Future<void> saveLocale(String languageCode) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('locale', languageCode);
+    await WidgetService.updateLocaleForWidget(languageCode);
+  }
+
+  // 言語設定を取得
+  Future<String> loadLocale() async {
+    final prefs = await SharedPreferences.getInstance();
+    final languageCode = prefs.getString('locale') ?? 'en';
+    await WidgetService.updateLocaleForWidget(languageCode);
+    return languageCode;
   }
 }

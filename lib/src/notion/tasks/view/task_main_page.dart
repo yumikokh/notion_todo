@@ -48,7 +48,8 @@ class TaskMainPage extends HookConsumerWidget {
         ref.watch(settingsViewModelProvider).hideNavigationLabel;
     final fontSettings = ref.watch(fontSettingsViewModelProvider);
 
-    final isToday = initialTab == tabToday;
+    // initialTabがnullまたはtabTodayの場合はtrue（今日タブを表示）
+    final isToday = initialTab == null || initialTab == tabToday;
     final currentIndex = useMemoized(() => isToday ? 0 : 1);
 
     final l = AppLocalizations.of(context)!;

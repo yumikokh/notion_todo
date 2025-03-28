@@ -9,10 +9,8 @@ import home_widget
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
     // HomeWidgetのプラグイン登録コールバックを設定
-    if #available(iOS 17, *) {
-      HomeWidgetBackgroundWorker.setPluginRegistrantCallback { registry in
-        GeneratedPluginRegistrant.register(with: registry)
-      }
+    HomeWidgetBackgroundWorker.setPluginRegistrantCallback { registry in
+      GeneratedPluginRegistrant.register(with: registry)
     }
 
     GeneratedPluginRegistrant.register(with: self)

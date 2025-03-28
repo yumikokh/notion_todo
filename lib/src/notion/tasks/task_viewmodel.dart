@@ -34,7 +34,6 @@ class TaskViewModel extends _$TaskViewModel {
   bool get showCompleted => _showCompleted;
 
   static final DateHelper d = DateHelper();
-  static final WidgetService widgetService = WidgetService();
 
   @override
   Future<List<Task>> build({
@@ -65,7 +64,7 @@ class TaskViewModel extends _$TaskViewModel {
       _updateBadge(tasks, showBadge);
 
       // ウィジェット更新
-      widgetService.applyTasks(tasks);
+      await _updateTodayWidget(tasks);
     }
 
     if (statusProperty is StatusCompleteStatusProperty) {
@@ -576,5 +575,9 @@ class TaskViewModel extends _$TaskViewModel {
     }
     final notCompletedCount = tasks.where((task) => !task.isCompleted).length;
     await FlutterAppBadger.updateBadgeCount(notCompletedCount);
+  }
+
+  Future<void> _updateTodayWidget(List<Task> tasks) async {
+    await WidgetService.applyTasks(tasks);
   }
 }

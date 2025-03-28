@@ -61,22 +61,21 @@ class WidgetService {
   static const String taskDatabaseKey = 'task_database';
   static const String lastUpdatedTaskKey = 'last_updated_task';
   static const String localeKey = 'widget_locale';
+  static const String lastCompletedTaskIdKey = 'last_completed_task_id';
 
   static const String widgetScheme = 'notiontodo';
 
-  static final WidgetService _instance = WidgetService._();
-
-  factory WidgetService() => _instance;
-  WidgetService._();
-
   // アプリバックグラウンド復帰時に使用するストリームコントローラー
-  StreamSubscription<Uri?>? _widgetClickedSubscription;
+  static StreamSubscription<Uri?>? _widgetClickedSubscription;
 
   // アプリが起動中にウィジェットクリックを検出するためのストリームを取得
-  Stream<Uri?> get widgetClicked => HomeWidget.widgetClicked;
+  static Stream<Uri?> get widgetClicked => HomeWidget.widgetClicked;
+
+  // コンストラクタを private に
+  WidgetService._();
 
   // ウィジェットから起動されたかどうかを確認するメソッド
-  Future<Uri?> registerInitialLaunchFromWidget(
+  static Future<Uri?> registerInitialLaunchFromWidget(
       GlobalKey<NavigatorState> globalNavigatorKey, WidgetRef ref) async {
     final uri = await HomeWidget.initiallyLaunchedFromHomeWidget();
     print('[WidgetService] registerInitialLaunchFromWidget: $uri');
@@ -85,7 +84,7 @@ class WidgetService {
   }
 
   // ウィジェットからのクリックを監視開始
-  void startListeningWidgetClicks(
+  static void startListeningWidgetClicks(
       GlobalKey<NavigatorState> globalNavigatorKey, WidgetRef ref) {
     print('[WidgetService] startListeningWidgetClicks');
     // 既存のサブスクリプションがあれば解除
@@ -97,13 +96,13 @@ class WidgetService {
   }
 
   // ウィジェットからのクリック監視を停止
-  void stopListeningWidgetClicks() {
+  static void stopListeningWidgetClicks() {
     print('[WidgetService] Stopping widget click listener');
     _widgetClickedSubscription?.cancel();
     _widgetClickedSubscription = null;
   }
 
-  Future<void> _handleWidgetLaunch(Uri? uri,
+  static Future<void> _handleWidgetLaunch(Uri? uri,
       GlobalKey<NavigatorState> globalNavigatorKey, WidgetRef ref) async {
     if (uri == null || uri.scheme != widgetScheme) return;
 
@@ -124,7 +123,7 @@ class WidgetService {
   }
 
   // ウィジェットからの起動処理
-  Future<void> _handleWidgetLaunchAddTaskToToday(
+  static Future<void> _handleWidgetLaunchAddTaskToToday(
       GlobalKey<NavigatorState> globalNavigatorKey, WidgetRef ref) async {
     final todayViewModel =
         ref.read(taskViewModelProvider(filterType: FilterType.today).notifier);
@@ -148,7 +147,7 @@ class WidgetService {
     });
   }
 
-  _navigateToTodayPage(GlobalKey<NavigatorState> globalNavigatorKey) {
+  static _navigateToTodayPage(GlobalKey<NavigatorState> globalNavigatorKey) {
     final currentState = globalNavigatorKey.currentState;
     if (currentState == null) return;
 
@@ -162,7 +161,7 @@ class WidgetService {
     );
   }
 
-  Future<void> _showTaskSheet(
+  static Future<void> _showTaskSheet(
       BuildContext context,
       Future<void> Function(String, TaskDate?, bool needSnackbarFloating)
           onAddTask,
@@ -185,7 +184,7 @@ class WidgetService {
 
   /////////////////////////
 
-  Future<WidgetValue> get value async {
+  static Future<WidgetValue> get value async {
     final rowTasks = await HomeWidget.getWidgetData(todayTasksKey);
     final accessToken = await HomeWidget.getWidgetData<String?>(accessTokenKey,
         defaultValue: null);
@@ -211,13 +210,13 @@ class WidgetService {
         locale: locale);
   }
 
-  initialize(Function(Uri?) interactivityCallback) async {
+  static initialize(Function(Uri?) interactivityCallback) async {
     await HomeWidget.setAppGroupId(appGroupId);
     await HomeWidget.registerInteractivityCallback(interactivityCallback);
   }
 
   // ウィジェットのインタラクティブコールバック
-  Future<void> interactivityCallback(Uri? uri) async {
+  static Future<void> interactivityCallback(Uri? uri) async {
     if (uri == null || uri.scheme != widgetScheme) return;
     final action = uri.host;
     final pathSegments = uri.pathSegments;
@@ -225,14 +224,19 @@ class WidgetService {
       if (action == 'toggle') {
         final [taskId, isCompletedStr] = pathSegments;
         final isCompleted = isCompletedStr.toLowerCase() == 'true';
-        await _completeTask(taskId, isCompleted);
+        if (isCompleted) {
+          await _completeTask(taskId);
+        } else {
+          // なにもしない
+        }
       }
     } catch (e) {
       print('[HomeWidget] Error in interactivity callback: $e');
     }
   }
 
-  sendDatabaseSettings(String? accessToken, TaskDatabase? taskDatabase) async {
+  static sendDatabaseSettings(
+      String? accessToken, TaskDatabase? taskDatabase) async {
     await HomeWidget.saveWidgetData<String?>(
       accessTokenKey,
       accessToken,
@@ -245,7 +249,7 @@ class WidgetService {
     await _updateWidget();
   }
 
-  Future<void> applyTasks(List<Task> tasks) async {
+  static Future<void> applyTasks(List<Task> tasks) async {
     final widgetTasks = tasks
         .map((task) => WidgetTask(
             id: task.id,
@@ -255,12 +259,15 @@ class WidgetService {
             isOverdue: task.isOverdue))
         .toList();
 
-    await _sendTasks(widgetTasks);
+    await _saveTasks(widgetTasks);
+    await _updateWidget();
   }
 
-  Future<void> _completeTask(String id, bool isCompleted) async {
-    final value = await this.value;
-    final tasks = value.tasks;
+  static Future<void> _completeTask(String id) async {
+    const isCompleted = true;
+    final widgetValue = await value;
+    final tasks = widgetValue.tasks;
+
     if (tasks == null) {
       print('[WidgetService] No widget data found');
       return;
@@ -272,37 +279,25 @@ class WidgetService {
                 id: id,
                 title: task.title,
                 isCompleted: isCompleted,
-                isSubmitted: false,
-                isOverdue: false)
+                isSubmitted: true, // 表示用のフラグ: Intent側で制御する
+                isOverdue: task.isOverdue)
             : task)
         .toList();
-    await _sendTasks(updatedTasks);
-
-    // 完了したタスクは1秒後にウィジェットから削除
-    if (isCompleted) {
-      Future.delayed(const Duration(seconds: 1), () async {
-        final currentTasks = (await this.value).tasks;
-        if (currentTasks == null) return;
-
-        final filteredTasks = currentTasks
-            .where((task) => task.id != id || !task.isCompleted)
-            .toList();
-        if (filteredTasks.length != currentTasks.length) {
-          await _sendTasks(filteredTasks);
-        }
-      });
-    }
-
+    await _saveTasks(updatedTasks);
     await _saveLastUpdatedTask(id, isCompleted);
 
+    await _updateWidget(); // 全てのウィジェットを更新するため
+
     _updateTaskInNotion(id, isCompleted);
+
+    _setLastCompletedIdFromWidget(id);
   }
 
   // Notionリポジトリを直接使用してタスクを更新するメソッド
-  Future<void> _updateTaskInNotion(String id, bool isCompleted) async {
-    final value = await this.value;
-    final accessToken = value.accessToken;
-    final taskDatabase = value.taskDatabase;
+  static Future<void> _updateTaskInNotion(String id, bool isCompleted) async {
+    final widgetValue = await value;
+    final accessToken = widgetValue.accessToken;
+    final taskDatabase = widgetValue.taskDatabase;
     if (accessToken == null || taskDatabase == null) {
       print('[WidgetService] No access token or task database found');
       return;
@@ -317,27 +312,40 @@ class WidgetService {
     }
   }
 
-  _sendTasks(List<WidgetTask> tasks) async {
+  static _saveTasks(List<WidgetTask> tasks) async {
     final value = tasks.map((task) => task.toJson()).toList();
     final tasksJson = jsonEncode(value);
 
     await HomeWidget.saveWidgetData(todayTasksKey, tasksJson);
-    await _updateWidget();
   }
 
-  _updateWidget() async {
+  // Timeline更新時にWidgetからのステータス変更化どうかを判定するのに使う
+  static _setLastCompletedIdFromWidget(String taskId) async {
+    await HomeWidget.saveWidgetData(lastCompletedTaskIdKey, taskId);
+
+    // 1秒後に削除
+    Future.delayed(const Duration(milliseconds: 300), () async {
+      await HomeWidget.saveWidgetData(lastCompletedTaskIdKey, null);
+    });
+  }
+
+  static _updateWidget() async {
+    // iOSでは = WidgetCenter.shared.reloadTimelines
     await HomeWidget.updateWidget(
+      name: 'TodayTasksWidgetProvider',
       androidName: 'TodayTasksWidgetProvider',
       iOSName: 'TodayTasksWidget',
     );
     await HomeWidget.updateWidget(
+      name: 'TaskProgressWidgetProvider',
       androidName: 'TaskProgressWidgetProvider',
       iOSName: 'TaskProgressWidget',
     );
   }
 
   // 最後に更新したタスク情報を保存
-  Future<void> _saveLastUpdatedTask(String taskId, bool isCompleted) async {
+  static Future<void> _saveLastUpdatedTask(
+      String taskId, bool isCompleted) async {
     final data = jsonEncode({
       'id': taskId,
       'isCompleted': isCompleted,
@@ -347,7 +355,7 @@ class WidgetService {
   }
 
   // 最後に更新したタスク情報を取得
-  Future<Map<String, dynamic>?> getLastUpdatedTask() async {
+  static Future<Map<String, dynamic>?> getLastUpdatedTask() async {
     final data = await HomeWidget.getWidgetData<String?>(lastUpdatedTaskKey);
     if (data == null) return null;
 
@@ -361,19 +369,19 @@ class WidgetService {
   }
 
   // 最後に更新したタスク情報をクリア
-  Future<void> clearLastUpdatedTask() async {
+  static Future<void> clearLastUpdatedTask() async {
     await HomeWidget.saveWidgetData(lastUpdatedTaskKey, null);
   }
 
   // ロケール情報をウィジェットと共有する
-  Future<void> updateLocaleForWidget(String languageCode) async {
+  static Future<void> updateLocaleForWidget(String languageCode) async {
     await HomeWidget.saveWidgetData(localeKey, languageCode);
     // ウィジェットの更新をトリガー
     await _updateWidget();
   }
 
   // ウィジェットからロケール情報を取得する
-  Future<String> getWidgetLocale() async {
+  static Future<String> getWidgetLocale() async {
     final locale = await HomeWidget.getWidgetData<String?>(localeKey);
     return locale ?? 'en';
   }

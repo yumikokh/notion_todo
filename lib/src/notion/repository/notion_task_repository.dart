@@ -425,13 +425,11 @@ NotionTaskRepository? notionTaskRepository(Ref ref) {
   final accessToken =
       ref.watch(notionOAuthViewModelProvider).valueOrNull?.accessToken;
   final taskDatabase = ref.watch(taskDatabaseViewModelProvider).valueOrNull;
+  WidgetService.sendDatabaseSettings(accessToken, taskDatabase);
+
   if (accessToken == null || taskDatabase == null) {
     return null;
   }
-
-  // ウィジェットの設定を保存
-  final service = WidgetService();
-  service.sendDatabaseSettings(accessToken, taskDatabase);
 
   return NotionTaskRepository(accessToken, taskDatabase);
 }
