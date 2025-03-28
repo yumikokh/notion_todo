@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 77;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -100,7 +100,7 @@
 		A8E9AE342D8D079E00B93CA7 /* Exceptions for "TodayTasksWidget" folder in "Runner" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				BackgroundIntent.swift,
+				TodayTasksWidget.swift,
 			);
 			target = 97C146ED1CF9000F007C117D /* Runner */;
 		};

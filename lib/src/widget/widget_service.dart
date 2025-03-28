@@ -284,8 +284,9 @@ class WidgetService {
             : task)
         .toList();
     await _saveTasks(updatedTasks);
-
     await _saveLastUpdatedTask(id, isCompleted);
+
+    await _updateWidget(); // 全てのウィジェットを更新するため
 
     _updateTaskInNotion(id, isCompleted);
 
