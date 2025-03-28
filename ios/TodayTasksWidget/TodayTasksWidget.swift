@@ -30,9 +30,16 @@ struct LocalizedStrings {
     "widget_tasks_empty": "No tasks",
     "widget_progress_title": "タスク進捗",
     "widget_progress_description": "今日のタスクの進捗状況を表示します",
-    "widget_today_description": "今日のタスク一覧",
+    "widget_today_title": "今日のタスク",
+    "widget_today_description": "今日のタスク一覧を表示します",
     "widget_no_tasks": "タスクがありません",
     "widget_no_database": "Notionデータベースが未設定です",
+    "widget_add_task_title": "タスクを追加",
+    "widget_add_task_description": "新しいタスクをすばやく追加できます",
+    // サンプルタスク
+    "sample_task_1": "朝のストレッチ",
+    "sample_task_2": "メールの返信",
+    "sample_task_3": "買い物リストの作成",
   ]
 
   // 英語
@@ -42,9 +49,16 @@ struct LocalizedStrings {
     "widget_tasks_empty": "No tasks",
     "widget_progress_title": "Task Progress",
     "widget_progress_description": "Shows your daily task progress",
-    "widget_today_description": "Today's tasks",
+    "widget_today_title": "Today's Tasks",
+    "widget_today_description": "Shows your today's tasks",
     "widget_no_tasks": "No tasks",
     "widget_no_database": "Notion database is not set",
+    "widget_add_task_title": "Add Task",
+    "widget_add_task_description": "Quickly add a new task",
+    // Sample tasks
+    "sample_task_1": "Morning Stretch",
+    "sample_task_2": "Reply to emails",
+    "sample_task_3": "Make shopping list",
   ]
 
   static func getLocalizedString(for key: String, locale: String, args: CVarArg...) -> String {
@@ -69,7 +83,10 @@ struct TodayTasksWidget: Widget {
     StaticConfiguration(kind: kind, provider: Provider()) { entry in
       TodayTasksWidgetEntryView(entry: entry)
     }
-    .configurationDisplayName("Today")  // Widgetギャラリーでの表示名
+    .configurationDisplayName(
+      LocalizedStrings.getLocalizedString(
+        for: "widget_today_title", locale: Provider().getCurrentLocale())
+    )  // Widgetギャラリーでの表示名
     .description(
       LocalizedStrings.getLocalizedString(
         for: "widget_today_description", locale: Provider().getCurrentLocale())
@@ -96,6 +113,69 @@ struct TaskProgressWidget: Widget {
         for: "widget_progress_description", locale: Provider().getCurrentLocale())
     )
     .supportedFamilies([.systemSmall])
+  }
+}
+
+// MARK: - LockScreenProgressWidget
+// ロック画面用の進捗表示ウィジェット
+struct LockScreenProgressWidget: Widget {
+  let kind: String = "LockScreenProgressWidget"
+
+  var body: some WidgetConfiguration {
+    StaticConfiguration(kind: kind, provider: Provider()) { entry in
+      LockScreenProgressView(entry: entry).containerBackground(.fill.tertiary, for: .widget)
+    }
+    .configurationDisplayName(
+      LocalizedStrings.getLocalizedString(
+        for: "widget_progress_title", locale: Provider().getCurrentLocale())
+    )
+    .description(
+      LocalizedStrings.getLocalizedString(
+        for: "widget_progress_description", locale: Provider().getCurrentLocale())
+    )
+    .supportedFamilies([.accessoryCircular])
+  }
+}
+
+// MARK: - LockScreenAddTaskWidget
+// ロック画面用のタスク追加ウィジェット
+struct LockScreenAddTaskWidget: Widget {
+  let kind: String = "LockScreenAddTaskWidget"
+
+  var body: some WidgetConfiguration {
+    StaticConfiguration(kind: kind, provider: Provider()) { entry in
+      LockScreenAddTaskView().containerBackground(.fill.tertiary, for: .widget)
+    }
+    .configurationDisplayName(
+      LocalizedStrings.getLocalizedString(
+        for: "widget_add_task_title", locale: Provider().getCurrentLocale())
+    )
+    .description(
+      LocalizedStrings.getLocalizedString(
+        for: "widget_add_task_description", locale: Provider().getCurrentLocale())
+    )
+    .supportedFamilies([.accessoryCircular])
+  }
+}
+
+// MARK: - LockScreenTaskListWidget
+// ロック画面用のタスク一覧ウィジェット
+struct LockScreenTaskListWidget: Widget {
+  let kind: String = "LockScreenTaskListWidget"
+
+  var body: some WidgetConfiguration {
+    StaticConfiguration(kind: kind, provider: Provider()) { entry in
+      LockScreenTaskListView(entry: entry).containerBackground(.fill.tertiary, for: .widget)
+    }
+    .configurationDisplayName(
+      LocalizedStrings.getLocalizedString(
+        for: "widget_today_title", locale: Provider().getCurrentLocale())
+    )
+    .description(
+      LocalizedStrings.getLocalizedString(
+        for: "widget_today_description", locale: Provider().getCurrentLocale())
+    )
+    .supportedFamilies([.accessoryRectangular])
   }
 }
 
@@ -177,11 +257,26 @@ struct Provider: TimelineProvider {
       date: Date(),
       tasks: [
         WidgetTask(
-          id: "1", title: "朝のストレッチ", isCompleted: true, isSubmitted: true, isOverdue: false),
+          id: "1",
+          title: LocalizedStrings.getLocalizedString(
+            for: "sample_task_1", locale: getCurrentLocale()),
+          isCompleted: true,
+          isSubmitted: true,
+          isOverdue: false),
         WidgetTask(
-          id: "2", title: "新しいレシピを試す", isCompleted: false, isSubmitted: true, isOverdue: false),
+          id: "2",
+          title: LocalizedStrings.getLocalizedString(
+            for: "sample_task_2", locale: getCurrentLocale()),
+          isCompleted: false,
+          isSubmitted: true,
+          isOverdue: false),
         WidgetTask(
-          id: "3", title: "公園でランニング", isCompleted: false, isSubmitted: true, isOverdue: false),
+          id: "3",
+          title: LocalizedStrings.getLocalizedString(
+            for: "sample_task_3", locale: getCurrentLocale()),
+          isCompleted: false,
+          isSubmitted: true,
+          isOverdue: false),
       ],
       locale: getCurrentLocale(),
       hasTaskDatabase: true)
@@ -281,11 +376,26 @@ struct Provider: TimelineProvider {
     if tasks.isEmpty && activePlaceholder {
       tasks = [
         WidgetTask(
-          id: "1", title: "朝のストレッチ", isCompleted: true, isSubmitted: true, isOverdue: false),
+          id: "1",
+          title: LocalizedStrings.getLocalizedString(
+            for: "sample_task_1", locale: getCurrentLocale()),
+          isCompleted: true,
+          isSubmitted: true,
+          isOverdue: false),
         WidgetTask(
-          id: "2", title: "新しいレシピを試す", isCompleted: false, isSubmitted: true, isOverdue: false),
+          id: "2",
+          title: LocalizedStrings.getLocalizedString(
+            for: "sample_task_2", locale: getCurrentLocale()),
+          isCompleted: false,
+          isSubmitted: true,
+          isOverdue: false),
         WidgetTask(
-          id: "3", title: "公園でランニング", isCompleted: false, isSubmitted: true, isOverdue: false),
+          id: "3",
+          title: LocalizedStrings.getLocalizedString(
+            for: "sample_task_3", locale: getCurrentLocale()),
+          isCompleted: false,
+          isSubmitted: true,
+          isOverdue: false),
       ]
     }
 
@@ -617,6 +727,138 @@ struct TodayTasksWidgetEntryView: View {
 
 ////////
 
+// ロック画面用の進捗表示ビュー
+struct LockScreenProgressView: View {
+  var entry: SimpleEntry
+
+  var body: some View {
+    let lineWidth: CGFloat = 6
+    let opacity: CGFloat = 0.2
+    let size: CGFloat = 54
+    if entry.hasTaskDatabase {
+      // 進捗表示
+      ZStack {
+        // 背景の円
+        Circle()
+          .stroke(.white.opacity(opacity), lineWidth: lineWidth)
+          .frame(width: size, height: size)  // サイズを明示的に指定
+
+        // 進捗を示す円
+        Circle()
+          .trim(from: 0, to: entry.progressPercentage)
+          .stroke(.white, style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
+          .frame(width: size, height: size)  // サイズを明示的に指定
+          .rotationEffect(.degrees(-90))
+          .opacity(0.5)
+
+        // ロゴ
+        Image("logo")
+          .opacity(0.8)
+          .scaleEffect(1.05)
+      }
+      .widgetURL(URL(string: "notiontodo://open/today?homeWidget")!)
+    } else {
+      // データベース未設定時
+      ZStack {
+        Circle()
+          .stroke(.white.opacity(opacity), lineWidth: lineWidth)
+          .frame(width: size, height: size)  // サイズを明示的に指定
+        Image(systemName: "exclamationmark.triangle")
+          .font(.system(size: 24))
+          .padding(EdgeInsets(top: 0, leading: 0, bottom: 4, trailing: 0))
+          .opacity(0.8)
+      }
+      .widgetURL(URL(string: "notiontodo://open/today?homeWidget")!)
+    }
+  }
+}
+
+// ロック画面用のタスク追加ビュー
+struct LockScreenAddTaskView: View {
+  let size: CGFloat = 54 + 3  // + lineWidth/2
+  var body: some View {
+    ZStack {
+      // 背景の円を半透明に
+      Circle()
+        .fill(.white.opacity(0.4))
+        .frame(width: size, height: size)  // 進捗表示ビューと同じサイズに
+      Link(destination: URL(string: "notiontodo://add_task/today?homeWidget")!) {
+        Image("plus").opacity(0.8).scaleEffect(1.1)
+          .foregroundStyle(.white)
+          .padding(EdgeInsets(top: 0, leading: 6, bottom: 4, trailing: 0))
+          .blendMode(.destinationOut)
+      }
+    }
+    .compositingGroup()  // ブレンドモードを有効にするために必要
+  }
+}
+
+// ロック画面用のタスク一覧ビュー
+struct LockScreenTaskListView: View {
+  var entry: SimpleEntry
+
+  var body: some View {
+    let fontSize: CGFloat = 14
+    if entry.hasTaskDatabase {
+      if entry.isCompleted {
+        // 全タスク完了時
+        HStack {
+          Image(systemName: "checkmark.circle").font(.system(size: 16))
+          Text(
+            LocalizedStrings.getLocalizedString(
+              for: "widget_tasks_completed",
+              locale: entry.locale
+            )
+          ).font(.system(size: fontSize))
+        }
+        .widgetURL(URL(string: "notiontodo://open/today?homeWidget")!)
+      } else if entry.isEmpty {
+        // タスクなし
+        Text(
+          LocalizedStrings.getLocalizedString(
+            for: "widget_tasks_empty",
+            locale: entry.locale
+          )
+        )
+        .font(.system(size: fontSize))
+        .widgetURL(URL(string: "notiontodo://open/today?homeWidget")!)
+      } else {
+        // タスク一覧（最新3件）
+        VStack(alignment: .leading, spacing: 4) {
+          let tasks = entry.displayTasks.prefix(3)
+          ForEach(Array(tasks.enumerated()), id: \.element.id) { index, task in
+            HStack(spacing: 4) {
+              Image(systemName: "square")
+                .font(.system(size: 12))
+                .opacity(0.4)
+              Text(task.title)
+                .font(.system(size: fontSize))
+                .lineLimit(1)
+                .strikethrough(task.isCompleted)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+          }
+          Spacer(minLength: 0)
+        }
+        .frame(maxHeight: .infinity, alignment: .top)
+        .widgetURL(URL(string: "notiontodo://open/today?homeWidget")!)
+      }
+    } else {
+      // データベース未設定時
+      Text(
+        LocalizedStrings.getLocalizedString(
+          for: "widget_no_database",
+          locale: entry.locale
+        )
+      )
+      .font(.system(size: fontSize))
+      .widgetURL(URL(string: "notiontodo://open/today?homeWidget")!)
+    }
+  }
+}
+
+////////
+
 // MARK: - Previews
 // 各ウィジェットのプレビュー
 
@@ -642,7 +884,6 @@ let sampleTasks = [
 
 let sampleOneTask = [
   WidgetTask(id: "1", title: "ヨガ", isCompleted: false, isSubmitted: true, isOverdue: false)
-
 ]
 
 let sampleEntry = SimpleEntry(
@@ -714,6 +955,32 @@ let noDatabaseEntry = SimpleEntry(
 
 #Preview("Progress Small", as: .systemSmall) {
   TaskProgressWidget()
+} timeline: {
+  sampleEntry
+  sampleOneEntry
+  noTasksEntry
+  allCompletedEntry
+  noDatabaseEntry
+}
+
+#Preview("Lock Screen Progress", as: .accessoryCircular) {
+  LockScreenProgressWidget()
+} timeline: {
+  sampleEntry
+  sampleOneEntry
+  noTasksEntry
+  allCompletedEntry
+  noDatabaseEntry
+}
+
+#Preview("Lock Screen Add Task", as: .accessoryCircular) {
+  LockScreenAddTaskWidget()
+} timeline: {
+  sampleEntry
+}
+
+#Preview("Lock Screen Task List", as: .accessoryRectangular) {
+  LockScreenTaskListWidget()
 } timeline: {
   sampleEntry
   sampleOneEntry

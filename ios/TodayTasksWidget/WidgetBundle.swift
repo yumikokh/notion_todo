@@ -8,5 +8,8 @@ struct TodayTasksWidgetBundle: WidgetBundle {
   var body: some Widget {
     TodayTasksWidget()
     TaskProgressWidget()
+    LockScreenProgressWidget()
+    LockScreenAddTaskWidget()
+    LockScreenTaskListWidget()
   }
 }

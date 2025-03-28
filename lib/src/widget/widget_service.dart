@@ -341,6 +341,16 @@ class WidgetService {
       androidName: 'TaskProgressWidgetProvider',
       iOSName: 'TaskProgressWidget',
     );
+    await HomeWidget.updateWidget(
+      name: 'LockScreenProgressWidgetProvider',
+      androidName: 'LockScreenProgressWidgetProvider',
+      iOSName: 'LockScreenProgressWidget',
+    );
+    await HomeWidget.updateWidget(
+      name: 'LockScreenTaskListWidgetProvider',
+      androidName: 'LockScreenTaskListWidgetProvider',
+      iOSName: 'LockScreenTaskListWidget',
+    );
   }
 
   // 最後に更新したタスク情報を保存
