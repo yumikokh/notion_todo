@@ -32,6 +32,7 @@ struct LocalizedStrings {
     "widget_progress_description": "今日のタスクの進捗状況を表示します",
     "widget_today_description": "今日のタスク一覧",
     "widget_no_tasks": "タスクがありません",
+    "widget_no_database": "Notionデータベースが未設定です",
   ]
 
   // 英語
@@ -43,6 +44,7 @@ struct LocalizedStrings {
     "widget_progress_description": "Shows your daily task progress",
     "widget_today_description": "Today's tasks",
     "widget_no_tasks": "No tasks",
+    "widget_no_database": "Notion database is not set",
   ]
 
   static func getLocalizedString(for key: String, locale: String, args: CVarArg...) -> String {
@@ -103,6 +105,7 @@ struct SimpleEntry: TimelineEntry {
   let date: Date
   let tasks: [WidgetTask]
   let locale: String
+  let hasTaskDatabase: Bool
 
   // 表示するタスク
   var displayTasks: [WidgetTask] {
@@ -180,14 +183,15 @@ struct Provider: TimelineProvider {
         WidgetTask(
           id: "3", title: "公園でランニング", isCompleted: false, isSubmitted: true, isOverdue: false),
       ],
-      locale: getCurrentLocale())
+      locale: getCurrentLocale(),
+      hasTaskDatabase: true)
   }
 
   // MARK: getSnapshot
   // Widgetギャラリーでの表示やプレビュー用のデータを提供する
   // ユーザーがWidgetを選択する際に表示される内容を定義
   func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> Void) {
-    let entry = loadCurrentEntry()
+    let entry = loadCurrentEntry(activePlaceholder: true)
     completion(entry)
   }
 
@@ -215,12 +219,14 @@ struct Provider: TimelineProvider {
             )
             : $0
         },
-        locale: entry.locale)
+        locale: entry.locale,
+        hasTaskDatabase: entry.hasTaskDatabase)
       entries.append(optimisticEntry)
       let nextEntry = SimpleEntry(
         date: entry.date.addingTimeInterval(1),  // 1s後にリストから削除
         tasks: entry.tasks,
-        locale: entry.locale)
+        locale: entry.locale,
+        hasTaskDatabase: entry.hasTaskDatabase)
       entries.append(nextEntry)
     } else {
       entries.append(entry)
@@ -237,10 +243,18 @@ struct Provider: TimelineProvider {
   }
 
   // 現在のエントリーを読み込むヘルパーメソッド
-  func loadCurrentEntry() -> SimpleEntry {
+  func loadCurrentEntry(activePlaceholder: Bool = false) -> SimpleEntry {
     let sharedDefaults = UserDefaults(suiteName: "group.com.ymkokh.notionTodo")
     var tasks: [WidgetTask] = []
     let locale = getCurrentLocale()
+    let hasTaskDatabase =
+      sharedDefaults?.object(forKey: "task_database") != nil
+      && sharedDefaults?.string(forKey: "access_token") != nil
+
+    // データベースが未設定の場合
+    if !hasTaskDatabase {
+      tasks = []
+    }
 
     // ペンディング中のタスク更新があれば処理
     if sharedDefaults?.object(forKey: "pending_task_update") != nil {
@@ -264,8 +278,7 @@ struct Provider: TimelineProvider {
     }
 
     // 実際のデータがない場合は、現実的なダミーデータを使用
-    // TODO: DB未設定時の表示
-    if tasks.isEmpty {
+    if tasks.isEmpty && activePlaceholder {
       tasks = [
         WidgetTask(
           id: "1", title: "朝のストレッチ", isCompleted: true, isSubmitted: true, isOverdue: false),
@@ -276,9 +289,9 @@ struct Provider: TimelineProvider {
       ]
     }
 
-    let entry = SimpleEntry(date: Date(), tasks: tasks, locale: locale)
-
-    return entry
+    return SimpleEntry(
+      date: Date(), tasks: tasks, locale: locale,
+      hasTaskDatabase: activePlaceholder || hasTaskDatabase)
   }
 }
 
@@ -470,8 +483,21 @@ struct TaskProgressWidgetEntryView: View {
     case .systemSmall:
       // スモールサイズ：進捗円のみ
       ZStack {
-        // 中央に円を配置
-        ProgressCircleView(entry: entry, size: 110)
+        if entry.hasTaskDatabase {
+          // 中央に円を配置
+          ProgressCircleView(entry: entry, size: 110)
+        } else {
+          // データベース未設定時のメッセージ
+          VStack(spacing: 4) {
+            Text(
+              LocalizedStrings.getLocalizedString(for: "widget_no_database", locale: entry.locale)
+            )
+            .font(.system(size: 12))
+            .foregroundColor(.secondary)
+            .multilineTextAlignment(.center)
+            .padding(.horizontal, 8)
+          }
+        }
       }
       .containerBackground(.fill.tertiary, for: .widget)
       .widgetURL(URL(string: "notiontodo://open/today?homeWidget")!)
@@ -489,40 +515,13 @@ struct TodayTasksWidgetEntryView: View {
   @Environment(\.widgetFamily) var widgetFamily
 
   var body: some View {
-    switch widgetFamily {
-
-    // スモールサイズ
-    case .systemSmall:
-      VStack(alignment: .leading, spacing: 0) {
-        // ヘッダー部分：タイトル
-        HStack(alignment: .bottom) {
-          Text(LocalizedStrings.getLocalizedString(for: "widget_today", locale: entry.locale))
-            .font(.headline)
-            .foregroundColor(.primary)
-
-          // タスクの完了状況を分数形式で表示
-          Text("\(entry.completedTasksCount)\u{2009}/\u{2009}\(entry.totalTasksCount)")
-            .font(.system(size: 12))
-            .foregroundColor(.secondary)
-            .padding(.bottom, 2)
-
-          Spacer()
-        }
-        .padding(.bottom, 8)
-
-        // タスク一覧（常に一定の高さを確保）
-        TaskListView(entry: entry, maxCount: getMaxTaskCount())
-          .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-      }
-      .containerBackground(.fill.tertiary, for: .widget)
-      .widgetURL(URL(string: "notiontodo://open/today?homeWidget")!)
-
-    // メディアム、ラージサイズ
-    default:
-      ZStack(alignment: .topLeading) {
+    if entry.hasTaskDatabase {
+      switch widgetFamily {
+      // スモールサイズ
+      case .systemSmall:
         VStack(alignment: .leading, spacing: 0) {
+          // ヘッダー部分：タイトル
           HStack(alignment: .bottom) {
-            // ヘッダー部分：タイトル
             Text(LocalizedStrings.getLocalizedString(for: "widget_today", locale: entry.locale))
               .font(.headline)
               .foregroundColor(.primary)
@@ -532,31 +531,71 @@ struct TodayTasksWidgetEntryView: View {
               .font(.system(size: 12))
               .foregroundColor(.secondary)
               .padding(.bottom, 2)
-          }
-          .padding(.bottom, widgetFamily == .systemMedium ? 8 : 10)
 
-          // タスク一覧
-          TaskListView(
-            entry: entry, maxCount: getMaxTaskCount())
-        }
-        .padding([.leading, .trailing], 4)
-
-        // Medium と Large サイズの場合は + ボタンを右上に絶対配置
-        VStack {
-          HStack {
             Spacer()
-            Link(destination: URL(string: "notiontodo://add_task/today?homeWidget")!) {
-              Image(systemName: "plus.circle.fill")
-                .font(.system(size: 30))
-                .foregroundColor(.primary)
-            }
-            .padding(.trailing, -2)
-            .padding(.top, -8)
           }
-          Spacer()
+          .padding(.bottom, 8)
+
+          // タスク一覧（常に一定の高さを確保）
+          TaskListView(entry: entry, maxCount: getMaxTaskCount())
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         }
+        .containerBackground(.fill.tertiary, for: .widget)
+        .widgetURL(URL(string: "notiontodo://open/today?homeWidget")!)
+
+      // メディアム、ラージサイズ
+      default:
+        ZStack(alignment: .topLeading) {
+          VStack(alignment: .leading, spacing: 0) {
+            HStack(alignment: .bottom) {
+              // ヘッダー部分：タイトル
+              Text(LocalizedStrings.getLocalizedString(for: "widget_today", locale: entry.locale))
+                .font(.headline)
+                .foregroundColor(.primary)
+
+              // タスクの完了状況を分数形式で表示
+              Text("\(entry.completedTasksCount)\u{2009}/\u{2009}\(entry.totalTasksCount)")
+                .font(.system(size: 12))
+                .foregroundColor(.secondary)
+                .padding(.bottom, 2)
+            }
+            .padding(.bottom, widgetFamily == .systemMedium ? 8 : 10)
+
+            // タスク一覧
+            TaskListView(
+              entry: entry, maxCount: getMaxTaskCount())
+          }
+          .padding([.leading, .trailing], 4)
+
+          // Medium と Large サイズの場合は + ボタンを右上に絶対配置
+          VStack {
+            HStack {
+              Spacer()
+              Link(destination: URL(string: "notiontodo://add_task/today?homeWidget")!) {
+                Image(systemName: "plus.circle.fill")
+                  .font(.system(size: 30))
+                  .foregroundColor(.primary)
+              }
+              .padding(.trailing, -2)
+              .padding(.top, -8)
+            }
+            Spacer()
+          }
+        }
+        .containerBackground(.fill.tertiary, for: .widget)  // iOS 17以降のWidget背景スタイル
+        .widgetURL(URL(string: "notiontodo://open/today?homeWidget")!)
       }
-      .containerBackground(.fill.tertiary, for: .widget)  // iOS 17以降のWidget背景スタイル
+    } else {
+      // データベース未設定時のメッセージ
+      VStack(spacing: 4) {
+        Text(LocalizedStrings.getLocalizedString(for: "widget_no_database", locale: entry.locale))
+          .font(.system(size: 12))
+          .foregroundColor(.secondary)
+          .multilineTextAlignment(.center)
+          .padding(.horizontal, 8)
+      }
+      .frame(maxWidth: .infinity, maxHeight: .infinity)
+      .containerBackground(.fill.tertiary, for: .widget)
       .widgetURL(URL(string: "notiontodo://open/today?homeWidget")!)
     }
   }
@@ -609,19 +648,22 @@ let sampleOneTask = [
 let sampleEntry = SimpleEntry(
   date: Date(),
   tasks: sampleTasks,
-  locale: "ja"
+  locale: "ja",
+  hasTaskDatabase: true
 )
 
 let sampleOneEntry = SimpleEntry(
   date: Date(),
   tasks: sampleOneTask,
-  locale: "ja"
+  locale: "ja",
+  hasTaskDatabase: true
 )
 
 let noTasksEntry = SimpleEntry(
   date: Date(),
   tasks: [],
-  locale: "ja"
+  locale: "ja",
+  hasTaskDatabase: true
 )
 
 let allCompletedEntry = SimpleEntry(
@@ -629,7 +671,15 @@ let allCompletedEntry = SimpleEntry(
   tasks: sampleTasks.map {
     WidgetTask(id: $0.id, title: $0.title, isCompleted: true, isSubmitted: true, isOverdue: false)
   },
-  locale: "ja"
+  locale: "ja",
+  hasTaskDatabase: true
+)
+
+let noDatabaseEntry = SimpleEntry(
+  date: Date(),
+  tasks: [],
+  locale: "ja",
+  hasTaskDatabase: false
 )
 
 #Preview("Today Small", as: .systemSmall) {
@@ -639,6 +689,7 @@ let allCompletedEntry = SimpleEntry(
   sampleOneEntry
   noTasksEntry
   allCompletedEntry
+  noDatabaseEntry
 }
 
 #Preview("Today Medium", as: .systemMedium) {
@@ -648,6 +699,7 @@ let allCompletedEntry = SimpleEntry(
   sampleOneEntry
   noTasksEntry
   allCompletedEntry
+  noDatabaseEntry
 }
 
 #Preview("Today Large", as: .systemLarge) {
@@ -657,6 +709,7 @@ let allCompletedEntry = SimpleEntry(
   sampleOneEntry
   noTasksEntry
   allCompletedEntry
+  noDatabaseEntry
 }
 
 #Preview("Progress Small", as: .systemSmall) {
@@ -666,4 +719,5 @@ let allCompletedEntry = SimpleEntry(
   sampleOneEntry
   noTasksEntry
   allCompletedEntry
+  noDatabaseEntry
 }
