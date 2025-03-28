@@ -125,7 +125,7 @@ struct SimpleEntry: TimelineEntry {
     if isEmpty {
       return 0
     }
-    return tasks.filter { $0.isCompleted }.count
+    return tasks.filter { $0.isCompleted && !$0.isOverdue }.count
   }
 
   // 全タスクの数を計算
@@ -133,7 +133,7 @@ struct SimpleEntry: TimelineEntry {
     if isEmpty {
       return 0
     }
-    return tasks.count
+    return tasks.filter { !($0.isCompleted && $0.isOverdue) }.count
   }
 
   // 残りのタスク
@@ -437,8 +437,10 @@ struct TaskListView: View {
                 )
               ) {
                 Image(systemName: task.isCompleted ? "checkmark.square.fill" : "square")
+                  .cornerRadius(0)
                   .font(.system(size: 16))
                   .foregroundColor(Color(red: 0.49, green: 0.46, blue: 0.43))
+                  .symbolEffect(.bounce, options: .speed(1.5), value: task.isSubmitted)
               }
               .buttonStyle(.plain)
             }
