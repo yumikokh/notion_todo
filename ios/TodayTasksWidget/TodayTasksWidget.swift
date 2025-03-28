@@ -196,7 +196,35 @@ struct Provider: TimelineProvider {
   // いつ、どのようなデータでWidgetを更新するかを定義
   func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> Void) {
     // 現在のエントリーを読み込む
+    var entries: [SimpleEntry] = []
     let entry = loadCurrentEntry()
+    let sharedDefaults = UserDefaults(suiteName: "group.com.ymkokh.notionTodo")
+
+    // Widgetからのステータス変更だった場合
+    if let lastCompletedTaskId = sharedDefaults?.string(forKey: "last_completed_task_id") {
+      let optimisticEntry = SimpleEntry(
+        date: entry.date,
+        tasks: entry.tasks.map {
+          $0.id == lastCompletedTaskId
+            ? WidgetTask(
+              id: $0.id,
+              title: $0.title,
+              isCompleted: $0.isCompleted,
+              isSubmitted: false,
+              isOverdue: $0.isOverdue
+            )
+            : $0
+        },
+        locale: entry.locale)
+      entries.append(optimisticEntry)
+      let nextEntry = SimpleEntry(
+        date: entry.date.addingTimeInterval(1),  // 1s後にリストから削除
+        tasks: entry.tasks,
+        locale: entry.locale)
+      entries.append(nextEntry)
+    } else {
+      entries.append(entry)
+    }
 
     // 次の更新時間（15分後）を設定
     // この設定により、Widgetは15分ごとに更新される
@@ -204,7 +232,7 @@ struct Provider: TimelineProvider {
 
     // タイムラインを作成して完了ハンドラを呼び出す
     // .after(nextUpdateDate)は指定した時間後に更新することを示す
-    let timeline = Timeline(entries: [entry], policy: .after(nextUpdateDate))
+    let timeline = Timeline(entries: entries, policy: .after(nextUpdateDate))
     completion(timeline)
   }
 
@@ -257,10 +285,13 @@ struct Provider: TimelineProvider {
 ////////
 /// @available(iOS 17, *)
 public struct BackgroundIntent: AppIntent {
+
   static public var title: LocalizedStringResource = "HomeWidget Background Intent"
 
   @Parameter(title: "Widget URI")
   var url: URL?
+
+  public init() {}
 
   public init(url: URL?) {
     self.url = url

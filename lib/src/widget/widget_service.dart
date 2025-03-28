@@ -61,6 +61,7 @@ class WidgetService {
   static const String taskDatabaseKey = 'task_database';
   static const String lastUpdatedTaskKey = 'last_updated_task';
   static const String localeKey = 'widget_locale';
+  static const String lastCompletedTaskIdKey = 'last_completed_task_id';
 
   static const String widgetScheme = 'notiontodo';
 
@@ -223,7 +224,11 @@ class WidgetService {
       if (action == 'toggle') {
         final [taskId, isCompletedStr] = pathSegments;
         final isCompleted = isCompletedStr.toLowerCase() == 'true';
-        await _completeTask(taskId, isCompleted);
+        if (isCompleted) {
+          await _completeTask(taskId);
+        } else {
+          // なにもしない
+        }
       }
     } catch (e) {
       print('[HomeWidget] Error in interactivity callback: $e');
@@ -254,18 +259,19 @@ class WidgetService {
             isOverdue: task.isOverdue))
         .toList();
 
-    await _sendTasks(widgetTasks);
+    await _saveTasks(widgetTasks);
+    await _updateWidget();
   }
 
-  static Future<void> _completeTask(String id, bool isCompleted) async {
+  static Future<void> _completeTask(String id) async {
+    const isCompleted = true;
     final widgetValue = await value;
     final tasks = widgetValue.tasks;
+
     if (tasks == null) {
       print('[WidgetService] No widget data found');
       return;
     }
-
-    print('[WidgetService] _completeTask 1: $id, $isCompleted');
 
     final updatedTasks = tasks
         .map((task) => task.id == id
@@ -273,42 +279,17 @@ class WidgetService {
                 id: id,
                 title: task.title,
                 isCompleted: isCompleted,
-                isSubmitted: false,
-                isOverdue: false)
+                isSubmitted: true, // 表示用のフラグ: Intent側で制御する
+                isOverdue: task.isOverdue)
             : task)
         .toList();
-    await _sendTasks(updatedTasks);
-
-    print('[WidgetService] _completeTask 2: $id, $isCompleted');
+    await _saveTasks(updatedTasks);
 
     await _saveLastUpdatedTask(id, isCompleted);
 
     _updateTaskInNotion(id, isCompleted);
 
-    // 完了したタスクは1秒後にウィジェットから削除
-    if (isCompleted) {
-      Future.delayed(const Duration(seconds: 1), () async {
-        print('[WidgetService] _completeTask 3: $id, $isCompleted');
-        final currentTasks = (await value).tasks;
-        if (currentTasks == null) return;
-        print('[WidgetService] _completeTask 4: $id, $isCompleted');
-
-        final updatedTasks = currentTasks
-            .map((task) => task.id == id
-                ? !task.isOverdue
-                    ? WidgetTask(
-                        id: id,
-                        title: task.title,
-                        isCompleted: true,
-                        isSubmitted: true,
-                        isOverdue: false)
-                    : null
-                : task)
-            .whereType<WidgetTask>()
-            .toList();
-        await _sendTasks(updatedTasks);
-      });
-    }
+    _setLastCompletedIdFromWidget(id);
   }
 
   // Notionリポジトリを直接使用してタスクを更新するメソッド
@@ -330,12 +311,21 @@ class WidgetService {
     }
   }
 
-  static _sendTasks(List<WidgetTask> tasks) async {
+  static _saveTasks(List<WidgetTask> tasks) async {
     final value = tasks.map((task) => task.toJson()).toList();
     final tasksJson = jsonEncode(value);
 
     await HomeWidget.saveWidgetData(todayTasksKey, tasksJson);
-    await _updateWidget();
+  }
+
+  // Timeline更新時にWidgetからのステータス変更化どうかを判定するのに使う
+  static _setLastCompletedIdFromWidget(String taskId) async {
+    await HomeWidget.saveWidgetData(lastCompletedTaskIdKey, taskId);
+
+    // 1秒後に削除
+    Future.delayed(const Duration(milliseconds: 300), () async {
+      await HomeWidget.saveWidgetData(lastCompletedTaskIdKey, null);
+    });
   }
 
   static _updateWidget() async {
