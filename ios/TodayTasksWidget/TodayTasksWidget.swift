@@ -736,13 +736,13 @@ struct LockScreenTaskListView: View {
       if entry.isCompleted {
         // 全タスク完了時
         HStack {
-          Image(systemName: "checkmark.circle")
+          Image(systemName: "checkmark.circle").font(.system(size: 16))
           Text(
             LocalizedStrings.getLocalizedString(
               for: "widget_tasks_completed",
               locale: entry.locale
             )
-          )
+          ).font(.system(size: 14))
         }
       } else if entry.isEmpty {
         // タスクなし
@@ -751,21 +751,27 @@ struct LockScreenTaskListView: View {
             for: "widget_tasks_empty",
             locale: entry.locale
           )
-        )
+        ).font(.system(size: 14))
       } else {
         // タスク一覧（最新2件）
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 4) {
           let tasks = entry.displayTasks.prefix(2)
           ForEach(Array(tasks.enumerated()), id: \.element.id) { index, task in
-            if index > 0 {
+            HStack(spacing: 4) {
+              Image(systemName: task.isCompleted ? "checkmark.square" : "square")
+                .font(.system(size: 10))
+              Text(task.title)
+                .font(.system(size: 12))
+                .lineLimit(1)
+                .strikethrough(task.isCompleted)
+            }
+            if index == 0 {
               Divider()
             }
-            Text(task.title)
-              .font(.system(size: 12))
-              .lineLimit(1)
-              .strikethrough(task.isCompleted)
           }
+          Spacer(minLength: 0)
         }
+        .frame(maxHeight: .infinity, alignment: .top)
       }
     } else {
       // データベース未設定時
@@ -774,7 +780,7 @@ struct LockScreenTaskListView: View {
           for: "widget_no_database",
           locale: entry.locale
         )
-      )
+      ).font(.system(size: 14))
     }
   }
 }
