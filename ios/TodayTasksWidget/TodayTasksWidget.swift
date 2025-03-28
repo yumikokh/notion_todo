@@ -99,6 +99,60 @@ struct TaskProgressWidget: Widget {
   }
 }
 
+// MARK: - LockScreenProgressWidget
+// ロック画面用の進捗表示ウィジェット
+struct LockScreenProgressWidget: Widget {
+  let kind: String = "LockScreenProgressWidget"
+
+  var body: some WidgetConfiguration {
+    StaticConfiguration(kind: kind, provider: Provider()) { entry in
+      LockScreenProgressView(entry: entry).containerBackground(.fill.tertiary, for: .widget)
+    }
+    .configurationDisplayName(
+      LocalizedStrings.getLocalizedString(
+        for: "widget_progress_title", locale: Provider().getCurrentLocale())
+    )
+    .description(
+      LocalizedStrings.getLocalizedString(
+        for: "widget_progress_description", locale: Provider().getCurrentLocale())
+    )
+    .supportedFamilies([.accessoryCircular])
+  }
+}
+
+// MARK: - LockScreenAddTaskWidget
+// ロック画面用のタスク追加ウィジェット
+struct LockScreenAddTaskWidget: Widget {
+  let kind: String = "LockScreenAddTaskWidget"
+
+  var body: some WidgetConfiguration {
+    StaticConfiguration(kind: kind, provider: Provider()) { entry in
+      LockScreenAddTaskView().containerBackground(.fill.tertiary, for: .widget)
+    }
+    .configurationDisplayName("Add Task")
+    .description("Quickly add a new task")
+    .supportedFamilies([.accessoryCircular])
+  }
+}
+
+// MARK: - LockScreenTaskListWidget
+// ロック画面用のタスク一覧ウィジェット
+struct LockScreenTaskListWidget: Widget {
+  let kind: String = "LockScreenTaskListWidget"
+
+  var body: some WidgetConfiguration {
+    StaticConfiguration(kind: kind, provider: Provider()) { entry in
+      LockScreenTaskListView(entry: entry).containerBackground(.fill.tertiary, for: .widget)
+    }
+    .configurationDisplayName("Today's Tasks")
+    .description(
+      LocalizedStrings.getLocalizedString(
+        for: "widget_today_description", locale: Provider().getCurrentLocale())
+    )
+    .supportedFamilies([.accessoryRectangular])
+  }
+}
+
 // MARK: - TimelineEntry
 // Widgetに表示するデータモデル
 struct SimpleEntry: TimelineEntry {
@@ -617,6 +671,101 @@ struct TodayTasksWidgetEntryView: View {
 
 ////////
 
+// ロック画面用の進捗表示ビュー
+struct LockScreenProgressView: View {
+  var entry: SimpleEntry
+
+  var body: some View {
+    if entry.hasTaskDatabase {
+      if entry.isCompleted {
+        // 全タスク完了時
+        Image(systemName: "checkmark")
+          .font(.system(size: 20))
+      } else if entry.isEmpty {
+        // タスクなし
+        Text("0")
+          .font(.system(size: 20, weight: .medium))
+      } else {
+        // 進捗表示
+        Gauge(value: entry.progressPercentage) {
+          Text("\(entry.remainingTasksCount)")
+            .font(.system(size: 20, weight: .medium))
+        }
+        .gaugeStyle(.accessoryCircular)
+      }
+    } else {
+      // データベース未設定時
+      Image(systemName: "exclamationmark.triangle")
+        .font(.system(size: 20))
+    }
+  }
+}
+
+// ロック画面用のタスク追加ビュー
+struct LockScreenAddTaskView: View {
+  var body: some View {
+    Link(destination: URL(string: "notiontodo://add_task/today?homeWidget")!) {
+      Image(systemName: "plus")
+        .font(.system(size: 20))
+        .widgetAccentable()
+    }
+  }
+}
+
+// ロック画面用のタスク一覧ビュー
+struct LockScreenTaskListView: View {
+  var entry: SimpleEntry
+
+  var body: some View {
+    if entry.hasTaskDatabase {
+      if entry.isCompleted {
+        // 全タスク完了時
+        HStack {
+          Image(systemName: "checkmark.circle")
+          Text(
+            LocalizedStrings.getLocalizedString(
+              for: "widget_tasks_completed",
+              locale: entry.locale
+            )
+          )
+        }
+      } else if entry.isEmpty {
+        // タスクなし
+        Text(
+          LocalizedStrings.getLocalizedString(
+            for: "widget_tasks_empty",
+            locale: entry.locale
+          )
+        )
+      } else {
+        // タスク一覧（最新2件）
+        VStack(alignment: .leading) {
+          let tasks = entry.displayTasks.prefix(2)
+          ForEach(Array(tasks.enumerated()), id: \.element.id) { index, task in
+            if index > 0 {
+              Divider()
+            }
+            Text(task.title)
+              .font(.system(size: 12))
+              .lineLimit(1)
+              .strikethrough(task.isCompleted)
+          }
+        }
+      }
+    } else {
+      // データベース未設定時
+      Text(
+        LocalizedStrings.getLocalizedString(
+          for: "widget_no_database",
+          locale: entry.locale
+        )
+      )
+    }
+  }
+}
+
+////////
+
 // MARK: - Previews
 // 各ウィジェットのプレビュー
 
@@ -714,6 +863,32 @@ let noDatabaseEntry = SimpleEntry(
 
 #Preview("Progress Small", as: .systemSmall) {
   TaskProgressWidget()
+} timeline: {
+  sampleEntry
+  sampleOneEntry
+  noTasksEntry
+  allCompletedEntry
+  noDatabaseEntry
+}
+
+#Preview("Lock Screen Progress", as: .accessoryCircular) {
+  LockScreenProgressWidget()
+} timeline: {
+  sampleEntry
+  sampleOneEntry
+  noTasksEntry
+  allCompletedEntry
+  noDatabaseEntry
+}
+
+#Preview("Lock Screen Add Task", as: .accessoryCircular) {
+  LockScreenAddTaskWidget()
+} timeline: {
+  sampleEntry
+}
+
+#Preview("Lock Screen Task List", as: .accessoryRectangular) {
+  LockScreenTaskListWidget()
 } timeline: {
   sampleEntry
   sampleOneEntry
