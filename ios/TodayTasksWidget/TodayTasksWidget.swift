@@ -678,29 +678,34 @@ struct LockScreenProgressView: View {
   var body: some View {
     let lineWidth: CGFloat = 6
     let opacity: CGFloat = 0.2
+    let size: CGFloat = 60
     if entry.hasTaskDatabase {
       // 進捗表示
       ZStack {
         // 背景の円
         Circle()
           .stroke(.white.opacity(opacity), lineWidth: lineWidth)
+          .frame(width: size, height: size)  // サイズを明示的に指定
 
         // 進捗を示す円
         Circle()
           .trim(from: 0, to: entry.progressPercentage)
           .stroke(.white, style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
+          .frame(width: size, height: size)  // サイズを明示的に指定
           .rotationEffect(.degrees(-90))
           .opacity(0.5)
 
         // ロゴ
-        Image("logo").opacity(0.8).scaleEffect(1.1)
-
+        Image("logo")
+          .opacity(0.8)
+          .scaleEffect(1.1)
       }
     } else {
       // データベース未設定時
       ZStack {
         Circle()
           .stroke(.white.opacity(opacity), lineWidth: lineWidth)
+          .frame(width: size, height: size)  // サイズを明示的に指定
         Image(systemName: "exclamationmark.triangle")
           .font(.system(size: 24))
           .padding(EdgeInsets(top: 0, leading: 0, bottom: 4, trailing: 0))
@@ -712,12 +717,15 @@ struct LockScreenProgressView: View {
 
 // ロック画面用のタスク追加ビュー
 struct LockScreenAddTaskView: View {
+  let size: CGFloat = 60 + 3
   var body: some View {
     ZStack {
+      // 背景の円を半透明に
       Circle()
-        .fill(.white.opacity(0.6))
+        .fill(.white.opacity(0.4))
+        .frame(width: size, height: size)  // 進捗表示ビューと同じサイズに
       Link(destination: URL(string: "notiontodo://add_task/today?homeWidget")!) {
-        Image("plus").opacity(0.8).scaleEffect(1.1)
+        Image("plus").opacity(0.8).scaleEffect(1.2)
           .foregroundStyle(.white)
           .padding(EdgeInsets(top: 0, leading: 8, bottom: 6, trailing: 0))
           .blendMode(.destinationOut)
@@ -732,6 +740,7 @@ struct LockScreenTaskListView: View {
   var entry: SimpleEntry
 
   var body: some View {
+    let fontSize: CGFloat = 14
     if entry.hasTaskDatabase {
       if entry.isCompleted {
         // 全タスク完了時
@@ -742,7 +751,7 @@ struct LockScreenTaskListView: View {
               for: "widget_tasks_completed",
               locale: entry.locale
             )
-          ).font(.system(size: 14))
+          ).font(.system(size: fontSize))
         }
       } else if entry.isEmpty {
         // タスクなし
@@ -751,23 +760,22 @@ struct LockScreenTaskListView: View {
             for: "widget_tasks_empty",
             locale: entry.locale
           )
-        ).font(.system(size: 14))
+        ).font(.system(size: fontSize))
       } else {
-        // タスク一覧（最新2件）
+        // タスク一覧（最新3件）
         VStack(alignment: .leading, spacing: 4) {
-          let tasks = entry.displayTasks.prefix(2)
+          let tasks = entry.displayTasks.prefix(3)
           ForEach(Array(tasks.enumerated()), id: \.element.id) { index, task in
             HStack(spacing: 4) {
-              Image(systemName: task.isCompleted ? "checkmark.square" : "square")
-                .font(.system(size: 10))
-              Text(task.title)
+              Image(systemName: "square")
                 .font(.system(size: 12))
+                .opacity(0.4)
+              Text(task.title)
+                .font(.system(size: fontSize))
                 .lineLimit(1)
                 .strikethrough(task.isCompleted)
             }
-            if index == 0 {
-              Divider()
-            }
+            .frame(maxWidth: .infinity, alignment: .leading)
           }
           Spacer(minLength: 0)
         }
@@ -780,7 +788,7 @@ struct LockScreenTaskListView: View {
           for: "widget_no_database",
           locale: entry.locale
         )
-      ).font(.system(size: 14))
+      ).font(.system(size: fontSize))
     }
   }
 }
