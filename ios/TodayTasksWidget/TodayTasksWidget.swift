@@ -30,9 +30,16 @@ struct LocalizedStrings {
     "widget_tasks_empty": "No tasks",
     "widget_progress_title": "タスク進捗",
     "widget_progress_description": "今日のタスクの進捗状況を表示します",
-    "widget_today_description": "今日のタスク一覧",
+    "widget_today_title": "今日のタスク",
+    "widget_today_description": "今日のタスク一覧を表示します",
     "widget_no_tasks": "タスクがありません",
     "widget_no_database": "Notionデータベースが未設定です",
+    "widget_add_task_title": "タスクを追加",
+    "widget_add_task_description": "新しいタスクをすばやく追加できます",
+    // サンプルタスク
+    "sample_task_1": "朝のストレッチ",
+    "sample_task_2": "メールの返信",
+    "sample_task_3": "買い物リストの作成",
   ]
 
   // 英語
@@ -42,9 +49,16 @@ struct LocalizedStrings {
     "widget_tasks_empty": "No tasks",
     "widget_progress_title": "Task Progress",
     "widget_progress_description": "Shows your daily task progress",
-    "widget_today_description": "Today's tasks",
+    "widget_today_title": "Today's Tasks",
+    "widget_today_description": "Shows your today's tasks",
     "widget_no_tasks": "No tasks",
     "widget_no_database": "Notion database is not set",
+    "widget_add_task_title": "Add Task",
+    "widget_add_task_description": "Quickly add a new task",
+    // Sample tasks
+    "sample_task_1": "Morning Stretch",
+    "sample_task_2": "Reply to emails",
+    "sample_task_3": "Make shopping list",
   ]
 
   static func getLocalizedString(for key: String, locale: String, args: CVarArg...) -> String {
@@ -69,7 +83,10 @@ struct TodayTasksWidget: Widget {
     StaticConfiguration(kind: kind, provider: Provider()) { entry in
       TodayTasksWidgetEntryView(entry: entry)
     }
-    .configurationDisplayName("Today")  // Widgetギャラリーでの表示名
+    .configurationDisplayName(
+      LocalizedStrings.getLocalizedString(
+        for: "widget_today_title", locale: Provider().getCurrentLocale())
+    )  // Widgetギャラリーでの表示名
     .description(
       LocalizedStrings.getLocalizedString(
         for: "widget_today_description", locale: Provider().getCurrentLocale())
@@ -129,8 +146,14 @@ struct LockScreenAddTaskWidget: Widget {
     StaticConfiguration(kind: kind, provider: Provider()) { entry in
       LockScreenAddTaskView().containerBackground(.fill.tertiary, for: .widget)
     }
-    .configurationDisplayName("Add Task")
-    .description("Quickly add a new task")
+    .configurationDisplayName(
+      LocalizedStrings.getLocalizedString(
+        for: "widget_add_task_title", locale: Provider().getCurrentLocale())
+    )
+    .description(
+      LocalizedStrings.getLocalizedString(
+        for: "widget_add_task_description", locale: Provider().getCurrentLocale())
+    )
     .supportedFamilies([.accessoryCircular])
   }
 }
@@ -144,7 +167,10 @@ struct LockScreenTaskListWidget: Widget {
     StaticConfiguration(kind: kind, provider: Provider()) { entry in
       LockScreenTaskListView(entry: entry).containerBackground(.fill.tertiary, for: .widget)
     }
-    .configurationDisplayName("Today's Tasks")
+    .configurationDisplayName(
+      LocalizedStrings.getLocalizedString(
+        for: "widget_today_title", locale: Provider().getCurrentLocale())
+    )
     .description(
       LocalizedStrings.getLocalizedString(
         for: "widget_today_description", locale: Provider().getCurrentLocale())
@@ -231,11 +257,26 @@ struct Provider: TimelineProvider {
       date: Date(),
       tasks: [
         WidgetTask(
-          id: "1", title: "朝のストレッチ", isCompleted: true, isSubmitted: true, isOverdue: false),
+          id: "1",
+          title: LocalizedStrings.getLocalizedString(
+            for: "sample_task_1", locale: getCurrentLocale()),
+          isCompleted: true,
+          isSubmitted: true,
+          isOverdue: false),
         WidgetTask(
-          id: "2", title: "新しいレシピを試す", isCompleted: false, isSubmitted: true, isOverdue: false),
+          id: "2",
+          title: LocalizedStrings.getLocalizedString(
+            for: "sample_task_2", locale: getCurrentLocale()),
+          isCompleted: false,
+          isSubmitted: true,
+          isOverdue: false),
         WidgetTask(
-          id: "3", title: "公園でランニング", isCompleted: false, isSubmitted: true, isOverdue: false),
+          id: "3",
+          title: LocalizedStrings.getLocalizedString(
+            for: "sample_task_3", locale: getCurrentLocale()),
+          isCompleted: false,
+          isSubmitted: true,
+          isOverdue: false),
       ],
       locale: getCurrentLocale(),
       hasTaskDatabase: true)
@@ -335,11 +376,26 @@ struct Provider: TimelineProvider {
     if tasks.isEmpty && activePlaceholder {
       tasks = [
         WidgetTask(
-          id: "1", title: "朝のストレッチ", isCompleted: true, isSubmitted: true, isOverdue: false),
+          id: "1",
+          title: LocalizedStrings.getLocalizedString(
+            for: "sample_task_1", locale: getCurrentLocale()),
+          isCompleted: true,
+          isSubmitted: true,
+          isOverdue: false),
         WidgetTask(
-          id: "2", title: "新しいレシピを試す", isCompleted: false, isSubmitted: true, isOverdue: false),
+          id: "2",
+          title: LocalizedStrings.getLocalizedString(
+            for: "sample_task_2", locale: getCurrentLocale()),
+          isCompleted: false,
+          isSubmitted: true,
+          isOverdue: false),
         WidgetTask(
-          id: "3", title: "公園でランニング", isCompleted: false, isSubmitted: true, isOverdue: false),
+          id: "3",
+          title: LocalizedStrings.getLocalizedString(
+            for: "sample_task_3", locale: getCurrentLocale()),
+          isCompleted: false,
+          isSubmitted: true,
+          isOverdue: false),
       ]
     }
 
@@ -719,7 +775,7 @@ struct LockScreenProgressView: View {
 
 // ロック画面用のタスク追加ビュー
 struct LockScreenAddTaskView: View {
-  let size: CGFloat = 54 + 3 // + lineWidth/2
+  let size: CGFloat = 54 + 3  // + lineWidth/2
   var body: some View {
     ZStack {
       // 背景の円を半透明に
@@ -727,7 +783,7 @@ struct LockScreenAddTaskView: View {
         .fill(.white.opacity(0.4))
         .frame(width: size, height: size)  // 進捗表示ビューと同じサイズに
       Link(destination: URL(string: "notiontodo://add_task/today?homeWidget")!) {
-          Image("plus").opacity(0.8).scaleEffect(1.1)
+        Image("plus").opacity(0.8).scaleEffect(1.1)
           .foregroundStyle(.white)
           .padding(EdgeInsets(top: 0, leading: 6, bottom: 4, trailing: 0))
           .blendMode(.destinationOut)
