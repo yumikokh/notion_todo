@@ -678,7 +678,7 @@ struct LockScreenProgressView: View {
   var body: some View {
     let lineWidth: CGFloat = 6
     let opacity: CGFloat = 0.2
-    let size: CGFloat = 60
+    let size: CGFloat = 54
     if entry.hasTaskDatabase {
       // 進捗表示
       ZStack {
@@ -698,8 +698,9 @@ struct LockScreenProgressView: View {
         // ロゴ
         Image("logo")
           .opacity(0.8)
-          .scaleEffect(1.1)
+          .scaleEffect(1.05)
       }
+      .widgetURL(URL(string: "notiontodo://open/today?homeWidget")!)
     } else {
       // データベース未設定時
       ZStack {
@@ -711,13 +712,14 @@ struct LockScreenProgressView: View {
           .padding(EdgeInsets(top: 0, leading: 0, bottom: 4, trailing: 0))
           .opacity(0.8)
       }
+      .widgetURL(URL(string: "notiontodo://open/today?homeWidget")!)
     }
   }
 }
 
 // ロック画面用のタスク追加ビュー
 struct LockScreenAddTaskView: View {
-  let size: CGFloat = 60 + 3
+  let size: CGFloat = 54 + 3 // + lineWidth/2
   var body: some View {
     ZStack {
       // 背景の円を半透明に
@@ -725,9 +727,9 @@ struct LockScreenAddTaskView: View {
         .fill(.white.opacity(0.4))
         .frame(width: size, height: size)  // 進捗表示ビューと同じサイズに
       Link(destination: URL(string: "notiontodo://add_task/today?homeWidget")!) {
-        Image("plus").opacity(0.8).scaleEffect(1.2)
+          Image("plus").opacity(0.8).scaleEffect(1.1)
           .foregroundStyle(.white)
-          .padding(EdgeInsets(top: 0, leading: 8, bottom: 6, trailing: 0))
+          .padding(EdgeInsets(top: 0, leading: 6, bottom: 4, trailing: 0))
           .blendMode(.destinationOut)
       }
     }
@@ -753,6 +755,7 @@ struct LockScreenTaskListView: View {
             )
           ).font(.system(size: fontSize))
         }
+        .widgetURL(URL(string: "notiontodo://open/today?homeWidget")!)
       } else if entry.isEmpty {
         // タスクなし
         Text(
@@ -760,7 +763,9 @@ struct LockScreenTaskListView: View {
             for: "widget_tasks_empty",
             locale: entry.locale
           )
-        ).font(.system(size: fontSize))
+        )
+        .font(.system(size: fontSize))
+        .widgetURL(URL(string: "notiontodo://open/today?homeWidget")!)
       } else {
         // タスク一覧（最新3件）
         VStack(alignment: .leading, spacing: 4) {
@@ -780,6 +785,7 @@ struct LockScreenTaskListView: View {
           Spacer(minLength: 0)
         }
         .frame(maxHeight: .infinity, alignment: .top)
+        .widgetURL(URL(string: "notiontodo://open/today?homeWidget")!)
       }
     } else {
       // データベース未設定時
@@ -788,7 +794,9 @@ struct LockScreenTaskListView: View {
           for: "widget_no_database",
           locale: entry.locale
         )
-      ).font(.system(size: fontSize))
+      )
+      .font(.system(size: fontSize))
+      .widgetURL(URL(string: "notiontodo://open/today?homeWidget")!)
     }
   }
 }
