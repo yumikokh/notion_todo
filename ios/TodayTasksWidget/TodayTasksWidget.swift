@@ -713,11 +713,17 @@ struct LockScreenProgressView: View {
 // ロック画面用のタスク追加ビュー
 struct LockScreenAddTaskView: View {
   var body: some View {
-    Link(destination: URL(string: "notiontodo://add_task/today?homeWidget")!) {
-      Image(systemName: "plus")
-        .font(.system(size: 20))
-        .widgetAccentable()
+    ZStack {
+      Circle()
+        .fill(.white.opacity(0.6))
+      Link(destination: URL(string: "notiontodo://add_task/today?homeWidget")!) {
+        Image("plus").opacity(0.8).scaleEffect(1.1)
+          .foregroundStyle(.white)
+          .padding(EdgeInsets(top: 0, leading: 8, bottom: 6, trailing: 0))
+          .blendMode(.destinationOut)
+      }
     }
+    .compositingGroup()  // ブレンドモードを有効にするために必要
   }
 }
 
