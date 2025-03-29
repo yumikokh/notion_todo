@@ -26,6 +26,7 @@ const _$PropertyTypeEnumMap = {
   PropertyType.date: 'date',
   PropertyType.checkbox: 'checkbox',
   PropertyType.status: 'status',
+  PropertyType.select: 'select',
 };
 
 DateProperty _$DatePropertyFromJson(Map<String, dynamic> json) => DateProperty(
@@ -158,3 +159,33 @@ const _$StatusGroupTypeEnumMap = {
   StatusGroupType.inProgress: 'inProgress',
   StatusGroupType.complete: 'complete',
 };
+
+SelectOption _$SelectOptionFromJson(Map<String, dynamic> json) => SelectOption(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      color: json['color'] as String?,
+    );
+
+Map<String, dynamic> _$SelectOptionToJson(SelectOption instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+      'color': instance.color,
+    };
+
+SelectProperty _$SelectPropertyFromJson(Map<String, dynamic> json) =>
+    SelectProperty(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      options: (json['options'] as List<dynamic>)
+          .map((e) => SelectOption.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    )..type = $enumDecode(_$PropertyTypeEnumMap, json['type']);
+
+Map<String, dynamic> _$SelectPropertyToJson(SelectProperty instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+      'type': _$PropertyTypeEnumMap[instance.type]!,
+      'options': instance.options,
+    };

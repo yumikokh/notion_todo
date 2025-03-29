@@ -7,6 +7,7 @@ enum PropertyType {
   date,
   checkbox,
   status,
+  select,
 }
 
 /// プロパティの基底クラス
@@ -26,6 +27,7 @@ sealed class Property {
         DateProperty date => date.toJson(),
         CheckboxCompleteStatusProperty checkbox => checkbox.toJson(),
         StatusCompleteStatusProperty status => status.toJson(),
+        SelectProperty select => select.toJson(),
       };
 
   factory Property.fromJson(Map<String, dynamic> json) {
@@ -40,6 +42,8 @@ sealed class Property {
         return CheckboxCompleteStatusProperty.fromJson(json);
       case PropertyType.status:
         return StatusCompleteStatusProperty.fromJson(json);
+      case PropertyType.select:
+        return SelectProperty.fromJson(json);
     }
   }
 }
@@ -223,4 +227,39 @@ class StatusOptionsByGroup {
       _$StatusOptionsByGroupFromJson(json);
 
   Map<String, dynamic> toJson() => _$StatusOptionsByGroupToJson(this);
+}
+
+@JsonSerializable()
+class SelectOption {
+  final String id;
+  final String name;
+  final String? color;
+
+  SelectOption({
+    required this.id,
+    required this.name,
+    required this.color,
+  });
+
+  factory SelectOption.fromJson(Map<String, dynamic> json) =>
+      _$SelectOptionFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SelectOptionToJson(this);
+}
+
+@JsonSerializable()
+class SelectProperty extends Property {
+  final List<SelectOption> options;
+
+  SelectProperty({
+    required String id,
+    required String name,
+    required this.options,
+  }) : super(id: id, name: name, type: PropertyType.select);
+
+  factory SelectProperty.fromJson(Map<String, dynamic> json) =>
+      _$SelectPropertyFromJson(json);
+
+  @override
+  Map<String, dynamic> toJson() => _$SelectPropertyToJson(this);
 }
