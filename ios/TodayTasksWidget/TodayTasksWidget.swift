@@ -734,7 +734,7 @@ struct LockScreenProgressView: View {
   var body: some View {
     let lineWidth: CGFloat = 6
     let opacity: CGFloat = 0.2
-    let size: CGFloat = 54
+    let size: CGFloat = 54 - lineWidth + 2 // 錯視調整
     if entry.hasTaskDatabase {
       // 進捗表示
       ZStack {
@@ -742,7 +742,6 @@ struct LockScreenProgressView: View {
         Circle()
           .stroke(.white.opacity(opacity), lineWidth: lineWidth)
           .frame(width: size, height: size)  // サイズを明示的に指定
-
         // 進捗を示す円
         Circle()
           .trim(from: 0, to: entry.progressPercentage)
@@ -775,7 +774,7 @@ struct LockScreenProgressView: View {
 
 // ロック画面用のタスク追加ビュー
 struct LockScreenAddTaskView: View {
-  let size: CGFloat = 54 + 3  // + lineWidth/2
+  let size: CGFloat = 54
   var body: some View {
     ZStack {
       // 背景の円を半透明に
