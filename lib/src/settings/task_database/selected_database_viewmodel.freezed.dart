@@ -21,8 +21,7 @@ mixin _$SelectedDatabaseState {
   TitleProperty get title => throw _privateConstructorUsedError;
   CompleteStatusProperty? get status => throw _privateConstructorUsedError;
   DateProperty? get date => throw _privateConstructorUsedError;
-  StatusCompleteStatusProperty? get priority =>
-      throw _privateConstructorUsedError;
+  SelectProperty? get priority => throw _privateConstructorUsedError;
 
   /// Create a copy of SelectedDatabaseState
   /// with the given fields replaced by the non-null parameter values.
@@ -43,7 +42,7 @@ abstract class $SelectedDatabaseStateCopyWith<$Res> {
       TitleProperty title,
       CompleteStatusProperty? status,
       DateProperty? date,
-      StatusCompleteStatusProperty? priority});
+      SelectProperty? priority});
 }
 
 /// @nodoc
@@ -93,7 +92,7 @@ class _$SelectedDatabaseStateCopyWithImpl<$Res,
       priority: freezed == priority
           ? _value.priority
           : priority // ignore: cast_nullable_to_non_nullable
-              as StatusCompleteStatusProperty?,
+              as SelectProperty?,
     ) as $Val);
   }
 }
@@ -113,7 +112,7 @@ abstract class _$$SelectedDatabaseStateImplCopyWith<$Res>
       TitleProperty title,
       CompleteStatusProperty? status,
       DateProperty? date,
-      StatusCompleteStatusProperty? priority});
+      SelectProperty? priority});
 }
 
 /// @nodoc
@@ -161,7 +160,7 @@ class __$$SelectedDatabaseStateImplCopyWithImpl<$Res>
       priority: freezed == priority
           ? _value.priority
           : priority // ignore: cast_nullable_to_non_nullable
-              as StatusCompleteStatusProperty?,
+              as SelectProperty?,
     ));
   }
 }
@@ -190,7 +189,7 @@ class _$SelectedDatabaseStateImpl
   @override
   final DateProperty? date;
   @override
-  final StatusCompleteStatusProperty? priority;
+  final SelectProperty? priority;
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
@@ -240,13 +239,12 @@ class _$SelectedDatabaseStateImpl
 
 abstract class _SelectedDatabaseState implements SelectedDatabaseState {
   const factory _SelectedDatabaseState(
-          {required final String id,
-          required final String name,
-          required final TitleProperty title,
-          required final CompleteStatusProperty? status,
-          required final DateProperty? date,
-          final StatusCompleteStatusProperty? priority}) =
-      _$SelectedDatabaseStateImpl;
+      {required final String id,
+      required final String name,
+      required final TitleProperty title,
+      required final CompleteStatusProperty? status,
+      required final DateProperty? date,
+      final SelectProperty? priority}) = _$SelectedDatabaseStateImpl;
 
   @override
   String get id;
@@ -259,7 +257,7 @@ abstract class _SelectedDatabaseState implements SelectedDatabaseState {
   @override
   DateProperty? get date;
   @override
-  StatusCompleteStatusProperty? get priority;
+  SelectProperty? get priority;
 
   /// Create a copy of SelectedDatabaseState
   /// with the given fields replaced by the non-null parameter values.

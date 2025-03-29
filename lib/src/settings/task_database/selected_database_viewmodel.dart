@@ -25,6 +25,7 @@ Future<List<Database>> accessibleDatabases(Ref ref) async {
 enum SettingPropertyType {
   status,
   date,
+  priority,
 }
 
 @riverpod
@@ -43,9 +44,11 @@ Future<List<Property>> properties(
   final selectedDatabase =
       accessibleDatabases.where((db) => db.id == selectedId).firstOrNull;
   final properties = selectedDatabase?.properties ?? [];
-  final types = type == SettingPropertyType.status
-      ? [PropertyType.status, PropertyType.checkbox]
-      : [PropertyType.date];
+  final types = switch (type) {
+    SettingPropertyType.status => [PropertyType.status, PropertyType.checkbox],
+    SettingPropertyType.date => [PropertyType.date],
+    SettingPropertyType.priority => [PropertyType.select],
+  };
 
   return properties.where((property) => types.contains(property.type)).toList();
 }
@@ -58,7 +61,7 @@ class SelectedDatabaseState with _$SelectedDatabaseState {
     required TitleProperty title,
     required CompleteStatusProperty? status,
     required DateProperty? date,
-    StatusCompleteStatusProperty? priority,
+    SelectProperty? priority,
   }) = _SelectedDatabaseState;
 }
 
@@ -89,6 +92,7 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
         title: taskDatabase.title,
         status: taskDatabase.status,
         date: taskDatabase.date,
+        priority: taskDatabase.priority,
       ),
     );
   }
@@ -110,6 +114,7 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
         title: title,
         status: null,
         date: null,
+        priority: null,
       );
     });
   }
@@ -128,7 +133,8 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
     if (s == null) return null;
     var noStatus = false;
     var noDate = false;
-    // s.status, s.dateがpropertiesに存在するか精査、なければnullにする
+    var noPriority = false;
+    // s.status, s.date, s.priorityがpropertiesに存在するか精査、なければnullにする
     if (properties
         .where((p) =>
             p.id == s.status?.id &&
@@ -144,8 +150,18 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
         .isEmpty) {
       noDate = true;
     }
+    if (properties
+        .where((p) =>
+            p is SelectProperty &&
+            p.id == s.priority?.id &&
+            p.name == s.priority?.name)
+        .isEmpty) {
+      noPriority = true;
+    }
     return s.copyWith(
-        status: noStatus ? null : s.status, date: noDate ? null : s.date);
+        status: noStatus ? null : s.status,
+        date: noDate ? null : s.date,
+        priority: noPriority ? null : s.priority);
   }
 
   void selectProperty(String? propertyId, SettingPropertyType type) async {
@@ -190,6 +206,14 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
             date: DateProperty(
               id: p.id,
               name: p.name,
+            ),
+          );
+        case (SettingPropertyType.priority, var p) when p is SelectProperty:
+          return value.copyWith(
+            priority: SelectProperty(
+              id: p.id,
+              name: p.name,
+              options: p.options,
             ),
           );
         default:
@@ -248,8 +272,9 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
 
     final snackbar = ref.read(snackbarProvider.notifier);
     final propertyName = switch (type) {
-      CreatePropertyType.date => '日付',
+      CreatePropertyType.date => '日付', // TODO: ローカライズ
       CreatePropertyType.checkbox => 'チェックボックス',
+      CreatePropertyType.select => '優先度',
     };
     snackbar.show('$propertyNameプロパティ「$name」を追加しました',
         type: SnackbarType.success);

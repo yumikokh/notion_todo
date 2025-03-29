@@ -254,5 +254,7 @@
   "licenses_page_title": "Licenses",
   "licenses_page_no_licenses": "No license information available.",
   "sound_credit_title": "Sound Credit",
-  "sound_credit_description": "OtoLogic (CC BY 4.0)"
+  "sound_credit_description": "OtoLogic (CC BY 4.0)",
+  "priority_property": "Priority",
+  "priority_property_description": "Type: Select"
 }

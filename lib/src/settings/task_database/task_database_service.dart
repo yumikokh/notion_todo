@@ -73,12 +73,13 @@ class TaskDatabaseService {
 
   List<Property> _getProperties(Map<String, dynamic> properties) =>
       properties.entries
-          // typeがtitle, date, checkbox, statusのものだけを取得
+          // typeがtitle, date, checkbox, status, selectのものだけを取得
           .where((entry) =>
               entry.value['type'] == 'title' ||
               entry.value['type'] == 'status' ||
               entry.value['type'] == 'checkbox' ||
-              entry.value['type'] == 'date')
+              entry.value['type'] == 'date' ||
+              entry.value['type'] == 'select')
           .map<Property>((entry) {
         final property = entry.value;
         final id = property['id'] as String;
@@ -122,6 +123,15 @@ class TaskDatabaseService {
               todoOption: null,
               inProgressOption: null,
               completeOption: null,
+            );
+          case 'select':
+            final options = (property['select']['options'] as List<dynamic>)
+                .map((option) => SelectOption.fromJson(option))
+                .toList();
+            return SelectProperty(
+              id: id,
+              name: name,
+              options: options,
             );
           default:
             throw Exception('Unknown property type: $type');

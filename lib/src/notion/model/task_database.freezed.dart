@@ -26,8 +26,7 @@ mixin _$TaskDatabase {
   @JsonKey(fromJson: _fromJson, toJson: _toJson)
   CompleteStatusProperty get status => throw _privateConstructorUsedError;
   DateProperty get date => throw _privateConstructorUsedError;
-  StatusCompleteStatusProperty? get priority =>
-      throw _privateConstructorUsedError;
+  SelectProperty? get priority => throw _privateConstructorUsedError;
 
   /// Serializes this TaskDatabase to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -52,7 +51,7 @@ abstract class $TaskDatabaseCopyWith<$Res> {
       @JsonKey(fromJson: _fromJson, toJson: _toJson)
       CompleteStatusProperty status,
       DateProperty date,
-      StatusCompleteStatusProperty? priority});
+      SelectProperty? priority});
 }
 
 /// @nodoc
@@ -101,7 +100,7 @@ class _$TaskDatabaseCopyWithImpl<$Res, $Val extends TaskDatabase>
       priority: freezed == priority
           ? _value.priority
           : priority // ignore: cast_nullable_to_non_nullable
-              as StatusCompleteStatusProperty?,
+              as SelectProperty?,
     ) as $Val);
   }
 }
@@ -121,7 +120,7 @@ abstract class _$$TaskDatabaseImplCopyWith<$Res>
       @JsonKey(fromJson: _fromJson, toJson: _toJson)
       CompleteStatusProperty status,
       DateProperty date,
-      StatusCompleteStatusProperty? priority});
+      SelectProperty? priority});
 }
 
 /// @nodoc
@@ -168,7 +167,7 @@ class __$$TaskDatabaseImplCopyWithImpl<$Res>
       priority: freezed == priority
           ? _value.priority
           : priority // ignore: cast_nullable_to_non_nullable
-              as StatusCompleteStatusProperty?,
+              as SelectProperty?,
     ));
   }
 }
@@ -200,7 +199,7 @@ class _$TaskDatabaseImpl implements _TaskDatabase {
   @override
   final DateProperty date;
   @override
-  final StatusCompleteStatusProperty? priority;
+  final SelectProperty? priority;
 
   @override
   String toString() {
@@ -250,7 +249,7 @@ abstract class _TaskDatabase implements TaskDatabase {
       @JsonKey(fromJson: _fromJson, toJson: _toJson)
       required final CompleteStatusProperty status,
       required final DateProperty date,
-      final StatusCompleteStatusProperty? priority}) = _$TaskDatabaseImpl;
+      final SelectProperty? priority}) = _$TaskDatabaseImpl;
 
   factory _TaskDatabase.fromJson(Map<String, dynamic> json) =
       _$TaskDatabaseImpl.fromJson;
@@ -267,7 +266,7 @@ abstract class _TaskDatabase implements TaskDatabase {
   @override
   DateProperty get date;
   @override
-  StatusCompleteStatusProperty? get priority;
+  SelectProperty? get priority;
 
   /// Create a copy of TaskDatabase
   /// with the given fields replaced by the non-null parameter values.

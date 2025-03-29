@@ -15,8 +15,7 @@ _$TaskDatabaseImpl _$$TaskDatabaseImplFromJson(Map<String, dynamic> json) =>
       date: DateProperty.fromJson(json['date'] as Map<String, dynamic>),
       priority: json['priority'] == null
           ? null
-          : StatusCompleteStatusProperty.fromJson(
-              json['priority'] as Map<String, dynamic>),
+          : SelectProperty.fromJson(json['priority'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$$TaskDatabaseImplToJson(_$TaskDatabaseImpl instance) =>
