@@ -26,6 +26,8 @@ mixin _$TaskDatabase {
   @JsonKey(fromJson: _fromJson, toJson: _toJson)
   CompleteStatusProperty get status => throw _privateConstructorUsedError;
   DateProperty get date => throw _privateConstructorUsedError;
+  StatusCompleteStatusProperty? get priority =>
+      throw _privateConstructorUsedError;
 
   /// Serializes this TaskDatabase to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -49,7 +51,8 @@ abstract class $TaskDatabaseCopyWith<$Res> {
       TitleProperty title,
       @JsonKey(fromJson: _fromJson, toJson: _toJson)
       CompleteStatusProperty status,
-      DateProperty date});
+      DateProperty date,
+      StatusCompleteStatusProperty? priority});
 }
 
 /// @nodoc
@@ -72,6 +75,7 @@ class _$TaskDatabaseCopyWithImpl<$Res, $Val extends TaskDatabase>
     Object? title = null,
     Object? status = null,
     Object? date = null,
+    Object? priority = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -94,6 +98,10 @@ class _$TaskDatabaseCopyWithImpl<$Res, $Val extends TaskDatabase>
           ? _value.date
           : date // ignore: cast_nullable_to_non_nullable
               as DateProperty,
+      priority: freezed == priority
+          ? _value.priority
+          : priority // ignore: cast_nullable_to_non_nullable
+              as StatusCompleteStatusProperty?,
     ) as $Val);
   }
 }
@@ -112,7 +120,8 @@ abstract class _$$TaskDatabaseImplCopyWith<$Res>
       TitleProperty title,
       @JsonKey(fromJson: _fromJson, toJson: _toJson)
       CompleteStatusProperty status,
-      DateProperty date});
+      DateProperty date,
+      StatusCompleteStatusProperty? priority});
 }
 
 /// @nodoc
@@ -133,6 +142,7 @@ class __$$TaskDatabaseImplCopyWithImpl<$Res>
     Object? title = null,
     Object? status = null,
     Object? date = null,
+    Object? priority = freezed,
   }) {
     return _then(_$TaskDatabaseImpl(
       id: null == id
@@ -155,6 +165,10 @@ class __$$TaskDatabaseImplCopyWithImpl<$Res>
           ? _value.date
           : date // ignore: cast_nullable_to_non_nullable
               as DateProperty,
+      priority: freezed == priority
+          ? _value.priority
+          : priority // ignore: cast_nullable_to_non_nullable
+              as StatusCompleteStatusProperty?,
     ));
   }
 }
@@ -168,7 +182,8 @@ class _$TaskDatabaseImpl implements _TaskDatabase {
       required this.name,
       required this.title,
       @JsonKey(fromJson: _fromJson, toJson: _toJson) required this.status,
-      required this.date});
+      required this.date,
+      this.priority});
 
   factory _$TaskDatabaseImpl.fromJson(Map<String, dynamic> json) =>
       _$$TaskDatabaseImplFromJson(json);
@@ -184,10 +199,12 @@ class _$TaskDatabaseImpl implements _TaskDatabase {
   final CompleteStatusProperty status;
   @override
   final DateProperty date;
+  @override
+  final StatusCompleteStatusProperty? priority;
 
   @override
   String toString() {
-    return 'TaskDatabase(id: $id, name: $name, title: $title, status: $status, date: $date)';
+    return 'TaskDatabase(id: $id, name: $name, title: $title, status: $status, date: $date, priority: $priority)';
   }
 
   @override
@@ -199,12 +216,15 @@ class _$TaskDatabaseImpl implements _TaskDatabase {
             (identical(other.name, name) || other.name == name) &&
             (identical(other.title, title) || other.title == title) &&
             (identical(other.status, status) || other.status == status) &&
-            (identical(other.date, date) || other.date == date));
+            (identical(other.date, date) || other.date == date) &&
+            (identical(other.priority, priority) ||
+                other.priority == priority));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, name, title, status, date);
+  int get hashCode =>
+      Object.hash(runtimeType, id, name, title, status, date, priority);
 
   /// Create a copy of TaskDatabase
   /// with the given fields replaced by the non-null parameter values.
@@ -229,7 +249,8 @@ abstract class _TaskDatabase implements TaskDatabase {
       required final TitleProperty title,
       @JsonKey(fromJson: _fromJson, toJson: _toJson)
       required final CompleteStatusProperty status,
-      required final DateProperty date}) = _$TaskDatabaseImpl;
+      required final DateProperty date,
+      final StatusCompleteStatusProperty? priority}) = _$TaskDatabaseImpl;
 
   factory _TaskDatabase.fromJson(Map<String, dynamic> json) =
       _$TaskDatabaseImpl.fromJson;
@@ -245,6 +266,8 @@ abstract class _TaskDatabase implements TaskDatabase {
   CompleteStatusProperty get status;
   @override
   DateProperty get date;
+  @override
+  StatusCompleteStatusProperty? get priority;
 
   /// Create a copy of TaskDatabase
   /// with the given fields replaced by the non-null parameter values.

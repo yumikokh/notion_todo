@@ -36,6 +36,7 @@ class TaskDatabaseViewModel extends _$TaskDatabaseViewModel {
       status: taskDatabase.status,
       date: taskDatabase.date,
       title: taskDatabase.title,
+      priority: taskDatabase.priority,
     );
   }
 
@@ -45,7 +46,8 @@ class TaskDatabaseViewModel extends _$TaskDatabaseViewModel {
         name: selectedTaskDatabase.name,
         status: selectedTaskDatabase.status!, // TODO: !消す
         date: selectedTaskDatabase.date!, // TODO: !消す
-        title: selectedTaskDatabase.title);
+        title: selectedTaskDatabase.title,
+        priority: selectedTaskDatabase.priority);
     state = const AsyncValue.loading();
     try {
       await _taskDatabaseService.save(taskDatabase);

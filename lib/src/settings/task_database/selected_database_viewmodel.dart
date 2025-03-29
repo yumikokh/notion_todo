@@ -58,6 +58,7 @@ class SelectedDatabaseState with _$SelectedDatabaseState {
     required TitleProperty title,
     required CompleteStatusProperty? status,
     required DateProperty? date,
+    StatusCompleteStatusProperty? priority,
   }) = _SelectedDatabaseState;
 }
 

@@ -21,6 +21,8 @@ mixin _$SelectedDatabaseState {
   TitleProperty get title => throw _privateConstructorUsedError;
   CompleteStatusProperty? get status => throw _privateConstructorUsedError;
   DateProperty? get date => throw _privateConstructorUsedError;
+  StatusCompleteStatusProperty? get priority =>
+      throw _privateConstructorUsedError;
 
   /// Create a copy of SelectedDatabaseState
   /// with the given fields replaced by the non-null parameter values.
@@ -40,7 +42,8 @@ abstract class $SelectedDatabaseStateCopyWith<$Res> {
       String name,
       TitleProperty title,
       CompleteStatusProperty? status,
-      DateProperty? date});
+      DateProperty? date,
+      StatusCompleteStatusProperty? priority});
 }
 
 /// @nodoc
@@ -64,6 +67,7 @@ class _$SelectedDatabaseStateCopyWithImpl<$Res,
     Object? title = null,
     Object? status = freezed,
     Object? date = freezed,
+    Object? priority = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -86,6 +90,10 @@ class _$SelectedDatabaseStateCopyWithImpl<$Res,
           ? _value.date
           : date // ignore: cast_nullable_to_non_nullable
               as DateProperty?,
+      priority: freezed == priority
+          ? _value.priority
+          : priority // ignore: cast_nullable_to_non_nullable
+              as StatusCompleteStatusProperty?,
     ) as $Val);
   }
 }
@@ -104,7 +112,8 @@ abstract class _$$SelectedDatabaseStateImplCopyWith<$Res>
       String name,
       TitleProperty title,
       CompleteStatusProperty? status,
-      DateProperty? date});
+      DateProperty? date,
+      StatusCompleteStatusProperty? priority});
 }
 
 /// @nodoc
@@ -126,6 +135,7 @@ class __$$SelectedDatabaseStateImplCopyWithImpl<$Res>
     Object? title = null,
     Object? status = freezed,
     Object? date = freezed,
+    Object? priority = freezed,
   }) {
     return _then(_$SelectedDatabaseStateImpl(
       id: null == id
@@ -148,6 +158,10 @@ class __$$SelectedDatabaseStateImplCopyWithImpl<$Res>
           ? _value.date
           : date // ignore: cast_nullable_to_non_nullable
               as DateProperty?,
+      priority: freezed == priority
+          ? _value.priority
+          : priority // ignore: cast_nullable_to_non_nullable
+              as StatusCompleteStatusProperty?,
     ));
   }
 }
@@ -162,7 +176,8 @@ class _$SelectedDatabaseStateImpl
       required this.name,
       required this.title,
       required this.status,
-      required this.date});
+      required this.date,
+      this.priority});
 
   @override
   final String id;
@@ -174,10 +189,12 @@ class _$SelectedDatabaseStateImpl
   final CompleteStatusProperty? status;
   @override
   final DateProperty? date;
+  @override
+  final StatusCompleteStatusProperty? priority;
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'SelectedDatabaseState(id: $id, name: $name, title: $title, status: $status, date: $date)';
+    return 'SelectedDatabaseState(id: $id, name: $name, title: $title, status: $status, date: $date, priority: $priority)';
   }
 
   @override
@@ -189,7 +206,8 @@ class _$SelectedDatabaseStateImpl
       ..add(DiagnosticsProperty('name', name))
       ..add(DiagnosticsProperty('title', title))
       ..add(DiagnosticsProperty('status', status))
-      ..add(DiagnosticsProperty('date', date));
+      ..add(DiagnosticsProperty('date', date))
+      ..add(DiagnosticsProperty('priority', priority));
   }
 
   @override
@@ -201,11 +219,14 @@ class _$SelectedDatabaseStateImpl
             (identical(other.name, name) || other.name == name) &&
             (identical(other.title, title) || other.title == title) &&
             (identical(other.status, status) || other.status == status) &&
-            (identical(other.date, date) || other.date == date));
+            (identical(other.date, date) || other.date == date) &&
+            (identical(other.priority, priority) ||
+                other.priority == priority));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, id, name, title, status, date);
+  int get hashCode =>
+      Object.hash(runtimeType, id, name, title, status, date, priority);
 
   /// Create a copy of SelectedDatabaseState
   /// with the given fields replaced by the non-null parameter values.
@@ -219,11 +240,13 @@ class _$SelectedDatabaseStateImpl
 
 abstract class _SelectedDatabaseState implements SelectedDatabaseState {
   const factory _SelectedDatabaseState(
-      {required final String id,
-      required final String name,
-      required final TitleProperty title,
-      required final CompleteStatusProperty? status,
-      required final DateProperty? date}) = _$SelectedDatabaseStateImpl;
+          {required final String id,
+          required final String name,
+          required final TitleProperty title,
+          required final CompleteStatusProperty? status,
+          required final DateProperty? date,
+          final StatusCompleteStatusProperty? priority}) =
+      _$SelectedDatabaseStateImpl;
 
   @override
   String get id;
@@ -235,6 +258,8 @@ abstract class _SelectedDatabaseState implements SelectedDatabaseState {
   CompleteStatusProperty? get status;
   @override
   DateProperty? get date;
+  @override
+  StatusCompleteStatusProperty? get priority;
 
   /// Create a copy of SelectedDatabaseState
   /// with the given fields replaced by the non-null parameter values.
