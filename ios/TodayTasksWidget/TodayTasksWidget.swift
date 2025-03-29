@@ -443,9 +443,11 @@ struct ProgressCircleView: View {
   var size: CGFloat  // 円のサイズ
 
   var body: some View {
+    let activeColor = Color.primary
+    let inactiveColor = Color.gray.opacity(0.15)
     ZStack {
       if entry.isEmpty || entry.isCompleted {
-        let color = entry.isEmpty ? Color.gray.opacity(0.15) : Color.black
+        let color = entry.isEmpty ? inactiveColor : activeColor
         Circle()
           .stroke(color, lineWidth: 10)
           .frame(width: size, height: size)
@@ -459,7 +461,7 @@ struct ProgressCircleView: View {
               to: CGFloat(index + 1) / CGFloat(entry.totalTasksCount) - edge  // 終了位置に間隔を追加
             )
             .stroke(
-              index < entry.completedTasksCount ? Color.black : Color.gray.opacity(0.15),
+              index < entry.completedTasksCount ? activeColor : inactiveColor,
               style: StrokeStyle(lineWidth: 13, lineCap: .butt)  // 両端を丸く
             )
             .frame(width: size, height: size)
@@ -734,7 +736,7 @@ struct LockScreenProgressView: View {
   var body: some View {
     let lineWidth: CGFloat = 6
     let opacity: CGFloat = 0.2
-    let size: CGFloat = 54
+    let size: CGFloat = 54 - lineWidth + 2  // 錯視調整
     if entry.hasTaskDatabase {
       // 進捗表示
       ZStack {
@@ -742,7 +744,6 @@ struct LockScreenProgressView: View {
         Circle()
           .stroke(.white.opacity(opacity), lineWidth: lineWidth)
           .frame(width: size, height: size)  // サイズを明示的に指定
-
         // 進捗を示す円
         Circle()
           .trim(from: 0, to: entry.progressPercentage)
@@ -775,7 +776,7 @@ struct LockScreenProgressView: View {
 
 // ロック画面用のタスク追加ビュー
 struct LockScreenAddTaskView: View {
-  let size: CGFloat = 54 + 3  // + lineWidth/2
+  let size: CGFloat = 54
   var body: some View {
     ZStack {
       // 背景の円を半透明に
