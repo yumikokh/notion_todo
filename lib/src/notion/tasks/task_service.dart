@@ -60,6 +60,7 @@ class TaskService {
                 status: _status(page),
                 dueDate: _date(page),
                 url: page['url'],
+                priority: _priority(page),
               ))
           .toList();
 
@@ -88,6 +89,7 @@ class TaskService {
       status: _status(data),
       dueDate: _date(data),
       url: data['url'],
+      priority: _priority(data),
     );
   }
 
@@ -108,6 +110,7 @@ class TaskService {
       status: _status(data),
       dueDate: _date(data),
       url: data['url'],
+      priority: _priority(data),
     );
   }
 
@@ -124,6 +127,7 @@ class TaskService {
       status: _status(data),
       dueDate: _date(data),
       url: data['url'],
+      priority: _priority(data),
     );
   }
 
@@ -139,6 +143,7 @@ class TaskService {
       status: _status(data),
       dueDate: _date(data),
       url: data['url'],
+      priority: _priority(data),
     );
   }
 
@@ -153,6 +158,7 @@ class TaskService {
       status: _status(data),
       dueDate: _date(data),
       url: data['url'],
+      priority: _priority(data),
     );
   }
 
@@ -167,6 +173,7 @@ class TaskService {
       status: _status(data),
       dueDate: _date(data),
       url: data['url'],
+      priority: _priority(data),
     );
   }
 
@@ -215,5 +222,20 @@ class TaskService {
 
         return TaskStatus.status(group: group, option: option);
     }
+  }
+
+  SelectOption? _priority(Map<String, dynamic> data) {
+    final property = taskDatabase.priority;
+    if (property == null) {
+      return null;
+    }
+    final propertyData = data['properties'][property.name];
+    if (propertyData == null || propertyData['select'] == null) {
+      return null;
+    }
+    final optionId = propertyData['select']['id'];
+    return property.options
+        .where((option) => option.id == optionId)
+        .firstOrNull;
   }
 }

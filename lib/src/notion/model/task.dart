@@ -68,6 +68,7 @@ class Task with _$Task {
     required TaskStatus status,
     required TaskDate? dueDate,
     required String? url,
+    SelectOption? priority,
     // required String createdTime,
     // required String updatedTime,
   }) = _Task;

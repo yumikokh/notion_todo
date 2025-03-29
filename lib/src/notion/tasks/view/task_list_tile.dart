@@ -11,6 +11,7 @@ import '../../model/task.dart';
 import '../../repository/notion_task_repository.dart';
 import '../task_viewmodel.dart';
 import 'date_label.dart';
+import 'priority_label.dart';
 import 'task_sheet/task_sheet.dart';
 import 'task_star_button.dart';
 
@@ -27,6 +28,8 @@ class TaskListTile extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final checked = useState(task.isCompleted);
+
+    print('task: $task');
 
     return ListTile(
       enabled: !task.isTemp,
@@ -117,18 +120,29 @@ class TaskListTile extends HookConsumerWidget {
             decorationColor: Theme.of(context).colorScheme.outline,
             fontSize: 15,
           )),
-      subtitle: taskViewModel.showDueDate(task)
+      subtitle: taskViewModel.showDueDate(task) || task.priority != null
           ? SizedBox(
               width: double.infinity,
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.only(top: 2),
-                child: DateLabel(
-                  date: task.dueDate,
-                  showToday: taskViewModel.filterType != FilterType.today,
-                  context: context,
-                  showColor: !task.isCompleted,
-                  showIcon: true,
+                child: Row(
+                  spacing: 8,
+                  children: [
+                    if (taskViewModel.showDueDate(task))
+                      DateLabel(
+                        date: task.dueDate,
+                        showToday: taskViewModel.filterType != FilterType.today,
+                        context: context,
+                        showColor: !task.isCompleted,
+                        showIcon: true,
+                      ),
+                    if (task.priority != null)
+                      PriorityLabel(
+                        priority: task.priority,
+                        context: context,
+                      ),
+                  ],
                 ),
               ),
             )
