@@ -6,6 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../model/task.dart';
 import '../../../model/property.dart';
 import '../../../../helpers/haptic_helper.dart';
+import '../../../../settings/task_database/task_database_viewmodel.dart';
 import 'date_chip.dart';
 import 'priority_chip.dart';
 import 'task_date_sheet.dart';
@@ -146,19 +147,54 @@ class TaskSheet extends HookConsumerWidget {
                           PriorityChip(
                             priority: selectedPriority.value,
                             context: context,
-                            onSelected: (selected) {
-                              showModalBottomSheet(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                context: context,
-                                builder: (context) => TaskPrioritySheet(
-                                  selectedPriority: selectedPriority.value,
-                                  onSelected: (SelectOption? priority) {
-                                    changeSelectedPriority(priority);
-                                  },
-                                ),
-                              );
+                            onSelected: (selected) async {
+                              final taskDatabase = await ref
+                                  .read(taskDatabaseViewModelProvider.future);
+                              if (taskDatabase?.priority == null) {
+                                if (context.mounted) {
+                                  await showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      title: Text(l.task_priority_dialog_title,
+                                          style: const TextStyle(fontSize: 18)),
+                                      content:
+                                          Text(l.task_priority_dialog_content),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: Text(
+                                              l.task_priority_dialog_cancel),
+                                        ),
+                                        FilledButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                            Navigator.pushNamed(context,
+                                                '/settings/task_database');
+                                          },
+                                          child: Text(
+                                              l.task_priority_dialog_settings),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                  return;
+                                }
+                              } else if (context.mounted) {
+                                showModalBottomSheet(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  context: context,
+                                  builder: (context) => TaskPrioritySheet(
+                                    selectedPriority: selectedPriority.value,
+                                    onSelected: (SelectOption? priority) {
+                                      changeSelectedPriority(priority);
+                                    },
+                                  ),
+                                );
+                              }
                             },
                             onDeleted: () {
                               changeSelectedPriority(null);

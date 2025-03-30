@@ -256,5 +256,9 @@
   "sound_credit_title": "Sound Credit",
   "sound_credit_description": "OtoLogic (CC BY 4.0)",
   "priority_property": "Priority",
-  "priority_property_description": "Type: Select"
+  "priority_property_description": "Type: Select",
+  "task_priority_dialog_title": "Priority Property Not Set",
+  "task_priority_dialog_content": "Set up the Priority property in database settings to prioritize your tasks!",
+  "task_priority_dialog_cancel": "Cancel",
+  "task_priority_dialog_settings": "Settings"
 }
