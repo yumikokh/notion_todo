@@ -8,6 +8,7 @@ import '../../common/error.dart';
 import '../../helpers/date.dart';
 import '../../widget/widget_service.dart';
 import '../model/property.dart';
+import '../model/task.dart';
 import '../model/task_database.dart';
 import '../oauth/notion_oauth_viewmodel.dart';
 import '../../settings/task_database/task_database_viewmodel.dart';
@@ -152,32 +153,31 @@ class NotionTaskRepository {
     };
   }
 
-  Future addTask(String title, String? startDate, String? endDate) async {
+  Future addTask(Task task) async {
     final db = database;
-    final status = db.status;
-    final statusReady = switch (status) {
-      StatusCompleteStatusProperty() => {
-          "status": {"name": status.todoOption?.name}
-        },
-      CheckboxCompleteStatusProperty() => {"checkbox": false},
-    };
+    if (db.id.isEmpty) return;
 
-    if (db.id.isEmpty) {
-      return;
-    }
+    final status = db.status;
+    final startDate = task.dueDate?.start.submitFormat;
+    final endDate = task.dueDate?.end?.submitFormat;
+
     final properties = {
       db.title.name: {
         "title": [
           {
             "type": "text",
-            "text": {"content": title}
+            "text": {"content": task.title}
           }
         ]
       },
-      db.status.name: statusReady,
+      db.status.name: CompleteStatusProperty.initialJson(status),
       if (startDate != null)
         db.date.name: {
           "date": {"start": startDate, if (endDate != null) "end": endDate}
+        },
+      if (db.priority != null && task.priority != null)
+        db.priority!.name: {
+          "select": {"name": task.priority!.name}
         }
     };
 
@@ -196,19 +196,20 @@ class NotionTaskRepository {
     return data;
   }
 
-  Future updateTask(
-      String taskId, String title, String? startDate, String? endDate) async {
+  Future updateTask(Task task) async {
     final db = database;
-    if (db.id.isEmpty) {
-      return;
-    }
+    if (db.id.isEmpty) return;
+
+    final startDate = task.dueDate?.start.submitFormat;
+    final endDate = task.dueDate?.end?.submitFormat;
+
     final properties = {
       db.title.name: {
         "id": db.title.id,
         "title": [
           {
             "type": "text",
-            "text": {"content": title}
+            "text": {"content": task.title}
           }
         ]
       },
@@ -219,14 +220,17 @@ class NotionTaskRepository {
                 "start": startDate,
                 if (endDate != null) "end": endDate,
                 // timezoneは時間指定しないとエラーになる see: https://developers.notion.com/changelog/time-zone-support
-                // REVIEW: 時間指定がないときのtimezoneがあっているか？
-                // if (dueDate.contains('T')) "time_zone": "Asia/Tokyo",
               }
             : null
-      }
+      },
+      if (db.priority != null && task.priority != null)
+        db.priority!.name: {
+          "id": db.priority!.id,
+          "select": {"name": task.priority!.name}
+        }
     };
     final res = await http.patch(
-      Uri.parse('https://api.notion.com/v1/pages/$taskId'),
+      Uri.parse('https://api.notion.com/v1/pages/${task.id}'),
       headers: headers,
       body: jsonEncode({"properties": properties}),
     );

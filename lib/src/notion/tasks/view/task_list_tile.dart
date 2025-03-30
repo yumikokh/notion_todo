@@ -52,16 +52,9 @@ class TaskListTile extends HookConsumerWidget {
           isScrollControlled: true,
           builder: (context) {
             return TaskSheet(
-              initialDueDate: task.dueDate,
-              initialTitle: task.title,
-              onSubmitted: (title, dueDate, {bool? needSnackbarFloating}) {
-                final due = dueDate == null
-                    ? null
-                    : TaskDate(start: dueDate.start, end: dueDate.end);
-                taskViewModel.updateTask(task.copyWith(
-                  title: title,
-                  dueDate: due,
-                ));
+              initialTask: task,
+              onSubmitted: (task, {bool? needSnackbarFloating}) {
+                taskViewModel.updateTask(task);
               },
               onDeleted: () {
                 taskViewModel.deleteTask(task);

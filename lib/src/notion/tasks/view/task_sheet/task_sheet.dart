@@ -10,28 +10,26 @@ import 'task_date_sheet.dart';
 import '../../../../settings/settings_viewmodel.dart';
 
 class TaskSheet extends HookConsumerWidget {
-  final TaskDate? initialDueDate;
-  final String? initialTitle;
-  final Function(String title, TaskDate? dueDate, {bool? needSnackbarFloating})
-      onSubmitted;
+  final Task initialTask;
+  final Function(Task task, {bool? needSnackbarFloating}) onSubmitted;
   final Function()? onDeleted;
 
   const TaskSheet({
     Key? key,
-    required this.initialDueDate,
-    required this.initialTitle,
+    required this.initialTask,
     required this.onSubmitted,
     this.onDeleted,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final titleController = useTextEditingController(text: initialTitle);
+    final titleController = useTextEditingController(text: initialTask.title);
     final focusNode = useFocusNode();
-    final selectedDueDate = useState<TaskDate?>(initialDueDate);
-    final isValidTitle = useState<bool>(initialTitle?.isNotEmpty ?? false);
+    final selectedDueDate = useState<TaskDate?>(initialTask.dueDate);
+    final selectedPriority = useState<SelectOption?>(initialTask.priority);
+    final isValidTitle = useState<bool>(initialTask.title.isNotEmpty);
     final l = AppLocalizations.of(context)!;
-    final isNewTask = initialTitle == null;
+    final isNewTask = initialTask.isTemp;
     final continuousTaskAddition =
         ref.watch(settingsViewModelProvider).continuousTaskAddition;
 
@@ -57,11 +55,15 @@ class TaskSheet extends HookConsumerWidget {
 
     final submitHandler = useCallback(() {
       final willClose = !isNewTask || !continuousTaskAddition;
-      final value = titleController.text;
-      if (value.trim().isNotEmpty) {
+      final titleValue = titleController.text;
+      if (titleValue.trim().isNotEmpty) {
         HapticHelper.selection();
-        onSubmitted(value, selectedDueDate.value,
-            needSnackbarFloating: !willClose);
+        final updatedTask = initialTask.copyWith(
+          title: titleValue,
+          dueDate: selectedDueDate.value,
+          priority: selectedPriority.value,
+        );
+        onSubmitted(updatedTask, needSnackbarFloating: !willClose);
       }
       if (willClose) {
         Navigator.pop(context);
@@ -76,7 +78,9 @@ class TaskSheet extends HookConsumerWidget {
       focusNode,
       titleController,
       selectedDueDate,
-      onSubmitted
+      selectedPriority,
+      onSubmitted,
+      initialTask,
     ]);
 
     return Padding(

@@ -101,6 +101,15 @@ sealed class CompleteStatusProperty extends Property {
     }
   }
 
+  static Map<String, dynamic> initialJson(CompleteStatusProperty status) {
+    return switch (status) {
+      StatusCompleteStatusProperty() => {
+          "status": {"name": status.todoOption?.name}
+        },
+      CheckboxCompleteStatusProperty() => {"checkbox": false},
+    };
+  }
+
   @override
   Map<String, dynamic> toJson() => switch (this) {
         CheckboxCompleteStatusProperty status => status.toJson(),

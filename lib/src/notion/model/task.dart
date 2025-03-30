@@ -24,12 +24,17 @@ class NotionDateTime with _$NotionDateTime {
     );
   }
 
-  String get submitFormat => isAllDay
-      ? datetime.toLocal().toIso8601String().split('T')[0]
-      : datetime.toUtc().toIso8601String();
+  factory NotionDateTime.todayAllDay() => NotionDateTime(
+        datetime: DateTime.now().toLocal(),
+        isAllDay: true,
+      );
 
   factory NotionDateTime.fromJson(Map<String, dynamic> json) =>
       _$NotionDateTimeFromJson(json);
+
+  String get submitFormat => isAllDay
+      ? datetime.toLocal().toIso8601String().split('T')[0]
+      : datetime.toUtc().toIso8601String();
 }
 
 @freezed
@@ -38,6 +43,11 @@ class TaskDate with _$TaskDate {
     required NotionDateTime start,
     NotionDateTime? end,
   }) = _TaskDate;
+
+  factory TaskDate.todayAllDay() => TaskDate(
+        start: NotionDateTime.todayAllDay(),
+        end: null,
+      );
 
   factory TaskDate.fromJson(Map<String, dynamic> json) =>
       _$TaskDateFromJson(json);
@@ -72,6 +82,22 @@ class Task with _$Task {
     // required String createdTime,
     // required String updatedTime,
   }) = _Task;
+
+  factory Task.fromJson(Map<String, dynamic> json) => _$TaskFromJson(json);
+
+  factory Task.temp({
+    String? title,
+    TaskDate? dueDate,
+    SelectOption? priority,
+  }) =>
+      Task(
+        id: 'temp_${DateTime.now().millisecondsSinceEpoch}',
+        title: title ?? '',
+        status: const TaskStatus.checkbox(checked: false),
+        dueDate: dueDate,
+        url: null,
+        priority: priority,
+      );
 
   static final DateHelper d = DateHelper();
 
@@ -111,6 +137,4 @@ class Task with _$Task {
   }
 
   bool get isTemp => id.startsWith("temp_");
-
-  factory Task.fromJson(Map<String, dynamic> json) => _$TaskFromJson(json);
 }

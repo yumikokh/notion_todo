@@ -236,17 +236,19 @@ void main() {
     };
 
     test('タスクを追加できる', () async {
-      when(mockRepository.addTask(any, any, any))
-          .thenAnswer((_) async => mockResponse);
+      when(mockRepository.addTask(any)).thenAnswer((_) async => mockResponse);
 
       final result = await service.addTask(
-          'New Task',
-          TaskDate(
+        Task.temp(
+          title: 'New Task',
+          dueDate: TaskDate(
             start: NotionDateTime(
               datetime: DateTime.parse('2024-03-20'),
               isAllDay: true,
             ),
-          ));
+          ),
+        ),
+      );
 
       expect(result.id, 'new_task');
       expect(result.title, 'New Task');
@@ -274,16 +276,17 @@ void main() {
     };
 
     test('タスクを更新できる', () async {
-      when(mockRepository.updateTask(any, any, any, any))
+      when(mockRepository.updateTask(any))
           .thenAnswer((_) async => mockResponse);
 
       final result = await service.updateTask(
-        'task1',
-        'Updated Task',
-        TaskDate(
-          start: NotionDateTime(
-            datetime: DateTime.parse('2024-03-21'),
-            isAllDay: true,
+        Task.temp(
+          title: 'Updated Task',
+          dueDate: TaskDate(
+            start: NotionDateTime(
+              datetime: DateTime.parse('2024-03-21'),
+              isAllDay: true,
+            ),
           ),
         ),
       );
