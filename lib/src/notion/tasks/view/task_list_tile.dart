@@ -83,8 +83,12 @@ class TaskListTile extends HookConsumerWidget {
             final soundSettings = ref.read(soundViewModelProvider);
             await soundSettings.playSound();
           }
-          checked.value = willComplete;
-          await taskViewModel.updateCompleteStatus(task, willComplete);
+          try {
+            checked.value = willComplete;
+            await taskViewModel.updateCompleteStatus(task, willComplete);
+          } catch (e) {
+            checked.value = !willComplete;
+          }
         },
       ),
       trailing: taskViewModel.showStarButton(task)

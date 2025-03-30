@@ -76,7 +76,7 @@ class TaskService {
 
   Future<Task> addTask(Task task) async {
     final data = await notionTaskRepository.addTask(task);
-    if (data == null || data.isEmpty) {
+    if (data == null || data.isEmpty || data['object'] == 'error') {
       throw Exception('Failed to add task');
     }
     return Task(
@@ -91,7 +91,7 @@ class TaskService {
 
   Future<Task> updateTask(Task task) async {
     final data = await notionTaskRepository.updateTask(task);
-    if (data == null || data['id'] == null) {
+    if (data == null || data['id'] == null || data['object'] == 'error') {
       throw Exception('Failed to update task');
     }
     return Task(
@@ -107,10 +107,9 @@ class TaskService {
   Future<Task> updateCompleteStatus(String taskId, bool isCompleted) async {
     final data =
         await notionTaskRepository.updateCompleteStatus(taskId, isCompleted);
-    if (data == null || data.isEmpty) {
+    if (data == null || data.isEmpty || data['object'] == 'error') {
       throw Exception('Failed to update task');
     }
-    // TODO: すでに存在しないIDだった場合のエラーハンドリング
     return Task(
       id: data['id'],
       title: _title(data),
@@ -124,7 +123,7 @@ class TaskService {
   Future<Task> updateInProgressStatus(String taskId, bool isInProgress) async {
     final data =
         await notionTaskRepository.updateInProgressStatus(taskId, isInProgress);
-    if (data == null || data.isEmpty) {
+    if (data == null || data.isEmpty || data['object'] == 'error') {
       throw Exception('Failed to update task');
     }
     return Task(
@@ -139,7 +138,7 @@ class TaskService {
 
   Future<Task?> deleteTask(String taskId) async {
     final data = await notionTaskRepository.deleteTask(taskId);
-    if (data == null || data.isEmpty) {
+    if (data == null || data.isEmpty || data['object'] == 'error') {
       return null;
     }
     return Task(
@@ -154,7 +153,7 @@ class TaskService {
 
   Future<Task?> undoDeleteTask(String taskId) async {
     final data = await notionTaskRepository.revertTask(taskId);
-    if (data == null || data.isEmpty) {
+    if (data == null || data.isEmpty || data['object'] == 'error') {
       return null;
     }
     return Task(
