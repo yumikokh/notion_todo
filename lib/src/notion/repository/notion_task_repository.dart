@@ -224,9 +224,10 @@ class NotionTaskRepository {
               }
             : null
       },
-      if (db.priority != null && task.priority != null)
+      if (db.priority != null)
         db.priority!.name: {
-          "select": {"name": task.priority!.name}
+          "select":
+              task.priority?.name != null ? {"name": task.priority!.name} : null
         }
     };
     final res = await http.patch(
