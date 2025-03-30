@@ -37,6 +37,14 @@ class NotionDatabaseRepository {
     return data['results'];
   }
 
+  Future fetchDatabase(String databaseId) async {
+    final res = await http.get(
+        Uri.parse('https://api.notion.com/v1/databases/$databaseId'),
+        headers: headers);
+    final data = jsonDecode(res.body);
+    return data;
+  }
+
   Future createProperty(
       String databaseId, CreatePropertyType type, String name) async {
     final body = {

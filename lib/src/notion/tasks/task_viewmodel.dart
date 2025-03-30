@@ -39,6 +39,10 @@ class TaskViewModel extends _$TaskViewModel {
   Future<List<Task>> build({
     FilterType filterType = FilterType.all,
   }) async {
+    // TaskDatabaseのidを元にプロパティを最新化
+    ref.invalidate(taskDatabaseViewModelProvider);
+    final taskDatabaseViewModel =
+        await ref.watch(taskDatabaseViewModelProvider.future);
     _taskService = await ref.watch(taskServiceProvider.future);
 
     if (_taskService == null) {
@@ -53,8 +57,7 @@ class TaskViewModel extends _$TaskViewModel {
     // もしpageSize以上のタスクがあったとき、「showCompleted」と「Load more」の不整合がおきるがいったん無視
     _hasCompleted = filterType == FilterType.today;
 
-    final statusProperty =
-        ref.watch(taskDatabaseViewModelProvider).valueOrNull?.status;
+    final statusProperty = taskDatabaseViewModel?.status;
     final tasks = await _fetchTasks(isFirstFetch: true);
 
     if (filterType == FilterType.today) {
@@ -345,19 +348,21 @@ class TaskViewModel extends _$TaskViewModel {
       final snackbar = ref.read(snackbarProvider.notifier);
       final locale = ref.read(settingsViewModelProvider).locale;
       final l = await AppLocalizations.delegate.load(locale);
-      snackbar.show(
-          isCompleted
-              ? l.task_update_status_success(task.title)
-              : l.task_update_status_undo(task.title),
-          type: SnackbarType.success, onUndo: () async {
-        updateCompleteStatus(task, !isCompleted, fromUndo: true);
-      });
 
       _isLoading = true;
       final prevState = state;
       try {
         final updatedTask =
             await taskService.updateCompleteStatus(task.id, isCompleted);
+
+        snackbar.show(
+            isCompleted
+                ? l.task_update_status_success(task.title)
+                : l.task_update_status_undo(task.title),
+            type: SnackbarType.success, onUndo: () async {
+          updateCompleteStatus(task, !isCompleted, fromUndo: true);
+        });
+
         state = AsyncValue.data([
           for (final t in state.valueOrNull ?? [])
             if (t.id == updatedTask.id) updatedTask else t
@@ -398,6 +403,7 @@ class TaskViewModel extends _$TaskViewModel {
       } catch (e) {
         state = prevState;
         snackbar.show(l.task_update_status_failed, type: SnackbarType.error);
+        rethrow;
       } finally {
         _isLoading = false;
       }

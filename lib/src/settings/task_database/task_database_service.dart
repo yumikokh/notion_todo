@@ -13,17 +13,79 @@ class TaskDatabaseService {
 
   Future<TaskDatabase?> loadSetting() async {
     final pref = await SharedPreferences.getInstance();
-    final taskDatabase = pref.getString(_taskDatabaseKey);
-    if (taskDatabase == null) {
+    final taskDatabaseJson = pref.getString(_taskDatabaseKey);
+    if (taskDatabaseJson == null) {
       return null;
     }
     try {
-      return TaskDatabase.fromJson(jsonDecode(taskDatabase));
+      final taskDatabase = TaskDatabase.fromJson(jsonDecode(taskDatabaseJson));
+      if (notionDatabaseRepository != null) {
+        return await _updateDatabaseWithLatestInfo(taskDatabase);
+      }
+      return taskDatabase;
     } catch (e) {
       print('Failed to load task database: $e');
       clear();
       return null;
     }
+  }
+
+  /// 保存されているデータベース情報を最新の情報で更新する
+  Future<TaskDatabase> _updateDatabaseWithLatestInfo(
+      TaskDatabase taskDatabase) async {
+    try {
+      final latestDatabase = await _fetchDatabase(taskDatabase.id);
+      return _updateTaskDatabaseProperties(taskDatabase, latestDatabase);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  /// 指定されたIDのデータベースを取得する
+  Future<Database> _fetchDatabase(String databaseId) async {
+    final data = await notionDatabaseRepository?.fetchDatabase(databaseId);
+    if (data == null) {
+      throw Exception('Database not found');
+    }
+    return _getDatabase(data);
+  }
+
+  /// データベースのプロパティを最新の情報で更新する
+  TaskDatabase _updateTaskDatabaseProperties(
+      TaskDatabase savedDatabase, Database latestDatabase) {
+    // 保存されているプロパティのIDを使って最新のプロパティを探す
+    final titleProperty = latestDatabase.properties.firstWhere(
+        (p) => p.id == savedDatabase.title.id,
+        orElse: () => savedDatabase.title);
+    final statusProperty = latestDatabase.properties.firstWhere(
+        (p) => p.id == savedDatabase.status.id,
+        orElse: () => savedDatabase.status);
+    final dateProperty = latestDatabase.properties.firstWhere(
+        (p) => p.id == savedDatabase.date.id,
+        orElse: () => savedDatabase.date);
+    final priorityProperty = savedDatabase.priority != null
+        ? latestDatabase.properties.firstWhere(
+            (p) => p.id == savedDatabase.priority!.id,
+            orElse: () => savedDatabase.priority!)
+        : null;
+
+    // プロパティの型チェック
+    if (titleProperty is! TitleProperty ||
+        statusProperty is! CompleteStatusProperty ||
+        dateProperty is! DateProperty ||
+        (savedDatabase.priority != null &&
+            priorityProperty is! SelectProperty)) {
+      throw Exception('Property types do not match');
+    }
+
+    return TaskDatabase(
+      id: latestDatabase.id,
+      name: latestDatabase.name,
+      title: titleProperty,
+      status: statusProperty,
+      date: dateProperty,
+      priority: priorityProperty as SelectProperty?,
+    );
   }
 
   Future<void> save(TaskDatabase taskDatabase) async {
