@@ -73,7 +73,7 @@ class NotionTaskRepository {
                   "property": dateProperty.name,
                   "date": {"on_or_before": todayEnd}
                 },
-                ...getCompleteStatusFilter(statusProperty, onlyComplete: true),
+                ..._getCompleteStatusFilter(statusProperty, onlyComplete: true),
               ],
             },
             {
@@ -86,7 +86,7 @@ class NotionTaskRepository {
                   "property": dateProperty.name,
                   "date": {"on_or_before": todayEnd}
                 },
-                ...getNotCompleteStatusFilter(statusProperty,
+                ..._getNotCompleteStatusFilter(statusProperty,
                     onlyNotComplete: true),
               ],
             }
@@ -102,7 +102,7 @@ class NotionTaskRepository {
                   "property": dateProperty.name,
                   "date": {"on_or_before": todayEnd}
                 },
-                ...getNotCompleteStatusFilter(statusProperty,
+                ..._getNotCompleteStatusFilter(statusProperty,
                     onlyNotComplete: true),
               ],
             },
@@ -113,17 +113,17 @@ class NotionTaskRepository {
                 "property": dateProperty.name,
                 "date": {"before": todayStart}
               },
-              ...getNotCompleteStatusFilter(statusProperty,
+              ..._getNotCompleteStatusFilter(statusProperty,
                   onlyNotComplete: true)
             ]
           },
           // 進行中のタスク
-          ...getInProgressStatusFilter(db)
+          ..._getInProgressStatusFilter(db)
         ]
       };
     } else if (filterType == FilterType.all && !hasCompleted) {
       filter = {
-        "and": [...getNotCompleteStatusFilter(statusProperty)]
+        "and": [..._getNotCompleteStatusFilter(statusProperty)]
       };
     } else {
       filter = null;
@@ -205,7 +205,6 @@ class NotionTaskRepository {
 
     final properties = {
       db.title.name: {
-        "id": db.title.id,
         "title": [
           {
             "type": "text",
@@ -214,7 +213,6 @@ class NotionTaskRepository {
         ]
       },
       db.date.name: {
-        "id": db.date.id,
         "date": startDate != null
             ? {
                 "start": startDate,
@@ -225,7 +223,6 @@ class NotionTaskRepository {
       },
       if (db.priority != null && task.priority != null)
         db.priority!.name: {
-          "id": db.priority!.id,
           "select": {"name": task.priority!.name}
         }
     };
@@ -246,16 +243,17 @@ class NotionTaskRepository {
     final status = db.status;
     final statusProperties = switch ((status, isCompleted)) {
       (
-        StatusCompleteStatusProperty(completeOption: var completeOption),
+        StatusCompleteStatusProperty(completeOption: var completeOption?),
         true
       ) =>
         {
-          "status": {"name": completeOption?.name ?? 'Done'}
+          "status": {"name": completeOption.name}
         },
-      (StatusCompleteStatusProperty(todoOption: var todoOption), false) => {
-          "status": {"name": todoOption?.name ?? 'To-do'}
+      (StatusCompleteStatusProperty(todoOption: var todoOption?), false) => {
+          "status": {"name": todoOption.name}
         },
       (CheckboxCompleteStatusProperty(), _) => {"checkbox": isCompleted},
+      (_, _) => throw Exception('Invalid status property'),
     };
 
     final res = await http.patch(
@@ -278,17 +276,18 @@ class NotionTaskRepository {
 
     final statusProperties = switch ((status, isInProgress)) {
       (
-        StatusCompleteStatusProperty(inProgressOption: var inProgressOption),
+        StatusCompleteStatusProperty(inProgressOption: var inProgressOption?),
         true
       ) =>
         {
-          "status": {"name": inProgressOption?.name ?? 'In Progress'}
+          "status": {"name": inProgressOption.name}
         },
-      (StatusCompleteStatusProperty(todoOption: var todoOption), false) => {
-          "status": {"name": todoOption?.name ?? 'To-do'}
+      (StatusCompleteStatusProperty(todoOption: var todoOption?), false) => {
+          "status": {"name": todoOption.name}
         },
       // checkboxは更新しない
       (CheckboxCompleteStatusProperty(), _) => {"checkbox": false},
+      (_, _) => throw Exception('Invalid status property'),
     };
 
     final res = await http.patch(
@@ -322,17 +321,17 @@ class NotionTaskRepository {
   }
 }
 
-List<dynamic> getCompleteStatusFilter(CompleteStatusProperty property,
+List<dynamic> _getCompleteStatusFilter(CompleteStatusProperty property,
     {bool onlyComplete = false}) {
   switch ((property, onlyComplete)) {
     case (
-        StatusCompleteStatusProperty(completeOption: var completeOption),
+        StatusCompleteStatusProperty(completeOption: var completeOption?),
         true
       ):
       return [
         {
           "property": property.name,
-          "status": {"equals": completeOption?.name}
+          "status": {"equals": completeOption.name}
         }
       ];
     case (StatusCompleteStatusProperty(status: var status), false):
@@ -361,18 +360,20 @@ List<dynamic> getCompleteStatusFilter(CompleteStatusProperty property,
           "checkbox": {"equals": true}
         }
       ];
+    case (StatusCompleteStatusProperty(completeOption: null), true):
+      return [];
   }
 }
 
-List<dynamic> getNotCompleteStatusFilter(CompleteStatusProperty property,
+List<dynamic> _getNotCompleteStatusFilter(CompleteStatusProperty property,
     {bool onlyNotComplete = false}) {
   switch ((property, onlyNotComplete)) {
-    case (StatusCompleteStatusProperty(todoOption: var todoOption), true):
+    case (StatusCompleteStatusProperty(todoOption: var todoOption?), true):
       // 未完了に指定されたオプションステータスのみ
       return [
         {
           "property": property.name,
-          "status": {"equals": todoOption?.name}
+          "status": {"equals": todoOption.name}
         }
       ];
     case (StatusCompleteStatusProperty(status: var status), false):
@@ -401,10 +402,12 @@ List<dynamic> getNotCompleteStatusFilter(CompleteStatusProperty property,
           "checkbox": {"equals": false}
         }
       ];
+    case (StatusCompleteStatusProperty(todoOption: null), true):
+      return [];
   }
 }
 
-List<dynamic> getInProgressStatusFilter(TaskDatabase database) {
+List<dynamic> _getInProgressStatusFilter(TaskDatabase database) {
   switch (database.status) {
     case StatusCompleteStatusProperty(
         name: var name,
