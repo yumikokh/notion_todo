@@ -66,11 +66,11 @@ class TaskListTile extends HookConsumerWidget {
       leading: Checkbox(
         value: checked.value,
         activeColor:
-            task.priority?.color ?? Theme.of(context).colorScheme.onSurface,
+            task.priority?.mColor ?? Theme.of(context).colorScheme.onSurface,
         side: BorderSide(
             width: 1,
             color:
-                task.priority?.color ?? Theme.of(context).colorScheme.outline),
+                task.priority?.mColor ?? Theme.of(context).colorScheme.outline),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(0),
         ),

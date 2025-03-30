@@ -281,15 +281,15 @@ class SelectOption {
   final String id;
   final String name;
   @JsonKey(fromJson: NotionColor.fromString)
-  final NotionColor? notionColor;
+  final NotionColor? color;
 
   SelectOption({
     required this.id,
     required this.name,
-    this.notionColor,
+    this.color,
   });
 
-  Color get color => notionColor?.toColor() ?? Colors.grey;
+  Color get mColor => color?.toColor() ?? Colors.grey;
 
   factory SelectOption.fromJson(Map<String, dynamic> json) =>
       _$SelectOptionFromJson(json);

@@ -228,7 +228,7 @@ class TaskService {
     return SelectOption(
       id: selectData['id'],
       name: selectData['name'],
-      notionColor: NotionColor.fromString(selectData['color']),
+      color: NotionColor.fromString(selectData['color']),
     );
   }
 }

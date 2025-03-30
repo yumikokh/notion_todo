@@ -32,7 +32,7 @@ class PriorityChip extends StatelessWidget {
       avatar: Icon(
         Icons.flag_rounded,
         size: 14,
-        color: isSelected ? priority?.color : Theme.of(context).hintColor,
+        color: isSelected ? priority?.mColor : Theme.of(context).hintColor,
       ),
       deleteIcon:
           Icon(Icons.clear, size: 14, color: Theme.of(context).disabledColor),

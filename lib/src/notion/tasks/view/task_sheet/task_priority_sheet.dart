@@ -58,7 +58,7 @@ class TaskPrioritySheet extends ConsumerWidget {
                 return ListTile(
                   leading: Icon(
                     Icons.flag_rounded,
-                    color: option.color,
+                    color: option.mColor,
                   ),
                   title: Text(option.name),
                   selected: selectedPriority?.id == option.id,

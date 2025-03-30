@@ -163,14 +163,14 @@ const _$StatusGroupTypeEnumMap = {
 SelectOption _$SelectOptionFromJson(Map<String, dynamic> json) => SelectOption(
       id: json['id'] as String,
       name: json['name'] as String,
-      notionColor: NotionColor.fromString(json['notionColor'] as String?),
+      color: NotionColor.fromString(json['color'] as String?),
     );
 
 Map<String, dynamic> _$SelectOptionToJson(SelectOption instance) =>
     <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
-      'notionColor': _$NotionColorEnumMap[instance.notionColor],
+      'color': _$NotionColorEnumMap[instance.color],
     };
 
 const _$NotionColorEnumMap = {
