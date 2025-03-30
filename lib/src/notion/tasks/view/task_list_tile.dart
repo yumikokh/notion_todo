@@ -68,7 +68,7 @@ class TaskListTile extends HookConsumerWidget {
         activeColor:
             task.priority?.mColor ?? Theme.of(context).colorScheme.onSurface,
         side: BorderSide(
-            width: 1,
+            width: 1.2,
             color:
                 task.priority?.mColor ?? Theme.of(context).colorScheme.outline),
         shape: RoundedRectangleBorder(
