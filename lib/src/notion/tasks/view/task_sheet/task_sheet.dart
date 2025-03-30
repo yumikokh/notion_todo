@@ -4,9 +4,12 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../model/task.dart';
+import '../../../model/property.dart';
 import '../../../../helpers/haptic_helper.dart';
 import 'date_chip.dart';
+import 'priority_chip.dart';
 import 'task_date_sheet.dart';
+import 'task_priority_sheet.dart';
 import '../../../../settings/settings_viewmodel.dart';
 
 class TaskSheet extends HookConsumerWidget {
@@ -44,18 +47,22 @@ class TaskSheet extends HookConsumerWidget {
 
     final changeSelectedDueDate = useCallback(
       (TaskDate? newDueDate) {
-        if (newDueDate == null) {
-          selectedDueDate.value = null;
-          return;
-        }
         selectedDueDate.value = newDueDate;
       },
       [selectedDueDate],
     );
 
+    final changeSelectedPriority = useCallback(
+      (SelectOption? newPriority) {
+        selectedPriority.value = newPriority;
+      },
+      [selectedPriority],
+    );
+
     final submitHandler = useCallback(() {
       final willClose = !isNewTask || !continuousTaskAddition;
       final titleValue = titleController.text;
+
       if (titleValue.trim().isNotEmpty) {
         HapticHelper.selection();
         final updatedTask = initialTask.copyWith(
@@ -65,6 +72,7 @@ class TaskSheet extends HookConsumerWidget {
         );
         onSubmitted(updatedTask, needSnackbarFloating: !willClose);
       }
+
       if (willClose) {
         Navigator.pop(context);
       } else {
@@ -111,26 +119,52 @@ class TaskSheet extends HookConsumerWidget {
                   Expanded(
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
-                      child: DateChip(
-                        date: selectedDueDate.value,
-                        context: context,
-                        onSelected: (selected) {
-                          showModalBottomSheet(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
+                      child: Row(
+                        children: [
+                          DateChip(
+                            date: selectedDueDate.value,
                             context: context,
-                            builder: (context) => TaskDateSheet(
-                              selectedDate: selectedDueDate.value,
-                              onSelected: (TaskDate? date) {
-                                changeSelectedDueDate(date);
-                              },
-                            ),
-                          );
-                        },
-                        onDeleted: () {
-                          changeSelectedDueDate(null);
-                        },
+                            onSelected: (selected) {
+                              showModalBottomSheet(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                context: context,
+                                builder: (context) => TaskDateSheet(
+                                  selectedDate: selectedDueDate.value,
+                                  onSelected: (TaskDate? date) {
+                                    changeSelectedDueDate(date);
+                                  },
+                                ),
+                              );
+                            },
+                            onDeleted: () {
+                              changeSelectedDueDate(null);
+                            },
+                          ),
+                          const SizedBox(width: 8),
+                          PriorityChip(
+                            priority: selectedPriority.value,
+                            context: context,
+                            onSelected: (selected) {
+                              showModalBottomSheet(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                context: context,
+                                builder: (context) => TaskPrioritySheet(
+                                  selectedPriority: selectedPriority.value,
+                                  onSelected: (SelectOption? priority) {
+                                    changeSelectedPriority(priority);
+                                  },
+                                ),
+                              );
+                            },
+                            onDeleted: () {
+                              changeSelectedPriority(null);
+                            },
+                          ),
+                        ],
                       ),
                     ),
                   ),
