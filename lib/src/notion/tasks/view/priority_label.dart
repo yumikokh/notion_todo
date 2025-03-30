@@ -7,10 +7,12 @@ class PriorityLabel extends StatelessWidget {
     super.key,
     required this.priority,
     required this.context,
+    required this.showColor,
   });
 
   final SelectOption? priority;
   final BuildContext context;
+  final bool showColor;
 
   @override
   Widget build(BuildContext context) {
@@ -21,15 +23,16 @@ class PriorityLabel extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Icon(
-          Icons.keyboard_double_arrow_up_rounded,
-          size: 14,
-          color: priority.color,
+          Icons.flag_rounded,
+          size: 12,
+          color: showColor ? priority.color : null,
         ),
+        const SizedBox(width: 2),
         Text(
           priority.name,
           style: TextStyle(
             fontSize: 12,
-            color: priority.color,
+            color: showColor ? priority.color : null,
           ),
         ),
       ],

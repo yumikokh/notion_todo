@@ -116,9 +116,9 @@ class TaskListTile extends HookConsumerWidget {
               width: double.infinity,
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.only(top: 2),
+                padding: const EdgeInsets.only(top: 4),
                 child: Row(
-                  spacing: 4,
+                  spacing: 6,
                   children: [
                     if (taskViewModel.showDueDate(task))
                       DateLabel(
@@ -132,6 +132,7 @@ class TaskListTile extends HookConsumerWidget {
                       PriorityLabel(
                         priority: task.priority,
                         context: context,
+                        showColor: !task.isCompleted,
                       ),
                   ],
                 ),
