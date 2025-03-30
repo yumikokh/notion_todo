@@ -54,6 +54,7 @@ class NotionTaskRepository {
     final databaseId = db.id;
     final dateProperty = db.date;
     final statusProperty = db.status;
+    final priorityProperty = db.priority;
     final now = DateTime.now();
     final todayStart = d.startTimeOfDay(now).toUtc().toIso8601String();
     final todayEnd = d.endTimeOfDay(now).toUtc().toIso8601String();
@@ -136,6 +137,8 @@ class NotionTaskRepository {
         if (filter != null) "filter": filter,
         "sorts": [
           {"property": dateProperty.name, "direction": "ascending"},
+          if (priorityProperty != null)
+            {"property": priorityProperty.name, "direction": "ascending"},
           {"timestamp": "created_time", "direction": "ascending"}
         ],
         if (startCursor != null) "start_cursor": startCursor,
