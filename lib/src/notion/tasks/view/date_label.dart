@@ -24,24 +24,8 @@ class DateLabel extends StatelessWidget {
     if (!showColor) return null;
     final dueDate = date;
     if (dueDate == null) return null;
-    final now = DateTime.now();
-    final dueDateStart = dueDate.start.datetime;
-    final dueDateEnd = dueDate.end?.datetime;
 
-    // 終日かつ今日
-    if (dueDateEnd == null &&
-        d.isToday(dueDateStart) &&
-        dueDate.start.isAllDay == true) {
-      return Theme.of(context).colorScheme.tertiary; // 今日だったら青
-    }
-
-    // 時間があり、すぎている
-    if ((dueDateEnd != null && dueDateEnd.isBefore(now)) ||
-        (dueDateEnd == null && dueDateStart.isBefore(now))) {
-      return Theme.of(context).colorScheme.error; // 過ぎてたら赤
-    }
-
-    return Theme.of(context).colorScheme.secondary; // それ以外は灰色
+    return TaskDate.getColor(context, dueDate);
   }
 
   List<String> get dateStrings {
@@ -64,7 +48,7 @@ class DateLabel extends StatelessWidget {
     ].whereType<String>().toList();
   }
 
-  double get size => 12.0;
+  double get size => 11.0;
 
   @override
   Widget build(BuildContext context) {

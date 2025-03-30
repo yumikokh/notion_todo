@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../helpers/date.dart';
@@ -39,6 +40,8 @@ class NotionDateTime with _$NotionDateTime {
 
 @freezed
 class TaskDate with _$TaskDate {
+  static final DateHelper d = DateHelper();
+
   const factory TaskDate({
     required NotionDateTime start,
     NotionDateTime? end,
@@ -51,6 +54,28 @@ class TaskDate with _$TaskDate {
 
   factory TaskDate.fromJson(Map<String, dynamic> json) =>
       _$TaskDateFromJson(json);
+
+  static Color? getColor(BuildContext context, TaskDate? dueDate) {
+    if (dueDate == null) return null;
+    final now = DateTime.now();
+    final dueDateStart = dueDate.start.datetime;
+    final dueDateEnd = dueDate.end?.datetime;
+
+    // 終日かつ今日
+    if (dueDateEnd == null &&
+        d.isToday(dueDateStart) &&
+        dueDate.start.isAllDay == true) {
+      return Theme.of(context).colorScheme.tertiary; // 今日だったら青
+    }
+
+    // 時間があり、すぎている
+    if ((dueDateEnd != null && dueDateEnd.isBefore(now)) ||
+        (dueDateEnd == null && dueDateStart.isBefore(now))) {
+      return Theme.of(context).colorScheme.error; // 過ぎてたら赤
+    }
+
+    return Theme.of(context).colorScheme.secondary;
+  }
 }
 
 @freezed

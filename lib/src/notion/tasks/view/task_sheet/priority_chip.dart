@@ -26,19 +26,22 @@ class PriorityChip extends StatelessWidget {
     return InputChip(
       label: Text(
         priority?.name ?? l.priority_property,
-        style: TextStyle(
-          color: isSelected ? null : Theme.of(context).hintColor,
-        ),
+        style: const TextStyle(fontSize: 11),
       ),
+      labelPadding: const EdgeInsets.symmetric(horizontal: 2),
       avatar: Icon(
         Icons.flag_rounded,
-        size: 18,
-        color: isSelected ? null : Theme.of(context).hintColor,
+        size: 14,
+        color: isSelected ? priority?.color : Theme.of(context).hintColor,
       ),
-      deleteIcon: isSelected ? const Icon(Icons.close_rounded, size: 18) : null,
+      deleteIcon:
+          Icon(Icons.clear, size: 14, color: Theme.of(context).disabledColor),
       onDeleted: isSelected ? onDeleted : null,
       onSelected: onSelected,
       selected: isSelected,
+      showCheckmark: false,
+      visualDensity: VisualDensity.compact,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
     );
   }
 }
