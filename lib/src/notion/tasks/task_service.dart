@@ -233,9 +233,12 @@ class TaskService {
     if (propertyData == null || propertyData['select'] == null) {
       return null;
     }
-    final optionId = propertyData['select']['id'];
-    return property.options
-        .where((option) => option.id == optionId)
-        .firstOrNull;
+    final selectData = propertyData['select'];
+
+    return SelectOption(
+      id: selectData['id'],
+      name: selectData['name'],
+      notionColor: NotionColor.fromString(selectData['color']),
+    );
   }
 }

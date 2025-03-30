@@ -29,8 +29,6 @@ class TaskListTile extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final checked = useState(task.isCompleted);
 
-    print('task: $task');
-
     return ListTile(
       enabled: !task.isTemp,
       onLongPress: () async {
@@ -127,7 +125,7 @@ class TaskListTile extends HookConsumerWidget {
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.only(top: 2),
                 child: Row(
-                  spacing: 8,
+                  spacing: 4,
                   children: [
                     if (taskViewModel.showDueDate(task))
                       DateLabel(

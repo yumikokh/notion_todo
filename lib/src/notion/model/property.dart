@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:flutter/material.dart';
 
 part 'property.g.dart';
 
@@ -229,17 +230,57 @@ class StatusOptionsByGroup {
   Map<String, dynamic> toJson() => _$StatusOptionsByGroupToJson(this);
 }
 
+/// NotionのAPIで定義されている色の列挙型
+enum NotionColor {
+  blue,
+  brown,
+  defaultColor,
+  gray,
+  green,
+  orange,
+  pink,
+  purple,
+  red,
+  yellow;
+
+  Color toColor() {
+    return switch (this) {
+      NotionColor.blue => const Color.fromARGB(255, 89, 96, 159),
+      NotionColor.brown => const Color.fromARGB(255, 100, 70, 13),
+      NotionColor.gray => const Color(0xff4b463d),
+      NotionColor.green => const Color.fromARGB(255, 38, 93, 51),
+      NotionColor.orange => const Color.fromARGB(255, 175, 126, 81),
+      NotionColor.pink => const Color.fromARGB(255, 174, 99, 114),
+      NotionColor.purple => const Color.fromARGB(255, 99, 75, 133),
+      NotionColor.red => const Color.fromARGB(255, 160, 63, 63),
+      NotionColor.yellow => const Color.fromARGB(255, 189, 169, 113),
+      NotionColor.defaultColor => const Color(0xff7c766c),
+    };
+  }
+
+  static NotionColor? fromString(String? value) {
+    if (value == null) return null;
+    return NotionColor.values.firstWhere(
+      (e) => e.name == (value == 'default' ? 'defaultColor' : value),
+      orElse: () => NotionColor.defaultColor,
+    );
+  }
+}
+
 @JsonSerializable()
 class SelectOption {
   final String id;
   final String name;
-  final String? color;
+  @JsonKey(fromJson: NotionColor.fromString)
+  final NotionColor? notionColor;
 
   SelectOption({
     required this.id,
     required this.name,
-    required this.color,
+    this.notionColor,
   });
+
+  Color get color => notionColor?.toColor() ?? Colors.grey;
 
   factory SelectOption.fromJson(Map<String, dynamic> json) =>
       _$SelectOptionFromJson(json);

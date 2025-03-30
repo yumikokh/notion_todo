@@ -14,32 +14,25 @@ class PriorityLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final priority = this.priority;
     if (priority == null) return const SizedBox.shrink();
 
-    return Container(
-      decoration: BoxDecoration(
-        color:
-            Theme.of(context).colorScheme.surfaceVariant, // TODO: Notionの色に合わせる
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Icons.flag_rounded,
-            size: 16,
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          Icons.keyboard_double_arrow_up_rounded,
+          size: 14,
+          color: priority.color,
+        ),
+        Text(
+          priority.name,
+          style: TextStyle(
+            fontSize: 12,
+            color: priority.color,
           ),
-          const SizedBox(width: 2),
-          Text(
-            priority!.name,
-            style: TextStyle(
-              fontSize: 12,
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

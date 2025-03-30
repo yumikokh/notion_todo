@@ -163,15 +163,28 @@ const _$StatusGroupTypeEnumMap = {
 SelectOption _$SelectOptionFromJson(Map<String, dynamic> json) => SelectOption(
       id: json['id'] as String,
       name: json['name'] as String,
-      color: json['color'] as String?,
+      notionColor: NotionColor.fromString(json['notionColor'] as String?),
     );
 
 Map<String, dynamic> _$SelectOptionToJson(SelectOption instance) =>
     <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
-      'color': instance.color,
+      'notionColor': _$NotionColorEnumMap[instance.notionColor],
     };
+
+const _$NotionColorEnumMap = {
+  NotionColor.blue: 'blue',
+  NotionColor.brown: 'brown',
+  NotionColor.defaultColor: 'defaultColor',
+  NotionColor.gray: 'gray',
+  NotionColor.green: 'green',
+  NotionColor.orange: 'orange',
+  NotionColor.pink: 'pink',
+  NotionColor.purple: 'purple',
+  NotionColor.red: 'red',
+  NotionColor.yellow: 'yellow',
+};
 
 SelectProperty _$SelectPropertyFromJson(Map<String, dynamic> json) =>
     SelectProperty(
