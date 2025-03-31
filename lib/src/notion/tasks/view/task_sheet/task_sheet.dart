@@ -96,7 +96,7 @@ class TaskSheet extends HookConsumerWidget {
       padding: MediaQuery.of(context).viewInsets,
       child: Wrap(children: <Widget>[
         Padding(
-          padding: const EdgeInsets.fromLTRB(24, 8, 24, 30),
+          padding: const EdgeInsets.fromLTRB(24, 14, 24, 30),
           child: Column(
             children: [
               TextField(
@@ -109,7 +109,7 @@ class TaskSheet extends HookConsumerWidget {
                   border: InputBorder.none,
                 ),
                 style: const TextStyle(
-                  fontSize: 18,
+                  fontSize: 20,
                 ),
                 onEditingComplete: submitHandler,
               ),

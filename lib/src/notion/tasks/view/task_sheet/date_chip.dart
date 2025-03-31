@@ -29,23 +29,31 @@ class DateChip extends StatelessWidget {
 
     return InputChip(
       label: date == null
-          ? Text(l.select_date, style: const TextStyle(fontSize: 12))
+          ? Text(l.select_date,
+              style: const TextStyle(
+                fontSize: 14,
+              ))
           : DateLabel(
               date: date,
               context: context,
               showColor: false,
               showToday: true,
-              showIcon: false),
-      labelPadding: const EdgeInsets.symmetric(horizontal: 2),
+              showIcon: false,
+              size: 14),
+      labelPadding: const EdgeInsets.symmetric(horizontal: 6),
       selected: selected,
       onDeleted: selected ? onDeleted : null,
       onSelected: onSelected,
       deleteIcon:
           Icon(Icons.clear, size: 14, color: Theme.of(context).disabledColor),
       showCheckmark: false,
-      avatar: Icon(Icons.event_rounded, size: 14, color: avatarColor),
+      avatar: Icon(Icons.event_rounded, size: 18, color: avatarColor),
       visualDensity: VisualDensity.compact,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+      side: BorderSide(
+          color: Theme.of(context).colorScheme.outlineVariant.withAlpha(50)),
+      backgroundColor: Theme.of(context).cardColor,
+      selectedColor: Theme.of(context).cardColor,
     );
   }
 }

@@ -9,7 +9,7 @@ class DateLabel extends StatelessWidget {
   final bool showToday;
   final bool showColor;
   final bool showIcon;
-
+  final double? size;
   static final DateHelper d = DateHelper();
 
   const DateLabel(
@@ -18,7 +18,8 @@ class DateLabel extends StatelessWidget {
       required this.showToday,
       required this.context,
       required this.showColor,
-      required this.showIcon});
+      required this.showIcon,
+      this.size = 12.0});
 
   Color? get color {
     if (!showColor) return null;
@@ -47,8 +48,6 @@ class DateLabel extends StatelessWidget {
             showToday: showToday, showOnlyTime: isSameDay),
     ].whereType<String>().toList();
   }
-
-  double get size => 12.0;
 
   @override
   Widget build(BuildContext context) {
