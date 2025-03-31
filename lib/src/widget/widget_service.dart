@@ -127,12 +127,6 @@ class WidgetService {
       GlobalKey<NavigatorState> globalNavigatorKey, WidgetRef ref) async {
     final todayViewModel =
         ref.read(taskViewModelProvider(filterType: FilterType.today).notifier);
-    final initialDueDate = TaskDate(
-      start: NotionDateTime(
-        datetime: DateTime.now(),
-        isAllDay: true,
-      ),
-    );
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final currentState = globalNavigatorKey.currentState;
@@ -142,7 +136,11 @@ class WidgetService {
 
       final context = globalNavigatorKey.currentContext;
       if (context != null && context.mounted) {
-        await _showTaskSheet(context, todayViewModel.addTask, initialDueDate);
+        await _showTaskSheet(
+          context,
+          Task.temp(dueDate: TaskDate.todayAllDay()),
+          todayViewModel.addTask,
+        );
       }
     });
   }
@@ -162,10 +160,10 @@ class WidgetService {
   }
 
   static Future<void> _showTaskSheet(
-      BuildContext context,
-      Future<void> Function(String, TaskDate?, bool needSnackbarFloating)
-          onAddTask,
-      TaskDate? initialDueDate) async {
+    BuildContext context,
+    Task initialTask,
+    Future<void> Function(Task, {bool? needSnackbarFloating}) onAddTask,
+  ) async {
     await showModalBottomSheet(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
@@ -173,10 +171,9 @@ class WidgetService {
       context: context,
       isScrollControlled: true,
       builder: (context) => TaskSheet(
-        initialDueDate: initialDueDate,
-        initialTitle: null,
-        onSubmitted: (title, dueDate, {bool? needSnackbarFloating}) {
-          onAddTask(title, dueDate, needSnackbarFloating ?? false);
+        initialTask: initialTask,
+        onSubmitted: (task, {bool? needSnackbarFloating}) {
+          onAddTask(task, needSnackbarFloating: needSnackbarFloating);
         },
       ),
     );

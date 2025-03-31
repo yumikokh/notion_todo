@@ -805,6 +805,7 @@ mixin _$Task {
   TaskStatus get status => throw _privateConstructorUsedError;
   TaskDate? get dueDate => throw _privateConstructorUsedError;
   String? get url => throw _privateConstructorUsedError;
+  SelectOption? get priority => throw _privateConstructorUsedError;
 
   /// Serializes this Task to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -825,7 +826,8 @@ abstract class $TaskCopyWith<$Res> {
       String title,
       TaskStatus status,
       TaskDate? dueDate,
-      String? url});
+      String? url,
+      SelectOption? priority});
 
   $TaskStatusCopyWith<$Res> get status;
   $TaskDateCopyWith<$Res>? get dueDate;
@@ -851,6 +853,7 @@ class _$TaskCopyWithImpl<$Res, $Val extends Task>
     Object? status = null,
     Object? dueDate = freezed,
     Object? url = freezed,
+    Object? priority = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -873,6 +876,10 @@ class _$TaskCopyWithImpl<$Res, $Val extends Task>
           ? _value.url
           : url // ignore: cast_nullable_to_non_nullable
               as String?,
+      priority: freezed == priority
+          ? _value.priority
+          : priority // ignore: cast_nullable_to_non_nullable
+              as SelectOption?,
     ) as $Val);
   }
 
@@ -913,7 +920,8 @@ abstract class _$$TaskImplCopyWith<$Res> implements $TaskCopyWith<$Res> {
       String title,
       TaskStatus status,
       TaskDate? dueDate,
-      String? url});
+      String? url,
+      SelectOption? priority});
 
   @override
   $TaskStatusCopyWith<$Res> get status;
@@ -938,6 +946,7 @@ class __$$TaskImplCopyWithImpl<$Res>
     Object? status = null,
     Object? dueDate = freezed,
     Object? url = freezed,
+    Object? priority = freezed,
   }) {
     return _then(_$TaskImpl(
       id: null == id
@@ -960,6 +969,10 @@ class __$$TaskImplCopyWithImpl<$Res>
           ? _value.url
           : url // ignore: cast_nullable_to_non_nullable
               as String?,
+      priority: freezed == priority
+          ? _value.priority
+          : priority // ignore: cast_nullable_to_non_nullable
+              as SelectOption?,
     ));
   }
 }
@@ -972,7 +985,8 @@ class _$TaskImpl extends _Task {
       required this.title,
       required this.status,
       required this.dueDate,
-      required this.url})
+      required this.url,
+      this.priority})
       : super._();
 
   factory _$TaskImpl.fromJson(Map<String, dynamic> json) =>
@@ -988,10 +1002,12 @@ class _$TaskImpl extends _Task {
   final TaskDate? dueDate;
   @override
   final String? url;
+  @override
+  final SelectOption? priority;
 
   @override
   String toString() {
-    return 'Task(id: $id, title: $title, status: $status, dueDate: $dueDate, url: $url)';
+    return 'Task(id: $id, title: $title, status: $status, dueDate: $dueDate, url: $url, priority: $priority)';
   }
 
   @override
@@ -1003,12 +1019,15 @@ class _$TaskImpl extends _Task {
             (identical(other.title, title) || other.title == title) &&
             (identical(other.status, status) || other.status == status) &&
             (identical(other.dueDate, dueDate) || other.dueDate == dueDate) &&
-            (identical(other.url, url) || other.url == url));
+            (identical(other.url, url) || other.url == url) &&
+            (identical(other.priority, priority) ||
+                other.priority == priority));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, title, status, dueDate, url);
+  int get hashCode =>
+      Object.hash(runtimeType, id, title, status, dueDate, url, priority);
 
   /// Create a copy of Task
   /// with the given fields replaced by the non-null parameter values.
@@ -1032,7 +1051,8 @@ abstract class _Task extends Task {
       required final String title,
       required final TaskStatus status,
       required final TaskDate? dueDate,
-      required final String? url}) = _$TaskImpl;
+      required final String? url,
+      final SelectOption? priority}) = _$TaskImpl;
   const _Task._() : super._();
 
   factory _Task.fromJson(Map<String, dynamic> json) = _$TaskImpl.fromJson;
@@ -1047,6 +1067,8 @@ abstract class _Task extends Task {
   TaskDate? get dueDate;
   @override
   String? get url;
+  @override
+  SelectOption? get priority;
 
   /// Create a copy of Task
   /// with the given fields replaced by the non-null parameter values.

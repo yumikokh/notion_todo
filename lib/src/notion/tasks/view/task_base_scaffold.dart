@@ -13,7 +13,7 @@ class TaskBaseScaffold extends StatelessWidget {
   final bool hideNavigationLabel;
   final void Function(int) onIndexChanged;
   final void Function(bool) onShowCompletedChanged;
-  final void Function(String, TaskDate?, bool) onAddTask;
+  final void Function(Task, {bool? needSnackbarFloating}) onAddTask;
 
   const TaskBaseScaffold({
     Key? key,
@@ -108,19 +108,12 @@ class TaskBaseScaffold extends StatelessWidget {
                     context: context,
                     isScrollControlled: true,
                     builder: (context) => TaskSheet(
-                      initialDueDate: isToday
-                          ? TaskDate(
-                              start: NotionDateTime(
-                                datetime: DateTime.now(),
-                                isAllDay: true,
-                              ),
-                            )
-                          : null,
-                      initialTitle: null,
-                      onSubmitted: (title, dueDate,
-                          {bool? needSnackbarFloating}) {
-                        onAddTask(
-                            title, dueDate, needSnackbarFloating ?? false);
+                      initialTask: Task.temp(
+                        dueDate: isToday ? TaskDate.todayAllDay() : null,
+                      ),
+                      onSubmitted: (task, {bool? needSnackbarFloating}) {
+                        onAddTask(task,
+                            needSnackbarFloating: needSnackbarFloating);
                       },
                     ),
                   );

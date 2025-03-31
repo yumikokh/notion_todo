@@ -19,33 +19,27 @@ class TaskDatabaseViewModel extends _$TaskDatabaseViewModel {
         ref.watch(notionDatabaseRepositoryProvider);
     _taskDatabaseService =
         TaskDatabaseService(notionDatabaseRepository: notionDatabaseRepository);
-
-    if (notionDatabaseRepository == null) {
+    try {
+      return await _taskDatabaseService.loadSetting();
+    } catch (e) {
+      clear();
       return null;
     }
-
-    final taskDatabase = await _taskDatabaseService.loadSetting();
-
-    if (taskDatabase == null) {
-      return null;
-    }
-
-    return TaskDatabase(
-      id: taskDatabase.id,
-      name: taskDatabase.name,
-      status: taskDatabase.status,
-      date: taskDatabase.date,
-      title: taskDatabase.title,
-    );
   }
 
   Future<void> save(SelectedDatabaseState selectedTaskDatabase) async {
+    final status = selectedTaskDatabase.status;
+    final date = selectedTaskDatabase.date;
+    if (status == null || date == null) {
+      throw Exception('Status or date is null');
+    }
     final taskDatabase = TaskDatabase(
         id: selectedTaskDatabase.id,
         name: selectedTaskDatabase.name,
-        status: selectedTaskDatabase.status!, // TODO: !消す
-        date: selectedTaskDatabase.date!, // TODO: !消す
-        title: selectedTaskDatabase.title);
+        status: status,
+        date: date,
+        title: selectedTaskDatabase.title,
+        priority: selectedTaskDatabase.priority);
     state = const AsyncValue.loading();
     try {
       await _taskDatabaseService.save(taskDatabase);

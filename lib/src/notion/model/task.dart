@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../helpers/date.dart';
@@ -24,23 +25,57 @@ class NotionDateTime with _$NotionDateTime {
     );
   }
 
-  String get submitFormat => isAllDay
-      ? datetime.toLocal().toIso8601String().split('T')[0]
-      : datetime.toUtc().toIso8601String();
+  factory NotionDateTime.todayAllDay() => NotionDateTime(
+        datetime: DateTime.now().toLocal(),
+        isAllDay: true,
+      );
 
   factory NotionDateTime.fromJson(Map<String, dynamic> json) =>
       _$NotionDateTimeFromJson(json);
+
+  String get submitFormat => isAllDay
+      ? datetime.toLocal().toIso8601String().split('T')[0]
+      : datetime.toUtc().toIso8601String();
 }
 
 @freezed
 class TaskDate with _$TaskDate {
+  static final DateHelper d = DateHelper();
+
   const factory TaskDate({
     required NotionDateTime start,
     NotionDateTime? end,
   }) = _TaskDate;
 
+  factory TaskDate.todayAllDay() => TaskDate(
+        start: NotionDateTime.todayAllDay(),
+        end: null,
+      );
+
   factory TaskDate.fromJson(Map<String, dynamic> json) =>
       _$TaskDateFromJson(json);
+
+  static Color? getColor(BuildContext context, TaskDate? dueDate) {
+    if (dueDate == null) return null;
+    final now = DateTime.now();
+    final dueDateStart = dueDate.start.datetime;
+    final dueDateEnd = dueDate.end?.datetime;
+
+    // 終日かつ今日
+    if (dueDateEnd == null &&
+        d.isToday(dueDateStart) &&
+        dueDate.start.isAllDay == true) {
+      return Theme.of(context).colorScheme.tertiary; // 今日だったら青
+    }
+
+    // 時間があり、すぎている
+    if ((dueDateEnd != null && dueDateEnd.isBefore(now)) ||
+        (dueDateEnd == null && dueDateStart.isBefore(now))) {
+      return Theme.of(context).colorScheme.error; // 過ぎてたら赤
+    }
+
+    return Theme.of(context).colorScheme.secondary;
+  }
 }
 
 @freezed
@@ -68,9 +103,26 @@ class Task with _$Task {
     required TaskStatus status,
     required TaskDate? dueDate,
     required String? url,
+    SelectOption? priority,
     // required String createdTime,
     // required String updatedTime,
   }) = _Task;
+
+  factory Task.fromJson(Map<String, dynamic> json) => _$TaskFromJson(json);
+
+  factory Task.temp({
+    String? title,
+    TaskDate? dueDate,
+    SelectOption? priority,
+  }) =>
+      Task(
+        id: 'temp_${DateTime.now().millisecondsSinceEpoch}',
+        title: title ?? '',
+        status: const TaskStatus.checkbox(checked: false),
+        dueDate: dueDate,
+        url: null,
+        priority: priority,
+      );
 
   static final DateHelper d = DateHelper();
 
@@ -110,6 +162,4 @@ class Task with _$Task {
   }
 
   bool get isTemp => id.startsWith("temp_");
-
-  factory Task.fromJson(Map<String, dynamic> json) => _$TaskFromJson(json);
 }

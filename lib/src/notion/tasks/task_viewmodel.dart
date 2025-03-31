@@ -39,6 +39,10 @@ class TaskViewModel extends _$TaskViewModel {
   Future<List<Task>> build({
     FilterType filterType = FilterType.all,
   }) async {
+    // TaskDatabaseのidを元にプロパティを最新化
+    ref.invalidate(taskDatabaseViewModelProvider);
+    final taskDatabaseViewModel =
+        await ref.watch(taskDatabaseViewModelProvider.future);
     _taskService = await ref.watch(taskServiceProvider.future);
 
     if (_taskService == null) {
@@ -53,8 +57,7 @@ class TaskViewModel extends _$TaskViewModel {
     // もしpageSize以上のタスクがあったとき、「showCompleted」と「Load more」の不整合がおきるがいったん無視
     _hasCompleted = filterType == FilterType.today;
 
-    final statusProperty =
-        ref.watch(taskDatabaseViewModelProvider).valueOrNull?.status;
+    final statusProperty = taskDatabaseViewModel?.status;
     final tasks = await _fetchTasks(isFirstFetch: true);
 
     if (filterType == FilterType.today) {
@@ -225,45 +228,40 @@ class TaskViewModel extends _$TaskViewModel {
     }
   }
 
-  Future<void> addTask(
-      String title, TaskDate? dueDate, bool needSnackbarFloating) async {
+  Future<void> addTask(Task tempTask,
+      {bool? needSnackbarFloating = false}) async {
     final locale = ref.read(settingsViewModelProvider).locale;
     final l = await AppLocalizations.delegate.load(locale);
     await _addOperation(() async {
       final taskService = _taskService;
-      if (taskService == null || title.trim().isEmpty) {
+      if (taskService == null || tempTask.title.trim().isEmpty) {
         return;
       }
       final snackbar = ref.read(snackbarProvider.notifier);
       final analytics = ref.read(analyticsServiceProvider);
 
       final prevState = state;
-      final tempId = "temp_${DateTime.now().millisecondsSinceEpoch.toString()}";
-      final tempTask = Task(
-          id: tempId,
-          title: title,
-          status: const TaskStatus.checkbox(checked: false),
-          dueDate: dueDate,
-          url: null);
 
       state = AsyncValue.data([...state.valueOrNull ?? [], tempTask]);
 
       try {
-        final t = await taskService.addTask(tempTask.title, tempTask.dueDate);
+        final t = await taskService.addTask(tempTask);
 
         // 最新のstateを使用して更新
-        state = AsyncValue.data([
-          for (final task in state.valueOrNull ?? [])
-            if (task.id == tempId) t else task
-        ]);
+        state = state.whenData((tasks) {
+          return tasks.map((task) {
+            if (task.isTemp) return t;
+            return task;
+          }).toList();
+        });
 
         snackbar.show(
-          l.add_task_success(title),
+          l.add_task_success(t.title),
           type: SnackbarType.success,
           onUndo: () {
             deleteTask(t);
           },
-          isFloating: needSnackbarFloating,
+          isFloating: needSnackbarFloating ?? false,
         );
         ref.invalidateSelf();
 
@@ -298,13 +296,6 @@ class TaskViewModel extends _$TaskViewModel {
         return;
       }
 
-      TaskDate? updatedDueDate;
-      final inputDueDate = task.dueDate;
-      // 入力された日付がある場合のみ
-      if (inputDueDate != null) {
-        updatedDueDate = inputDueDate;
-      }
-
       final snackbar = ref.read(snackbarProvider.notifier);
       final locale = ref.read(settingsViewModelProvider).locale;
       final l = await AppLocalizations.delegate.load(locale);
@@ -320,8 +311,7 @@ class TaskViewModel extends _$TaskViewModel {
       });
 
       try {
-        final updatedTask =
-            await taskService.updateTask(task.id, task.title, updatedDueDate);
+        final updatedTask = await taskService.updateTask(task);
 
         state = AsyncValue.data([
           for (final Task t in state.valueOrNull ?? [])
@@ -358,19 +348,21 @@ class TaskViewModel extends _$TaskViewModel {
       final snackbar = ref.read(snackbarProvider.notifier);
       final locale = ref.read(settingsViewModelProvider).locale;
       final l = await AppLocalizations.delegate.load(locale);
-      snackbar.show(
-          isCompleted
-              ? l.task_update_status_success(task.title)
-              : l.task_update_status_undo(task.title),
-          type: SnackbarType.success, onUndo: () async {
-        updateCompleteStatus(task, !isCompleted, fromUndo: true);
-      });
 
       _isLoading = true;
       final prevState = state;
       try {
         final updatedTask =
             await taskService.updateCompleteStatus(task.id, isCompleted);
+
+        snackbar.show(
+            isCompleted
+                ? l.task_update_status_success(task.title)
+                : l.task_update_status_undo(task.title),
+            type: SnackbarType.success, onUndo: () async {
+          updateCompleteStatus(task, !isCompleted, fromUndo: true);
+        });
+
         state = AsyncValue.data([
           for (final t in state.valueOrNull ?? [])
             if (t.id == updatedTask.id) updatedTask else t
@@ -411,6 +403,7 @@ class TaskViewModel extends _$TaskViewModel {
       } catch (e) {
         state = prevState;
         snackbar.show(l.task_update_status_failed, type: SnackbarType.error);
+        rethrow;
       } finally {
         _isLoading = false;
       }

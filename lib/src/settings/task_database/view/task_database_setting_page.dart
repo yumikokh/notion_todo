@@ -182,6 +182,45 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                               error: (error, stack) => Text(error.toString()),
                             ),
                         const SizedBox(height: 32),
+
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            // 優先度プロパティセクション
+                            _buildSectionTitle(context, l.priority_property,
+                                tooltip: l.priority_property_description,
+                                isRequired: false),
+                            PropertyCreateButton(
+                              type: CreatePropertyType.select,
+                              selectedDatabaseViewModel:
+                                  selectedDatabaseViewModel,
+                              onDatabaseRefreshed: () async {
+                                await ref
+                                    .read(accessibleDatabasesProvider.future);
+                              },
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        ref
+                            .watch(propertiesProvider(
+                                SettingPropertyType.priority))
+                            .when(
+                              data: (properties) => _buildDropdown(
+                                value: selectedDatabase.priority?.id,
+                                items: properties
+                                    .map((prop) => DropdownMenuItem(
+                                        value: prop.id, child: Text(prop.name)))
+                                    .toList(),
+                                onChanged: (value) =>
+                                    selectedDatabaseViewModel.selectProperty(
+                                        value, SettingPropertyType.priority),
+                                context: context,
+                              ),
+                              loading: () => const CircularProgressIndicator(),
+                              error: (error, stack) => Text(error.toString()),
+                            ),
+                        const SizedBox(height: 32),
                       ],
 
                       // 保存ボタン

@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:flutter/material.dart';
 
 part 'property.g.dart';
 
@@ -7,6 +8,7 @@ enum PropertyType {
   date,
   checkbox,
   status,
+  select,
 }
 
 /// プロパティの基底クラス
@@ -26,6 +28,7 @@ sealed class Property {
         DateProperty date => date.toJson(),
         CheckboxCompleteStatusProperty checkbox => checkbox.toJson(),
         StatusCompleteStatusProperty status => status.toJson(),
+        SelectProperty select => select.toJson(),
       };
 
   factory Property.fromJson(Map<String, dynamic> json) {
@@ -40,6 +43,8 @@ sealed class Property {
         return CheckboxCompleteStatusProperty.fromJson(json);
       case PropertyType.status:
         return StatusCompleteStatusProperty.fromJson(json);
+      case PropertyType.select:
+        return SelectProperty.fromJson(json);
     }
   }
 }
@@ -94,6 +99,15 @@ sealed class CompleteStatusProperty extends Property {
       default:
         throw ArgumentError('Unknown type: $type');
     }
+  }
+
+  static Map<String, dynamic> initialJson(CompleteStatusProperty status) {
+    return switch (status) {
+      StatusCompleteStatusProperty() => {
+          "status": {"name": status.todoOption?.name}
+        },
+      CheckboxCompleteStatusProperty() => {"checkbox": false},
+    };
   }
 
   @override
@@ -223,4 +237,79 @@ class StatusOptionsByGroup {
       _$StatusOptionsByGroupFromJson(json);
 
   Map<String, dynamic> toJson() => _$StatusOptionsByGroupToJson(this);
+}
+
+/// NotionのAPIで定義されている色の列挙型
+enum NotionColor {
+  blue,
+  brown,
+  defaultColor,
+  gray,
+  green,
+  orange,
+  pink,
+  purple,
+  red,
+  yellow;
+
+  Color toColor() {
+    return switch (this) {
+      NotionColor.blue => const Color.fromARGB(255, 84, 162, 163),
+      NotionColor.brown => const Color.fromARGB(255, 125, 110, 99),
+      NotionColor.gray => const Color.fromARGB(255, 124, 118, 108),
+      NotionColor.green => const Color.fromARGB(255, 91, 138, 85),
+      NotionColor.orange => const Color.fromARGB(255, 211, 108, 54),
+      NotionColor.pink => const Color.fromARGB(255, 207, 102, 121),
+      NotionColor.purple => const Color.fromARGB(255, 121, 134, 203),
+      NotionColor.red => const Color.fromARGB(255, 186, 26, 26),
+      NotionColor.yellow => const Color.fromARGB(255, 221, 187, 45),
+      NotionColor.defaultColor => const Color.fromARGB(255, 103, 94, 70),
+    };
+  }
+
+  static NotionColor? fromString(String? value) {
+    if (value == null) return null;
+    return NotionColor.values.firstWhere(
+      (e) => e.name == (value == 'default' ? 'defaultColor' : value),
+      orElse: () => NotionColor.defaultColor,
+    );
+  }
+}
+
+@JsonSerializable()
+class SelectOption {
+  final String id;
+  final String name;
+  @JsonKey(fromJson: NotionColor.fromString)
+  final NotionColor? color;
+
+  SelectOption({
+    required this.id,
+    required this.name,
+    this.color,
+  });
+
+  Color get mColor => color?.toColor() ?? Colors.grey;
+
+  factory SelectOption.fromJson(Map<String, dynamic> json) =>
+      _$SelectOptionFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SelectOptionToJson(this);
+}
+
+@JsonSerializable()
+class SelectProperty extends Property {
+  final List<SelectOption> options;
+
+  SelectProperty({
+    required String id,
+    required String name,
+    required this.options,
+  }) : super(id: id, name: name, type: PropertyType.select);
+
+  factory SelectProperty.fromJson(Map<String, dynamic> json) =>
+      _$SelectPropertyFromJson(json);
+
+  @override
+  Map<String, dynamic> toJson() => _$SelectPropertyToJson(this);
 }

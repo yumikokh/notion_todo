@@ -11,6 +11,7 @@ part 'notion_database_repository.g.dart';
 enum CreatePropertyType {
   date,
   checkbox,
+  select, // 優先度
 }
 
 class NotionDatabaseRepository {
@@ -36,13 +37,30 @@ class NotionDatabaseRepository {
     return data['results'];
   }
 
+  Future fetchDatabase(String databaseId) async {
+    final res = await http.get(
+        Uri.parse('https://api.notion.com/v1/databases/$databaseId'),
+        headers: headers);
+    final data = jsonDecode(res.body);
+    return data;
+  }
+
   Future createProperty(
       String databaseId, CreatePropertyType type, String name) async {
     final body = {
       "properties": {
-        name: {
-          if (type == CreatePropertyType.date) "date": {},
-          if (type == CreatePropertyType.checkbox) "checkbox": {},
+        name: switch (type) {
+          CreatePropertyType.date => {"date": {}},
+          CreatePropertyType.checkbox => {"checkbox": {}},
+          CreatePropertyType.select => {
+              "select": {
+                "options": [
+                  {"name": "High", "color": "red"},
+                  {"name": "Medium", "color": "yellow"},
+                  {"name": "Low", "color": "blue"}
+                ]
+              },
+            }
         }
       }
     };

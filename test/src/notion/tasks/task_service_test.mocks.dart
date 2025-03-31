@@ -7,6 +7,7 @@ import 'dart:async' as _i5;
 
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:mockito/src/dummies.dart' as _i4;
+import 'package:tanzaku_todo/src/notion/model/task.dart' as _i6;
 import 'package:tanzaku_todo/src/notion/model/task_database.dart' as _i2;
 import 'package:tanzaku_todo/src/notion/repository/notion_task_repository.dart'
     as _i3;
@@ -122,40 +123,20 @@ class MockNotionTaskRepository extends _i1.Mock
       ) as _i5.Future<dynamic>);
 
   @override
-  _i5.Future<dynamic> addTask(
-    String? title,
-    String? startDate,
-    String? endDate,
-  ) =>
-      (super.noSuchMethod(
+  _i5.Future<dynamic> addTask(_i6.Task? task) => (super.noSuchMethod(
         Invocation.method(
           #addTask,
-          [
-            title,
-            startDate,
-            endDate,
-          ],
+          [task],
         ),
         returnValue: _i5.Future<dynamic>.value(),
         returnValueForMissingStub: _i5.Future<dynamic>.value(),
       ) as _i5.Future<dynamic>);
 
   @override
-  _i5.Future<dynamic> updateTask(
-    String? taskId,
-    String? title,
-    String? startDate,
-    String? endDate,
-  ) =>
-      (super.noSuchMethod(
+  _i5.Future<dynamic> updateTask(_i6.Task? task) => (super.noSuchMethod(
         Invocation.method(
           #updateTask,
-          [
-            taskId,
-            title,
-            startDate,
-            endDate,
-          ],
+          [task],
         ),
         returnValue: _i5.Future<dynamic>.value(),
         returnValueForMissingStub: _i5.Future<dynamic>.value(),

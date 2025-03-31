@@ -23,6 +23,7 @@ class TaskDatabase with _$TaskDatabase {
     )
     required CompleteStatusProperty status,
     required DateProperty date,
+    SelectProperty? priority,
   }) = _TaskDatabase;
 
   factory TaskDatabase.fromJson(Map<String, dynamic> json) =>

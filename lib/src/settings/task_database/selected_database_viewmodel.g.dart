@@ -25,7 +25,7 @@ final accessibleDatabasesProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef AccessibleDatabasesRef = AutoDisposeFutureProviderRef<List<Database>>;
-String _$propertiesHash() => r'2a1b274a1c616ab2d1f1299072c764bb250366b1';
+String _$propertiesHash() => r'b795e19d13df0e07d7eef412a7487d1b60339f21';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -178,7 +178,7 @@ class _PropertiesProviderElement
 }
 
 String _$selectedDatabaseViewModelHash() =>
-    r'6ff60f2de93cd628bc075e77e90d010c2e4a6af3';
+    r'fdf401b44868232be7238147351afe40eb2ce94a';
 
 /// See also [SelectedDatabaseViewModel].
 @ProviderFor(SelectedDatabaseViewModel)

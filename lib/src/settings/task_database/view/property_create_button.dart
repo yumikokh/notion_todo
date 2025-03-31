@@ -94,7 +94,8 @@ class PropertyCreateButton extends StatelessWidget {
 
             final propertyType = switch (type) {
               CreatePropertyType.date => SettingPropertyType.date,
-              CreatePropertyType.checkbox => SettingPropertyType.status
+              CreatePropertyType.checkbox => SettingPropertyType.status,
+              CreatePropertyType.select => SettingPropertyType.priority,
             };
 
             selectedDatabaseViewModel.selectProperty(property.id, propertyType);

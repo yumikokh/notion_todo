@@ -115,12 +115,18 @@ class TaskMainPage extends HookConsumerWidget {
       onShowCompletedChanged: (value) async {
         todayViewModel.toggleShowCompleted();
       },
-      onAddTask: (title, dueDate, needSnackbarFloating) {
+      onAddTask: (task, {bool? needSnackbarFloating}) {
         switch (isToday) {
           case true:
-            todayViewModel.addTask(title, dueDate, needSnackbarFloating);
+            todayViewModel.addTask(
+              task,
+              needSnackbarFloating: needSnackbarFloating,
+            );
           case false:
-            allViewModel.addTask(title, dueDate, needSnackbarFloating);
+            allViewModel.addTask(
+              task,
+              needSnackbarFloating: needSnackbarFloating,
+            );
         }
       },
       body: taskDatabase.when(

@@ -165,6 +165,9 @@ class NotionSettingsPage extends ConsumerWidget {
                           ),
                         ],
                         _buildInfoTile(l.date_property, taskDatabase.date.name),
+                        if (taskDatabase.priority != null)
+                          _buildInfoTile(
+                              l.priority_property, taskDatabase.priority!.name),
                         const SizedBox(height: 16),
                       ],
                       SizedBox(

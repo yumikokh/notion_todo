@@ -60,6 +60,7 @@ class TaskService {
                 status: _status(page),
                 dueDate: _date(page),
                 url: page['url'],
+                priority: _priority(page),
               ))
           .toList();
 
@@ -73,64 +74,56 @@ class TaskService {
     }
   }
 
-  Future<Task> addTask(String title, TaskDate? dueDate) async {
-    final data = await notionTaskRepository.addTask(
-      title,
-      dueDate?.start.submitFormat,
-      dueDate?.end?.submitFormat,
-    );
-    if (data == null || data.isEmpty) {
+  Future<Task> addTask(Task task) async {
+    final data = await notionTaskRepository.addTask(task);
+    if (data == null || data.isEmpty || data['object'] == 'error') {
       throw Exception('Failed to add task');
     }
     return Task(
       id: data['id'],
-      title: title,
+      title: _title(data),
       status: _status(data),
       dueDate: _date(data),
       url: data['url'],
+      priority: _priority(data),
     );
   }
 
-  Future<Task> updateTask(
-      String taskId, String title, TaskDate? dueDate) async {
-    final data = await notionTaskRepository.updateTask(
-      taskId,
-      title,
-      dueDate?.start.submitFormat,
-      dueDate?.end?.submitFormat,
-    );
-    if (data == null || data['id'] == null) {
+  Future<Task> updateTask(Task task) async {
+    final data = await notionTaskRepository.updateTask(task);
+    if (data == null || data['id'] == null || data['object'] == 'error') {
       throw Exception('Failed to update task');
     }
     return Task(
       id: data['id'],
-      title: title,
+      title: _title(data),
       status: _status(data),
       dueDate: _date(data),
       url: data['url'],
+      priority: _priority(data),
     );
   }
 
   Future<Task> updateCompleteStatus(String taskId, bool isCompleted) async {
     final data =
         await notionTaskRepository.updateCompleteStatus(taskId, isCompleted);
-    if (data == null || data.isEmpty) {
+    if (data == null || data.isEmpty || data['object'] == 'error') {
       throw Exception('Failed to update task');
     }
-    // TODO: すでに存在しないIDだった場合のエラーハンドリング
     return Task(
       id: data['id'],
       title: _title(data),
       status: _status(data),
       dueDate: _date(data),
       url: data['url'],
+      priority: _priority(data),
     );
   }
 
   Future<Task> updateInProgressStatus(String taskId, bool isInProgress) async {
     final data =
         await notionTaskRepository.updateInProgressStatus(taskId, isInProgress);
-    if (data == null || data.isEmpty) {
+    if (data == null || data.isEmpty || data['object'] == 'error') {
       throw Exception('Failed to update task');
     }
     return Task(
@@ -139,12 +132,13 @@ class TaskService {
       status: _status(data),
       dueDate: _date(data),
       url: data['url'],
+      priority: _priority(data),
     );
   }
 
   Future<Task?> deleteTask(String taskId) async {
     final data = await notionTaskRepository.deleteTask(taskId);
-    if (data == null || data.isEmpty) {
+    if (data == null || data.isEmpty || data['object'] == 'error') {
       return null;
     }
     return Task(
@@ -153,12 +147,13 @@ class TaskService {
       status: _status(data),
       dueDate: _date(data),
       url: data['url'],
+      priority: _priority(data),
     );
   }
 
   Future<Task?> undoDeleteTask(String taskId) async {
     final data = await notionTaskRepository.revertTask(taskId);
-    if (data == null || data.isEmpty) {
+    if (data == null || data.isEmpty || data['object'] == 'error') {
       return null;
     }
     return Task(
@@ -167,6 +162,7 @@ class TaskService {
       status: _status(data),
       dueDate: _date(data),
       url: data['url'],
+      priority: _priority(data),
     );
   }
 
@@ -215,5 +211,23 @@ class TaskService {
 
         return TaskStatus.status(group: group, option: option);
     }
+  }
+
+  SelectOption? _priority(Map<String, dynamic> data) {
+    final property = taskDatabase.priority;
+    if (property == null) {
+      return null;
+    }
+    final propertyData = data['properties'][property.name];
+    if (propertyData == null || propertyData['select'] == null) {
+      return null;
+    }
+    final selectData = propertyData['select'];
+
+    return SelectOption(
+      id: selectData['id'],
+      name: selectData['name'],
+      color: NotionColor.fromString(selectData['color']),
+    );
   }
 }
