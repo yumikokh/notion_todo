@@ -755,7 +755,7 @@ struct LockScreenProgressView: View {
         // 達成済みタスク数 / 合計タスク数
         VStack(spacing: 0) {
           Text("\(entry.completedTasksCount)")
-            .font(.system(size: 14, weight: .bold))
+            .font(.system(size: 18, weight: .bold))
           Text("/ \(entry.totalTasksCount)")
             .font(.system(size: 11))
         }
