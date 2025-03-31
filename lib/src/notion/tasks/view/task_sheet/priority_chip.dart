@@ -42,8 +42,7 @@ class PriorityChip extends StatelessWidget {
       showCheckmark: false,
       visualDensity: VisualDensity.compact,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-      side: BorderSide(
-          color: Theme.of(context).colorScheme.outlineVariant.withAlpha(50)),
+      side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
       backgroundColor: Theme.of(context).cardColor,
       selectedColor: Theme.of(context).cardColor,
     );
