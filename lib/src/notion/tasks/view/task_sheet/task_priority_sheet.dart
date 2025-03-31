@@ -62,6 +62,9 @@ class TaskPrioritySheet extends ConsumerWidget {
                   ),
                   title: Text(option.name),
                   selected: selectedPriority?.id == option.id,
+                  trailing: selectedPriority?.id == option.id
+                      ? const Icon(Icons.check)
+                      : null,
                   onTap: () {
                     HapticHelper.selection();
                     onSelected(option);
