@@ -21,23 +21,6 @@ import 'src/notion/repository/notion_task_repository.dart';
 import 'src/widget/widget_service.dart';
 import 'firebase_options.dart';
 
-// バックグラウンドフェッチのイベントハンドラ
-@pragma('vm:entry-point')
-void backgroundFetchHeadlessTask(HeadlessTask task) async {
-  var taskId = task.taskId;
-  var timeout = task.timeout;
-  if (timeout) {
-    print("[BackgroundFetch] Headless task timed-out: $taskId");
-    BackgroundFetch.finish(taskId);
-    return;
-  }
-  print("[BackgroundFetch] Headless event received: $taskId");
-
-  await _refreshTodayTasks();
-
-  BackgroundFetch.finish(taskId);
-}
-
 // バックグラウンドコールバック関数（iOS 17のインタラクティブウィジェット用）
 @pragma('vm:entry-point')
 Future<void> interactivityCallback(Uri? uri) async {
