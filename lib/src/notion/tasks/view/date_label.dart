@@ -48,7 +48,7 @@ class DateLabel extends StatelessWidget {
     ].whereType<String>().toList();
   }
 
-  double get size => 11.0;
+  double get size => 12.0;
 
   @override
   Widget build(BuildContext context) {

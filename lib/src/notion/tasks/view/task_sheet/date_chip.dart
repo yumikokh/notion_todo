@@ -29,7 +29,7 @@ class DateChip extends StatelessWidget {
 
     return InputChip(
       label: date == null
-          ? Text(l.select_date, style: const TextStyle(fontSize: 11))
+          ? Text(l.select_date, style: const TextStyle(fontSize: 12))
           : DateLabel(
               date: date,
               context: context,
