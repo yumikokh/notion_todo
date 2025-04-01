@@ -67,11 +67,11 @@ class NotionTaskRepository {
             {
               "and": [
                 {
-                  "property": dateProperty.name,
+                  "property": dateProperty.id,
                   "date": {"on_or_after": todayStart}
                 },
                 {
-                  "property": dateProperty.name,
+                  "property": dateProperty.id,
                   "date": {"on_or_before": todayEnd}
                 },
                 ..._getCompleteStatusFilter(statusProperty, onlyComplete: true),
@@ -80,11 +80,11 @@ class NotionTaskRepository {
             {
               "and": [
                 {
-                  "property": dateProperty.name,
+                  "property": dateProperty.id,
                   "date": {"on_or_after": todayStart}
                 },
                 {
-                  "property": dateProperty.name,
+                  "property": dateProperty.id,
                   "date": {"on_or_before": todayEnd}
                 },
                 ..._getNotCompleteStatusFilter(statusProperty,
@@ -96,11 +96,11 @@ class NotionTaskRepository {
             {
               "and": [
                 {
-                  "property": dateProperty.name,
+                  "property": dateProperty.id,
                   "date": {"on_or_after": todayStart}
                 },
                 {
-                  "property": dateProperty.name,
+                  "property": dateProperty.id,
                   "date": {"on_or_before": todayEnd}
                 },
                 ..._getNotCompleteStatusFilter(statusProperty,
@@ -111,7 +111,7 @@ class NotionTaskRepository {
           {
             "and": [
               {
-                "property": dateProperty.name,
+                "property": dateProperty.id,
                 "date": {"before": todayStart}
               },
               ..._getNotCompleteStatusFilter(statusProperty,
@@ -146,8 +146,8 @@ class NotionTaskRepository {
       }),
     );
     final data = jsonDecode(res.body);
-    if (data['object'] == 'error') {
-      throw TaskException(data['message'], data['status']);
+    if (NotionErrorException.isErrorResponse(data)) {
+      throw NotionErrorException.fromJson(data);
     }
     return {
       'results': data['results'],
@@ -193,8 +193,8 @@ class NotionTaskRepository {
       }),
     );
     final data = jsonDecode(res.body);
-    if (data['object'] == 'error') {
-      throw Exception(data['message']);
+    if (NotionErrorException.isErrorResponse(data)) {
+      throw NotionErrorException.fromJson(data);
     }
     return data;
   }
@@ -284,10 +284,10 @@ class NotionTaskRepository {
         true
       ) =>
         {
-          "status": {"name": inProgressOption.name}
+          "status": {"id": inProgressOption.id}
         },
       (StatusCompleteStatusProperty(todoOption: var todoOption?), false) => {
-          "status": {"name": todoOption.name}
+          "status": {"id": todoOption.id}
         },
       // checkboxは更新しない
       (CheckboxCompleteStatusProperty(), _) => {"checkbox": false},
@@ -298,7 +298,7 @@ class NotionTaskRepository {
       Uri.parse('https://api.notion.com/v1/pages/$taskId'),
       headers: headers,
       body: jsonEncode({
-        "properties": {status.name: statusProperties},
+        "properties": {status.id: statusProperties},
       }),
     );
     return jsonDecode(res.body);
@@ -334,7 +334,7 @@ List<dynamic> _getCompleteStatusFilter(CompleteStatusProperty property,
       ):
       return [
         {
-          "property": property.name,
+          "property": property.id,
           "status": {"equals": completeOption.name}
         }
       ];
@@ -353,14 +353,14 @@ List<dynamic> _getCompleteStatusFilter(CompleteStatusProperty property,
           throw Exception('Complete option name not found');
         }
         return {
-          "property": property.name,
+          "property": property.id,
           "status": {"equals": completeOptionName}
         };
       }).toList();
     case (CheckboxCompleteStatusProperty(), _):
       return [
         {
-          "property": property.name,
+          "property": property.id,
           "checkbox": {"equals": true}
         }
       ];
@@ -376,7 +376,7 @@ List<dynamic> _getNotCompleteStatusFilter(CompleteStatusProperty property,
       // 未完了に指定されたオプションステータスのみ
       return [
         {
-          "property": property.name,
+          "property": property.id,
           "status": {"equals": todoOption.name}
         }
       ];
@@ -395,14 +395,14 @@ List<dynamic> _getNotCompleteStatusFilter(CompleteStatusProperty property,
           throw Exception('Complete option name not found');
         }
         return {
-          "property": property.name,
+          "property": property.id,
           "status": {"does_not_equal": completeOptionName}
         };
       }).toList();
     case (CheckboxCompleteStatusProperty(), _):
       return [
         {
-          "property": property.name,
+          "property": property.id,
           "checkbox": {"equals": false}
         }
       ];
@@ -414,7 +414,7 @@ List<dynamic> _getNotCompleteStatusFilter(CompleteStatusProperty property,
 List<dynamic> _getInProgressStatusFilter(TaskDatabase database) {
   switch (database.status) {
     case StatusCompleteStatusProperty(
-        name: var name,
+        id: var id,
         inProgressOption: var inProgressOption
       ):
       if (inProgressOption == null) {
@@ -422,7 +422,7 @@ List<dynamic> _getInProgressStatusFilter(TaskDatabase database) {
       }
       return [
         {
-          "property": name,
+          "property": id,
           "status": {"equals": inProgressOption.name}
         }
       ];
