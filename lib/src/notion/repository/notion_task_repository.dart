@@ -207,7 +207,7 @@ class NotionTaskRepository {
     final endDate = task.dueDate?.end?.submitFormat;
 
     final properties = {
-      db.title.name: {
+      db.title.id: {
         "title": [
           {
             "type": "text",
@@ -215,7 +215,7 @@ class NotionTaskRepository {
           }
         ]
       },
-      db.date.name: {
+      db.date.id: {
         "date": startDate != null
             ? {
                 "start": startDate,
@@ -225,7 +225,7 @@ class NotionTaskRepository {
             : null
       },
       if (db.priority != null)
-        db.priority!.name: {
+        db.priority!.id: {
           "select":
               task.priority?.name != null ? {"name": task.priority!.name} : null
         }
@@ -251,10 +251,10 @@ class NotionTaskRepository {
         true
       ) =>
         {
-          "status": {"name": completeOption.name}
+          "status": {"id": completeOption.id}
         },
       (StatusCompleteStatusProperty(todoOption: var todoOption?), false) => {
-          "status": {"name": todoOption.name}
+          "status": {"id": todoOption.id}
         },
       (CheckboxCompleteStatusProperty(), _) => {"checkbox": isCompleted},
       (_, _) => throw Exception('Invalid status property'),
@@ -264,7 +264,7 @@ class NotionTaskRepository {
       Uri.parse('https://api.notion.com/v1/pages/$taskId'),
       headers: headers,
       body: jsonEncode({
-        "properties": {status.name: statusProperties},
+        "properties": {status.id: statusProperties},
       }),
     );
     return jsonDecode(res.body);

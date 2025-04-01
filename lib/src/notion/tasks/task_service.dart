@@ -49,29 +49,25 @@ class TaskService {
 
   Future<TaskResult> fetchTasks(FilterType filterType, bool hasCompleted,
       {String? startCursor}) async {
-    try {
-      final data = await notionTaskRepository
-          .fetchPages(filterType, hasCompleted, startCursor: startCursor);
+    final data = await notionTaskRepository.fetchPages(filterType, hasCompleted,
+        startCursor: startCursor);
 
-      final tasks = (data['results'] as List)
-          .map((page) => Task(
-                id: page['id'],
-                title: _title(page),
-                status: _status(page),
-                dueDate: _date(page),
-                url: page['url'],
-                priority: _priority(page),
-              ))
-          .toList();
+    final tasks = (data['results'] as List<dynamic>)
+        .map((dynamic page) => Task(
+              id: page['id'],
+              title: _title(page),
+              status: _status(page),
+              dueDate: _date(page),
+              url: page['url'],
+              priority: _priority(page),
+            ))
+        .toList();
 
-      return TaskResult(
-        tasks: tasks,
-        hasMore: data['has_more'] ?? false,
-        nextCursor: data['next_cursor'],
-      );
-    } catch (e) {
-      rethrow;
-    }
+    return TaskResult(
+      tasks: tasks,
+      hasMore: data['has_more'] ?? false,
+      nextCursor: data['next_cursor'],
+    );
   }
 
   Future<Task> addTask(Task task) async {
@@ -166,21 +162,33 @@ class TaskService {
     );
   }
 
+  /// プロパティをIDで検索する共通関数
+  Map<String, dynamic>? _findPropertyById(
+      Map<String, dynamic> data, String propertyId) {
+    try {
+      return (data['properties'] as Map<String, dynamic>)
+          .entries
+          .firstWhere((entry) => entry.value['id'] == propertyId,
+              orElse: () => const MapEntry('', {}))
+          .value;
+    } catch (e) {
+      print('Error finding property by id: $e');
+      return null;
+    }
+  }
+
   String _title(Map<String, dynamic> data) {
-    final titleProperty = data['properties']
-        .entries
-        .firstWhere((e) => e.value['type'] == 'title')
-        .value['title'];
+    // titleプロパティは常にidが"title"
+    final titleProperty = _findPropertyById(data, 'title')?['title'];
     return titleProperty?.length > 0 ? titleProperty[0]['plain_text'] : '';
   }
 
   TaskDate? _date(Map<String, dynamic> data) {
-    final dateProperty = taskDatabase.date.name;
-    final datePropertyData = data['properties'][dateProperty];
-    if (datePropertyData == null) {
+    final dateProperty = _findPropertyById(data, taskDatabase.date.id);
+    if (dateProperty == null) {
       return null;
     }
-    final date = datePropertyData['date'];
+    final date = dateProperty['date'];
     if (date == null) {
       return null;
     }
@@ -192,17 +200,21 @@ class TaskService {
 
   TaskStatus _status(Map<String, dynamic> data) {
     final property = taskDatabase.status;
+    final statusData = _findPropertyById(data, property.id);
+    if (statusData == null) {
+      return const TaskStatus.status(group: null, option: null);
+    }
+
     switch (property) {
       case CheckboxCompleteStatusProperty():
-        return TaskStatus.checkbox(
-            checked: data['properties'][property.name]['checkbox']);
+        return TaskStatus.checkbox(checked: statusData['checkbox']);
       case StatusCompleteStatusProperty(status: var status):
         // statusが未指定の場合がある
-        if (data['properties'][property.name]['status'] == null) {
+        if (statusData['status'] == null) {
           return const TaskStatus.status(group: null, option: null);
         }
 
-        final optionId = data['properties'][property.name]['status']['id'];
+        final optionId = statusData['status']['id'];
         final group = status.groups
             .where((group) => group.optionIds.contains(optionId))
             .firstOrNull;
@@ -218,7 +230,7 @@ class TaskService {
     if (property == null) {
       return null;
     }
-    final propertyData = data['properties'][property.name];
+    final propertyData = _findPropertyById(data, property.id);
     if (propertyData == null || propertyData['select'] == null) {
       return null;
     }
