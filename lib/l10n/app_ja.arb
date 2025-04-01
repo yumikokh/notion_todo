@@ -79,6 +79,7 @@
   "task_delete_failed_undo": "復元に失敗しました",
   "re_set_database": "再設定が必要です。",
   "not_found_property": "適切なプロパティが見つかりませんでした。",
+  "task_fetch_failed": "タスクの取得に失敗しました",
   "load_more": "もっと見る",
   "wakelock_title": "アプリ起動中のスリープを防ぐ",
   "wakelock_description": "バッテリーに影響を与える可能性があります。",

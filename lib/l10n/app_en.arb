@@ -147,6 +147,7 @@
   },
   "re_set_database": "Re-setting is required.",
   "not_found_property": "No appropriate property found.",
+  "task_fetch_failed": "Failed to fetch tasks",
   "load_more": "Load More",
   "wakelock_title": "Prevent sleep while the app is running",
   "wakelock_description": "Battery consumption may be affected.",
