@@ -165,7 +165,7 @@ class NotionTaskRepository {
     final endDate = task.dueDate?.end?.submitFormat;
 
     final properties = {
-      db.title.name: {
+      db.title.id: {
         "title": [
           {
             "type": "text",
@@ -173,13 +173,13 @@ class NotionTaskRepository {
           }
         ]
       },
-      db.status.name: CompleteStatusProperty.initialJson(status),
+      db.status.id: CompleteStatusProperty.initialJson(status),
       if (startDate != null)
-        db.date.name: {
+        db.date.id: {
           "date": {"start": startDate, if (endDate != null) "end": endDate}
         },
       if (db.priority != null && task.priority != null)
-        db.priority!.name: {
+        db.priority!.id: {
           "select": {"name": task.priority!.name}
         }
     };
