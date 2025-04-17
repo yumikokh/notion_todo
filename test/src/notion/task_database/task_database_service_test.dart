@@ -32,7 +32,7 @@ void main() {
         status: CheckboxCompleteStatusProperty(
           id: 'status-id',
           name: 'Status',
-          checked: false,
+          checkbox: false,
         ),
         date: DateProperty(
           id: 'date-id',
@@ -72,7 +72,7 @@ void main() {
         status: CheckboxCompleteStatusProperty(
           id: 'status-id',
           name: 'Status',
-          checked: false,
+          checkbox: false,
         ),
         date: DateProperty(
           id: 'date-id',

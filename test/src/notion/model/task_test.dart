@@ -9,7 +9,7 @@ void main() {
         const task = Task(
           id: '1',
           title: 'test',
-          status: TaskStatus.checkbox(checked: true),
+          status: TaskStatus.checkbox(checkbox: true),
           dueDate: null,
           url: null,
         );
@@ -20,7 +20,7 @@ void main() {
         const task = Task(
           id: '1',
           title: 'test',
-          status: TaskStatus.checkbox(checked: false),
+          status: TaskStatus.checkbox(checkbox: false),
           dueDate: null,
           url: null,
         );
@@ -35,7 +35,7 @@ void main() {
             group: StatusGroup(
               id: '1',
               name: StatusGroupType.complete.value,
-              color: 'gray',
+              color: NotionColor.gray,
               optionIds: [],
             ),
             option: null,
@@ -54,7 +54,7 @@ void main() {
             group: StatusGroup(
               id: '1',
               name: StatusGroupType.todo.value,
-              color: 'gray',
+              color: NotionColor.gray,
               optionIds: [],
             ),
             option: null,
@@ -70,14 +70,14 @@ void main() {
       final inProgressOption = StatusOption(
         id: '1',
         name: 'In Progress',
-        color: 'blue',
+        color: NotionColor.blue,
       );
 
       test('TaskStatusCheckbox - always returns false', () {
         const task = Task(
           id: '1',
           title: 'test',
-          status: TaskStatus.checkbox(checked: false),
+          status: TaskStatus.checkbox(checkbox: false),
           dueDate: null,
           url: null,
         );
@@ -92,7 +92,7 @@ void main() {
             group: StatusGroup(
               id: '1',
               name: StatusGroupType.inProgress.value,
-              color: 'blue',
+              color: NotionColor.blue,
               optionIds: [inProgressOption.id],
             ),
             option: inProgressOption,
@@ -111,13 +111,13 @@ void main() {
             group: StatusGroup(
               id: '1',
               name: StatusGroupType.todo.value,
-              color: 'gray',
+              color: NotionColor.gray,
               optionIds: ['2'],
             ),
             option: StatusOption(
               id: '2',
               name: 'To-do',
-              color: 'gray',
+              color: NotionColor.gray,
             ),
           ),
           dueDate: null,

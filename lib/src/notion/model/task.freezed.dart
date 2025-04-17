@@ -401,19 +401,19 @@ TaskStatus _$TaskStatusFromJson(Map<String, dynamic> json) {
 mixin _$TaskStatus {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(bool checked) checkbox,
+    required TResult Function(bool checkbox) checkbox,
     required TResult Function(StatusGroup? group, StatusOption? option) status,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(bool checked)? checkbox,
+    TResult? Function(bool checkbox)? checkbox,
     TResult? Function(StatusGroup? group, StatusOption? option)? status,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(bool checked)? checkbox,
+    TResult Function(bool checkbox)? checkbox,
     TResult Function(StatusGroup? group, StatusOption? option)? status,
     required TResult orElse(),
   }) =>
@@ -469,7 +469,7 @@ abstract class _$$TaskStatusCheckboxImplCopyWith<$Res> {
           $Res Function(_$TaskStatusCheckboxImpl) then) =
       __$$TaskStatusCheckboxImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({bool checked});
+  $Res call({bool checkbox});
 }
 
 /// @nodoc
@@ -485,12 +485,12 @@ class __$$TaskStatusCheckboxImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? checked = null,
+    Object? checkbox = null,
   }) {
     return _then(_$TaskStatusCheckboxImpl(
-      checked: null == checked
-          ? _value.checked
-          : checked // ignore: cast_nullable_to_non_nullable
+      checkbox: null == checkbox
+          ? _value.checkbox
+          : checkbox // ignore: cast_nullable_to_non_nullable
               as bool,
     ));
   }
@@ -499,21 +499,21 @@ class __$$TaskStatusCheckboxImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$TaskStatusCheckboxImpl implements TaskStatusCheckbox {
-  const _$TaskStatusCheckboxImpl({required this.checked, final String? $type})
+  const _$TaskStatusCheckboxImpl({required this.checkbox, final String? $type})
       : $type = $type ?? 'checkbox';
 
   factory _$TaskStatusCheckboxImpl.fromJson(Map<String, dynamic> json) =>
       _$$TaskStatusCheckboxImplFromJson(json);
 
   @override
-  final bool checked;
+  final bool checkbox;
 
   @JsonKey(name: 'runtimeType')
   final String $type;
 
   @override
   String toString() {
-    return 'TaskStatus.checkbox(checked: $checked)';
+    return 'TaskStatus.checkbox(checkbox: $checkbox)';
   }
 
   @override
@@ -521,12 +521,13 @@ class _$TaskStatusCheckboxImpl implements TaskStatusCheckbox {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$TaskStatusCheckboxImpl &&
-            (identical(other.checked, checked) || other.checked == checked));
+            (identical(other.checkbox, checkbox) ||
+                other.checkbox == checkbox));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, checked);
+  int get hashCode => Object.hash(runtimeType, checkbox);
 
   /// Create a copy of TaskStatus
   /// with the given fields replaced by the non-null parameter values.
@@ -540,30 +541,30 @@ class _$TaskStatusCheckboxImpl implements TaskStatusCheckbox {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(bool checked) checkbox,
+    required TResult Function(bool checkbox) checkbox,
     required TResult Function(StatusGroup? group, StatusOption? option) status,
   }) {
-    return checkbox(checked);
+    return checkbox(this.checkbox);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(bool checked)? checkbox,
+    TResult? Function(bool checkbox)? checkbox,
     TResult? Function(StatusGroup? group, StatusOption? option)? status,
   }) {
-    return checkbox?.call(checked);
+    return checkbox?.call(this.checkbox);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(bool checked)? checkbox,
+    TResult Function(bool checkbox)? checkbox,
     TResult Function(StatusGroup? group, StatusOption? option)? status,
     required TResult orElse(),
   }) {
     if (checkbox != null) {
-      return checkbox(checked);
+      return checkbox(this.checkbox);
     }
     return orElse();
   }
@@ -608,13 +609,13 @@ class _$TaskStatusCheckboxImpl implements TaskStatusCheckbox {
 }
 
 abstract class TaskStatusCheckbox implements TaskStatus {
-  const factory TaskStatusCheckbox({required final bool checked}) =
+  const factory TaskStatusCheckbox({required final bool checkbox}) =
       _$TaskStatusCheckboxImpl;
 
   factory TaskStatusCheckbox.fromJson(Map<String, dynamic> json) =
       _$TaskStatusCheckboxImpl.fromJson;
 
-  bool get checked;
+  bool get checkbox;
 
   /// Create a copy of TaskStatus
   /// with the given fields replaced by the non-null parameter values.
@@ -709,7 +710,7 @@ class _$TaskStatusStatusImpl implements TaskStatusStatus {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(bool checked) checkbox,
+    required TResult Function(bool checkbox) checkbox,
     required TResult Function(StatusGroup? group, StatusOption? option) status,
   }) {
     return status(group, option);
@@ -718,7 +719,7 @@ class _$TaskStatusStatusImpl implements TaskStatusStatus {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(bool checked)? checkbox,
+    TResult? Function(bool checkbox)? checkbox,
     TResult? Function(StatusGroup? group, StatusOption? option)? status,
   }) {
     return status?.call(group, option);
@@ -727,7 +728,7 @@ class _$TaskStatusStatusImpl implements TaskStatusStatus {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(bool checked)? checkbox,
+    TResult Function(bool checkbox)? checkbox,
     TResult Function(StatusGroup? group, StatusOption? option)? status,
     required TResult orElse(),
   }) {

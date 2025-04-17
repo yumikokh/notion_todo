@@ -207,7 +207,7 @@ class TaskService {
 
     switch (property) {
       case CheckboxCompleteStatusProperty():
-        return TaskStatus.checkbox(checked: statusData['checkbox']);
+        return TaskStatus.checkbox(checkbox: statusData['checkbox']);
       case StatusCompleteStatusProperty(status: var status):
         // statusが未指定の場合がある
         if (statusData['status'] == null) {

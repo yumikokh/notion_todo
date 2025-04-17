@@ -35,19 +35,19 @@ void main() {
             StatusGroup(
               id: 'todo_group',
               name: StatusGroupType.todo.value,
-              color: 'gray',
+              color: NotionColor.gray,
               optionIds: ['todo_option'],
             ),
             StatusGroup(
               id: 'in_progress_group',
               name: StatusGroupType.inProgress.value,
-              color: 'blue',
+              color: NotionColor.blue,
               optionIds: ['in_progress_option'],
             ),
             StatusGroup(
               id: 'complete_group',
               name: StatusGroupType.complete.value,
-              color: 'green',
+              color: NotionColor.green,
               optionIds: ['complete_option'],
             ),
           ],
@@ -55,34 +55,34 @@ void main() {
             StatusOption(
               id: 'todo_option',
               name: 'To-do',
-              color: 'gray',
+              color: NotionColor.gray,
             ),
             StatusOption(
               id: 'in_progress_option',
               name: 'In Progress',
-              color: 'blue',
+              color: NotionColor.blue,
             ),
             StatusOption(
               id: 'complete_option',
               name: 'Complete',
-              color: 'green',
+              color: NotionColor.green,
             ),
           ],
         ),
         todoOption: StatusOption(
           id: 'todo_option',
           name: 'To-do',
-          color: 'gray',
+          color: NotionColor.gray,
         ),
         inProgressOption: StatusOption(
           id: 'in_progress_option',
           name: 'In Progress',
-          color: 'blue',
+          color: NotionColor.blue,
         ),
         completeOption: StatusOption(
           id: 'complete_option',
           name: 'Complete',
-          color: 'green',
+          color: NotionColor.green,
         ),
       ),
       date: DateProperty(

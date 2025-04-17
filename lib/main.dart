@@ -185,7 +185,7 @@ TaskStatus _extractStatus(
   switch (property) {
     case CheckboxCompleteStatusProperty():
       return TaskStatus.checkbox(
-          checked: data['properties'][property.name]['checkbox']);
+          checkbox: data['properties'][property.name]['checkbox']);
     case StatusCompleteStatusProperty(status: var status):
       // statusが未指定の場合がある
       if (data['properties'][property.name]['status'] == null) {
