@@ -40,8 +40,9 @@ class TaskViewModel extends _$TaskViewModel {
   Future<List<Task>> build({
     FilterType filterType = FilterType.all,
   }) async {
-    final taskDatabaseViewModel =
-        await ref.refresh(taskDatabaseViewModelProvider.future);
+    final taskDatabaseViewModel = filterType == FilterType.today
+        ? await ref.refresh(taskDatabaseViewModelProvider.future)
+        : await ref.watch(taskDatabaseViewModelProvider.future);
     _taskService = await ref.watch(taskServiceProvider.future);
 
     if (_taskService == null || taskDatabaseViewModel == null) {
