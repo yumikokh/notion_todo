@@ -15,7 +15,8 @@ part 'selected_database_viewmodel.g.dart';
 
 @riverpod
 Future<List<Database>> accessibleDatabases(Ref ref) async {
-  final notionDatabaseRepository = ref.watch(notionDatabaseRepositoryProvider);
+  final notionDatabaseRepository =
+      await ref.watch(notionDatabaseRepositoryProvider.future);
   final taskDatabaseService =
       TaskDatabaseService(notionDatabaseRepository: notionDatabaseRepository);
   final dbs = await taskDatabaseService.fetchDatabases();
@@ -73,7 +74,7 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
   Future<SelectedDatabaseState?> build() async {
     final taskDatabase = await ref.watch(taskDatabaseViewModelProvider.future);
     final notionDatabaseRepository =
-        ref.watch(notionDatabaseRepositoryProvider);
+        await ref.watch(notionDatabaseRepositoryProvider.future);
     _taskDatabaseService =
         TaskDatabaseService(notionDatabaseRepository: notionDatabaseRepository);
     if (state.value != null) {

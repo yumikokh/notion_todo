@@ -41,7 +41,7 @@ class TaskViewModel extends _$TaskViewModel {
     FilterType filterType = FilterType.all,
   }) async {
     final taskDatabaseViewModel =
-        await ref.watch(taskDatabaseViewModelProvider.future);
+        await ref.refresh(taskDatabaseViewModelProvider.future);
     _taskService = await ref.watch(taskServiceProvider.future);
 
     if (_taskService == null || taskDatabaseViewModel == null) {
