@@ -2,6 +2,7 @@ import 'package:background_fetch/background_fetch.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../notion/common/filter_type.dart';
 import '../../notion/repository/notion_task_repository.dart';
 import '../../widget/widget_service.dart';
 import '../utils/notion_converter.dart';

@@ -7,7 +7,8 @@ import 'dart:async' as _i5;
 
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:mockito/src/dummies.dart' as _i4;
-import 'package:tanzaku_todo/src/notion/model/task.dart' as _i6;
+import 'package:tanzaku_todo/src/notion/common/filter_type.dart' as _i6;
+import 'package:tanzaku_todo/src/notion/model/task.dart' as _i7;
 import 'package:tanzaku_todo/src/notion/model/task_database.dart' as _i2;
 import 'package:tanzaku_todo/src/notion/repository/notion_task_repository.dart'
     as _i3;
@@ -105,7 +106,7 @@ class MockNotionTaskRepository extends _i1.Mock
 
   @override
   _i5.Future<dynamic> fetchPages(
-    _i3.FilterType? filterType,
+    _i6.FilterType? filterType,
     bool? hasCompleted, {
     String? startCursor,
   }) =>
@@ -123,7 +124,7 @@ class MockNotionTaskRepository extends _i1.Mock
       ) as _i5.Future<dynamic>);
 
   @override
-  _i5.Future<dynamic> addTask(_i6.Task? task) => (super.noSuchMethod(
+  _i5.Future<dynamic> addTask(_i7.Task? task) => (super.noSuchMethod(
         Invocation.method(
           #addTask,
           [task],
@@ -133,7 +134,7 @@ class MockNotionTaskRepository extends _i1.Mock
       ) as _i5.Future<dynamic>);
 
   @override
-  _i5.Future<dynamic> updateTask(_i6.Task? task) => (super.noSuchMethod(
+  _i5.Future<dynamic> updateTask(_i7.Task? task) => (super.noSuchMethod(
         Invocation.method(
           #updateTask,
           [task],
