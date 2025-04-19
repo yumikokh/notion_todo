@@ -10,6 +10,7 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:background_fetch/background_fetch.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'src/notion/model/task.dart';
 import 'src/notion/model/task_database.dart';
@@ -129,8 +130,16 @@ Future<void> _refreshTodayTasks() async {
       await WidgetService.applyTasks(tasks);
 
       // バッジを更新
-      final notCompletedCount = tasks.where((task) => !task.isCompleted).length;
-      await FlutterAppBadger.updateBadgeCount(notCompletedCount);
+      final prefs = await SharedPreferences.getInstance();
+      final showBadge = prefs.getBool('show_notification_badge') ?? true;
+
+      if (showBadge) {
+        final notCompletedCount =
+            tasks.where((task) => !task.isCompleted).length;
+        await FlutterAppBadger.updateBadgeCount(notCompletedCount);
+      } else {
+        await FlutterAppBadger.removeBadge();
+      }
 
       print(
           "[BackgroundFetch] Tasks refreshed successfully: ${tasks.length} tasks");
