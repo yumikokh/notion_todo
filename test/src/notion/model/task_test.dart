@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tanzaku_todo/src/notion/model/property.dart';
 import 'package:tanzaku_todo/src/notion/model/task.dart';
@@ -138,6 +140,90 @@ void main() {
           url: null,
         );
         expect(task.isInProgress(inProgressOption), false);
+      });
+    });
+
+    group('priority', () {
+      test('priorityを持つTaskを作成できる', () {
+        final priority = SelectOption(
+          id: 'high',
+          name: '高',
+          color: NotionColor.red,
+        );
+
+        final task = Task(
+          id: '1',
+          title: 'テストタスク',
+          status: const TaskStatus.checkbox(checkbox: false),
+          dueDate: null,
+          url: null,
+          priority: priority,
+        );
+
+        expect(task.priority, equals(priority));
+        expect(task.priority?.id, equals('high'));
+        expect(task.priority?.name, equals('高'));
+        expect(task.priority?.color, equals(NotionColor.red));
+      });
+
+      test('priorityを省略できる', () {
+        const task = Task(
+          id: '1',
+          title: 'テストタスク',
+          status: TaskStatus.checkbox(checkbox: false),
+          dueDate: null,
+          url: null,
+        );
+
+        expect(task.priority, isNull);
+      });
+
+      test('Task.tempファクトリでpriorityを指定できる', () {
+        final priority = SelectOption(
+          id: 'medium',
+          name: '中',
+          color: NotionColor.yellow,
+        );
+
+        final task = Task.temp(
+          title: 'テストタスク',
+          priority: priority,
+        );
+
+        expect(task.isTemp, isTrue);
+        expect(task.title, equals('テストタスク'));
+        expect(task.priority, equals(priority));
+      });
+
+      test('JSON変換でpriorityが保持される', () {
+        final priority = SelectOption(
+          id: 'low',
+          name: '低',
+          color: NotionColor.blue,
+        );
+
+        final task = Task(
+          id: '1',
+          title: 'テストタスク',
+          status: const TaskStatus.checkbox(checkbox: false),
+          dueDate: null,
+          url: null,
+          priority: priority,
+        );
+
+        // JSONに変換してからStringに変換し、再度デコードすることでJSONの互換性を確認
+        final jsonString = jsonEncode(task.toJson());
+        expect(jsonString.contains('"priority"'), isTrue);
+
+        // JSONからオブジェクトに復元
+        final jsonMap = jsonDecode(jsonString) as Map<String, dynamic>;
+        final restoredTask = Task.fromJson(jsonMap);
+
+        // 復元されたオブジェクトの値を検証
+        expect(restoredTask.priority, isNotNull);
+        expect(restoredTask.priority?.id, equals('low'));
+        expect(restoredTask.priority?.name, equals('低'));
+        expect(restoredTask.priority?.color, equals(NotionColor.blue));
       });
     });
   });

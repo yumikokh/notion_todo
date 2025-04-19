@@ -593,4 +593,118 @@ void main() {
       verify(mockRepository.updateInProgressStatus(taskId, true)).called(1);
     });
   });
+
+  group('_priority', () {
+    test('priorityプロパティからSelectOptionが正しく取得できる', () {
+      // _priorityメソッドは非公開なので、addTaskを通して間接的に確認する
+      final mockResponse = {
+        'id': 'task1',
+        'properties': {
+          'Title': {
+            'id': 'title',
+            'type': 'title',
+            'title': [
+              {'plain_text': 'Test Task'}
+            ]
+          },
+          'Status': {
+            'id': 'status_id',
+            'type': 'checkbox',
+            'checkbox': false,
+          },
+          'Priority': {
+            'id': 'priority_id',
+            'type': 'select',
+            'select': {'id': 'high_priority', 'name': 'High', 'color': 'red'}
+          }
+        },
+        'url': 'https://notion.so/task1'
+      };
+
+      when(mockRepository.addTask(any)).thenAnswer((_) async => mockResponse);
+
+      final task = Task.temp(
+        title: 'Test Task',
+        priority: SelectOption(
+          id: 'high_priority',
+          name: 'High',
+          color: NotionColor.red,
+        ),
+      );
+
+      service.addTask(task).then((result) {
+        expect(result.priority?.id, 'high_priority');
+        expect(result.priority?.name, 'High');
+        expect(result.priority?.color, NotionColor.red);
+      });
+    });
+
+    test('priorityプロパティが存在しない場合はnullを返す', () {
+      final mockResponse = {
+        'id': 'task1',
+        'properties': {
+          'Title': {
+            'id': 'title',
+            'type': 'title',
+            'title': [
+              {'plain_text': 'Test Task'}
+            ]
+          },
+          'Status': {
+            'id': 'status_id',
+            'type': 'checkbox',
+            'checkbox': false,
+          },
+          // Priorityプロパティなし
+        },
+        'url': 'https://notion.so/task1'
+      };
+
+      when(mockRepository.addTask(any)).thenAnswer((_) async => mockResponse);
+
+      final task = Task.temp(
+        title: 'Test Task',
+      );
+
+      service.addTask(task).then((result) {
+        expect(result.priority, isNull);
+      });
+    });
+
+    test('優先度が選択されていない場合はnullを返す', () {
+      final mockResponse = {
+        'id': 'task1',
+        'properties': {
+          'Title': {
+            'id': 'title',
+            'type': 'title',
+            'title': [
+              {'plain_text': 'Test Task'}
+            ]
+          },
+          'Status': {
+            'id': 'status_id',
+            'type': 'checkbox',
+            'checkbox': false,
+          },
+          'Priority': {
+            'id': 'priority_id',
+            'type': 'select',
+            'select': null, // 選択なし
+          }
+        },
+        'url': 'https://notion.so/task1'
+      };
+
+      when(mockRepository.addTask(any)).thenAnswer((_) async => mockResponse);
+
+      final task = Task.temp(
+        title: 'Test Task',
+      );
+
+      service.addTask(task).then((result) {
+        expect(result.priority, isNull);
+      });
+    });
+  });
 }
