@@ -147,13 +147,26 @@ class TaskListView extends HookConsumerWidget {
                 .toList(),
 
             // 完了タスク
-            if (showCompleted && completedTasks.isNotEmpty)
+            if (showCompleted && completedTasks.isNotEmpty) ...[
+              // 完了タスクのヘッダー
+              Padding(
+                padding: EdgeInsets.fromLTRB(
+                    32, notCompletedTasks.isEmpty ? 0 : 24, 32, 8),
+                child: Text(
+                  l.completed_tasks,
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
+                ),
+              ),
+              // 完了タスク一覧
               ...completedTasks
                   .map((task) => TaskDismissible(
                       taskViewModel: taskViewModel,
                       task: task,
                       themeMode: themeMode))
                   .toList(),
+            ],
 
             if (centerOverlay == null) const Divider(height: 0),
 

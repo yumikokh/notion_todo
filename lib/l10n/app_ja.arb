@@ -177,5 +177,7 @@
   "task_priority_dialog_title": "優先度プロパティが未設定です",
   "task_priority_dialog_content": "タスクの優先度を設定するには、データベース設定で優先度プロパティを設定してください。",
   "task_priority_dialog_cancel": "キャンセル",
-  "task_priority_dialog_settings": "設定"
+  "task_priority_dialog_settings": "設定",
+  "show_completed_tasks": "完了したタスクを表示",
+  "completed_tasks": "完了済"
 }
