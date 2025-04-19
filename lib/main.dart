@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,14 +11,17 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'src/common/background/background_fetch_service.dart';
 import 'src/app.dart';
 import 'src/env/env.dart';
-import 'src/widget/widget_service.dart';
+// import 'src/widget/widget_service.dart';
 import 'firebase_options.dart';
 
 // バックグラウンドコールバック関数（iOS 17のインタラクティブウィジェット用）
+// v2で有効化するため一時的にコメントアウト
+/*
 @pragma('vm:entry-point')
 Future<void> interactivityCallback(Uri? uri) async {
   await WidgetService.interactivityCallback(uri);
 }
+*/
 
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -34,8 +36,8 @@ void main() async {
   await FirebaseAnalytics.instance
       .setAnalyticsCollectionEnabled(trackingEnabled);
 
-  // ウィジェットの初期化
-  await WidgetService.initialize(interactivityCallback);
+  // ウィジェットの初期化 (v2で有効化するため一時的にコメントアウト)
+  // await WidgetService.initialize(interactivityCallback);
 
   // BackgroundFetchの初期化
   await BackgroundFetchService.initialize();
