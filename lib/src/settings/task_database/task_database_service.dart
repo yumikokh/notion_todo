@@ -71,7 +71,8 @@ class TaskDatabaseService {
         (statusProperty is! CheckboxProperty &&
             statusProperty is! StatusProperty) ||
         (priorityProperty is! SelectProperty)) {
-      throw Exception('Property types do not match');
+      throw Exception(
+          'Property types do not match ${titleProperty.type.name} ${dateProperty.type.name} ${statusProperty.type.name} ${priorityProperty?.type.name}');
     }
 
     final updatedStatusProperty =

@@ -12,10 +12,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'src/notion/model/task.dart';
-import 'src/notion/model/task_database.dart';
-import 'src/notion/model/property.dart';
-
+import 'src/common/utils/notion_converter.dart';
 import 'src/app.dart';
 import 'src/env/env.dart';
 import 'src/notion/repository/notion_task_repository.dart';
@@ -117,22 +114,22 @@ void _onBackgroundFetchTimeout(String taskId) {
   BackgroundFetch.finish(taskId);
 }
 
-// タスク更新処理を集約したメソッド
+// ウィジェットはアプリとは別プロセスで動作するため、Riverpodを使わずに直接データを取得する
 Future<void> _refreshTodayTasks() async {
   // ウィジェットの更新
   final widgetValue = await WidgetService.value;
-  if (widgetValue.accessToken != null && widgetValue.taskDatabase != null) {
+  final accessToken = widgetValue.accessToken;
+  final taskDatabase = widgetValue.taskDatabase;
+  if (accessToken != null && taskDatabase != null) {
     try {
-      final repository = NotionTaskRepository(
-          widgetValue.accessToken!, widgetValue.taskDatabase!);
+      final repository = NotionTaskRepository(accessToken, taskDatabase);
       final result = await repository.fetchPages(FilterType.today, true);
-      final tasks = _convertToTasks(result, widgetValue.taskDatabase!);
+      final tasks = NotionConverter.convertToTasks(result, taskDatabase);
       await WidgetService.applyTasks(tasks);
 
       // バッジを更新
       final prefs = await SharedPreferences.getInstance();
       final showBadge = prefs.getBool('show_notification_badge') ?? true;
-
       if (showBadge) {
         final notCompletedCount =
             tasks.where((task) => !task.isCompleted).length;
@@ -146,69 +143,6 @@ Future<void> _refreshTodayTasks() async {
     } catch (e) {
       print("[BackgroundFetch] Error refreshing tasks: $e");
     }
-  }
-}
-
-// APIレスポンスをTaskオブジェクトに変換するヘルパーメソッド
-List<Task> _convertToTasks(
-    Map<String, dynamic> result, TaskDatabase taskDatabase) {
-  return (result['results'] as List)
-      .map((page) => Task(
-            id: page['id'],
-            title: _extractTitle(page, taskDatabase),
-            status: _extractStatus(page, taskDatabase),
-            dueDate: _extractDate(page, taskDatabase),
-            url: page['url'],
-          ))
-      .toList();
-}
-
-// TaskServiceのヘルパーメソッドをコピー
-String _extractTitle(Map<String, dynamic> data, TaskDatabase taskDatabase) {
-  final titleProperty = data['properties']
-      .entries
-      .firstWhere((e) => e.value['type'] == 'title')
-      .value['title'];
-  return titleProperty?.length > 0 ? titleProperty[0]['plain_text'] : '';
-}
-
-TaskDate? _extractDate(Map<String, dynamic> data, TaskDatabase taskDatabase) {
-  final dateProperty = taskDatabase.date.name;
-  final datePropertyData = data['properties'][dateProperty];
-  if (datePropertyData == null) {
-    return null;
-  }
-  final date = datePropertyData['date'];
-  if (date == null) {
-    return null;
-  }
-  return TaskDate(
-    start: NotionDateTime.fromString(date['start']),
-    end: date['end'] != null ? NotionDateTime.fromString(date['end']) : null,
-  );
-}
-
-TaskStatus _extractStatus(
-    Map<String, dynamic> data, TaskDatabase taskDatabase) {
-  final property = taskDatabase.status;
-  switch (property) {
-    case CheckboxCompleteStatusProperty():
-      return TaskStatus.checkbox(
-          checkbox: data['properties'][property.name]['checkbox']);
-    case StatusCompleteStatusProperty(status: var status):
-      // statusが未指定の場合がある
-      if (data['properties'][property.name]['status'] == null) {
-        return const TaskStatus.status(group: null, option: null);
-      }
-
-      final optionId = data['properties'][property.name]['status']['id'];
-      final group = status.groups
-          .where((group) => group.optionIds.contains(optionId))
-          .firstOrNull;
-      final option =
-          status.options.where((option) => option.id == optionId).firstOrNull;
-
-      return TaskStatus.status(group: group, option: option);
   }
 }
 
