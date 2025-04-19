@@ -87,12 +87,10 @@ void main() {
       expect(result, isNull);
     });
 
-    test('不正なJSONデータが保存されている場合はnullを返す', () async {
+    test('不正なJSONデータが保存されている場合はエラーをスローされる', () async {
       final pref = await SharedPreferences.getInstance();
       await pref.setString('taskDatabase', '{"invalid": "json"}');
-
-      final result = await service.loadSetting();
-      expect(result, isNull);
+      expect(service.loadSetting(), throwsA(anything));
     });
   });
 }

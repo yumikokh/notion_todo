@@ -60,8 +60,13 @@ class TitleProperty extends Property {
     required this.title,
   }) : super(id: id, name: name, type: PropertyType.title);
 
-  static String? _titleFromJson(Map<String, dynamic>? json) {
-    return json?.isEmpty ?? true ? null : json?[0]['plain_text'] as String;
+  static String? _titleFromJson(dynamic json) {
+    if (json == null) return null;
+    if (json is String) return json;
+    if (json is List && json.isNotEmpty) {
+      return json[0]['plain_text'] as String;
+    }
+    return null;
   }
 
   factory TitleProperty.fromJson(Map<String, dynamic> json) =>

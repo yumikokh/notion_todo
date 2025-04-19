@@ -168,9 +168,9 @@ class TaskService {
     try {
       return (data['properties'] as Map<String, dynamic>)
           .entries
-          .firstWhere((entry) => entry.value['id'] == propertyId,
-              orElse: () => const MapEntry('', {}))
-          .value;
+          .where((entry) => entry.value['id'] == propertyId)
+          .map((entry) => entry.value)
+          .firstOrNull;
     } catch (e) {
       print('Error finding property by id: $e');
       return null;

@@ -10,8 +10,7 @@ TitleProperty _$TitlePropertyFromJson(Map<String, dynamic> json) =>
     TitleProperty(
       id: json['id'] as String,
       name: json['name'] as String,
-      title:
-          TitleProperty._titleFromJson(json['title'] as Map<String, dynamic>?),
+      title: TitleProperty._titleFromJson(json['title']),
     )..type = $enumDecode(_$PropertyTypeEnumMap, json['type']);
 
 Map<String, dynamic> _$TitlePropertyToJson(TitleProperty instance) =>
