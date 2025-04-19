@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import '../../../common/ui/custom_popup_menu.dart';
 import '../../../helpers/haptic_helper.dart';
 import '../../../settings/view/settings_page.dart';
 import '../../model/task.dart';
 import 'task_sheet/task_sheet.dart';
 
-class TaskBaseScaffold extends StatelessWidget {
+class TaskBaseScaffold extends HookConsumerWidget {
   final Widget body;
   final int currentIndex;
   final bool? showCompleted;
@@ -28,10 +30,33 @@ class TaskBaseScaffold extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final isToday = currentIndex == 0;
-    final showCompleted = this.showCompleted;
+
+    // カスタムメニューの設定
+    final customMenu = useCustomPopupMenu(
+      items: [
+        if (showCompleted != null)
+          CustomPopupMenuItem(
+            id: 'toggle_completed',
+            title: Text(l.show_completed_tasks),
+            trailing: showCompleted!
+                ? Icon(
+                    Icons.check,
+                    size: 18,
+                    color: Theme.of(context).colorScheme.primary,
+                  )
+                : null,
+            onTap: () {
+              HapticHelper.selection();
+              onShowCompletedChanged(!showCompleted!);
+            },
+          ),
+      ],
+      animationDuration: const Duration(milliseconds: 30),
+      animationCurve: Curves.easeOut,
+    );
 
     return Scaffold(
         key: key,
@@ -56,31 +81,13 @@ class TaskBaseScaffold extends StatelessWidget {
                 },
               ),
 
-              PopupMenuButton<String>(
+              IconButton(
+                key: customMenu.buttonKey,
                 icon: Icon(
                   Icons.more_horiz_rounded,
                   color: Theme.of(context).colorScheme.onSurface,
                 ),
-                onSelected: (value) {
-                  if (value == 'toggle_completed' && showCompleted != null) {
-                    HapticHelper.selection();
-                    onShowCompletedChanged(!showCompleted);
-                  }
-                },
-                itemBuilder: (context) => [
-                  if (showCompleted != null)
-                    PopupMenuItem<String>(
-                      value: 'toggle_completed',
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Text(l.show_completed_tasks),
-                          ),
-                          if (showCompleted) const Icon(Icons.check, size: 18)
-                        ],
-                      ),
-                    ),
-                ],
+                onPressed: customMenu.toggle,
               ),
             ]),
         body: body,
