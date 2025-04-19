@@ -261,5 +261,7 @@
   "task_priority_dialog_title": "Priority Property Not Set",
   "task_priority_dialog_content": "Set up the Priority property in database settings to prioritize your tasks!",
   "task_priority_dialog_cancel": "Cancel",
-  "task_priority_dialog_settings": "Settings"
+  "task_priority_dialog_settings": "Settings",
+  "show_completed_tasks": "Show Completed Tasks",
+  "completed_tasks": "Completed"
 }

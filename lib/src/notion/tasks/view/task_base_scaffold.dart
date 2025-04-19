@@ -41,35 +41,45 @@ class TaskBaseScaffold extends StatelessWidget {
                 ? Text(l.navigation_index, style: const TextStyle(fontSize: 20))
                 : null,
             actions: [
-              if (showCompleted != null) ...[
-                IconButton(
-                  icon: Icon(
-                    showCompleted
-                        ? Icons.visibility_rounded
-                        : Icons.visibility_off_outlined,
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                  onPressed: () {
+              // TODO: サイドバーができたら移動する
+              IconButton(
+                icon: showSettingBadge
+                    ? Icon(Icons.settings_rounded,
+                        color: Theme.of(context).colorScheme.onSurface)
+                    : Badge(
+                        child: Icon(Icons.settings_outlined,
+                            color: Theme.of(context).colorScheme.onSurface),
+                      ),
+                onPressed: () {
+                  Navigator.restorablePushNamed(
+                      context, SettingsPage.routeName);
+                },
+              ),
+
+              PopupMenuButton<String>(
+                icon: Icon(
+                  Icons.more_horiz_rounded,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+                onSelected: (value) {
+                  if (value == 'toggle_completed' && showCompleted != null) {
                     HapticHelper.selection();
                     onShowCompletedChanged(!showCompleted);
-                  },
-                )
-              ],
-              Stack(
-                children: [
-                  IconButton(
-                    icon: showSettingBadge
-                        ? Icon(Icons.settings_outlined,
-                            color: Theme.of(context).colorScheme.onSurface)
-                        : Badge(
-                            child: Icon(Icons.settings_outlined,
-                                color: Theme.of(context).colorScheme.onSurface),
+                  }
+                },
+                itemBuilder: (context) => [
+                  if (showCompleted != null)
+                    PopupMenuItem<String>(
+                      value: 'toggle_completed',
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(l.show_completed_tasks),
                           ),
-                    onPressed: () {
-                      Navigator.restorablePushNamed(
-                          context, SettingsPage.routeName);
-                    },
-                  ),
+                          if (showCompleted) const Icon(Icons.check, size: 18)
+                        ],
+                      ),
+                    ),
                 ],
               ),
             ]),
