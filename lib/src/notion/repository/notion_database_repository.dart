@@ -74,9 +74,10 @@ class NotionDatabaseRepository {
 }
 
 @riverpod
-NotionDatabaseRepository? notionDatabaseRepository(Ref ref) {
-  final accessToken =
-      ref.watch(notionOAuthViewModelProvider).valueOrNull?.accessToken;
+Future<NotionDatabaseRepository?> notionDatabaseRepository(Ref ref) async {
+  final accessToken = await ref
+      .watch(notionOAuthViewModelProvider.future)
+      .then((value) => value.accessToken);
   if (accessToken == null) {
     return null;
   }

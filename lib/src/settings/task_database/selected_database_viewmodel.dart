@@ -15,7 +15,8 @@ part 'selected_database_viewmodel.g.dart';
 
 @riverpod
 Future<List<Database>> accessibleDatabases(Ref ref) async {
-  final notionDatabaseRepository = ref.watch(notionDatabaseRepositoryProvider);
+  final notionDatabaseRepository =
+      await ref.watch(notionDatabaseRepositoryProvider.future);
   final taskDatabaseService =
       TaskDatabaseService(notionDatabaseRepository: notionDatabaseRepository);
   final dbs = await taskDatabaseService.fetchDatabases();
@@ -73,7 +74,7 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
   Future<SelectedDatabaseState?> build() async {
     final taskDatabase = await ref.watch(taskDatabaseViewModelProvider.future);
     final notionDatabaseRepository =
-        ref.watch(notionDatabaseRepositoryProvider);
+        await ref.watch(notionDatabaseRepositoryProvider.future);
     _taskDatabaseService =
         TaskDatabaseService(notionDatabaseRepository: notionDatabaseRepository);
     if (state.value != null) {
@@ -90,7 +91,7 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
         id: taskDatabase.id,
         name: taskDatabase.name,
         title: taskDatabase.title,
-        status: taskDatabase.status,
+        status: CompleteStatusProperty.fromJson(taskDatabase.status.toJson()),
         date: taskDatabase.date,
         priority: taskDatabase.priority,
       ),
@@ -139,8 +140,7 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
         .where((p) =>
             p.id == s.status?.id &&
             p.name == s.status?.name &&
-            (p is StatusCompleteStatusProperty ||
-                p is CheckboxCompleteStatusProperty))
+            (p is StatusProperty || p is CheckboxProperty))
         .isEmpty) {
       noStatus = true;
     }
@@ -180,40 +180,38 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
         return null;
       }
       switch ((type, property)) {
-        case (SettingPropertyType.status, var p)
-            when p is StatusCompleteStatusProperty:
+        case (SettingPropertyType.status, StatusProperty p):
           return value.copyWith(
             status: StatusCompleteStatusProperty(
               id: p.id,
               name: p.name,
               status: p.status,
-              todoOption: p.todoOption,
-              inProgressOption: p.inProgressOption,
-              completeOption: p.completeOption,
+              todoOption: null,
+              inProgressOption: null,
+              completeOption: null,
             ),
           );
-        case (SettingPropertyType.status, var p)
-            when p is CheckboxCompleteStatusProperty:
+        case (SettingPropertyType.status, CheckboxProperty p):
           return value.copyWith(
             status: CheckboxCompleteStatusProperty(
               id: p.id,
               name: p.name,
-              checked: p.checked,
+              checkbox: p.checkbox,
             ),
           );
-        case (SettingPropertyType.date, var p) when p is DateProperty:
+        case (SettingPropertyType.date, DateProperty p):
           return value.copyWith(
             date: DateProperty(
               id: p.id,
               name: p.name,
             ),
           );
-        case (SettingPropertyType.priority, var p) when p is SelectProperty:
+        case (SettingPropertyType.priority, SelectProperty p):
           return value.copyWith(
             priority: SelectProperty(
               id: p.id,
               name: p.name,
-              options: p.options,
+              select: p.select,
             ),
           );
         default:
@@ -302,6 +300,9 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
   }
 
   bool get submitDisabled {
+    if (state.hasValue == false) {
+      return true;
+    }
     final status = state.value?.status;
     if (status == null) {
       return true;

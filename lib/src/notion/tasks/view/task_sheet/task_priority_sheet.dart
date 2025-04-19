@@ -20,7 +20,8 @@ class TaskPrioritySheet extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final taskDatabase = ref.watch(taskDatabaseViewModelProvider);
-    final priorityOptions = taskDatabase.valueOrNull?.priority?.options ?? [];
+    final priorityOptions =
+        taskDatabase.valueOrNull?.priority?.select.options ?? [];
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16),

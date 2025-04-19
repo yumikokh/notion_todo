@@ -23,7 +23,6 @@ mixin _$TaskDatabase {
   String get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   TitleProperty get title => throw _privateConstructorUsedError;
-  @JsonKey(fromJson: _fromJson, toJson: _toJson)
   CompleteStatusProperty get status => throw _privateConstructorUsedError;
   DateProperty get date => throw _privateConstructorUsedError;
   SelectProperty? get priority => throw _privateConstructorUsedError;
@@ -48,7 +47,6 @@ abstract class $TaskDatabaseCopyWith<$Res> {
       {String id,
       String name,
       TitleProperty title,
-      @JsonKey(fromJson: _fromJson, toJson: _toJson)
       CompleteStatusProperty status,
       DateProperty date,
       SelectProperty? priority});
@@ -117,7 +115,6 @@ abstract class _$$TaskDatabaseImplCopyWith<$Res>
       {String id,
       String name,
       TitleProperty title,
-      @JsonKey(fromJson: _fromJson, toJson: _toJson)
       CompleteStatusProperty status,
       DateProperty date,
       SelectProperty? priority});
@@ -180,7 +177,7 @@ class _$TaskDatabaseImpl implements _TaskDatabase {
       {required this.id,
       required this.name,
       required this.title,
-      @JsonKey(fromJson: _fromJson, toJson: _toJson) required this.status,
+      required this.status,
       required this.date,
       this.priority});
 
@@ -194,7 +191,6 @@ class _$TaskDatabaseImpl implements _TaskDatabase {
   @override
   final TitleProperty title;
   @override
-  @JsonKey(fromJson: _fromJson, toJson: _toJson)
   final CompleteStatusProperty status;
   @override
   final DateProperty date;
@@ -246,7 +242,6 @@ abstract class _TaskDatabase implements TaskDatabase {
       {required final String id,
       required final String name,
       required final TitleProperty title,
-      @JsonKey(fromJson: _fromJson, toJson: _toJson)
       required final CompleteStatusProperty status,
       required final DateProperty date,
       final SelectProperty? priority}) = _$TaskDatabaseImpl;
@@ -261,7 +256,6 @@ abstract class _TaskDatabase implements TaskDatabase {
   @override
   TitleProperty get title;
   @override
-  @JsonKey(fromJson: _fromJson, toJson: _toJson)
   CompleteStatusProperty get status;
   @override
   DateProperty get date;

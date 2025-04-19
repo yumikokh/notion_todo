@@ -736,7 +736,7 @@ struct LockScreenProgressView: View {
   var body: some View {
     let lineWidth: CGFloat = 6
     let opacity: CGFloat = 0.2
-    let size: CGFloat = 54 - lineWidth + 2  // 錯視調整
+    let size: CGFloat = 58 - lineWidth + 2  // 錯視調整
     if entry.hasTaskDatabase {
       // 進捗表示
       ZStack {
@@ -750,12 +750,17 @@ struct LockScreenProgressView: View {
           .stroke(.white, style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
           .frame(width: size, height: size)  // サイズを明示的に指定
           .rotationEffect(.degrees(-90))
-          .opacity(0.5)
+          .opacity(0.9)
 
-        // ロゴ
-        Image("logo")
-          .opacity(0.8)
-          .scaleEffect(1.05)
+        // 達成済みタスク数 / 合計タスク数
+        VStack(spacing: 0) {
+          Text("\(entry.completedTasksCount)")
+            .font(.system(size: 18, weight: .bold))
+          Text("/ \(entry.totalTasksCount)")
+            .font(.system(size: 11))
+        }
+        .foregroundColor(.white)
+        .padding(EdgeInsets(top: 0, leading: 0, bottom: 2, trailing: 0))
       }
       .widgetURL(URL(string: "notiontodo://open/today?homeWidget")!)
     } else {
@@ -767,7 +772,6 @@ struct LockScreenProgressView: View {
         Image(systemName: "exclamationmark.triangle")
           .font(.system(size: 24))
           .padding(EdgeInsets(top: 0, leading: 0, bottom: 4, trailing: 0))
-          .opacity(0.8)
       }
       .widgetURL(URL(string: "notiontodo://open/today?homeWidget")!)
     }
@@ -776,18 +780,16 @@ struct LockScreenProgressView: View {
 
 // ロック画面用のタスク追加ビュー
 struct LockScreenAddTaskView: View {
-  let size: CGFloat = 54
+  let size: CGFloat = 58
   var body: some View {
     ZStack {
-      // 背景の円を半透明に
+      // 背景を曇りガラス効果に
       Circle()
-        .fill(.white.opacity(0.4))
-        .frame(width: size, height: size)  // 進捗表示ビューと同じサイズに
+        .fill(.ultraThinMaterial.opacity(0.5))
+        .frame(width: size, height: size)
       Link(destination: URL(string: "notiontodo://add_task/today?homeWidget")!) {
-        Image("plus").opacity(0.8).scaleEffect(1.1)
-          .foregroundStyle(.white)
+        Image("plus").scaleEffect(1.15)
           .padding(EdgeInsets(top: 0, leading: 6, bottom: 4, trailing: 0))
-          .blendMode(.destinationOut)
       }
     }
     .compositingGroup()  // ブレンドモードを有効にするために必要

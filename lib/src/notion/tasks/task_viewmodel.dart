@@ -1,6 +1,7 @@
 import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 import 'dart:collection';
 
@@ -39,14 +40,14 @@ class TaskViewModel extends _$TaskViewModel {
   Future<List<Task>> build({
     FilterType filterType = FilterType.all,
   }) async {
-    // TaskDatabaseのidを元にプロパティを最新化
-    ref.invalidate(taskDatabaseViewModelProvider);
-    final taskDatabaseViewModel =
-        await ref.watch(taskDatabaseViewModelProvider.future);
+    final taskDatabaseViewModel = filterType == FilterType.today
+        ? await ref.refresh(taskDatabaseViewModelProvider.future)
+        : await ref.watch(taskDatabaseViewModelProvider.future);
     _taskService = await ref.watch(taskServiceProvider.future);
 
-    if (_taskService == null) {
+    if (_taskService == null || taskDatabaseViewModel == null) {
       await FlutterAppBadger.removeBadge();
+      await _updateTodayWidget([]);
       return [];
     }
 
@@ -57,7 +58,7 @@ class TaskViewModel extends _$TaskViewModel {
     // もしpageSize以上のタスクがあったとき、「showCompleted」と「Load more」の不整合がおきるがいったん無視
     _hasCompleted = filterType == FilterType.today;
 
-    final statusProperty = taskDatabaseViewModel?.status;
+    final statusProperty = taskDatabaseViewModel.status;
     final tasks = await _fetchTasks(isFirstFetch: true);
 
     if (filterType == FilterType.today) {
@@ -182,46 +183,40 @@ class TaskViewModel extends _$TaskViewModel {
       _nextCursor = result.nextCursor;
       return result.tasks;
     } catch (e) {
-      if (e is TaskException && e.statusCode == 404) {
-        final snackbar = ref.read(snackbarProvider.notifier);
-        final taskDatabaseViewModel =
-            ref.read(taskDatabaseViewModelProvider.notifier);
-        final analytics = ref.read(analyticsServiceProvider);
+      final snackbar = ref.read(snackbarProvider.notifier);
+      final taskDatabaseViewModel =
+          ref.read(taskDatabaseViewModelProvider.notifier);
+      final analytics = ref.read(analyticsServiceProvider);
 
-        taskDatabaseViewModel.clear();
-        snackbar.show("${l.not_found_database} ${l.re_set_database}",
-            type: SnackbarType.error);
-
-        try {
-          await analytics.logError(
-            'database_not_found',
-            error: e,
-            parameters: {'status_code': 404},
-          );
-        } catch (trackingError) {
-          print('Analytics error: $trackingError');
+      if (e is NotionErrorException) {
+        switch (e) {
+          // MEMO: IDベースでリクエストしているため、プロパティが削除されない限り起こらないはず
+          case NotionValidationException():
+            snackbar.show(l.not_found_property, type: SnackbarType.error);
+            break;
+          case NotionInvalidException():
+            taskDatabaseViewModel.clear();
+            snackbar.show("${l.not_found_database} ${l.re_set_database}",
+                type: SnackbarType.error);
+            break;
+          case NotionUnknownException():
+            await Sentry.captureException(e);
+            snackbar.show(l.task_fetch_failed, type: SnackbarType.error);
+            break;
         }
+        await analytics.logError(
+          e.code,
+          error: e.message,
+          parameters: {'status_code': e.status},
+        );
+      } else {
+        // その他のエラー処理
+        snackbar.show(l.task_fetch_failed, type: SnackbarType.error);
+        await Sentry.captureException(e);
+        print('Unknown error: $e');
       }
-      if (e is TaskException && e.statusCode == 400) {
-        final snackbar = ref.read(snackbarProvider.notifier);
-        final taskDatabaseViewModel =
-            ref.read(taskDatabaseViewModelProvider.notifier);
-        final analytics = ref.read(analyticsServiceProvider);
 
-        taskDatabaseViewModel.clear();
-        snackbar.show("${l.not_found_property} ${l.re_set_database}",
-            type: SnackbarType.error);
-
-        try {
-          await analytics.logError(
-            'property_not_found',
-            error: e,
-            parameters: {'status_code': 400},
-          );
-        } catch (trackingError) {
-          print('Analytics error: $trackingError');
-        }
-      }
+      // TODO: エラー表示をつくったらthrowする。ネットワークがつながらないときなど
       return [];
     } finally {
       _isLoading = false;

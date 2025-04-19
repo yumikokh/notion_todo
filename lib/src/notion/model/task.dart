@@ -81,7 +81,7 @@ class TaskDate with _$TaskDate {
 @freezed
 sealed class TaskStatus with _$TaskStatus {
   const factory TaskStatus.checkbox({
-    required bool checked,
+    required bool checkbox,
   }) = TaskStatusCheckbox;
 
   const factory TaskStatus.status({
@@ -118,7 +118,7 @@ class Task with _$Task {
       Task(
         id: 'temp_${DateTime.now().millisecondsSinceEpoch}',
         title: title ?? '',
-        status: const TaskStatus.checkbox(checked: false),
+        status: const TaskStatus.checkbox(checkbox: false),
         dueDate: dueDate,
         url: null,
         priority: priority,
@@ -127,7 +127,7 @@ class Task with _$Task {
   static final DateHelper d = DateHelper();
 
   bool get isCompleted => switch (status) {
-        TaskStatusCheckbox(checked: var checked) => checked,
+        TaskStatusCheckbox(checkbox: var checkbox) => checkbox,
         TaskStatusStatus(group: var group) =>
           group?.name == StatusGroupType.complete.value,
       };

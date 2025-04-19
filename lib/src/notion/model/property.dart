@@ -26,8 +26,8 @@ sealed class Property {
   Map<String, dynamic> toJson() => switch (this) {
         TitleProperty title => title.toJson(),
         DateProperty date => date.toJson(),
-        CheckboxCompleteStatusProperty checkbox => checkbox.toJson(),
-        StatusCompleteStatusProperty status => status.toJson(),
+        CheckboxProperty checkbox => checkbox.toJson(),
+        StatusProperty status => status.toJson(),
         SelectProperty select => select.toJson(),
       };
 
@@ -40,9 +40,9 @@ sealed class Property {
       case PropertyType.date:
         return DateProperty.fromJson(json);
       case PropertyType.checkbox:
-        return CheckboxCompleteStatusProperty.fromJson(json);
+        return CheckboxProperty.fromJson(json);
       case PropertyType.status:
-        return StatusCompleteStatusProperty.fromJson(json);
+        return StatusProperty.fromJson(json);
       case PropertyType.select:
         return SelectProperty.fromJson(json);
     }
@@ -51,13 +51,23 @@ sealed class Property {
 
 @JsonSerializable()
 class TitleProperty extends Property {
-  final String title;
+  @JsonKey(fromJson: _titleFromJson)
+  final String? title;
 
   TitleProperty({
     required String id,
     required String name,
     required this.title,
   }) : super(id: id, name: name, type: PropertyType.title);
+
+  static String? _titleFromJson(dynamic json) {
+    if (json == null) return null;
+    if (json is String) return json;
+    if (json is List && json.isNotEmpty) {
+      return json[0]['plain_text'] as String;
+    }
+    return null;
+  }
 
   factory TitleProperty.fromJson(Map<String, dynamic> json) =>
       _$TitlePropertyFromJson(json);
@@ -80,15 +90,97 @@ class DateProperty extends Property {
   Map<String, dynamic> toJson() => _$DatePropertyToJson(this);
 }
 
-/// 完了ステータスプロパティの基底クラス
-sealed class CompleteStatusProperty extends Property {
-  CompleteStatusProperty({
+@JsonSerializable(explicitToJson: true)
+class SelectProperty extends Property {
+  final ({List<SelectOption> options}) select;
+
+  SelectProperty({
     required String id,
     required String name,
-    required PropertyType type,
-  }) : super(id: id, name: name, type: type);
+    required this.select,
+  }) : super(id: id, name: name, type: PropertyType.select);
 
-  static CompleteStatusProperty fromJson(Map<String, dynamic> json) {
+  factory SelectProperty.fromJson(Map<String, dynamic> json) =>
+      _$SelectPropertyFromJson(json);
+
+  @override
+  Map<String, dynamic> toJson() => _$SelectPropertyToJson(this);
+}
+
+@JsonSerializable()
+class CheckboxProperty extends Property {
+  final bool checkbox;
+
+  CheckboxProperty({
+    required String id,
+    required String name,
+    required this.checkbox,
+    required PropertyType type,
+  }) : super(id: id, name: name, type: PropertyType.checkbox);
+
+  factory CheckboxProperty.fromJson(Map<String, dynamic> json) {
+    // checkboxの値が空のオブジェクト{}の場合はfalseとして扱う
+    if (json['checkbox'] is Map) {
+      json['checkbox'] = false;
+    }
+    return _$CheckboxPropertyFromJson(json);
+  }
+
+  @override
+  Map<String, dynamic> toJson() => _$CheckboxPropertyToJson(this);
+}
+
+@JsonSerializable(explicitToJson: true)
+class StatusProperty extends Property {
+  final ({List<StatusOption> options, List<StatusGroup> groups}) status;
+
+  StatusProperty({
+    required String id,
+    required String name,
+    required this.status,
+  }) : super(id: id, name: name, type: PropertyType.status);
+
+  StatusProperty copyWith({
+    String? id,
+    String? name,
+    ({List<StatusOption> options, List<StatusGroup> groups})? status,
+  }) {
+    return StatusProperty(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      status: status ?? this.status,
+    );
+  }
+
+  factory StatusProperty.fromJson(Map<String, dynamic> json) =>
+      _$StatusPropertyFromJson(json);
+
+  @override
+  Map<String, dynamic> toJson() => _$StatusPropertyToJson(this);
+}
+
+/// 完了ステータスの基底クラス - チェックボックス or ステータス
+sealed class CompleteStatusProperty {
+  final String id;
+  final String name;
+  final PropertyType type;
+
+  CompleteStatusProperty({
+    required this.id,
+    required this.name,
+    required this.type,
+  });
+
+  static Map<String, dynamic> initialJson(CompleteStatusProperty status) {
+    return switch (status) {
+      StatusCompleteStatusProperty() => {
+          "status": {"name": status.todoOption?.name}
+        },
+      CheckboxCompleteStatusProperty() => {"checkbox": false},
+    };
+  }
+
+  factory CompleteStatusProperty.fromJson(Map<String, dynamic> json) {
     final typeStr = json['type'] as String;
     final type = $enumDecode(_$PropertyTypeEnumMap, typeStr);
     switch (type) {
@@ -100,17 +192,6 @@ sealed class CompleteStatusProperty extends Property {
         throw ArgumentError('Unknown type: $type');
     }
   }
-
-  static Map<String, dynamic> initialJson(CompleteStatusProperty status) {
-    return switch (status) {
-      StatusCompleteStatusProperty() => {
-          "status": {"name": status.todoOption?.name}
-        },
-      CheckboxCompleteStatusProperty() => {"checkbox": false},
-    };
-  }
-
-  @override
   Map<String, dynamic> toJson() => switch (this) {
         CheckboxCompleteStatusProperty status => status.toJson(),
         StatusCompleteStatusProperty status => status.toJson(),
@@ -118,14 +199,17 @@ sealed class CompleteStatusProperty extends Property {
 }
 
 @JsonSerializable()
-class CheckboxCompleteStatusProperty extends CompleteStatusProperty {
-  final bool checked;
-
+class CheckboxCompleteStatusProperty extends CheckboxProperty
+    implements CompleteStatusProperty {
   CheckboxCompleteStatusProperty({
     required String id,
     required String name,
-    required this.checked,
-  }) : super(id: id, name: name, type: PropertyType.checkbox);
+    required bool checkbox,
+  }) : super(
+            id: id,
+            name: name,
+            checkbox: checkbox,
+            type: PropertyType.checkbox);
 
   factory CheckboxCompleteStatusProperty.fromJson(Map<String, dynamic> json) =>
       _$CheckboxCompleteStatusPropertyFromJson(json);
@@ -134,9 +218,9 @@ class CheckboxCompleteStatusProperty extends CompleteStatusProperty {
   Map<String, dynamic> toJson() => _$CheckboxCompleteStatusPropertyToJson(this);
 }
 
-@JsonSerializable()
-class StatusCompleteStatusProperty extends CompleteStatusProperty {
-  final ({List<StatusOption> options, List<StatusGroup> groups}) status;
+@JsonSerializable(explicitToJson: true)
+class StatusCompleteStatusProperty extends StatusProperty
+    implements CompleteStatusProperty {
   final StatusOption? todoOption;
   final StatusOption? inProgressOption; // optional
   final StatusOption? completeOption;
@@ -144,21 +228,50 @@ class StatusCompleteStatusProperty extends CompleteStatusProperty {
   StatusCompleteStatusProperty({
     required String id,
     required String name,
-    required this.status,
+    required ({List<StatusOption> options, List<StatusGroup> groups}) status,
     required this.todoOption,
     required this.inProgressOption,
     required this.completeOption,
-  }) : super(id: id, name: name, type: PropertyType.status);
+  }) : super(id: id, name: name, status: status);
+
+  /// 既存のStatusCompleteStatusPropertyのオプションIDを使用して、
+  /// 新しいStatusPropertyから対応するStatusCompleteStatusPropertyを作成します
+  factory StatusCompleteStatusProperty.fromSavedStatusOptions({
+    required StatusProperty newStatusProperty,
+    required StatusCompleteStatusProperty savedStatus,
+  }) {
+    // 保存済みのオプションIDを使って、新しいステータスから対応するオプションを探す
+    StatusOption? findOptionById(String? currentOptionId) {
+      if (currentOptionId == null) return null;
+      return newStatusProperty.status.options.firstWhere(
+        (option) => option.id == currentOptionId,
+        orElse: () =>
+            throw StateError('対応するステータスオプションが見つかりません: $currentOptionId'),
+      );
+    }
+
+    return StatusCompleteStatusProperty(
+      id: newStatusProperty.id,
+      name: newStatusProperty.name,
+      status: newStatusProperty.status,
+      todoOption: findOptionById(savedStatus.todoOption?.id),
+      inProgressOption: findOptionById(savedStatus.inProgressOption?.id),
+      completeOption: findOptionById(savedStatus.completeOption?.id),
+    );
+  }
 
   StatusCompleteStatusProperty copyWith({
+    String? id,
+    String? name,
+    ({List<StatusOption> options, List<StatusGroup> groups})? status,
     StatusOption? todoOption,
     StatusOption? inProgressOption,
     StatusOption? completeOption,
   }) {
     return StatusCompleteStatusProperty(
-      id: id,
-      name: name,
-      status: status,
+      id: id ?? this.id,
+      name: name ?? this.name,
+      status: status ?? this.status,
       todoOption: todoOption ?? this.todoOption,
       inProgressOption: inProgressOption ?? this.inProgressOption,
       completeOption: completeOption ?? this.completeOption,
@@ -172,6 +285,48 @@ class StatusCompleteStatusProperty extends CompleteStatusProperty {
   Map<String, dynamic> toJson() => _$StatusCompleteStatusPropertyToJson(this);
 }
 
+abstract interface class OptionBase {
+  final String id;
+  final String name;
+  final NotionColor? color;
+
+  OptionBase({
+    required this.id,
+    required this.name,
+    this.color,
+  });
+
+  Color get mColor => color?.toColor() ?? Colors.grey;
+}
+
+@JsonSerializable(explicitToJson: true)
+class SelectOption extends OptionBase {
+  SelectOption({
+    required String id,
+    required String name,
+    @JsonKey(fromJson: NotionColor.fromString) NotionColor? color,
+  }) : super(id: id, name: name, color: color);
+
+  factory SelectOption.fromJson(Map<String, dynamic> json) =>
+      _$SelectOptionFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SelectOptionToJson(this);
+}
+
+@JsonSerializable(explicitToJson: true)
+class StatusOption extends OptionBase {
+  StatusOption({
+    required String id,
+    required String name,
+    @JsonKey(fromJson: NotionColor.fromString) NotionColor? color,
+  }) : super(id: id, name: name, color: color);
+
+  factory StatusOption.fromJson(Map<String, dynamic> json) =>
+      _$StatusOptionFromJson(json);
+
+  Map<String, dynamic> toJson() => _$StatusOptionToJson(this);
+}
+
 enum StatusGroupType {
   todo('To-do'),
   inProgress('In progress'),
@@ -181,44 +336,23 @@ enum StatusGroupType {
   const StatusGroupType(this.value);
 }
 
-/// ステータスプロパティの基底クラス
-abstract interface class StatusPropertyBase {
-  String id;
-  String name;
-  String? color;
-
-  StatusPropertyBase({
-    required this.id,
-    required this.name,
-    required this.color,
-  });
-}
-
-@JsonSerializable()
-class StatusOption extends StatusPropertyBase {
-  StatusOption({
-    required String id,
-    required String name,
-    required String? color,
-  }) : super(id: id, name: name, color: color);
-
-  factory StatusOption.fromJson(Map<String, dynamic> json) =>
-      _$StatusOptionFromJson(json);
-
-  Map<String, dynamic> toJson() => _$StatusOptionToJson(this);
-}
-
-@JsonSerializable()
-class StatusGroup extends StatusPropertyBase {
+@JsonSerializable(explicitToJson: true)
+class StatusGroup extends OptionBase {
   @JsonKey(name: 'option_ids')
   final List<String> optionIds;
 
   StatusGroup({
     required String id,
     required String name,
-    required String? color,
+    @JsonKey(fromJson: NotionColor.fromString) NotionColor? color,
     required this.optionIds,
   }) : super(id: id, name: name, color: color);
+
+  List<StatusOption> getStatusOptionsByGroup(
+    List<StatusOption> options,
+  ) {
+    return options.where((option) => optionIds.contains(option.id)).toList();
+  }
 
   factory StatusGroup.fromJson(Map<String, dynamic> json) =>
       _$StatusGroupFromJson(json);
@@ -226,23 +360,11 @@ class StatusGroup extends StatusPropertyBase {
   Map<String, dynamic> toJson() => _$StatusGroupToJson(this);
 }
 
-@JsonSerializable()
-class StatusOptionsByGroup {
-  final StatusGroupType groupType;
-  final List<StatusOption> options;
-
-  StatusOptionsByGroup({required this.groupType, required this.options});
-
-  factory StatusOptionsByGroup.fromJson(Map<String, dynamic> json) =>
-      _$StatusOptionsByGroupFromJson(json);
-
-  Map<String, dynamic> toJson() => _$StatusOptionsByGroupToJson(this);
-}
-
 /// NotionのAPIで定義されている色の列挙型
 enum NotionColor {
   blue,
   brown,
+  @JsonValue('default')
   defaultColor,
   gray,
   green,
@@ -254,16 +376,16 @@ enum NotionColor {
 
   Color toColor() {
     return switch (this) {
-      NotionColor.blue => const Color.fromARGB(255, 84, 162, 163),
-      NotionColor.brown => const Color.fromARGB(255, 125, 110, 99),
-      NotionColor.gray => const Color.fromARGB(255, 124, 118, 108),
-      NotionColor.green => const Color.fromARGB(255, 91, 138, 85),
-      NotionColor.orange => const Color.fromARGB(255, 211, 108, 54),
-      NotionColor.pink => const Color.fromARGB(255, 207, 102, 121),
-      NotionColor.purple => const Color.fromARGB(255, 121, 134, 203),
-      NotionColor.red => const Color.fromARGB(255, 186, 26, 26),
-      NotionColor.yellow => const Color.fromARGB(255, 221, 187, 45),
-      NotionColor.defaultColor => const Color.fromARGB(255, 103, 94, 70),
+      NotionColor.blue => const Color.fromARGB(255, 66, 135, 136),
+      NotionColor.brown => const Color.fromARGB(255, 109, 93, 81),
+      NotionColor.gray => const Color.fromARGB(255, 105, 99, 90),
+      NotionColor.green => const Color.fromARGB(255, 75, 113, 70),
+      NotionColor.orange => const Color.fromARGB(255, 194, 110, 46),
+      NotionColor.pink => const Color.fromARGB(255, 175, 87, 102),
+      NotionColor.purple => const Color.fromARGB(255, 97, 107, 161),
+      NotionColor.red => const Color.fromARGB(255, 148, 26, 26),
+      NotionColor.yellow => const Color.fromARGB(255, 167, 144, 54),
+      NotionColor.defaultColor => const Color.fromARGB(255, 86, 78, 59),
     };
   }
 
@@ -274,42 +396,4 @@ enum NotionColor {
       orElse: () => NotionColor.defaultColor,
     );
   }
-}
-
-@JsonSerializable()
-class SelectOption {
-  final String id;
-  final String name;
-  @JsonKey(fromJson: NotionColor.fromString)
-  final NotionColor? color;
-
-  SelectOption({
-    required this.id,
-    required this.name,
-    this.color,
-  });
-
-  Color get mColor => color?.toColor() ?? Colors.grey;
-
-  factory SelectOption.fromJson(Map<String, dynamic> json) =>
-      _$SelectOptionFromJson(json);
-
-  Map<String, dynamic> toJson() => _$SelectOptionToJson(this);
-}
-
-@JsonSerializable()
-class SelectProperty extends Property {
-  final List<SelectOption> options;
-
-  SelectProperty({
-    required String id,
-    required String name,
-    required this.options,
-  }) : super(id: id, name: name, type: PropertyType.select);
-
-  factory SelectProperty.fromJson(Map<String, dynamic> json) =>
-      _$SelectPropertyFromJson(json);
-
-  @override
-  Map<String, dynamic> toJson() => _$SelectPropertyToJson(this);
 }

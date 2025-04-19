@@ -32,7 +32,7 @@ class MaterialTheme {
       surfaceVariant: Color(0xffe9e2d5),
       onSurfaceVariant: Color(0xff4b463d),
       outline: Color(0xff7c766c),
-      outlineVariant: Color(0xffcdc6b9),
+      outlineVariant: Color.fromARGB(80, 205, 198, 185),
       shadow: Color(0xff000000),
       scrim: Color(0xff000000),
       inverseSurface: Color(0xff32302e),

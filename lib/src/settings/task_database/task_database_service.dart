@@ -13,29 +13,27 @@ class TaskDatabaseService {
 
   Future<TaskDatabase?> loadSetting() async {
     final pref = await SharedPreferences.getInstance();
-    final taskDatabaseJson = pref.getString(_taskDatabaseKey);
-    if (taskDatabaseJson == null) {
+    final taskDatabaseString = pref.getString(_taskDatabaseKey);
+    if (taskDatabaseString == null) {
       return null;
     }
-    try {
-      final taskDatabase = TaskDatabase.fromJson(jsonDecode(taskDatabaseJson));
-      if (notionDatabaseRepository != null) {
-        return await _updateDatabaseWithLatestInfo(taskDatabase);
-      }
-      return taskDatabase;
-    } catch (e) {
-      print('Failed to load task database: $e');
-      clear();
-      return null;
-    }
+    final taskDatabaseJson = jsonDecode(taskDatabaseString);
+    return TaskDatabase.fromJson(taskDatabaseJson);
   }
 
   /// 保存されているデータベース情報を最新の情報で更新する
-  Future<TaskDatabase> _updateDatabaseWithLatestInfo(
+  Future<TaskDatabase?> updateDatabaseWithLatestInfo(
       TaskDatabase taskDatabase) async {
     try {
       final latestDatabase = await _fetchDatabase(taskDatabase.id);
-      return _updateTaskDatabaseProperties(taskDatabase, latestDatabase);
+      final updatedTaskDatabase =
+          _updateTaskDatabaseProperties(taskDatabase, latestDatabase);
+      final isEqual = _isEqualTaskDatabase(taskDatabase, updatedTaskDatabase);
+      if (!isEqual) {
+        await save(updatedTaskDatabase);
+        return updatedTaskDatabase;
+      }
+      return null;
     } catch (e) {
       rethrow;
     }
@@ -53,39 +51,77 @@ class TaskDatabaseService {
   /// データベースのプロパティを最新の情報で更新する
   TaskDatabase _updateTaskDatabaseProperties(
       TaskDatabase savedDatabase, Database latestDatabase) {
-    // 保存されているプロパティのIDを使って最新のプロパティを探す
-    final titleProperty = latestDatabase.properties.firstWhere(
-        (p) => p.id == savedDatabase.title.id,
-        orElse: () => savedDatabase.title);
-    final statusProperty = latestDatabase.properties.firstWhere(
-        (p) => p.id == savedDatabase.status.id,
-        orElse: () => savedDatabase.status);
-    final dateProperty = latestDatabase.properties.firstWhere(
-        (p) => p.id == savedDatabase.date.id,
-        orElse: () => savedDatabase.date);
+    Property findProperty(String targetId, List<Property> latestProperties) {
+      return latestProperties.firstWhere((p) => p.id == targetId,
+          orElse: () => throw Exception('Property not found: $targetId'));
+    }
+
+    final titleProperty =
+        findProperty(savedDatabase.title.id, latestDatabase.properties);
+    var statusProperty =
+        findProperty(savedDatabase.status.id, latestDatabase.properties);
+    final dateProperty =
+        findProperty(savedDatabase.date.id, latestDatabase.properties);
     final priorityProperty = savedDatabase.priority != null
-        ? latestDatabase.properties.firstWhere(
-            (p) => p.id == savedDatabase.priority!.id,
-            orElse: () => savedDatabase.priority!)
+        ? findProperty(savedDatabase.priority!.id, latestDatabase.properties)
         : null;
 
-    // プロパティの型チェック
     if (titleProperty is! TitleProperty ||
-        statusProperty is! CompleteStatusProperty ||
         dateProperty is! DateProperty ||
-        (savedDatabase.priority != null &&
-            priorityProperty is! SelectProperty)) {
+        (statusProperty is! CheckboxProperty &&
+            statusProperty is! StatusProperty) ||
+        (priorityProperty is! SelectProperty)) {
       throw Exception('Property types do not match');
     }
+
+    final updatedStatusProperty =
+        switch ((statusProperty, savedDatabase.status)) {
+      (StatusProperty status, StatusCompleteStatusProperty savedStatus) =>
+        StatusCompleteStatusProperty.fromSavedStatusOptions(
+          newStatusProperty: status,
+          savedStatus: savedStatus,
+        ),
+      (CheckboxProperty checkbox, _) =>
+        CheckboxCompleteStatusProperty.fromJson(checkbox.toJson()),
+      _ => throw Exception('Invalid property type'),
+    };
 
     return TaskDatabase(
       id: latestDatabase.id,
       name: latestDatabase.name,
       title: titleProperty,
-      status: statusProperty,
+      status: updatedStatusProperty as CompleteStatusProperty,
       date: dateProperty,
-      priority: priorityProperty as SelectProperty?,
+      priority: priorityProperty,
     );
+  }
+
+  bool _isEqualTaskDatabase(TaskDatabase a, TaskDatabase b) {
+    // statusがStatusCompleteStatusPropertyの場合、optionのnameも比較する
+    final isSameStatusOptionName = switch ((a.status, b.status)) {
+      (
+        StatusCompleteStatusProperty statusA,
+        StatusCompleteStatusProperty statusB
+      ) =>
+        statusA.todoOption?.name == statusB.todoOption?.name &&
+            statusA.inProgressOption?.name == statusB.inProgressOption?.name &&
+            statusA.completeOption?.name == statusB.completeOption?.name,
+      _ => true,
+    };
+    // priorityがある場合、optionのnameも比較する
+    final isSamePriorityOptionName = switch ((a.priority, b.priority)) {
+      (SelectProperty priorityA, SelectProperty priorityB) =>
+        priorityA.select.options.map((e) => e.name).toList() ==
+            priorityB.select.options.map((e) => e.name).toList(),
+      _ => true,
+    };
+    return a.id == b.id &&
+        a.name == b.name &&
+        a.title.name == b.title.name &&
+        a.date.name == b.date.name &&
+        a.status.name == b.status.name &&
+        isSameStatusOptionName &&
+        isSamePriorityOptionName;
   }
 
   Future<void> save(TaskDatabase taskDatabase) async {
@@ -117,7 +153,7 @@ class TaskDatabaseService {
     if (data == null) {
       return null;
     }
-    final properties = _getProperties(data["properties"]);
+    final properties = _getPropertiesFromJson(data["properties"]);
     return properties
         .where((property) =>
             property.name == name && property.type.name == type.name)
@@ -129,74 +165,17 @@ class TaskDatabaseService {
     final name =
         e['title'].length > 0 ? e['title'][0]['plain_text'] : 'NoTitle';
     final url = e['url'];
-    final properties = _getProperties(e['properties']);
+    final properties = _getPropertiesFromJson(e['properties']);
     return Database(id: id, name: name, url: url, properties: properties);
   }
 
-  List<Property> _getProperties(Map<String, dynamic> properties) =>
-      properties.entries
-          // typeがtitle, date, checkbox, status, selectのものだけを取得
-          .where((entry) =>
-              entry.value['type'] == 'title' ||
-              entry.value['type'] == 'status' ||
-              entry.value['type'] == 'checkbox' ||
-              entry.value['type'] == 'date' ||
-              entry.value['type'] == 'select')
-          .map<Property>((entry) {
-        final property = entry.value;
-        final id = property['id'] as String;
-        final name = property['name'] as String;
-        final type = property['type'] as String;
-
-        switch (type) {
-          case 'title':
-            return TitleProperty(
-              id: id,
-              name: name,
-              title: property['title'].isEmpty
-                  ? ''
-                  : property['title'][0]['plain_text'],
-            );
-          case 'date':
-            return DateProperty(
-              id: id,
-              name: name,
-            );
-          case 'checkbox':
-            return CheckboxCompleteStatusProperty(
-              id: id,
-              name: name,
-              checked: false,
-            );
-          case 'status':
-            final options = (property['status']['options'] as List<dynamic>)
-                .map((option) => StatusOption.fromJson(option))
-                .toList();
-            final groups = (property['status']['groups'] as List<dynamic>)
-                .map((group) => StatusGroup.fromJson(group))
-                .toList();
-            return StatusCompleteStatusProperty(
-              id: id,
-              name: name,
-              status: (
-                options: options,
-                groups: groups,
-              ),
-              todoOption: null,
-              inProgressOption: null,
-              completeOption: null,
-            );
-          case 'select':
-            final options = (property['select']['options'] as List<dynamic>)
-                .map((option) => SelectOption.fromJson(option))
-                .toList();
-            return SelectProperty(
-              id: id,
-              name: name,
-              options: options,
-            );
-          default:
-            throw Exception('Unknown property type: $type');
-        }
-      }).toList();
+  List<Property> _getPropertiesFromJson(Map<String, dynamic> properties) {
+    final list = properties.entries
+        // typeがtitle, date, checkbox, status, selectのものだけを取得
+        .where((entry) => PropertyType.values
+            .any((propertyType) => propertyType.name == entry.value['type']));
+    return list
+        .map<Property>((entry) => Property.fromJson(entry.value))
+        .toList();
+  }
 }
