@@ -2,20 +2,16 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
-import 'package:background_fetch/background_fetch.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-import 'src/common/utils/notion_converter.dart';
+import 'src/common/background/background_fetch_service.dart';
 import 'src/app.dart';
 import 'src/env/env.dart';
-import 'src/notion/repository/notion_task_repository.dart';
 import 'src/widget/widget_service.dart';
 import 'firebase_options.dart';
 
@@ -42,7 +38,7 @@ void main() async {
   await WidgetService.initialize(interactivityCallback);
 
   // BackgroundFetchの初期化
-  await initBackgroundFetch();
+  await BackgroundFetchService.initialize();
 
   final app = ProviderScope(
     observers: trackingEnabled ? [SentryProviderObserver()] : [],
@@ -72,78 +68,6 @@ void main() async {
   }
 
   FlutterNativeSplash.remove();
-}
-
-// BackgroundFetchの初期化
-Future<void> initBackgroundFetch() async {
-  try {
-    // バックグラウンドフェッチの設定
-    var status = await BackgroundFetch.configure(
-      BackgroundFetchConfig(
-        minimumFetchInterval: 15, // 15分間隔
-        stopOnTerminate: false,
-        enableHeadless: true,
-        requiresBatteryNotLow: false,
-        requiresCharging: false,
-        requiresStorageNotLow: false,
-        requiresDeviceIdle: false,
-        startOnBoot: true,
-      ),
-      _onBackgroundFetch,
-      _onBackgroundFetchTimeout,
-    );
-    print("[BackgroundFetch] configure success: $status");
-
-    // バックグラウンドフェッチの開始
-    BackgroundFetch.start();
-  } catch (e) {
-    print("[BackgroundFetch] configure error: $e");
-  }
-}
-
-// バックグラウンドフェッチのコールバック
-void _onBackgroundFetch(String taskId) async {
-  print("[BackgroundFetch] Event received: $taskId");
-  await _refreshTodayTasks();
-  BackgroundFetch.finish(taskId);
-}
-
-// タイムアウト時のコールバック
-void _onBackgroundFetchTimeout(String taskId) {
-  print("[BackgroundFetch] TIMEOUT: $taskId");
-  BackgroundFetch.finish(taskId);
-}
-
-// ウィジェットはアプリとは別プロセスで動作するため、Riverpodを使わずに直接データを取得する
-Future<void> _refreshTodayTasks() async {
-  // ウィジェットの更新
-  final widgetValue = await WidgetService.value;
-  final accessToken = widgetValue.accessToken;
-  final taskDatabase = widgetValue.taskDatabase;
-  if (accessToken != null && taskDatabase != null) {
-    try {
-      final repository = NotionTaskRepository(accessToken, taskDatabase);
-      final result = await repository.fetchPages(FilterType.today, true);
-      final tasks = NotionConverter.convertToTasks(result, taskDatabase);
-      await WidgetService.applyTasks(tasks);
-
-      // バッジを更新
-      final prefs = await SharedPreferences.getInstance();
-      final showBadge = prefs.getBool('show_notification_badge') ?? true;
-      if (showBadge) {
-        final notCompletedCount =
-            tasks.where((task) => !task.isCompleted).length;
-        await FlutterAppBadger.updateBadgeCount(notCompletedCount);
-      } else {
-        await FlutterAppBadger.removeBadge();
-      }
-
-      print(
-          "[BackgroundFetch] Tasks refreshed successfully: ${tasks.length} tasks");
-    } catch (e) {
-      print("[BackgroundFetch] Error refreshing tasks: $e");
-    }
-  }
 }
 
 class SentryProviderObserver extends ProviderObserver {
