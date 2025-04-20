@@ -57,7 +57,6 @@ class TaskBaseScaffold extends HookConsumerWidget {
               onShowCompletedChanged(!showCompleted!);
             },
           ),
-
         // 並び替えメニュー
         CustomPopupMenuItem(
           id: 'sort_options',
@@ -91,6 +90,14 @@ class TaskBaseScaffold extends HookConsumerWidget {
                 ? Text(l.navigation_index, style: const TextStyle(fontSize: 20))
                 : null,
             actions: [
+              IconButton(
+                key: customMenu.buttonKey,
+                icon: Icon(
+                  Icons.more_horiz_rounded,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+                onPressed: customMenu.toggle,
+              ),
               // TODO: サイドバーができたら移動する
               IconButton(
                 icon: showSettingBadge
@@ -104,15 +111,6 @@ class TaskBaseScaffold extends HookConsumerWidget {
                   Navigator.restorablePushNamed(
                       context, SettingsPage.routeName);
                 },
-              ),
-
-              IconButton(
-                key: customMenu.buttonKey,
-                icon: Icon(
-                  Icons.more_horiz_rounded,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-                onPressed: customMenu.toggle,
               ),
             ]),
         body: body,
