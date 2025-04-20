@@ -122,8 +122,6 @@ class TaskListView extends HookConsumerWidget {
               final newTask = task.copyWith(dueDate: date);
               await taskViewModel.updateTask(newTask);
             }
-
-            // ハプティックフィードバック
             HapticHelper.selection();
           },
         ),
