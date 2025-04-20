@@ -170,7 +170,7 @@ class TaskListView extends HookConsumerWidget {
                 error: (_, __) => const SizedBox(),
               ),
 
-            // 期限切れタスク（今日のタスク表示の場合のみ表示）
+            // 期限切れタスク
             if (overdueTasks.isNotEmpty) ...[
               Padding(
                 padding: const EdgeInsets.fromLTRB(32, 0, 32, 8),
@@ -179,16 +179,16 @@ class TaskListView extends HookConsumerWidget {
                   splashFactory: NoSplash.splashFactory,
                   highlightColor: Colors.transparent,
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Text(
                         l.overdue_tasks,
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                            color: Theme.of(context).colorScheme.secondary),
+                            color: Theme.of(context).colorScheme.error),
                       ),
-                      const SizedBox(width: 4),
-                      Icon(Icons.restore,
-                          size: 18,
-                          color: Theme.of(context).colorScheme.secondary),
+                      const SizedBox(width: 2),
+                      Icon(Icons.refresh,
+                          size: 18, color: Theme.of(context).colorScheme.error),
                     ],
                   ),
                 ),
