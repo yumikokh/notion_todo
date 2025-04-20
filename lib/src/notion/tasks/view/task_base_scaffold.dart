@@ -4,7 +4,9 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../common/ui/custom_popup_menu.dart';
 import '../../../helpers/haptic_helper.dart';
 import '../../../settings/view/settings_page.dart';
+import '../../common/filter_type.dart';
 import '../../model/task.dart';
+import 'sort_options_bottom_sheet.dart';
 import 'task_sheet/task_sheet.dart';
 
 class TaskBaseScaffold extends HookConsumerWidget {
@@ -33,6 +35,7 @@ class TaskBaseScaffold extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final isToday = currentIndex == 0;
+    final filterType = isToday ? FilterType.today : FilterType.all;
 
     // カスタムメニューの設定
     final customMenu = useCustomPopupMenu(
@@ -53,6 +56,21 @@ class TaskBaseScaffold extends HookConsumerWidget {
               onShowCompletedChanged(!showCompleted!);
             },
           ),
+
+        // 並び替えメニュー
+        CustomPopupMenuItem(
+          id: 'sort_options',
+          title: Text(l.sort_options),
+          leading: Icon(
+            Icons.sort,
+            size: 18,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+          onTap: () async {
+            HapticHelper.selection();
+            await showSortOptionsBottomSheet(context, filterType);
+          },
+        ),
       ],
       animationDuration: const Duration(milliseconds: 30),
       animationCurve: Curves.easeOut,

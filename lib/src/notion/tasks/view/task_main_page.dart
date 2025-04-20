@@ -11,7 +11,7 @@ import '../../../helpers/date.dart';
 import '../../../helpers/haptic_helper.dart';
 import '../../../settings/settings_viewmodel.dart';
 import '../../../settings/view/notion_settings_page.dart';
-import '../../repository/notion_task_repository.dart';
+import '../../common/filter_type.dart';
 import '../../../settings/task_database/task_database_viewmodel.dart';
 import '../task_viewmodel.dart';
 import 'task_list_view.dart';

@@ -263,5 +263,11 @@
   "task_priority_dialog_cancel": "Cancel",
   "task_priority_dialog_settings": "Settings",
   "show_completed_tasks": "Show Completed Tasks",
-  "completed_tasks": "Completed"
+  "completed_tasks": "Completed",
+  "sort_options": "Sort",
+  "sort_by": "Sort by",
+  "sort_by_default": "Default",
+  "sort_by_date": "Date",
+  "sort_by_title": "Title",
+  "sort_by_priority": "Priority"
 }

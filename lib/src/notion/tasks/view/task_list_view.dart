@@ -6,8 +6,8 @@ import '../../../helpers/date.dart';
 import '../../../settings/font/font_constants.dart';
 import '../../../settings/font/font_settings_viewmodel.dart';
 import '../../../settings/settings_viewmodel.dart';
+import '../../common/filter_type.dart';
 import '../../model/task.dart';
-import '../../repository/notion_task_repository.dart';
 import '../task_viewmodel.dart';
 import './task_dismissible.dart';
 
