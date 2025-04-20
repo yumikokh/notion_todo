@@ -5,6 +5,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../common/utils/notion_converter.dart';
 import '../../settings/task_database/task_database_viewmodel.dart';
+import '../common/filter_type.dart';
 import '../model/task.dart';
 import '../model/task_database.dart';
 import '../repository/notion_task_repository.dart';

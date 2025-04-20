@@ -6,6 +6,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:home_widget/home_widget.dart';
 import 'package:page_transition/page_transition.dart';
 
+import '../notion/common/filter_type.dart';
 import '../notion/model/task.dart';
 import '../notion/model/task_database.dart';
 import '../notion/repository/notion_task_repository.dart';

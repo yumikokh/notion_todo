@@ -7,6 +7,7 @@ import 'common/snackbar/view/snackbar_listener.dart';
 import 'helpers/date.dart';
 import 'common/app_lifecycle_observer.dart';
 import 'common/app_version/view/app_version_notifier.dart';
+import 'notion/common/filter_type.dart';
 import 'settings/task_database/view/task_database_setting_page.dart';
 import 'notion/tasks/view/task_main_page.dart';
 import 'settings/view/appearance_settings_page.dart';
@@ -22,7 +23,6 @@ import 'settings/theme/util.dart';
 import 'settings/view/theme_settings_page.dart';
 import 'widget/widget_service.dart';
 import 'notion/tasks/task_viewmodel.dart';
-import 'notion/repository/notion_task_repository.dart';
 
 /// The Widget that configures your application.
 class MyApp extends HookConsumerWidget {

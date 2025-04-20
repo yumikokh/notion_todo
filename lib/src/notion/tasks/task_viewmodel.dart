@@ -11,9 +11,9 @@ import '../../common/snackbar/snackbar.dart';
 import '../../helpers/date.dart';
 import '../../settings/settings_viewmodel.dart';
 import '../../settings/task_database/task_database_viewmodel.dart';
+import '../common/filter_type.dart';
 import '../model/property.dart';
 import '../model/task.dart';
-import '../repository/notion_task_repository.dart';
 import 'task_service.dart';
 import '../../common/analytics/analytics_service.dart';
 import '../../common/app_review/app_review_service.dart';
@@ -58,7 +58,6 @@ class TaskViewModel extends _$TaskViewModel {
     // もしpageSize以上のタスクがあったとき、「showCompleted」と「Load more」の不整合がおきるがいったん無視
     _hasCompleted = filterType == FilterType.today;
 
-    final statusProperty = taskDatabaseViewModel.status;
     final tasks = await _fetchTasks(isFirstFetch: true);
 
     if (filterType == FilterType.today) {
@@ -69,18 +68,6 @@ class TaskViewModel extends _$TaskViewModel {
 
       // ウィジェット更新
       await _updateTodayWidget(tasks);
-    }
-
-    if (statusProperty is StatusCompleteStatusProperty) {
-      final inProgressOption = statusProperty.inProgressOption;
-      if (inProgressOption == null) {
-        return tasks;
-      }
-      // task.inProgressを先頭にする
-      return [
-        ...tasks.where((task) => task.isInProgress(inProgressOption)),
-        ...tasks.where((task) => !task.isInProgress(inProgressOption)),
-      ];
     }
 
     return tasks;

@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:tanzaku_todo/src/notion/common/filter_type.dart';
 import 'package:tanzaku_todo/src/notion/model/property.dart';
 import 'package:tanzaku_todo/src/notion/model/task.dart';
 import 'package:tanzaku_todo/src/notion/model/task_database.dart';

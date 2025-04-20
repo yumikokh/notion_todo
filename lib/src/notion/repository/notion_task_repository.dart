@@ -12,10 +12,9 @@ import '../model/task.dart';
 import '../model/task_database.dart';
 import '../oauth/notion_oauth_viewmodel.dart';
 import '../../settings/task_database/task_database_viewmodel.dart';
+import '../common/filter_type.dart';
 
 part 'notion_task_repository.g.dart';
-
-enum FilterType { today, all }
 
 class NotionTaskRepository {
   final String accessToken;
