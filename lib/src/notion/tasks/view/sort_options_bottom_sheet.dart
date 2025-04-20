@@ -16,7 +16,7 @@ class SortOptionsBottomSheet extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentSortType = ref.watch(sortTypeProvider(filterType));
+    final currentSortType = ref.watch(currentSortTypeProvider(filterType));
     final l = AppLocalizations.of(context)!;
 
     return Container(
@@ -80,10 +80,8 @@ class SortOptionsBottomSheet extends HookConsumerWidget {
     return InkWell(
       onTap: () async {
         await HapticHelper.light();
-        // SortTypeプロバイダーを更新
-        ref.read(sortTypeProvider(filterType).notifier).state = option;
-        // 永続化
-        await saveSortType(filterType, option);
+        // SortTypeを更新
+        ref.read(taskSortProvider.notifier).setSortType(filterType, option);
 
         if (context.mounted) {
           Navigator.of(context).pop();
