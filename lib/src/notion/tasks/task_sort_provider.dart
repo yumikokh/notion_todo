@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../settings/task_database/task_database_viewmodel.dart';
 import '../common/filter_type.dart';
@@ -11,10 +12,26 @@ part 'task_sort_provider.g.dart';
 
 // ソートタイプの列挙型
 enum SortType {
-  system, // デフォルト（ドラッグで並び替え可能）
+  system, // デフォルト(inProgress → 日付 → 優先度 → 作成日)
   date, // 日付順
   title, // タイトル順
   priority, // 優先度順
+}
+
+// ソートタイプの名前を取得する拡張メソッド
+extension SortTypeExtension on SortType {
+  String getLocalizedName(AppLocalizations l) {
+    switch (this) {
+      case SortType.system:
+        return l.sort_by_default;
+      case SortType.date:
+        return l.sort_by_date;
+      case SortType.title:
+        return l.sort_by_title;
+      case SortType.priority:
+        return l.sort_by_priority;
+    }
+  }
 }
 
 // SharedPreferences操作用のサービスクラス

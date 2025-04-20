@@ -59,14 +59,10 @@ class SortOptionsBottomSheet extends HookConsumerWidget {
             const SizedBox(height: 16),
 
             // オプションリスト
-            _buildOptionItem(context, ref, SortType.system, l.sort_by_default,
-                currentSortType),
-            _buildOptionItem(
-                context, ref, SortType.date, l.sort_by_date, currentSortType),
-            _buildOptionItem(
-                context, ref, SortType.title, l.sort_by_title, currentSortType),
-            _buildOptionItem(context, ref, SortType.priority,
-                l.sort_by_priority, currentSortType),
+            _buildOptionItem(context, ref, SortType.system, currentSortType),
+            _buildOptionItem(context, ref, SortType.date, currentSortType),
+            _buildOptionItem(context, ref, SortType.title, currentSortType),
+            _buildOptionItem(context, ref, SortType.priority, currentSortType),
           ],
         ),
       ),
@@ -74,8 +70,9 @@ class SortOptionsBottomSheet extends HookConsumerWidget {
   }
 
   Widget _buildOptionItem(BuildContext context, WidgetRef ref, SortType option,
-      String title, SortType currentOption) {
+      SortType currentOption) {
     final isSelected = option == currentOption;
+    final l = AppLocalizations.of(context)!;
 
     return InkWell(
       onTap: () async {
@@ -95,7 +92,8 @@ class SortOptionsBottomSheet extends HookConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: Theme.of(context).textTheme.titleSmall)
+                  Text(option.getLocalizedName(l),
+                      style: Theme.of(context).textTheme.titleSmall)
                 ],
               ),
             ),
