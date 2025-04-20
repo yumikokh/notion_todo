@@ -114,11 +114,9 @@ class TaskListView extends HookConsumerWidget {
         ),
         context: context,
         builder: (context) => TaskDateSheet(
-          selectedDate: null,
+          selectedDate: TaskDate.todayAllDay(),
           confirmable: true,
           onSelected: (TaskDate? date) async {
-            if (date == null) return;
-
             // 期限切れタスクすべてを更新
             for (final task in overdueTasks) {
               final newTask = task.copyWith(dueDate: date);
