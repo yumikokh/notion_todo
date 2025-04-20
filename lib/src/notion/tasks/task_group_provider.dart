@@ -122,8 +122,10 @@ class TaskGroup extends _$TaskGroup {
 
         for (final task in tasks) {
           if (task.dueDate != null) {
-            final dateKey =
-                task.dueDate!.start.datetime.toIso8601String().split('T')[0];
+            final dateKey = task.dueDate!.start.datetime
+                .toLocal()
+                .toIso8601String()
+                .split('T')[0];
             unsortedGroups.putIfAbsent(dateKey, () => []);
             unsortedGroups[dateKey]!.add(task);
           } else {
