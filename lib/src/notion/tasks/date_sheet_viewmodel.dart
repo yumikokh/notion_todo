@@ -40,7 +40,10 @@ class DateSheetViewModel extends ChangeNotifier {
   String get selectedSegment {
     final selectedDateTime = _selectedDateTime;
     if (selectedDateTime == null) return 'no-date';
-    return selectedDateTime.start.submitFormat.split('T')[0];
+    return selectedDateTime.start.datetime
+        .toLocal()
+        .toIso8601String()
+        .split('T')[0];
   }
 
   TaskDate? get submitDateForSegment {

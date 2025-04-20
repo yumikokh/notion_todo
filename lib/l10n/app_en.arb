@@ -241,6 +241,7 @@
       }
     }
   },
+  "overdue_tasks": "Overdue",
   "continuous_task_addition_title": "Continuous Task Addition",
   "continuous_task_addition_description": "Allow continuous task addition",
   "behavior_settings_title": "Behavior",

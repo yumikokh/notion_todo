@@ -3,6 +3,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../helpers/date.dart';
+import '../../../helpers/haptic_helper.dart';
 import '../../../settings/font/font_constants.dart';
 import '../../../settings/font/font_settings_viewmodel.dart';
 import '../../../settings/settings_viewmodel.dart';
@@ -10,6 +11,7 @@ import '../../common/filter_type.dart';
 import '../../model/task.dart';
 import '../task_viewmodel.dart';
 import './task_dismissible.dart';
+import './task_sheet/task_date_sheet.dart';
 
 class TaskListView extends HookConsumerWidget {
   final List<Task> list;
@@ -30,6 +32,10 @@ class TaskListView extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final notCompletedTasks = list.where((task) => !task.isCompleted).toList();
+    final overdueTasks =
+        notCompletedTasks.where((task) => task.isOverdue).toList();
+    final remainingNotCompletedTasks =
+        notCompletedTasks.where((task) => !task.isOverdue).toList();
     final completedTasks = list.where((task) => task.isCompleted).toList();
     final fontSettings = ref.watch(fontSettingsViewModelProvider);
     final themeMode = ref.watch(settingsViewModelProvider).themeMode;
@@ -100,6 +106,28 @@ class TaskListView extends HookConsumerWidget {
       );
     }
 
+    // 期限切れタスクを一括リスケジュールするシート
+    void showRescheduleSheet() {
+      showModalBottomSheet(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        context: context,
+        builder: (context) => TaskDateSheet(
+          selectedDate: TaskDate.todayAllDay(),
+          confirmable: true,
+          onSelected: (TaskDate? date) async {
+            // 期限切れタスクすべてを更新
+            for (final task in overdueTasks) {
+              final newTask = task.copyWith(dueDate: date);
+              await taskViewModel.updateTask(newTask);
+            }
+            HapticHelper.selection();
+          },
+        ),
+      );
+    }
+
     return Stack(
       children: [
         // イラスト+テキスト部分（条件に応じて中央に固定表示）
@@ -138,20 +166,56 @@ class TaskListView extends HookConsumerWidget {
                 error: (_, __) => const SizedBox(),
               ),
 
-            // 未完了タスク
-            ...notCompletedTasks
-                .map((task) => TaskDismissible(
-                    taskViewModel: taskViewModel,
-                    task: task,
-                    themeMode: themeMode))
-                .toList(),
+            // 期限切れタスク
+            if (overdueTasks.isNotEmpty) ...[
+              Padding(
+                padding: const EdgeInsets.fromLTRB(32, 0, 32, 8),
+                child: InkWell(
+                  onTap: showRescheduleSheet,
+                  splashFactory: NoSplash.splashFactory,
+                  highlightColor: Colors.transparent,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(
+                        l.overdue_tasks,
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                            color: Theme.of(context).colorScheme.error),
+                      ),
+                      const SizedBox(width: 2),
+                      Icon(Icons.refresh,
+                          size: 18, color: Theme.of(context).colorScheme.error),
+                    ],
+                  ),
+                ),
+              ),
+              ...overdueTasks
+                  .map((task) => TaskDismissible(
+                      taskViewModel: taskViewModel,
+                      task: task,
+                      themeMode: themeMode))
+                  .toList(),
+              const Divider(height: 0),
+              const SizedBox(height: 30),
+            ],
+
+            // 残りの未完了タスク
+            if (remainingNotCompletedTasks.isNotEmpty) ...[
+              ...remainingNotCompletedTasks
+                  .map((task) => TaskDismissible(
+                      taskViewModel: taskViewModel,
+                      task: task,
+                      themeMode: themeMode))
+                  .toList(),
+              const Divider(height: 0),
+              const SizedBox(height: 30),
+            ],
 
             // 完了タスク
             if (showCompleted && completedTasks.isNotEmpty) ...[
               // 完了タスクのヘッダー
               Padding(
-                padding: EdgeInsets.fromLTRB(
-                    32, notCompletedTasks.isEmpty ? 0 : 24, 32, 8),
+                padding: const EdgeInsets.fromLTRB(32, 0, 32, 8),
                 child: Text(
                   l.completed_tasks,
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
@@ -166,9 +230,8 @@ class TaskListView extends HookConsumerWidget {
                       task: task,
                       themeMode: themeMode))
                   .toList(),
+              const Divider(height: 0),
             ],
-
-            if (centerOverlay == null) const Divider(height: 0),
 
             // ロードボタン
             if (taskViewModel.hasMore)
