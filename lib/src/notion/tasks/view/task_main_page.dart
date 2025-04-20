@@ -13,6 +13,7 @@ import '../../../settings/settings_viewmodel.dart';
 import '../../../settings/view/notion_settings_page.dart';
 import '../../common/filter_type.dart';
 import '../../../settings/task_database/task_database_viewmodel.dart';
+import '../task_sort_provider.dart';
 import '../task_viewmodel.dart';
 import 'task_list_view.dart';
 import 'task_base_scaffold.dart';
@@ -47,10 +48,13 @@ class TaskMainPage extends HookConsumerWidget {
     final hideNavigationLabel =
         ref.watch(settingsViewModelProvider).hideNavigationLabel;
     final fontSettings = ref.watch(fontSettingsViewModelProvider);
+    final taskSort = ref.watch(taskSortProvider.notifier);
 
     // initialTabがnullまたはtabTodayの場合はtrue（今日タブを表示）
     final isToday = initialTab == null || initialTab == tabToday;
     final currentIndex = useMemoized(() => isToday ? 0 : 1);
+    ref.watch(
+        currentSortTypeProvider(isToday ? FilterType.today : FilterType.all));
 
     final l = AppLocalizations.of(context)!;
 
@@ -143,7 +147,7 @@ class TaskMainPage extends HookConsumerWidget {
                       data: (tasks) => TaskListView(
                         title: d.formatDateForTitle(DateTime.now(),
                             locale: fontSettings.value?.languageCode),
-                        list: tasks,
+                        list: taskSort.sortTasks(tasks, FilterType.today),
                         taskViewModel: todayViewModel,
                         showCompleted: todayViewModel.showCompleted,
                       ),
@@ -161,7 +165,7 @@ class TaskMainPage extends HookConsumerWidget {
                     },
                     child: allTasks.when(
                       data: (tasks) => TaskListView(
-                        list: tasks,
+                        list: taskSort.sortTasks(tasks, FilterType.all),
                         taskViewModel: allViewModel,
                         showCompleted: false, // NOTE: Indexページでは常に未完了のみ表示対応
                       ),

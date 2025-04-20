@@ -6,6 +6,23 @@ part of 'task_sort_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
+String _$taskSortServiceHash() => r'171f4f0d04b9f0f266d8a62a6c008a756e31e03c';
+
+/// See also [taskSortService].
+@ProviderFor(taskSortService)
+final taskSortServiceProvider = Provider<TaskSortService>.internal(
+  taskSortService,
+  name: r'taskSortServiceProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$taskSortServiceHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef TaskSortServiceRef = ProviderRef<TaskSortService>;
 String _$currentSortTypeHash() => r'595c6c972cdcfc00cb72e7b02793ec5ea3e31963';
 
 /// Copied from Dart SDK
@@ -157,7 +174,7 @@ class _CurrentSortTypeProviderElement
   FilterType get filterType => (origin as CurrentSortTypeProvider).filterType;
 }
 
-String _$taskSortHash() => r'cd10c813c6c0d2f8f90156ac95c13be7eacc162a';
+String _$taskSortHash() => r'6d91fed6eb0c82f9f88cdc39b690c8f5274d5213';
 
 /// See also [TaskSort].
 @ProviderFor(TaskSort)

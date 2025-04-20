@@ -58,7 +58,6 @@ class TaskViewModel extends _$TaskViewModel {
     // もしpageSize以上のタスクがあったとき、「showCompleted」と「Load more」の不整合がおきるがいったん無視
     _hasCompleted = filterType == FilterType.today;
 
-    final statusProperty = taskDatabaseViewModel.status;
     final tasks = await _fetchTasks(isFirstFetch: true);
 
     if (filterType == FilterType.today) {
@@ -69,18 +68,6 @@ class TaskViewModel extends _$TaskViewModel {
 
       // ウィジェット更新
       await _updateTodayWidget(tasks);
-    }
-
-    if (statusProperty is StatusCompleteStatusProperty) {
-      final inProgressOption = statusProperty.inProgressOption;
-      if (inProgressOption == null) {
-        return tasks;
-      }
-      // task.inProgressを先頭にする
-      return [
-        ...tasks.where((task) => task.isInProgress(inProgressOption)),
-        ...tasks.where((task) => !task.isInProgress(inProgressOption)),
-      ];
     }
 
     return tasks;

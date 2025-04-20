@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../settings/task_database/task_database_viewmodel.dart';
 import '../common/filter_type.dart';
 import '../model/property.dart';
 import '../model/task.dart';
@@ -49,13 +50,21 @@ class TaskSortService {
   }
 }
 
+// TaskSortServiceのProviderを定義
+@Riverpod(keepAlive: true)
+TaskSortService taskSortService(Ref ref) {
+  return TaskSortService();
+}
+
 // タスクのソート機能を提供するNotifier
 @riverpod
 class TaskSort extends _$TaskSort {
-  final TaskSortService _sortService = TaskSortService();
+  late TaskSortService _sortService;
 
   @override
   Future<Map<FilterType, SortType>> build() async {
+    _sortService = ref.read(taskSortServiceProvider);
+
     // 全てのFilterTypeに対するSortTypeを読み込む
     final Map<FilterType, SortType> sortTypes = {};
     for (final type in FilterType.values) {
@@ -84,10 +93,17 @@ class TaskSort extends _$TaskSort {
   }
 
   // タスクリストをソートする
-  List<Task> sortTasks(
-      List<Task> tasks, FilterType filterType, StatusOption? inProgressOption) {
+  List<Task> sortTasks(List<Task> tasks, FilterType filterType) {
     final sortType = getSortType(filterType);
     final sortedTasks = List<Task>.from(tasks);
+
+    final taskDatabaseViewModel =
+        ref.read(taskDatabaseViewModelProvider).valueOrNull;
+    final statusProperty = taskDatabaseViewModel?.status;
+    StatusOption? inProgressOption;
+    if (statusProperty is StatusCompleteStatusProperty) {
+      inProgressOption = statusProperty.inProgressOption;
+    }
 
     // ステータスの二次ソート関数
     int compareByStatus(Task a, Task b) {
@@ -113,14 +129,18 @@ class TaskSort extends _$TaskSort {
           if (a.dueDate == null && b.dueDate == null) {
             return compareByStatus(a, b);
           }
+          if (a.dueDate!.start.datetime == b.dueDate!.start.datetime) {
+            return compareByStatus(a, b);
+          }
           return a.dueDate!.start.datetime.compareTo(b.dueDate!.start.datetime);
         });
         break;
 
       case SortType.title:
         sortedTasks.sort((a, b) {
-          final statusCompare = compareByStatus(a, b);
-          if (statusCompare != 0) return statusCompare;
+          if (a.title == b.title) {
+            return compareByStatus(a, b);
+          }
           return a.title.compareTo(b.title);
         });
         break;
@@ -135,17 +155,21 @@ class TaskSort extends _$TaskSort {
             // 優先度名で比較
             final prioCompare = aPriority.name.compareTo(bPriority.name);
             if (prioCompare != 0) return prioCompare;
+            return compareByStatus(a, b);
           } else if (aPriority != null && bPriority == null) {
             return -1; // 優先度があるタスクを前に
           } else if (aPriority == null && bPriority != null) {
             return 1; // 優先度がないタスクを後ろに
           }
-
           return compareByStatus(a, b);
         });
         break;
 
       case SortType.system:
+        sortedTasks.sort((a, b) {
+          return compareByStatus(a, b);
+        });
+        break;
     }
 
     return sortedTasks;
