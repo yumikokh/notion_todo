@@ -6,7 +6,9 @@ import '../../../helpers/haptic_helper.dart';
 import '../../../settings/view/settings_page.dart';
 import '../../common/filter_type.dart';
 import '../../model/task.dart';
+import '../task_group_provider.dart';
 import '../task_sort_provider.dart';
+import 'group_options_bottom_sheet.dart';
 import 'sort_options_bottom_sheet.dart';
 import 'task_sheet/task_sheet.dart';
 
@@ -60,7 +62,7 @@ class TaskBaseScaffold extends HookConsumerWidget {
         // 並び替えメニュー
         CustomPopupMenuItem(
           id: 'sort_options',
-          title: Text(l.sort_options),
+          title: Text(l.sort_by),
           leading: Icon(
             Icons.sort,
             size: 18,
@@ -75,6 +77,27 @@ class TaskBaseScaffold extends HookConsumerWidget {
           onTap: () async {
             HapticHelper.selection();
             await showSortOptionsBottomSheet(context, filterType);
+          },
+        ),
+        // グループメニュー
+        CustomPopupMenuItem(
+          id: 'group_options',
+          title: Text(l.group_by),
+          leading: Icon(
+            Icons.workspaces_outline,
+            size: 18,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+          trailing: Text(
+            ref.watch(currentGroupTypeProvider(filterType)).getLocalizedName(l),
+            style: Theme.of(context)
+                .textTheme
+                .bodySmall!
+                .copyWith(color: Theme.of(context).colorScheme.secondary),
+          ),
+          onTap: () async {
+            HapticHelper.selection();
+            await showGroupOptionsBottomSheet(context, filterType);
           },
         ),
       ],

@@ -25,11 +25,11 @@ extension SortTypeExtension on SortType {
       case SortType.system:
         return l.sort_by_default;
       case SortType.date:
-        return l.sort_by_date;
+        return l.date_property;
       case SortType.title:
-        return l.sort_by_title;
+        return l.title_property;
       case SortType.priority:
-        return l.sort_by_priority;
+        return l.priority_property;
     }
   }
 }
