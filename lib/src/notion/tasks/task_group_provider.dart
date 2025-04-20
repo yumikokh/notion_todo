@@ -157,20 +157,53 @@ class TaskGroup extends _$TaskGroup {
           try {
             final statusProperty =
                 taskDatabaseViewModel!.status as StatusProperty;
-            final options = statusProperty.status.options;
-            List<MapEntry<String, String>> optionEntries = [];
 
-            // オプションIDと表示名のマッピングを作成
+            // StatusPropertyからオプションとグループを取得
+            final options = statusProperty.status.options;
+            final groups = statusProperty.status.groups;
+
+            // StatusGroupTypeの順序に対応するマップ
+            final groupOrderMap = {
+              StatusGroupType.todo.value: 1,
+              StatusGroupType.inProgress.value: 2,
+              StatusGroupType.complete.value: 3,
+              "": 4, // グループに属さないオプション用
+            };
+
+            // オプションID、グループID、名前のマッピングのリストを作成
+            List<(String, String, String)> optionMappings = [];
+
             for (final option in options) {
-              optionEntries.add(MapEntry(option.id, option.name));
+              // オプションが属するグループを探す
+              String groupName = "";
+              for (final group in groups) {
+                if (group.optionIds.contains(option.id)) {
+                  groupName = group.name;
+                  break;
+                }
+              }
+
+              optionMappings.add((option.id, groupName, option.name));
             }
 
-            // 表示名でソート
-            optionEntries.sort((a, b) => a.value.compareTo(b.value));
+            // 1. グループ順、2. オプション名で並び替え
+            optionMappings.sort((a, b) {
+              // まずグループ順で比較
+              final groupOrderA = groupOrderMap[a.$2] ?? 4;
+              final groupOrderB = groupOrderMap[b.$2] ?? 4;
+
+              if (groupOrderA != groupOrderB) {
+                return groupOrderA.compareTo(groupOrderB);
+              }
+
+              // 同じグループ内ではオプション名で比較
+              return a.$3.toLowerCase().compareTo(b.$3.toLowerCase());
+            });
 
             // ソートされた順序でグループ化
-            for (final entry in optionEntries) {
-              final optionId = entry.key;
+            for (final mapping in optionMappings) {
+              final optionId = mapping.$1;
+
               final taskList = tasks.where((task) {
                 if (task.status is TaskStatusStatus) {
                   final statusTask = task.status as TaskStatusStatus;
