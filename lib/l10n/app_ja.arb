@@ -165,7 +165,7 @@
       }
     }
   },
-  "overdue_tasks": "期限切れ",
+  "reschedule": "リスケジュール",
   "morning_message": "新しい一日の始まりです。\n何から始めますか？",
   "afternoon_message": "こんにちは！\n何から始めますか？",
   "evening_message": "こんばんは。\n今日中に取り組みたいことはありますか？",
@@ -175,16 +175,23 @@
   "sound_credit_description": "OtoLogic (CC BY 4.0)",
   "priority_property": "優先度",
   "priority_property_description": "種類: セレクト",
+  "title_property": "タイトル",
   "task_priority_dialog_title": "優先度プロパティが未設定です",
   "task_priority_dialog_content": "タスクの優先度を設定するには、データベース設定で優先度プロパティを設定してください。",
   "task_priority_dialog_cancel": "キャンセル",
   "task_priority_dialog_settings": "設定",
   "show_completed_tasks": "完了したタスクを表示",
   "completed_tasks": "完了済",
-  "sort_options": "並び替え",
   "sort_by": "並び替え",
   "sort_by_default": "デフォルト",
-  "sort_by_date": "日付",
-  "sort_by_title": "タイトル",
-  "sort_by_priority": "優先度"
+  "group_by": "グループ",
+  "group_by_none": "なし",
+  "no_property": "{property}なし",
+  "@no_property": {
+    "placeholders": {
+      "property": {
+        "type": "String"
+      }
+    }
+  }
 }

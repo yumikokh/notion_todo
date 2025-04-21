@@ -25,11 +25,11 @@
   "notion_settings_view_database_settings_change_database_settings": "Change Database Settings",
   "task_database_settings_title": "Task Database Settings",
   "database": "Database",
-  "status_property": "Status Property",
+  "status_property": "Status",
   "status_property_todo_option": "To-do Option",
   "status_property_in_progress_option": "In Progress Option",
   "status_property_complete_option": "Complete Option",
-  "date_property": "Date Property",
+  "date_property": "Date",
   "todo_option_description": "Status for not completed",
   "in_progress_option_description": "Status for in progress",
   "complete_option_description": "Status for completed",
@@ -241,7 +241,7 @@
       }
     }
   },
-  "overdue_tasks": "Overdue",
+  "reschedule": "Reschedule",
   "continuous_task_addition_title": "Continuous Task Addition",
   "continuous_task_addition_description": "Allow continuous task addition",
   "behavior_settings_title": "Behavior",
@@ -259,16 +259,23 @@
   "sound_credit_description": "OtoLogic (CC BY 4.0)",
   "priority_property": "Priority",
   "priority_property_description": "Type: Select",
+  "title_property": "Title",
   "task_priority_dialog_title": "Priority Property Not Set",
   "task_priority_dialog_content": "Set up the Priority property in database settings to prioritize your tasks!",
   "task_priority_dialog_cancel": "Cancel",
   "task_priority_dialog_settings": "Settings",
   "show_completed_tasks": "Show Completed Tasks",
   "completed_tasks": "Completed",
-  "sort_options": "Sort",
   "sort_by": "Sort by",
   "sort_by_default": "Default",
-  "sort_by_date": "Date",
-  "sort_by_title": "Title",
-  "sort_by_priority": "Priority"
+  "group_by": "Group by",
+  "group_by_none": "None",
+  "no_property": "No {property}",
+  "@no_property": {
+    "placeholders": {
+      "property": {
+        "type": "String"
+      }
+    }
+  }
 }
