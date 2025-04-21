@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 
 import '../../../helpers/date.dart';
 import '../../../helpers/haptic_helper.dart';
@@ -35,11 +34,23 @@ class TaskListView extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final expandedGroups = useState<Map<String, bool>>(const {});
-
     // グループタイプを取得
     final groupType =
         ref.watch(currentGroupTypeProvider(taskViewModel.filterType));
+
+    // グループの開閉状態を取得（グループタイプごとに分ける）
+    final expandedGroupsKey =
+        '${taskViewModel.filterType.name}_${groupType.name}';
+    final expandedGroups = ref.watch(expandedGroupsProvider(expandedGroupsKey));
+    final expandedGroupsNotifier =
+        ref.read(expandedGroupsProvider(expandedGroupsKey).notifier);
+
+    // 完了タスクセクションの開閉状態を取得
+    final isCompletedSectionExpanded = ref
+        .watch(completedTasksSectionExpandedProvider(taskViewModel.filterType));
+    final completedSectionNotifier = ref.read(
+        completedTasksSectionExpandedProvider(taskViewModel.filterType)
+            .notifier);
 
     // タスクをグループ化
     final groupedTasks = ref
@@ -189,6 +200,7 @@ class TaskListView extends HookConsumerWidget {
                   context: context,
                   themeMode: themeMode,
                   expandedGroups: expandedGroups,
+                  expandedGroupsNotifier: expandedGroupsNotifier,
                   ref: ref),
 
             // グループ化しない場合の表示
@@ -244,23 +256,53 @@ class TaskListView extends HookConsumerWidget {
 
               // 完了タスク
               if (showCompleted && completedTasks.isNotEmpty) ...[
-                // 完了タスクのヘッダー
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(32, 0, 32, 8),
-                  child: Text(
-                    l.completed_tasks,
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          color: Theme.of(context).colorScheme.secondary,
+                // 完了タスクのヘッダー（開閉操作可能に）
+                InkWell(
+                  splashFactory: NoSplash.splashFactory,
+                  highlightColor: Colors.transparent,
+                  onTap: () {
+                    HapticHelper.light();
+                    completedSectionNotifier.toggle();
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(32, 0, 32, 8),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            l.completed_tasks,
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleSmall
+                                ?.copyWith(
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                ),
+                          ),
                         ),
+                        // 矢印アイコン - 開閉状態に応じて回転
+                        AnimatedRotation(
+                          turns: isCompletedSectionExpanded ? 0 : -0.25,
+                          duration: const Duration(milliseconds: 200),
+                          child: Icon(
+                            Icons.keyboard_arrow_down,
+                            size: 20,
+                            color: Theme.of(context).colorScheme.secondary,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-                // 完了タスク一覧
-                ...completedTasks
-                    .map((task) => TaskDismissible(
-                        taskViewModel: taskViewModel,
-                        task: task,
-                        themeMode: themeMode))
-                    .toList(),
+
+                // 完了タスク一覧（セクションが開いている場合のみ表示）
+                if (isCompletedSectionExpanded)
+                  ...completedTasks
+                      .map((task) => TaskDismissible(
+                          taskViewModel: taskViewModel,
+                          task: task,
+                          themeMode: themeMode))
+                      .toList(),
                 const Divider(height: 0),
               ],
             ],
@@ -298,7 +340,8 @@ class TaskListView extends HookConsumerWidget {
     required Map<String, List<Task>> groupedTasks,
     required BuildContext context,
     required ThemeMode themeMode,
-    required ValueNotifier<Map<String, bool>> expandedGroups,
+    required Map<String, bool> expandedGroups,
+    required ExpandedGroupsNotifier expandedGroupsNotifier,
     required WidgetRef ref,
   }) {
     final widgets = <Widget>[];
@@ -352,15 +395,8 @@ class TaskListView extends HookConsumerWidget {
       // グループヘッダーを表示するかどうか
       final showGroupHeader = groupId != 'not_completed';
 
-      // 各グループの開閉状態を初期化（まだない場合）
-      if (!expandedGroups.value.containsKey(groupId)) {
-        final updatedGroups = Map<String, bool>.from(expandedGroups.value);
-        updatedGroups[groupId] = true; // デフォルトは開いた状態
-        expandedGroups.value = updatedGroups;
-      }
-
       // 現在のグループの開閉状態
-      final isExpanded = expandedGroups.value[groupId] ?? true;
+      final isExpanded = expandedGroupsNotifier.isExpanded(groupId);
 
       final groupColumn = Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -373,11 +409,7 @@ class TaskListView extends HookConsumerWidget {
               onTap: () {
                 HapticHelper.light();
                 // グループの開閉状態を切り替え
-                final newIsExpanded = !(expandedGroups.value[groupId] ?? true);
-                final updatedGroups =
-                    Map<String, bool>.from(expandedGroups.value);
-                updatedGroups[groupId] = newIsExpanded;
-                expandedGroups.value = updatedGroups;
+                expandedGroupsNotifier.toggleGroup(groupId);
               },
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(32, 0, 32, 8),

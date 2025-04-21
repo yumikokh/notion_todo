@@ -2,6 +2,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter/foundation.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'dart:convert';
 
 import '../../settings/task_database/task_database_viewmodel.dart';
 import '../common/filter_type.dart';
@@ -387,4 +390,174 @@ class TaskGroup extends _$TaskGroup {
 GroupType currentGroupType(Ref ref, FilterType filterType) {
   final groupState = ref.watch(taskGroupProvider);
   return groupState.valueOrNull?[filterType] ?? GroupType.none;
+}
+
+/// グループの展開状態を管理するプロバイダー
+final expandedGroupsProvider = StateNotifierProvider.family<
+    ExpandedGroupsNotifier, Map<String, bool>, String>(
+  (ref, key) => ExpandedGroupsNotifier(key),
+);
+
+/// 「完了タスク」セクションの展開状態を管理するプロバイダー
+final completedTasksSectionExpandedProvider = StateNotifierProvider.family<
+    CompletedTasksExpandedNotifier, bool, FilterType>(
+  (ref, filterType) => CompletedTasksExpandedNotifier(filterType.name),
+);
+
+/// グループの展開状態を管理するStateNotifier
+class ExpandedGroupsNotifier extends StateNotifier<Map<String, bool>> {
+  final String _storageKey;
+  bool _isInitialized = false;
+
+  ExpandedGroupsNotifier(this._storageKey) : super({}) {
+    _loadState();
+  }
+
+  Future<void> _loadState() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final savedState = prefs.getString('expanded_groups_$_storageKey');
+
+      if (savedState != null) {
+        try {
+          final Map<String, dynamic> decoded = jsonDecode(savedState);
+          final Map<String, bool> typedState =
+              decoded.map((key, value) => MapEntry(key, value as bool));
+          state = typedState;
+        } catch (e) {
+          debugPrint('Failed to parse expanded groups state: $e');
+          state = {};
+        }
+      }
+      _isInitialized = true;
+    } catch (e) {
+      debugPrint('Failed to load expanded groups state: $e');
+      _isInitialized = true;
+      state = {};
+    }
+  }
+
+  Future<void> _saveState() async {
+    if (!_isInitialized) {
+      debugPrint('Skipping save because state is not initialized yet');
+      return;
+    }
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('expanded_groups_$_storageKey', jsonEncode(state));
+    } catch (e) {
+      debugPrint('Failed to save expanded groups state: $e');
+    }
+  }
+
+  // グループの展開状態を取得（存在しない場合はデフォルトでtrue）
+  bool isExpanded(String groupId) {
+    return state[groupId] ?? true;
+  }
+
+  void toggleGroup(String groupId) {
+    if (!_isInitialized) {
+      debugPrint('Skipping toggle because state is not initialized yet');
+      return;
+    }
+
+    try {
+      final isExpanded = state[groupId] ?? true;
+      final newState = Map<String, bool>.from(state);
+      newState[groupId] = !isExpanded;
+      state = newState;
+      _saveState();
+    } catch (e) {
+      debugPrint('Error toggling group: $e');
+    }
+  }
+
+  void setGroupExpanded(String groupId, bool expanded) {
+    if (!_isInitialized) {
+      debugPrint(
+          'Skipping setGroupExpanded because state is not initialized yet');
+      return;
+    }
+
+    try {
+      // 現在の値と同じなら何もしない
+      if ((state[groupId] ?? true) == expanded) {
+        return;
+      }
+
+      final newState = Map<String, bool>.from(state);
+      newState[groupId] = expanded;
+      state = newState;
+      _saveState();
+    } catch (e) {
+      debugPrint('Error setting group expanded: $e');
+    }
+  }
+
+  void updateGroups(Map<String, bool> updatedGroups) {
+    if (!_isInitialized) {
+      debugPrint('Skipping updateGroups because state is not initialized yet');
+      return;
+    }
+
+    try {
+      // 変更がなければ何もしない
+      if (mapEquals(state, updatedGroups)) {
+        return;
+      }
+
+      state = Map<String, bool>.from(updatedGroups);
+      _saveState();
+    } catch (e) {
+      debugPrint('Error updating groups: $e');
+    }
+  }
+}
+
+/// 完了タスクセクションの展開状態を管理するStateNotifier
+class CompletedTasksExpandedNotifier extends StateNotifier<bool> {
+  final String _filterType;
+  bool _isInitialized = false;
+
+  CompletedTasksExpandedNotifier(this._filterType) : super(true) {
+    _loadState();
+  }
+
+  Future<void> _loadState() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final savedState = prefs.getBool('completed_tasks_expanded_$_filterType');
+
+      if (savedState != null) {
+        state = savedState;
+      }
+      _isInitialized = true;
+    } catch (e) {
+      debugPrint('Failed to load completed tasks expanded state: $e');
+      _isInitialized = true;
+    }
+  }
+
+  Future<void> _saveState() async {
+    if (!_isInitialized) {
+      return;
+    }
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('completed_tasks_expanded_$_filterType', state);
+    } catch (e) {
+      debugPrint('Failed to save completed tasks expanded state: $e');
+    }
+  }
+
+  void toggle() {
+    if (!_isInitialized) {
+      return;
+    }
+
+    state = !state;
+    _saveState();
+  }
 }
