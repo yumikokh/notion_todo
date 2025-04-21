@@ -106,7 +106,8 @@ class TaskGroup extends _$TaskGroup {
   }
 
   // タスクリストをグループ化する
-  Map<String, List<Task>> groupTasks(List<Task> tasks, FilterType filterType) {
+  Map<String, List<Task>> groupTasks(
+      List<Task> tasks, FilterType filterType, bool showCompleted) {
     final groupType = getGroupType(filterType);
     final taskDatabaseViewModel =
         ref.read(taskDatabaseViewModelProvider).valueOrNull;
@@ -114,11 +115,27 @@ class TaskGroup extends _$TaskGroup {
     // 結果を格納するマップ（順序を保持するためLinkedHashMapを使用）
     Map<String, List<Task>> groupedTasks = {};
 
+    // GroupType.none では完了/未完了でタスクを分ける
+    if (groupType == GroupType.none) {
+      final notCompletedTasks =
+          tasks.where((task) => !task.isCompleted).toList();
+      final completedTasks = tasks.where((task) => task.isCompleted).toList();
+
+      groupedTasks['not_completed'] =
+          _sortTasksInGroup(notCompletedTasks, filterType, showCompleted);
+      if (completedTasks.isNotEmpty) {
+        groupedTasks['completed'] =
+            _sortTasksInGroup(completedTasks, filterType, showCompleted);
+      }
+
+      return groupedTasks;
+    }
+
+    // 以下、グループ化する場合の処理（日付、ステータス、優先度）
     switch (groupType) {
       case GroupType.date:
         // 日付ごとにグループ化
         final unsortedGroups = <String, List<Task>>{};
-        final noDateTasks = <Task>[];
 
         for (final task in tasks) {
           if (task.dueDate != null) {
@@ -129,24 +146,26 @@ class TaskGroup extends _$TaskGroup {
             unsortedGroups.putIfAbsent(dateKey, () => []);
             unsortedGroups[dateKey]!.add(task);
           } else {
-            noDateTasks.add(task);
+            // 日付なしのタスク
+            unsortedGroups.putIfAbsent('no_date', () => []);
+            unsortedGroups['no_date']!.add(task);
           }
         }
 
         // 各グループをソートして追加
         final entries = unsortedGroups.entries.toList();
 
-        // 日付キーで昇順ソート
-        entries.sort((a, b) => a.key.compareTo(b.key));
+        // 日付キーで昇順ソート（no_dateは最後に）
+        entries.sort((a, b) {
+          if (a.key == 'no_date') return 1;
+          if (b.key == 'no_date') return -1;
+          return a.key.compareTo(b.key);
+        });
 
         // 各グループ内のタスクをソート
         for (final entry in entries) {
-          groupedTasks[entry.key] = _sortTasksInGroup(entry.value, filterType);
-        }
-
-        // 日付なしのタスクは「未設定」グループに (最後に追加)
-        if (noDateTasks.isNotEmpty) {
-          groupedTasks['no_date'] = _sortTasksInGroup(noDateTasks, filterType);
+          groupedTasks[entry.key] =
+              _sortTasksInGroup(entry.value, filterType, showCompleted);
         }
 
         return groupedTasks;
@@ -202,6 +221,19 @@ class TaskGroup extends _$TaskGroup {
               return a.$3.toLowerCase().compareTo(b.$3.toLowerCase());
             });
 
+            // ステータスなしタスクを追加
+            final noStatusTasks = tasks.where((task) {
+              if (task.status is TaskStatusStatus) {
+                final statusTask = task.status as TaskStatusStatus;
+                return statusTask.option == null;
+              }
+              return task.status is TaskStatusCheckbox;
+            }).toList();
+
+            if (noStatusTasks.isNotEmpty) {
+              unsortedGroups['no_status'] = noStatusTasks;
+            }
+
             // ソートされた順序でグループ化
             for (final mapping in optionMappings) {
               final optionId = mapping.$1;
@@ -219,138 +251,102 @@ class TaskGroup extends _$TaskGroup {
               }
             }
 
-            // ステータスが設定されていないタスク
-            final noStatusTasks = tasks.where((task) {
-              if (task.status is TaskStatusStatus) {
-                final statusTask = task.status as TaskStatusStatus;
-                return statusTask.option == null;
-              }
-              return task.status is TaskStatusCheckbox;
-            }).toList();
-
-            if (noStatusTasks.isNotEmpty) {
-              unsortedGroups['no_status'] = noStatusTasks;
-            }
-
             // 各グループ内のタスクをソート
             for (final entry in unsortedGroups.entries) {
               groupedTasks[entry.key] =
-                  _sortTasksInGroup(entry.value, filterType);
+                  _sortTasksInGroup(entry.value, filterType, showCompleted);
             }
 
             return groupedTasks;
           } catch (e) {
-            // エラー発生時はデフォルトの完了/未完了グループに分ける
-            final notCompletedTasks =
-                tasks.where((task) => !task.isCompleted).toList();
-            final completedTasks =
-                tasks.where((task) => task.isCompleted).toList();
-
-            groupedTasks['not_completed'] =
-                _sortTasksInGroup(notCompletedTasks, filterType);
-            if (completedTasks.isNotEmpty) {
-              groupedTasks['completed'] =
-                  _sortTasksInGroup(completedTasks, filterType);
-            }
+            // エラー発生時は単純な完了/未完了グループに分ける
+            return _fallbackGrouping(tasks, filterType);
           }
         } else {
-          // チェックボックスの場合、完了/未完了でグループ化
-          final notCompletedTasks =
-              tasks.where((task) => !task.isCompleted).toList();
-          final completedTasks =
-              tasks.where((task) => task.isCompleted).toList();
-
-          groupedTasks['not_completed'] =
-              _sortTasksInGroup(notCompletedTasks, filterType);
-          if (completedTasks.isNotEmpty) {
-            groupedTasks['completed'] =
-                _sortTasksInGroup(completedTasks, filterType);
-          }
+          // Checkboxプロパティの場合、フォールバックグループ化を使用
+          return _fallbackGrouping(tasks, filterType);
         }
-
-        return groupedTasks;
 
       case GroupType.priority:
         // 優先度ごとにグループ化
         final unsortedGroups = <String, List<Task>>{};
-        final noPriorityTasks = <Task>[];
 
+        // すべてのタスクをグループ化
+        for (final task in tasks) {
+          if (task.priority != null) {
+            final priorityKey = task.priority!.id;
+            unsortedGroups.putIfAbsent(priorityKey, () => []);
+            unsortedGroups[priorityKey]!.add(task);
+          } else {
+            // 優先度なしのタスク
+            unsortedGroups.putIfAbsent('no_priority', () => []);
+            unsortedGroups['no_priority']!.add(task);
+          }
+        }
+
+        // 優先度名でソート
         if (taskDatabaseViewModel?.priority != null) {
           try {
-            for (final task in tasks) {
-              if (task.priority != null) {
-                final priorityKey = task.priority!.id;
-                unsortedGroups.putIfAbsent(priorityKey, () => []);
-                unsortedGroups[priorityKey]!.add(task);
-              } else {
-                noPriorityTasks.add(task);
-              }
+            final priorityProperty = taskDatabaseViewModel!.priority!;
+            final priorityOptions = priorityProperty.select.options;
+
+            // 優先度IDから名前へのマッピングを作成
+            final priorityNameMap = {
+              for (var option in priorityOptions) option.id: option.name
+            };
+
+            // グループエントリをソート
+            final entries = unsortedGroups.entries.toList();
+            entries.sort((a, b) {
+              // no_priorityは最後に
+              if (a.key == 'no_priority') return 1;
+              if (b.key == 'no_priority') return -1;
+
+              // 優先度名で比較
+              final nameA = priorityNameMap[a.key] ?? '';
+              final nameB = priorityNameMap[b.key] ?? '';
+              return nameA.toLowerCase().compareTo(nameB.toLowerCase());
+            });
+
+            // ソートされた順序で追加
+            for (final entry in entries) {
+              groupedTasks[entry.key] =
+                  _sortTasksInGroup(entry.value, filterType, showCompleted);
             }
+
+            return groupedTasks;
           } catch (e) {
-            // エラー時は通常どおり処理
-            for (final task in tasks) {
-              if (task.priority != null) {
-                final priorityKey = task.priority!.id;
-                unsortedGroups.putIfAbsent(priorityKey, () => []);
-                unsortedGroups[priorityKey]!.add(task);
-              } else {
-                noPriorityTasks.add(task);
-              }
-            }
-          }
-        } else {
-          // 通常の処理
-          for (final task in tasks) {
-            if (task.priority != null) {
-              final priorityKey = task.priority!.id;
-              unsortedGroups.putIfAbsent(priorityKey, () => []);
-              unsortedGroups[priorityKey]!.add(task);
-            } else {
-              noPriorityTasks.add(task);
-            }
+            // エラー時は通常の処理を続行
           }
         }
 
-        // 各グループ内のタスクをソート
+        // 各グループ内のタスクをソート（通常処理）
         for (final entry in unsortedGroups.entries) {
-          groupedTasks[entry.key] = _sortTasksInGroup(entry.value, filterType);
-        }
-
-        // 優先度なしのタスクは「未設定」グループに (最後に追加)
-        if (noPriorityTasks.isNotEmpty) {
-          groupedTasks['no_priority'] =
-              _sortTasksInGroup(noPriorityTasks, filterType);
+          groupedTasks[entry.key] =
+              _sortTasksInGroup(entry.value, filterType, showCompleted);
         }
 
         return groupedTasks;
 
-      case GroupType.none:
-        // グループ化なし（完了/未完了のみ分ける）
-        final notCompletedTasks =
-            tasks.where((task) => !task.isCompleted).toList();
-        final completedTasks = tasks.where((task) => task.isCompleted).toList();
-
-        groupedTasks['not_completed'] =
-            _sortTasksInGroup(notCompletedTasks, filterType);
-        if (completedTasks.isNotEmpty) {
-          groupedTasks['completed'] =
-              _sortTasksInGroup(completedTasks, filterType);
-        }
-
-        return groupedTasks;
+      default:
+        return _fallbackGrouping(tasks, filterType);
     }
   }
 
   // グループ内のタスクをソートする
-  List<Task> _sortTasksInGroup(List<Task> tasks, FilterType filterType) {
+  List<Task> _sortTasksInGroup(
+      List<Task> tasks, FilterType filterType, bool showCompleted) {
     if (tasks.isEmpty) return tasks;
-
-    // 現在のソートタイプを取得
-    final taskSortNotifier = ref.read(taskSortProvider.notifier);
 
     // タスクを完了/未完了で分ける
     final notCompletedTasks = tasks.where((t) => !t.isCompleted).toList();
     final completedTasks = tasks.where((t) => t.isCompleted).toList();
+
+    // 未完了タスクがない場合は空リストを返す
+    if (notCompletedTasks.isEmpty && !showCompleted) return [];
+
+    // 現在のソートタイプを取得
+    final taskSortNotifier = ref.read(taskSortProvider.notifier);
 
     // それぞれのグループをソート
     final sortedNotCompletedTasks =
@@ -360,6 +356,29 @@ class TaskGroup extends _$TaskGroup {
 
     // 未完了→完了の順で結合
     return [...sortedNotCompletedTasks, ...sortedCompletedTasks];
+  }
+
+  // フォールバックグループ化（エラー時や特殊な場合のフォールバック）
+  Map<String, List<Task>> _fallbackGrouping(
+      List<Task> tasks, FilterType filterType) {
+    final notCompletedTasks = tasks.where((task) => !task.isCompleted).toList();
+    final completedTasks = tasks.where((task) => task.isCompleted).toList();
+
+    final taskSortNotifier = ref.read(taskSortProvider.notifier);
+
+    final Map<String, List<Task>> result = {};
+    if (notCompletedTasks.isNotEmpty) {
+      // 未完了タスクと完了タスクを結合（「未完了」グループには完了タスクは含めない）
+      result['not_completed'] =
+          taskSortNotifier.sortTasks(notCompletedTasks, filterType);
+    }
+    if (completedTasks.isNotEmpty) {
+      // 「完了」専用グループ
+      result['completed'] =
+          taskSortNotifier.sortTasks(completedTasks, filterType);
+    }
+
+    return result;
   }
 }
 

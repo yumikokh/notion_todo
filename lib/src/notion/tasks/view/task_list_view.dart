@@ -41,7 +41,7 @@ class TaskListView extends HookConsumerWidget {
     // タスクをグループ化
     final groupedTasks = ref
         .watch(taskGroupProvider.notifier)
-        .groupTasks(list, taskViewModel.filterType);
+        .groupTasks(list, taskViewModel.filterType, showCompleted);
 
     // 未グループ化の場合の通常表示用データ取得
     final notCompletedTasks = list.where((task) => !task.isCompleted).toList();
@@ -141,43 +141,6 @@ class TaskListView extends HookConsumerWidget {
       );
     }
 
-    // ステータスやグループの表示名を取得
-    String getOptionNameById(String id) {
-      if (id == 'no_date') return l.no_property(l.date_property);
-      if (id == 'no_status') return l.no_property(l.status_property);
-      if (id == 'no_priority') return l.no_property(l.priority_property);
-      if (id == 'not_completed') return l.no_property(l.completed_tasks);
-      if (id == 'completed') return l.completed_tasks;
-
-      // データベースのステータス情報からオプション名を取得
-      final taskDatabaseViewModel =
-          ref.read(taskDatabaseViewModelProvider).valueOrNull;
-
-      if (groupType == GroupType.status &&
-          taskDatabaseViewModel?.status is StatusProperty) {
-        final statusProperty = taskDatabaseViewModel!.status as StatusProperty;
-        try {
-          final option =
-              statusProperty.status.options.firstWhere((o) => o.id == id);
-          return option.name;
-        } catch (e) {
-          return id;
-        }
-      } else if (groupType == GroupType.priority &&
-          taskDatabaseViewModel?.priority != null) {
-        try {
-          final priorityProperty = taskDatabaseViewModel!.priority!;
-          final option =
-              priorityProperty.select.options.firstWhere((o) => o.id == id);
-          return option.name;
-        } catch (e) {
-          return id;
-        }
-      }
-
-      return id;
-    }
-
     return Stack(
       children: [
         // イラスト+テキスト部分（条件に応じて中央に固定表示）
@@ -216,7 +179,15 @@ class TaskListView extends HookConsumerWidget {
                 error: (_, __) => const SizedBox(),
               ),
 
-            // グループ化しない場合の通常表示
+            // グループ化する場合の表示
+            if (groupType != GroupType.none)
+              ...buildGroupedTaskList(
+                  groupedTasks: groupedTasks,
+                  context: context,
+                  themeMode: themeMode,
+                  ref: ref),
+
+            // グループ化しない場合の表示
             if (groupType == GroupType.none) ...[
               // 期限切れタスク
               if (overdueTasks.isNotEmpty) ...[
@@ -290,102 +261,6 @@ class TaskListView extends HookConsumerWidget {
               ],
             ],
 
-            // グループ化する場合の表示
-            if (groupType != GroupType.none) ...[
-              // 各グループごとに表示
-              ...groupedTasks.entries.map((entry) {
-                final groupId = entry.key;
-                final tasksInGroup = entry.value;
-
-                // 完了タスクグループで、showCompletedがfalseの場合は表示しない
-                if (groupId == 'completed' && !showCompleted) {
-                  return const SizedBox.shrink();
-                }
-
-                // 空のグループは表示しない
-                if (tasksInGroup.isEmpty) {
-                  return const SizedBox.shrink();
-                }
-
-                // グループが「completed」以外は、完了タスクと未完了タスクを分ける
-                final List<Task> nonCompletedTasks;
-                final List<Task> completedTasksInGroup;
-
-                if (groupId != 'completed' && groupId != 'not_completed') {
-                  nonCompletedTasks =
-                      tasksInGroup.where((t) => !t.isCompleted).toList();
-                  completedTasksInGroup =
-                      tasksInGroup.where((t) => t.isCompleted).toList();
-                } else {
-                  nonCompletedTasks = tasksInGroup;
-                  completedTasksInGroup = [];
-                }
-
-                final showGroupHeader =
-                    groupId != 'not_completed' && nonCompletedTasks.isNotEmpty;
-                final showCompletedHeader =
-                    showCompleted && completedTasksInGroup.isNotEmpty;
-
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // グループヘッダー
-                    if (showGroupHeader) ...[
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(32, 0, 32, 8),
-                        child: Text(
-                          getOptionNameById(groupId),
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleSmall
-                              ?.copyWith(
-                                color: Theme.of(context).colorScheme.secondary,
-                              ),
-                        ),
-                      ),
-                    ],
-
-                    // 未完了タスク
-                    ...nonCompletedTasks
-                        .map((task) => TaskDismissible(
-                            taskViewModel: taskViewModel,
-                            task: task,
-                            themeMode: themeMode))
-                        .toList(),
-
-                    // 完了タスク
-                    if (showCompletedHeader) ...[
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(32, 16, 32, 8),
-                        child: Text(
-                          l.completed_tasks,
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleSmall
-                              ?.copyWith(
-                                color: Theme.of(context).colorScheme.secondary,
-                                fontSize: 13,
-                              ),
-                        ),
-                      ),
-                    ],
-
-                    if (showCompleted) ...[
-                      ...completedTasksInGroup
-                          .map((task) => TaskDismissible(
-                              taskViewModel: taskViewModel,
-                              task: task,
-                              themeMode: themeMode))
-                          .toList(),
-                    ],
-
-                    const Divider(height: 0),
-                    const SizedBox(height: 30),
-                  ],
-                );
-              }).toList(),
-            ],
-
             // ロードボタン
             if (taskViewModel.hasMore)
               Padding(
@@ -412,5 +287,152 @@ class TaskListView extends HookConsumerWidget {
         ),
       ],
     );
+  }
+
+  // グループ化されたタスクリストを構築
+  List<Widget> buildGroupedTaskList({
+    required Map<String, List<Task>> groupedTasks,
+    required BuildContext context,
+    required ThemeMode themeMode,
+    required WidgetRef ref,
+  }) {
+    final widgets = <Widget>[];
+    // グループ処理に使う一時的なMapを作成（完了タスクの処理を確実にするため）
+    Map<String, List<Task>> workingGroups = {};
+
+    // 完了済みタスクを含むすべてのグループを処理
+    for (final entry in groupedTasks.entries) {
+      final groupId = entry.key;
+      final tasksInGroup = entry.value;
+
+      // 完了済み専用セクションは表示しない（他のグループに含めるためスキップ）
+      if (groupId == 'completed') {
+        continue;
+      }
+
+      // 空のグループはスキップ
+      if (tasksInGroup.isEmpty) {
+        continue;
+      }
+
+      // このグループを作業用Mapに追加
+      workingGroups[groupId] = tasksInGroup;
+    }
+
+    // 各グループを処理して表示
+    for (final entry in workingGroups.entries) {
+      final groupId = entry.key;
+      final tasksInGroup = entry.value;
+
+      // 完了タスクと未完了タスクに分離
+      final nonCompletedTasks =
+          tasksInGroup.where((t) => !t.isCompleted).toList();
+      final completedTasksInGroup =
+          tasksInGroup.where((t) => t.isCompleted).toList();
+
+      // 表示条件の確認
+      final hasNonCompletedTasks = nonCompletedTasks.isNotEmpty;
+      final hasCompletedTasks = completedTasksInGroup.isNotEmpty;
+
+      // このグループを表示するか判定
+      // 未完了タスクがある、または（showCompletedがtrueかつ完了タスクがある）
+      final shouldShowGroup =
+          hasNonCompletedTasks || (showCompleted && hasCompletedTasks);
+
+      // 表示条件を満たさないグループはスキップ
+      if (!shouldShowGroup) {
+        continue;
+      }
+
+      // グループヘッダーを表示するかどうか
+      final showGroupHeader = groupId != 'not_completed';
+
+      final groupColumn = Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // グループヘッダー
+          if (showGroupHeader)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(32, 0, 32, 8),
+              child: Text(
+                _getOptionNameById(groupId, context, ref),
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      color: Theme.of(context).colorScheme.secondary,
+                    ),
+              ),
+            ),
+
+          // 未完了タスク
+          ...nonCompletedTasks
+              .map((task) => TaskDismissible(
+                  taskViewModel: taskViewModel,
+                  task: task,
+                  themeMode: themeMode))
+              .toList(),
+
+          // 完了済みタスク（showCompletedがtrueの場合のみ表示）
+          if (showCompleted && completedTasksInGroup.isNotEmpty)
+            ...completedTasksInGroup
+                .map((task) => TaskDismissible(
+                    taskViewModel: taskViewModel,
+                    task: task,
+                    themeMode: themeMode))
+                .toList(),
+
+          const Divider(height: 0),
+          const SizedBox(height: 30),
+        ],
+      );
+
+      widgets.add(groupColumn);
+    }
+
+    return widgets;
+  }
+
+  // ステータスやグループの表示名を取得するメソッド
+  String _getOptionNameById(String id, BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
+
+    if (id == 'no_date') return l.no_property(l.date_property);
+    if (id == 'no_status') return l.no_property(l.status_property);
+    if (id == 'no_priority') return l.no_property(l.priority_property);
+    if (id == 'not_completed') return l.no_property(l.completed_tasks);
+    if (id == 'completed') return l.completed_tasks;
+
+    final groupType =
+        ref.watch(currentGroupTypeProvider(taskViewModel.filterType));
+
+    // データベースのステータス情報からオプション名を取得
+    final taskDatabaseViewModel =
+        ref.read(taskDatabaseViewModelProvider).valueOrNull;
+
+    try {
+      switch (groupType) {
+        case GroupType.status:
+          if (taskDatabaseViewModel?.status is StatusProperty) {
+            final statusProperty =
+                taskDatabaseViewModel!.status as StatusProperty;
+
+            final option =
+                statusProperty.status.options.firstWhere((o) => o.id == id);
+            return option.name;
+          }
+          break;
+        case GroupType.priority:
+          if (taskDatabaseViewModel?.priority != null) {
+            final priorityProperty = taskDatabaseViewModel!.priority!;
+            final option =
+                priorityProperty.select.options.firstWhere((o) => o.id == id);
+            return option.name;
+          }
+          break;
+        default:
+          break;
+      }
+      return id;
+    } catch (e) {
+      return id;
+    }
   }
 }
