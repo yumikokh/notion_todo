@@ -344,7 +344,7 @@ class TaskListView extends HookConsumerWidget {
     required ExpandedGroupsNotifier expandedGroupsNotifier,
     required WidgetRef ref,
   }) {
-    final widgets = <Widget>[];
+    final widgets = <Widget>[const SizedBox(height: 12)];
     // グループ処理に使う一時的なMapを作成（完了タスクの処理を確実にするため）
     Map<String, List<Task>> workingGroups = {};
 
