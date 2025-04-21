@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
 import '../../../helpers/date.dart';
 import '../../../helpers/haptic_helper.dart';
@@ -34,6 +35,8 @@ class TaskListView extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final expandedGroups = useState<Map<String, bool>>(const {});
+
     // グループタイプを取得
     final groupType =
         ref.watch(currentGroupTypeProvider(taskViewModel.filterType));
@@ -185,6 +188,7 @@ class TaskListView extends HookConsumerWidget {
                   groupedTasks: groupedTasks,
                   context: context,
                   themeMode: themeMode,
+                  expandedGroups: expandedGroups,
                   ref: ref),
 
             // グループ化しない場合の表示
@@ -294,6 +298,7 @@ class TaskListView extends HookConsumerWidget {
     required Map<String, List<Task>> groupedTasks,
     required BuildContext context,
     required ThemeMode themeMode,
+    required ValueNotifier<Map<String, bool>> expandedGroups,
     required WidgetRef ref,
   }) {
     final widgets = <Widget>[];
@@ -347,37 +352,79 @@ class TaskListView extends HookConsumerWidget {
       // グループヘッダーを表示するかどうか
       final showGroupHeader = groupId != 'not_completed';
 
+      // 各グループの開閉状態を初期化（まだない場合）
+      if (!expandedGroups.value.containsKey(groupId)) {
+        final updatedGroups = Map<String, bool>.from(expandedGroups.value);
+        updatedGroups[groupId] = true; // デフォルトは開いた状態
+        expandedGroups.value = updatedGroups;
+      }
+
+      // 現在のグループの開閉状態
+      final isExpanded = expandedGroups.value[groupId] ?? true;
+
       final groupColumn = Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // グループヘッダー
           if (showGroupHeader)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(32, 0, 32, 8),
-              child: Text(
-                _getOptionNameById(groupId, context, ref),
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      color: Theme.of(context).colorScheme.secondary,
+            InkWell(
+              splashFactory: NoSplash.splashFactory,
+              highlightColor: Colors.transparent,
+              onTap: () {
+                HapticHelper.light();
+                // グループの開閉状態を切り替え
+                final newIsExpanded = !(expandedGroups.value[groupId] ?? true);
+                final updatedGroups =
+                    Map<String, bool>.from(expandedGroups.value);
+                updatedGroups[groupId] = newIsExpanded;
+                expandedGroups.value = updatedGroups;
+              },
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(32, 0, 32, 8),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        _getOptionNameById(groupId, context, ref),
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                              color: Theme.of(context).colorScheme.secondary,
+                            ),
+                      ),
                     ),
+                    // 矢印アイコン - 開閉状態に応じて回転
+                    AnimatedRotation(
+                      turns: isExpanded ? 0 : -0.25,
+                      duration: const Duration(milliseconds: 200),
+                      child: Icon(
+                        Icons.keyboard_arrow_down,
+                        size: 20,
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
 
-          // 未完了タスク
-          ...nonCompletedTasks
-              .map((task) => TaskDismissible(
-                  taskViewModel: taskViewModel,
-                  task: task,
-                  themeMode: themeMode))
-              .toList(),
-
-          // 完了済みタスク（showCompletedがtrueの場合のみ表示）
-          if (showCompleted && completedTasksInGroup.isNotEmpty)
-            ...completedTasksInGroup
+          // グループが開いている場合のみタスクを表示
+          if (isExpanded) ...[
+            // 未完了タスク
+            ...nonCompletedTasks
                 .map((task) => TaskDismissible(
                     taskViewModel: taskViewModel,
                     task: task,
                     themeMode: themeMode))
                 .toList(),
+
+            // 完了済みタスク（showCompletedがtrueの場合のみ表示）
+            if (showCompleted && completedTasksInGroup.isNotEmpty)
+              ...completedTasksInGroup
+                  .map((task) => TaskDismissible(
+                      taskViewModel: taskViewModel,
+                      task: task,
+                      themeMode: themeMode))
+                  .toList(),
+          ],
 
           const Divider(height: 0),
           const SizedBox(height: 30),
