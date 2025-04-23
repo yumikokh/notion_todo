@@ -211,8 +211,13 @@ class CheckboxCompleteStatusProperty extends CheckboxProperty
             checkbox: checkbox,
             type: PropertyType.checkbox);
 
-  factory CheckboxCompleteStatusProperty.fromJson(Map<String, dynamic> json) =>
-      _$CheckboxCompleteStatusPropertyFromJson(json);
+  factory CheckboxCompleteStatusProperty.fromJson(Map<String, dynamic> json) {
+    if (json['checked'] != null) {
+      // TODO: 前のバージョンではcheckboxがcheckedというキーで保存されていたため。しばらくしたら消す
+      json['checkbox'] = json['checked'];
+    }
+    return _$CheckboxCompleteStatusPropertyFromJson(json);
+  }
 
   @override
   Map<String, dynamic> toJson() => _$CheckboxCompleteStatusPropertyToJson(this);
