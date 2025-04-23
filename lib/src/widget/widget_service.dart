@@ -183,7 +183,7 @@ class WidgetService {
   /////////////////////////
 
   static Future<WidgetValue> get value async {
-    final rowTasks = await HomeWidget.getWidgetData(todayTasksKey);
+    final rowTasks = await HomeWidget.getWidgetData<String?>(todayTasksKey);
     final accessToken = await HomeWidget.getWidgetData<String?>(accessTokenKey,
         defaultValue: null);
     final rowTaskDatabase =
