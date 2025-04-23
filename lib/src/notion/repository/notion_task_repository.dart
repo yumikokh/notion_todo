@@ -11,7 +11,6 @@ import '../model/property.dart';
 import '../model/task.dart';
 import '../model/task_database.dart';
 import '../oauth/notion_oauth_viewmodel.dart';
-import '../../settings/task_database/task_database_viewmodel.dart';
 import '../common/filter_type.dart';
 
 part 'notion_task_repository.g.dart';
@@ -431,10 +430,10 @@ List<dynamic> _getInProgressStatusFilter(TaskDatabase database) {
 }
 
 @riverpod
-NotionTaskRepository? notionTaskRepository(Ref ref) {
+NotionTaskRepository? notionTaskRepository(
+    Ref ref, TaskDatabase? taskDatabase) {
   final accessToken =
       ref.watch(notionOAuthViewModelProvider).valueOrNull?.accessToken;
-  final taskDatabase = ref.watch(taskDatabaseViewModelProvider).valueOrNull;
   WidgetService.sendDatabaseSettings(accessToken, taskDatabase);
 
   if (accessToken == null || taskDatabase == null) {

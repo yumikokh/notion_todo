@@ -6,15 +6,21 @@ import '../../notion/model/index.dart';
 import '../../notion/repository/notion_database_repository.dart';
 import 'task_database_service.dart';
 import 'selected_database_viewmodel.dart';
+import '../../common/debounced_state_mixin.dart';
 
 part 'task_database_viewmodel.g.dart';
 
 @riverpod
-class TaskDatabaseViewModel extends _$TaskDatabaseViewModel {
+class TaskDatabaseViewModel extends _$TaskDatabaseViewModel
+    with DebouncedStateMixin<TaskDatabase?> {
   late TaskDatabaseService _taskDatabaseService;
 
   @override
   Future<TaskDatabase?> build() async {
+    if (state.hasValue && !shouldUpdateState()) {
+      return state.value!;
+    }
+
     final notionDatabaseRepository =
         await ref.watch(notionDatabaseRepositoryProvider.future);
     _taskDatabaseService =

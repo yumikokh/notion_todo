@@ -1,5 +1,6 @@
 import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
@@ -18,11 +19,13 @@ import 'task_service.dart';
 import '../../common/analytics/analytics_service.dart';
 import '../../common/app_review/app_review_service.dart';
 import '../../widget/widget_service.dart';
+import '../../common/debounced_state_mixin.dart';
 
 part 'task_viewmodel.g.dart';
 
 @riverpod
-class TaskViewModel extends _$TaskViewModel {
+class TaskViewModel extends _$TaskViewModel
+    with DebouncedStateMixin<List<Task>> {
   late TaskService? _taskService;
   late FilterType _filterType;
   late bool _hasCompleted;
@@ -40,10 +43,14 @@ class TaskViewModel extends _$TaskViewModel {
   Future<List<Task>> build({
     FilterType filterType = FilterType.all,
   }) async {
-    final taskDatabaseViewModel = filterType == FilterType.today
-        ? await ref.refresh(taskDatabaseViewModelProvider.future)
-        : await ref.watch(taskDatabaseViewModelProvider.future);
-    _taskService = await ref.watch(taskServiceProvider.future);
+    if (state.hasValue && !shouldUpdateState()) {
+      return state.value!;
+    }
+
+    final taskDatabaseViewModel =
+        await ref.refresh(taskDatabaseViewModelProvider.future);
+    _taskService =
+        await ref.watch(taskServiceProvider(taskDatabaseViewModel).future);
 
     if (_taskService == null || taskDatabaseViewModel == null) {
       await FlutterAppBadger.removeBadge();
@@ -555,4 +562,10 @@ class TaskViewModel extends _$TaskViewModel {
   Future<void> _updateTodayWidget(List<Task> tasks) async {
     await WidgetService.applyTasks(tasks);
   }
+}
+
+// FilterがTodayのタスク一覧のプロバイダー
+@riverpod
+Future<List<Task>> todayTasks(Ref ref) async {
+  return ref.watch(taskViewModelProvider(filterType: FilterType.today).future);
 }
