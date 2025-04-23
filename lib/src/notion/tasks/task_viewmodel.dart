@@ -543,9 +543,3 @@ class TaskViewModel extends _$TaskViewModel
     await WidgetService.applyTasks(tasks);
   }
 }
-
-// FilterがTodayのタスク一覧のプロバイダー
-@riverpod
-Future<List<Task>> todayTasks(Ref ref) async {
-  return ref.watch(taskViewModelProvider(filterType: FilterType.today).future);
-}

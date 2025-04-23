@@ -6,22 +6,6 @@ part of 'task_viewmodel.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$todayTasksHash() => r'5dd33b02f3d9f52c572536551c45c25be5e756b9';
-
-/// See also [todayTasks].
-@ProviderFor(todayTasks)
-final todayTasksProvider = AutoDisposeFutureProvider<List<Task>>.internal(
-  todayTasks,
-  name: r'todayTasksProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$todayTasksHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef TodayTasksRef = AutoDisposeFutureProviderRef<List<Task>>;
 String _$taskViewModelHash() => r'6bcf93dd79936c2172486a9612574c8919904db4';
 
 /// Copied from Dart SDK
