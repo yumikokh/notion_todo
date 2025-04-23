@@ -57,3 +57,27 @@ class NotionUnknownException extends NotionErrorException {
     required String message,
   }) : super(status: status, code: code, message: message);
 }
+
+/// ネットワーク接続エラー
+class NetworkConnectionException implements Exception {
+  final String message;
+
+  const NetworkConnectionException({
+    this.message = 'ネットワーク接続がありません',
+  });
+
+  @override
+  String toString() => message;
+}
+
+/// タイムアウトエラー
+class TimeoutException implements Exception {
+  final String message;
+
+  const TimeoutException({
+    this.message = '接続がタイムアウトしました',
+  });
+
+  @override
+  String toString() => message;
+}

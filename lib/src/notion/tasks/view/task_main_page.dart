@@ -155,7 +155,7 @@ class TaskMainPage extends HookConsumerWidget {
                         child: CircularProgressIndicator(),
                       ),
                       error: (error, stack) =>
-                          Center(child: Text(error.toString())),
+                          Center(child: Text(l.loading_failed)),
                     ),
                   ),
                   // All Tasks
@@ -173,7 +173,7 @@ class TaskMainPage extends HookConsumerWidget {
                         child: CircularProgressIndicator(),
                       ),
                       error: (error, stack) =>
-                          Center(child: Text(error.toString())),
+                          Center(child: Text(l.loading_failed)),
                     ),
                   ),
                 ],
@@ -204,7 +204,7 @@ class TaskMainPage extends HookConsumerWidget {
                 ),
               ),
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(child: Text(error.toString())),
+        error: (error, stack) => Center(child: Text(l.loading_failed)),
       ),
     );
   }

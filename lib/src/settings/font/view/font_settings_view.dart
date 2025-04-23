@@ -231,7 +231,7 @@ class FontSettingsView extends HookConsumerWidget {
           },
           loading: () =>
               const Center(child: CircularProgressIndicator.adaptive()),
-          error: (error, stack) => Center(child: Text(error.toString())),
+          error: (error, stack) => Center(child: Text(l.loading_failed)),
         ),
       ),
     );
