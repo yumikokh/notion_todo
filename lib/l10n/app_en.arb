@@ -138,6 +138,7 @@
     }
   },
   "task_delete_failed_undo": "Failed to restore \"{title}\"",
+  "loading_failed": "Failed to load",
   "@task_delete_failed_undo": {
     "placeholders": {
       "title": {

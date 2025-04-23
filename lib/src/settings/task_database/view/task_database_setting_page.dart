@@ -93,7 +93,8 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                                 context: context,
                               ),
                               loading: () => const CircularProgressIndicator(),
-                              error: (error, stack) => Text(error.toString()),
+                              error: (error, stack) =>
+                                  Center(child: Text(l.loading_failed)),
                             ),
                         const SizedBox(height: 24),
 
@@ -179,7 +180,8 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                                 context: context,
                               ),
                               loading: () => const CircularProgressIndicator(),
-                              error: (error, stack) => Text(error.toString()),
+                              error: (error, stack) =>
+                                  Center(child: Text(l.loading_failed)),
                             ),
                         const SizedBox(height: 32),
 
@@ -218,7 +220,8 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                                 context: context,
                               ),
                               loading: () => const CircularProgressIndicator(),
-                              error: (error, stack) => Text(error.toString()),
+                              error: (error, stack) =>
+                                  Center(child: Text(l.loading_failed)),
                             ),
                         const SizedBox(height: 32),
                       ],
@@ -268,7 +271,7 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                 ),
               ),
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(child: Text(error.toString())),
+        error: (error, stack) => Center(child: Text(l.loading_failed)),
       ),
     );
   }
