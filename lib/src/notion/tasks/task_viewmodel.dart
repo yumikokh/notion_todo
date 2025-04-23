@@ -135,29 +135,9 @@ class TaskViewModel extends _$TaskViewModel
     }
   }
 
-  // 操作のキューを管理するための変数
-  final _operationQueue = Queue<Future<void> Function()>();
-  bool _isProcessing = false;
-
-  // キューを処理する関数
-  Future<void> _processQueue() async {
-    if (_isProcessing) return;
-
-    _isProcessing = true;
-    try {
-      while (_operationQueue.isNotEmpty) {
-        final operation = _operationQueue.removeFirst();
-        await operation();
-      }
-    } finally {
-      _isProcessing = false;
-    }
-  }
-
   // キューに操作を追加する関数
   Future<void> _addOperation(Future<void> Function() operation) async {
-    _operationQueue.add(operation);
-    await _processQueue();
+    operation(); // 即時実行するようにする
   }
 
   Future<List<Task>> _fetchTasks({bool isFirstFetch = false}) async {

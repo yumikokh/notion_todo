@@ -22,7 +22,7 @@ final todayTasksProvider = AutoDisposeFutureProvider<List<Task>>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef TodayTasksRef = AutoDisposeFutureProviderRef<List<Task>>;
-String _$taskViewModelHash() => r'5531df8195d97180daf48d854bd243504471eaa9';
+String _$taskViewModelHash() => r'6bcf93dd79936c2172486a9612574c8919904db4';
 
 /// Copied from Dart SDK
 class _SystemHash {
