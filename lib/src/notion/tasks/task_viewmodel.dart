@@ -169,11 +169,13 @@ class TaskViewModel extends _$TaskViewModel {
       _hasMore = result.hasMore;
       _nextCursor = result.nextCursor;
       return result.tasks;
-    } catch (e) {
+    } catch (e, stackTrace) {
       final snackbar = ref.read(snackbarProvider.notifier);
       final taskDatabaseViewModel =
           ref.read(taskDatabaseViewModelProvider.notifier);
       final analytics = ref.read(analyticsServiceProvider);
+
+      Sentry.captureException(e, stackTrace: stackTrace);
 
       if (e is NotionErrorException) {
         switch (e) {
@@ -187,7 +189,6 @@ class TaskViewModel extends _$TaskViewModel {
                 type: SnackbarType.error);
             break;
           case NotionUnknownException():
-            await Sentry.captureException(e);
             snackbar.show(l.task_fetch_failed, type: SnackbarType.error);
             break;
         }
@@ -199,7 +200,6 @@ class TaskViewModel extends _$TaskViewModel {
       } else {
         // その他のエラー処理
         snackbar.show(l.task_fetch_failed, type: SnackbarType.error);
-        await Sentry.captureException(e);
         print('Unknown error: $e');
       }
 

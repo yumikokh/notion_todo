@@ -27,7 +27,7 @@ class TaskResult {
 @riverpod
 Future<TaskService?> taskService(Ref ref) async {
   final repository = ref.watch(notionTaskRepositoryProvider);
-  final taskDatabase = ref.watch(taskDatabaseViewModelProvider).valueOrNull;
+  final taskDatabase = await ref.watch(taskDatabaseViewModelProvider.future);
   if (repository == null || taskDatabase == null) {
     return null;
   }
