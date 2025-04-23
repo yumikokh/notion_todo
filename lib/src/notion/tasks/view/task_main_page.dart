@@ -41,8 +41,8 @@ class TaskMainPage extends HookConsumerWidget {
     final allProvider = taskViewModelProvider(filterType: FilterType.all);
     final todayTasks = ref.watch(todayProvider);
     final allTasks = ref.watch(allProvider);
-    final todayViewModel = ref.watch(todayProvider.notifier);
-    final allViewModel = ref.watch(allProvider.notifier);
+    final todayViewModel = ref.read(todayProvider.notifier);
+    final allViewModel = ref.read(allProvider.notifier);
     final taskDatabase = ref.watch(taskDatabaseViewModelProvider);
     final wakelock = ref.watch(settingsViewModelProvider).wakelock;
     final hideNavigationLabel =
@@ -67,7 +67,6 @@ class TaskMainPage extends HookConsumerWidget {
     }, [isToday]);
 
     // ポーリングする
-    // TODO: 前回の実行時間を記録して、余分にリクエストしないようにする
     useEffect(() {
       final provider = switch (isToday) {
         true => todayProvider,

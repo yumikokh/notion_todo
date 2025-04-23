@@ -59,6 +59,7 @@ class MyApp extends HookConsumerWidget {
 
     // アプリのライフサイクル管理
     useEffect(() {
+      // アプリ復帰時にウィジェットの変更を適用
       Future<void> applyWidgetChanges() async {
         final lastUpdated = await WidgetService.getLastUpdatedTask();
         if (lastUpdated == null) return;

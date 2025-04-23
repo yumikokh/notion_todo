@@ -161,5 +161,22 @@ class Task with _$Task {
     return false;
   }
 
+  bool get isOverdueToday {
+    final endOfToday = d.endTimeOfDay(DateTime.now());
+    final startOfToday = d.startTimeOfDay(DateTime.now());
+    final dueDateStart = dueDate?.start.datetime;
+    final dueDateEnd = dueDate?.end?.datetime;
+
+    if (dueDateEnd != null && dueDateEnd.isBefore(endOfToday)) {
+      return true;
+    }
+
+    if (dueDateStart != null && dueDateStart.isBefore(startOfToday)) {
+      return true;
+    }
+
+    return false;
+  }
+
   bool get isTemp => id.startsWith("temp_");
 }

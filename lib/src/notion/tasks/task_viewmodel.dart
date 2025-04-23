@@ -1,5 +1,6 @@
 import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
@@ -18,11 +19,13 @@ import 'task_service.dart';
 import '../../common/analytics/analytics_service.dart';
 import '../../common/app_review/app_review_service.dart';
 import '../../widget/widget_service.dart';
+import '../../common/debounced_state_mixin.dart';
 
 part 'task_viewmodel.g.dart';
 
 @riverpod
-class TaskViewModel extends _$TaskViewModel {
+class TaskViewModel extends _$TaskViewModel
+    with DebouncedStateMixin<List<Task>> {
   late TaskService? _taskService;
   late FilterType _filterType;
   late bool _hasCompleted;
@@ -40,10 +43,14 @@ class TaskViewModel extends _$TaskViewModel {
   Future<List<Task>> build({
     FilterType filterType = FilterType.all,
   }) async {
-    final taskDatabaseViewModel = filterType == FilterType.today
-        ? await ref.refresh(taskDatabaseViewModelProvider.future)
-        : await ref.watch(taskDatabaseViewModelProvider.future);
-    _taskService = await ref.watch(taskServiceProvider.future);
+    if (state.hasValue && !shouldUpdateState()) {
+      return state.value!;
+    }
+
+    final taskDatabaseViewModel =
+        await ref.refresh(taskDatabaseViewModelProvider.future);
+    _taskService =
+        await ref.watch(taskServiceProvider(taskDatabaseViewModel).future);
 
     if (_taskService == null || taskDatabaseViewModel == null) {
       await FlutterAppBadger.removeBadge();
@@ -128,29 +135,9 @@ class TaskViewModel extends _$TaskViewModel {
     }
   }
 
-  // 操作のキューを管理するための変数
-  final _operationQueue = Queue<Future<void> Function()>();
-  bool _isProcessing = false;
-
-  // キューを処理する関数
-  Future<void> _processQueue() async {
-    if (_isProcessing) return;
-
-    _isProcessing = true;
-    try {
-      while (_operationQueue.isNotEmpty) {
-        final operation = _operationQueue.removeFirst();
-        await operation();
-      }
-    } finally {
-      _isProcessing = false;
-    }
-  }
-
   // キューに操作を追加する関数
   Future<void> _addOperation(Future<void> Function() operation) async {
-    _operationQueue.add(operation);
-    await _processQueue();
+    operation(); // 即時実行するようにする
   }
 
   Future<List<Task>> _fetchTasks({bool isFirstFetch = false}) async {
