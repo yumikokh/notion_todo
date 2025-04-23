@@ -60,9 +60,9 @@ class TaskListView extends HookConsumerWidget {
     // 未グループ化の場合の通常表示用データ取得
     final notCompletedTasks = list.where((task) => !task.isCompleted).toList();
     final overdueTasks =
-        notCompletedTasks.where((task) => task.isOverdue).toList();
+        notCompletedTasks.where((task) => task.isOverdueToday).toList();
     final remainingNotCompletedTasks =
-        notCompletedTasks.where((task) => !task.isOverdue).toList();
+        notCompletedTasks.where((task) => !task.isOverdueToday).toList();
     final completedTasks = list.where((task) => task.isCompleted).toList();
 
     final fontSettings = ref.watch(fontSettingsViewModelProvider);
