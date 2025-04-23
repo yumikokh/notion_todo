@@ -19,18 +19,15 @@ class TaskDatabaseViewModel extends _$TaskDatabaseViewModel {
         await ref.watch(notionDatabaseRepositoryProvider.future);
     _taskDatabaseService =
         TaskDatabaseService(notionDatabaseRepository: notionDatabaseRepository);
+
+    final taskDatabase = await _taskDatabaseService.loadSetting();
+    if (taskDatabase == null) return null;
     try {
-      final taskDatabase = await _taskDatabaseService.loadSetting();
-      if (taskDatabase != null) {
-        final updatedTaskDatabase = await _taskDatabaseService
-            .updateDatabaseWithLatestInfo(taskDatabase);
-        return updatedTaskDatabase ?? taskDatabase;
-      }
-      return taskDatabase;
+      final updatedTaskDatabase =
+          await _taskDatabaseService.updateDatabaseWithLatestInfo(taskDatabase);
+      return updatedTaskDatabase ?? taskDatabase;
     } catch (e) {
-      print('Failed to load task database: $e');
-      clear();
-      return null;
+      return taskDatabase;
     }
   }
 
