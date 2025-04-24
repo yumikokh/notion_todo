@@ -1,6 +1,5 @@
 import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
@@ -100,6 +99,7 @@ class TaskViewModel extends _$TaskViewModel
 
   Future<void> toggleShowCompleted() async {
     _showCompleted = !_showCompleted;
+    ref.notifyListeners();
     if (_taskService != null) {
       await _taskService!.saveShowCompleted(_showCompleted);
     }
@@ -112,7 +112,6 @@ class TaskViewModel extends _$TaskViewModel
     } catch (e) {
       print('Analytics error: $e');
     }
-    ref.notifyListeners();
   }
 
   Future<void> loadMore() async {
@@ -148,7 +147,6 @@ class TaskViewModel extends _$TaskViewModel
     final locale = ref.read(settingsViewModelProvider).locale;
     final l = await AppLocalizations.delegate.load(locale);
     _isLoading = true;
-    ref.notifyListeners(); // ローディング状態が更新されるようにする
     try {
       final cursor = isFirstFetch ? null : _nextCursor;
       final result = await taskService.fetchTasks(_filterType, _hasCompleted,
@@ -405,7 +403,6 @@ class TaskViewModel extends _$TaskViewModel
       });
 
       _isLoading = true;
-
       try {
         final updatedTask =
             await taskService.updateInProgressStatus(task.id, willBeInProgress);

@@ -322,7 +322,7 @@ class TaskListView extends HookConsumerWidget {
               ),
 
             // ローディング中
-            if (taskViewModel.isLoading)
+            if (taskViewModel.isLoading && centerOverlay == null)
               const Padding(
                   padding: EdgeInsets.all(16.0),
                   child: Center(child: CircularProgressIndicator.adaptive())),
