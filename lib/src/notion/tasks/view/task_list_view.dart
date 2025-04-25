@@ -20,6 +20,7 @@ class TaskListView extends HookConsumerWidget {
   final List<Task> list;
   final TaskViewModel taskViewModel;
   final bool showCompleted;
+  final bool isLoading;
   final String? title;
 
   static final DateHelper d = DateHelper();
@@ -29,6 +30,7 @@ class TaskListView extends HookConsumerWidget {
     required this.list,
     required this.taskViewModel,
     required this.showCompleted,
+    required this.isLoading,
     this.title,
   });
 
@@ -273,7 +275,8 @@ class TaskListView extends HookConsumerWidget {
               ),
 
             // ローディング中
-            if (taskViewModel.isLoading && centerOverlay == null)
+
+            if (isLoading && centerOverlay == null)
               const Padding(
                   padding: EdgeInsets.all(16.0),
                   child: Center(child: CircularProgressIndicator.adaptive())),

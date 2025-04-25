@@ -55,6 +55,7 @@ class TaskDatabaseViewModel extends _$TaskDatabaseViewModel
         date: date,
         title: selectedTaskDatabase.title,
         priority: selectedTaskDatabase.priority);
+    // 状態の初期化
     state = const AsyncValue.loading();
     try {
       await repository.save(taskDatabase);

@@ -32,7 +32,6 @@ class TaskViewModel extends _$TaskViewModel
   bool get hasMore => _hasMore;
   String? _nextCursor;
   bool _isLoading = false;
-  bool get isLoading => _isLoading;
   bool _showCompleted = false;
   bool get showCompleted => _showCompleted;
 
@@ -66,13 +65,10 @@ class TaskViewModel extends _$TaskViewModel
     final tasks = await _fetchTasks(isFirstFetch: true);
 
     if (filterType == FilterType.today) {
-      // バッジ更新
       final showBadge =
           ref.watch(settingsViewModelProvider).showNotificationBadge;
       _updateBadge(tasks, showBadge);
-
-      // ウィジェット更新
-      await _updateTodayWidget(tasks);
+      _updateTodayWidget(tasks);
     }
 
     return tasks;
