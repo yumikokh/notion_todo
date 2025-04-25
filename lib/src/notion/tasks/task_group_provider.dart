@@ -27,7 +27,7 @@ extension GroupTypeExtension on GroupType {
   String getLocalizedName(AppLocalizations l) {
     switch (this) {
       case GroupType.none:
-        return l.group_by_none;
+        return l.sort_by_default;
       case GroupType.date:
         return l.date_property;
       case GroupType.status:

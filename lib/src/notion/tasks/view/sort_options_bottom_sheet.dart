@@ -39,11 +39,6 @@ class SortOptionsBottomSheet extends HookConsumerWidget {
                 margin: const EdgeInsets.symmetric(vertical: 12),
                 width: 40,
                 height: 4,
-                decoration: BoxDecoration(
-                  color:
-                      Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(2),
-                ),
               ),
             ),
 
@@ -52,7 +47,9 @@ class SortOptionsBottomSheet extends HookConsumerWidget {
               padding: const EdgeInsets.fromLTRB(24, 8, 24, 0),
               child: Text(
                 l.sort_by,
-                style: Theme.of(context).textTheme.titleMedium,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
             ),
 
@@ -85,7 +82,7 @@ class SortOptionsBottomSheet extends HookConsumerWidget {
         }
       },
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
         child: Row(
           children: [
             Expanded(
