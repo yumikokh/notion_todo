@@ -41,10 +41,6 @@ class TaskViewModel extends _$TaskViewModel
   Future<List<Task>> build({
     FilterType filterType = FilterType.all,
   }) async {
-    if (state.hasValue && !shouldUpdateState()) {
-      return state.value!;
-    }
-
     final taskDatabaseViewModel =
         await ref.refresh(taskDatabaseViewModelProvider.future);
     _taskRepository = await ref.watch(taskRepositoryProvider.future);
@@ -142,52 +138,55 @@ class TaskViewModel extends _$TaskViewModel
     final locale = ref.read(settingsViewModelProvider).locale;
     final l = await AppLocalizations.delegate.load(locale);
     _isLoading = true;
-    try {
-      final cursor = isFirstFetch ? null : _nextCursor;
-      final result = await taskService.fetchTasks(_filterType, _hasCompleted,
-          startCursor: cursor);
-      _hasMore = result.hasMore;
-      _nextCursor = result.nextCursor;
-      return result.tasks;
-    } catch (e, stackTrace) {
-      final snackbar = ref.read(snackbarProvider.notifier);
-      final taskDatabaseViewModel =
-          ref.read(taskDatabaseViewModelProvider.notifier);
-      final analytics = ref.read(analyticsServiceProvider);
 
-      Sentry.captureException(e, stackTrace: stackTrace);
+    return await debouncedFetch(() async {
+      try {
+        final cursor = isFirstFetch ? null : _nextCursor;
+        final result = await taskService.fetchTasks(_filterType, _hasCompleted,
+            startCursor: cursor);
+        _hasMore = result.hasMore;
+        _nextCursor = result.nextCursor;
+        return result.tasks;
+      } catch (e, stackTrace) {
+        final snackbar = ref.read(snackbarProvider.notifier);
+        final taskDatabaseViewModel =
+            ref.read(taskDatabaseViewModelProvider.notifier);
+        final analytics = ref.read(analyticsServiceProvider);
 
-      if (e is NotionErrorException) {
-        switch (e) {
-          // MEMO: IDベースでリクエストしているため、プロパティが削除されない限り起こらないはず
-          case NotionValidationException():
-            snackbar.show(l.not_found_property, type: SnackbarType.error);
-            break;
-          case NotionInvalidException():
-            taskDatabaseViewModel.clear();
-            snackbar.show("${l.not_found_database} ${l.re_set_database}",
-                type: SnackbarType.error);
-            break;
-          case NotionUnknownException():
-            snackbar.show(l.task_fetch_failed, type: SnackbarType.error);
-            break;
+        Sentry.captureException(e, stackTrace: stackTrace);
+
+        if (e is NotionErrorException) {
+          switch (e) {
+            // MEMO: IDベースでリクエストしているため、プロパティが削除されない限り起こらないはず
+            case NotionValidationException():
+              snackbar.show(l.not_found_property, type: SnackbarType.error);
+              break;
+            case NotionInvalidException():
+              taskDatabaseViewModel.clear();
+              snackbar.show("${l.not_found_database} ${l.re_set_database}",
+                  type: SnackbarType.error);
+              break;
+            case NotionUnknownException():
+              snackbar.show(l.task_fetch_failed, type: SnackbarType.error);
+              break;
+          }
+          await analytics.logError(
+            e.code,
+            error: e.message,
+            parameters: {'status_code': e.status},
+          );
+        } else {
+          // その他のエラー処理
+          snackbar.show(l.task_fetch_failed, type: SnackbarType.error);
+          print('Unknown error: $e');
         }
-        await analytics.logError(
-          e.code,
-          error: e.message,
-          parameters: {'status_code': e.status},
-        );
-      } else {
-        // その他のエラー処理
-        snackbar.show(l.task_fetch_failed, type: SnackbarType.error);
-        print('Unknown error: $e');
-      }
 
-      // TODO: エラー表示をつくったらthrowする。ネットワークがつながらないときなど
-      return [];
-    } finally {
-      _isLoading = false;
-    }
+        // TODO: エラー表示をつくったらthrowする。ネットワークがつながらないときなど
+        return [];
+      } finally {
+        _isLoading = false;
+      }
+    });
   }
 
   Future<void> addTask(Task tempTask,

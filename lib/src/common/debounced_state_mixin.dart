@@ -1,24 +1,20 @@
 import 'package:flutter/foundation.dart';
 
 mixin DebouncedStateMixin<T> {
-  DateTime? _lastUpdateTime;
-  static const _minimumInterval = Duration(seconds: 1);
+  Future<T>? _pendingFuture;
 
   @protected
-  bool shouldUpdateState() {
-    final now = DateTime.now();
-    if (_lastUpdateTime != null) {
-      final timeSinceLastUpdate = now.difference(_lastUpdateTime!);
-      if (timeSinceLastUpdate < _minimumInterval) {
-        return false;
-      }
+  Future<T> debouncedFetch(Future<T> Function() fetchFunction) async {
+    if (_pendingFuture != null) {
+      return _pendingFuture!;
     }
-    _lastUpdateTime = now;
-    return true;
-  }
 
-  @protected
-  void resetDebounce() {
-    _lastUpdateTime = null;
+    try {
+      _pendingFuture = fetchFunction();
+      final result = await _pendingFuture!;
+      return result;
+    } finally {
+      _pendingFuture = null;
+    }
   }
 }

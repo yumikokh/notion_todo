@@ -16,10 +16,6 @@ class TaskDatabaseViewModel extends _$TaskDatabaseViewModel
 
   @override
   Future<TaskDatabase?> build() async {
-    if (state.hasValue && !shouldUpdateState()) {
-      return state.value!;
-    }
-
     _taskDatabaseRepository =
         await ref.watch(taskDatabaseRepositoryProvider.future);
 
@@ -30,8 +26,10 @@ class TaskDatabaseViewModel extends _$TaskDatabaseViewModel
     final taskDatabase = await _taskDatabaseRepository!.loadSetting();
     if (taskDatabase == null) return null;
     try {
-      final updatedTaskDatabase = await _taskDatabaseRepository!
-          .updateDatabaseWithLatestInfo(taskDatabase);
+      final updatedTaskDatabase = await debouncedFetch(() async {
+        return await _taskDatabaseRepository!
+            .updateDatabaseWithLatestInfo(taskDatabase);
+      });
       return updatedTaskDatabase ?? taskDatabase;
     } catch (e) {
       return taskDatabase;
