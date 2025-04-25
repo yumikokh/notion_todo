@@ -7,11 +7,10 @@ import 'dart:async' as _i5;
 
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:mockito/src/dummies.dart' as _i4;
+import 'package:tanzaku_todo/src/notion/api/notion_task_api.dart' as _i3;
 import 'package:tanzaku_todo/src/notion/common/filter_type.dart' as _i6;
 import 'package:tanzaku_todo/src/notion/model/task.dart' as _i7;
 import 'package:tanzaku_todo/src/notion/model/task_database.dart' as _i2;
-import 'package:tanzaku_todo/src/notion/repository/notion_task_repository.dart'
-    as _i3;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -37,11 +36,10 @@ class _FakeTaskDatabase_0 extends _i1.SmartFake implements _i2.TaskDatabase {
         );
 }
 
-/// A class which mocks [NotionTaskRepository].
+/// A class which mocks [NotionTaskApi].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockNotionTaskRepository extends _i1.Mock
-    implements _i3.NotionTaskRepository {
+class MockNotionTaskApi extends _i1.Mock implements _i3.NotionTaskApi {
   @override
   String get accessToken => (super.noSuchMethod(
         Invocation.getter(#accessToken),

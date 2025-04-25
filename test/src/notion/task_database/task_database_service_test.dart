@@ -1,17 +1,17 @@
 import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tanzaku_todo/src/settings/task_database/task_database_service.dart';
+import 'package:tanzaku_todo/src/notion/tasks/task_database_repository.dart';
 import 'package:tanzaku_todo/src/notion/model/task_database.dart';
 import 'package:tanzaku_todo/src/notion/model/property.dart';
 
 void main() {
-  late TaskDatabaseService service;
+  late TaskDatabaseRepository service;
 
   setUp(() {
     // ignore: invalid_use_of_visible_for_testing_member
     SharedPreferences.setMockInitialValues({});
-    service = TaskDatabaseService(notionDatabaseRepository: null);
+    service = TaskDatabaseRepository(notionDatabaseApi: null);
   });
 
   group('TaskDatabaseService', () {

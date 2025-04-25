@@ -4,7 +4,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../helpers/haptic_helper.dart';
 import '../../../notion/model/property.dart';
 import '../../../notion/oauth/notion_oauth_viewmodel.dart';
-import '../../../notion/repository/notion_database_repository.dart';
+import '../../../notion/api/notion_database_api.dart';
 import '../../../notion/tasks/view/task_main_page.dart';
 import '../selected_database_viewmodel.dart';
 import '../task_database_viewmodel.dart';

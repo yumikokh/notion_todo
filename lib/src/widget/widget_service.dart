@@ -9,7 +9,7 @@ import 'package:page_transition/page_transition.dart';
 import '../notion/common/filter_type.dart';
 import '../notion/model/task.dart';
 import '../notion/model/task_database.dart';
-import '../notion/repository/notion_task_repository.dart';
+import '../notion/api/notion_task_api.dart';
 import '../notion/tasks/task_viewmodel.dart';
 import '../notion/tasks/view/task_main_page.dart';
 import '../notion/tasks/view/task_sheet/task_sheet.dart';
@@ -301,7 +301,7 @@ class WidgetService {
       return;
     }
     try {
-      final repository = NotionTaskRepository(accessToken, taskDatabase);
+      final repository = NotionTaskApi(accessToken, taskDatabase);
       await repository.updateCompleteStatus(id, isCompleted);
       print(
           '[WidgetService] Task updated directly in Notion: $id, $isCompleted');

@@ -1,21 +1,15 @@
 import 'dart:convert';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../common/error.dart';
 import '../../helpers/date.dart';
-import '../../widget/widget_service.dart';
 import '../model/property.dart';
 import '../model/task.dart';
 import '../model/task_database.dart';
-import '../oauth/notion_oauth_viewmodel.dart';
 import '../common/filter_type.dart';
 
-part 'notion_task_repository.g.dart';
-
-class NotionTaskRepository {
+class NotionTaskApi {
   final String accessToken;
   final TaskDatabase database;
   late final Map<String, String> headers;
@@ -24,7 +18,7 @@ class NotionTaskRepository {
   static final DateHelper d = DateHelper();
   static const _pageSize = 100; // NOTE: NotionAPIの最大許容サイズ
 
-  NotionTaskRepository(this.accessToken, this.database) {
+  NotionTaskApi(this.accessToken, this.database) {
     headers = {
       'Content-Type': 'application/json',
       'Notion-Version': '2022-06-28',
@@ -427,18 +421,4 @@ List<dynamic> _getInProgressStatusFilter(TaskDatabase database) {
     case CheckboxCompleteStatusProperty():
       return [];
   }
-}
-
-@riverpod
-NotionTaskRepository? notionTaskRepository(
-    Ref ref, TaskDatabase? taskDatabase) {
-  final accessToken =
-      ref.watch(notionOAuthViewModelProvider).valueOrNull?.accessToken;
-  WidgetService.sendDatabaseSettings(accessToken, taskDatabase);
-
-  if (accessToken == null || taskDatabase == null) {
-    return null;
-  }
-
-  return NotionTaskRepository(accessToken, taskDatabase);
 }

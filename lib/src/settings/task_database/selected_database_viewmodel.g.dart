@@ -7,7 +7,7 @@ part of 'selected_database_viewmodel.dart';
 // **************************************************************************
 
 String _$accessibleDatabasesHash() =>
-    r'148dd99af6bd1ae3fb9dd259ffae5aa0117a9e61';
+    r'7084d26e5e1aa748b3577d8ad0664934d203d0bf';
 
 /// See also [accessibleDatabases].
 @ProviderFor(accessibleDatabases)
@@ -178,7 +178,7 @@ class _PropertiesProviderElement
 }
 
 String _$selectedDatabaseViewModelHash() =>
-    r'60cc1c5be9c66a0635f6a53b346f3febd0ec4e40';
+    r'bad44be1a4f39827ba73c2d4138aaab3dce614ae';
 
 /// See also [SelectedDatabaseViewModel].
 @ProviderFor(SelectedDatabaseViewModel)

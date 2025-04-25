@@ -4,7 +4,7 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../notion/common/filter_type.dart';
-import '../../notion/repository/notion_task_repository.dart';
+import '../../notion/api/notion_task_api.dart';
 import '../../widget/widget_service.dart';
 import '../utils/notion_converter.dart';
 
@@ -63,7 +63,7 @@ class BackgroundFetchService {
     final accessToken = widgetValue.accessToken;
     final taskDatabase = widgetValue.taskDatabase;
     if (accessToken == null || taskDatabase == null) return;
-    final repository = NotionTaskRepository(accessToken, taskDatabase);
+    final repository = NotionTaskApi(accessToken, taskDatabase);
     final result = await repository.fetchPages(FilterType.today, true);
     final tasks = NotionConverter.convertToTasks(result, taskDatabase);
     await WidgetService.applyTasks(tasks);

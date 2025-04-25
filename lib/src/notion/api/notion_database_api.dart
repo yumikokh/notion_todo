@@ -1,11 +1,5 @@
 import 'dart:convert';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
-import 'package:riverpod_annotation/riverpod_annotation.dart';
-
-import '../oauth/notion_oauth_viewmodel.dart';
-
-part 'notion_database_repository.g.dart';
 
 // NotionAPIの仕様上、titleとstatusプロパティは作成できない
 enum CreatePropertyType {
@@ -14,11 +8,11 @@ enum CreatePropertyType {
   select, // 優先度
 }
 
-class NotionDatabaseRepository {
+class NotionDatabaseApi {
   final String accessToken;
   late final Map<String, String> headers;
 
-  NotionDatabaseRepository(this.accessToken) {
+  NotionDatabaseApi(this.accessToken) {
     headers = {
       'Content-Type': 'application/json',
       'Notion-Version': '2022-06-28',
@@ -71,15 +65,4 @@ class NotionDatabaseRepository {
     final data = jsonDecode(res.body);
     return data;
   }
-}
-
-@riverpod
-Future<NotionDatabaseRepository?> notionDatabaseRepository(Ref ref) async {
-  final accessToken = await ref
-      .watch(notionOAuthViewModelProvider.future)
-      .then((value) => value.accessToken);
-  if (accessToken == null) {
-    return null;
-  }
-  return NotionDatabaseRepository(accessToken);
 }

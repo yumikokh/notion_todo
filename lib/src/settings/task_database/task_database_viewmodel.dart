@@ -3,8 +3,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../common/analytics/analytics_service.dart';
 import '../../notion/model/task_database.dart';
 import '../../notion/model/index.dart';
-import '../../notion/repository/notion_database_repository.dart';
-import 'task_database_service.dart';
+import '../../notion/tasks/task_database_repository.dart';
 import 'selected_database_viewmodel.dart';
 import '../../common/debounced_state_mixin.dart';
 
@@ -13,7 +12,7 @@ part 'task_database_viewmodel.g.dart';
 @riverpod
 class TaskDatabaseViewModel extends _$TaskDatabaseViewModel
     with DebouncedStateMixin<TaskDatabase?> {
-  late TaskDatabaseService _taskDatabaseService;
+  late TaskDatabaseRepository? _taskDatabaseRepository;
 
   @override
   Future<TaskDatabase?> build() async {
@@ -21,16 +20,18 @@ class TaskDatabaseViewModel extends _$TaskDatabaseViewModel
       return state.value!;
     }
 
-    final notionDatabaseRepository =
-        await ref.watch(notionDatabaseRepositoryProvider.future);
-    _taskDatabaseService =
-        TaskDatabaseService(notionDatabaseRepository: notionDatabaseRepository);
+    _taskDatabaseRepository =
+        await ref.watch(taskDatabaseRepositoryProvider.future);
 
-    final taskDatabase = await _taskDatabaseService.loadSetting();
+    if (_taskDatabaseRepository == null) {
+      return null;
+    }
+
+    final taskDatabase = await _taskDatabaseRepository!.loadSetting();
     if (taskDatabase == null) return null;
     try {
-      final updatedTaskDatabase =
-          await _taskDatabaseService.updateDatabaseWithLatestInfo(taskDatabase);
+      final updatedTaskDatabase = await _taskDatabaseRepository!
+          .updateDatabaseWithLatestInfo(taskDatabase);
       return updatedTaskDatabase ?? taskDatabase;
     } catch (e) {
       return taskDatabase;
@@ -38,6 +39,10 @@ class TaskDatabaseViewModel extends _$TaskDatabaseViewModel
   }
 
   Future<void> save(SelectedDatabaseState selectedTaskDatabase) async {
+    final repository = _taskDatabaseRepository;
+    if (repository == null) {
+      return;
+    }
     final status = selectedTaskDatabase.status;
     final date = selectedTaskDatabase.date;
     if (status == null || date == null) {
@@ -52,7 +57,7 @@ class TaskDatabaseViewModel extends _$TaskDatabaseViewModel
         priority: selectedTaskDatabase.priority);
     state = const AsyncValue.loading();
     try {
-      await _taskDatabaseService.save(taskDatabase);
+      await repository.save(taskDatabase);
       state = AsyncValue.data(taskDatabase);
 
       try {
@@ -72,9 +77,13 @@ class TaskDatabaseViewModel extends _$TaskDatabaseViewModel
   }
 
   Future<void> clear() async {
+    final repository = _taskDatabaseRepository;
+    if (repository == null) {
+      return;
+    }
     state = const AsyncValue.loading();
     try {
-      await _taskDatabaseService.clear();
+      await repository.clear();
       state = const AsyncValue.data(null);
 
       try {
