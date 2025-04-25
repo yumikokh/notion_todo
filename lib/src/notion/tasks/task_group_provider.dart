@@ -27,7 +27,7 @@ extension GroupTypeExtension on GroupType {
   String getLocalizedName(AppLocalizations l) {
     switch (this) {
       case GroupType.none:
-        return l.group_by_none;
+        return l.sort_by_default;
       case GroupType.date:
         return l.date_property;
       case GroupType.status:
@@ -177,99 +177,99 @@ class TaskGroup extends _$TaskGroup {
         // ステータスごとにグループ化
         final unsortedGroups = <String, List<Task>>{};
 
-        if (taskDatabaseViewModel?.status is StatusProperty) {
-          try {
-            final statusProperty =
-                taskDatabaseViewModel!.status as StatusProperty;
+        switch (taskDatabaseViewModel?.status) {
+          case StatusProperty status:
+            try {
+              final statusProperty = status;
 
-            // StatusPropertyからオプションとグループを取得
-            final options = statusProperty.status.options;
-            final groups = statusProperty.status.groups;
+              // StatusPropertyからオプションとグループを取得
+              final options = statusProperty.status.options;
+              final groups = statusProperty.status.groups;
 
-            // StatusGroupTypeの順序に対応するマップ
-            final groupOrderMap = {
-              StatusGroupType.todo.value: 1,
-              StatusGroupType.inProgress.value: 2,
-              StatusGroupType.complete.value: 3,
-              "": 4, // グループに属さないオプション用
-            };
+              // StatusGroupTypeの順序に対応するマップ
+              final groupOrderMap = {
+                StatusGroupType.todo.value: 1,
+                StatusGroupType.inProgress.value: 2,
+                StatusGroupType.complete.value: 3,
+                "": 4, // グループに属さないオプション用
+              };
 
-            // オプションID、グループID、名前のマッピングのリストを作成
-            List<(String, String, String)> optionMappings = [];
+              // オプションID、グループID、名前のマッピングのリストを作成
+              List<(String, String, String)> optionMappings = [];
 
-            for (final option in options) {
-              // オプションが属するグループを探す
-              String groupName = "";
-              for (final group in groups) {
-                if (group.optionIds.contains(option.id)) {
-                  groupName = group.name;
-                  break;
+              for (final option in options) {
+                // オプションが属するグループを探す
+                String groupName = "";
+                for (final group in groups) {
+                  if (group.optionIds.contains(option.id)) {
+                    groupName = group.name;
+                    break;
+                  }
                 }
+
+                optionMappings.add((option.id, groupName, option.name));
               }
 
-              optionMappings.add((option.id, groupName, option.name));
-            }
+              // 1. グループ順、2. オプション名で並び替え
+              optionMappings.sort((a, b) {
+                // まずグループ順で比較
+                final groupOrderA = groupOrderMap[a.$2] ?? 4;
+                final groupOrderB = groupOrderMap[b.$2] ?? 4;
 
-            // 1. グループ順、2. オプション名で並び替え
-            optionMappings.sort((a, b) {
-              // まずグループ順で比較
-              final groupOrderA = groupOrderMap[a.$2] ?? 4;
-              final groupOrderB = groupOrderMap[b.$2] ?? 4;
+                if (groupOrderA != groupOrderB) {
+                  return groupOrderA.compareTo(groupOrderB);
+                }
 
-              if (groupOrderA != groupOrderB) {
-                return groupOrderA.compareTo(groupOrderB);
-              }
+                // 同じグループ内ではオプション名で比較
+                return a.$3.toLowerCase().compareTo(b.$3.toLowerCase());
+              });
 
-              // 同じグループ内ではオプション名で比較
-              return a.$3.toLowerCase().compareTo(b.$3.toLowerCase());
-            });
-
-            // ステータスなしタスクを追加
-            final noStatusTasks = tasks.where((task) {
-              if (task.status is TaskStatusStatus) {
-                final statusTask = task.status as TaskStatusStatus;
-                return statusTask.option == null;
-              }
-              return task.status is TaskStatusCheckbox;
-            }).toList();
-
-            if (noStatusTasks.isNotEmpty) {
-              unsortedGroups['no_status'] = noStatusTasks;
-            }
-
-            // ソートされた順序でグループ化
-            for (final mapping in optionMappings) {
-              final optionId = mapping.$1;
-
-              final taskList = tasks.where((task) {
+              // ステータスなしタスクを追加
+              final noStatusTasks = tasks.where((task) {
                 if (task.status is TaskStatusStatus) {
                   final statusTask = task.status as TaskStatusStatus;
-                  return statusTask.option?.id == optionId;
+                  return statusTask.option == null;
                 }
-                return false;
+                return task.status is TaskStatusCheckbox;
               }).toList();
 
-              if (taskList.isNotEmpty) {
-                unsortedGroups[optionId] = taskList;
+              if (noStatusTasks.isNotEmpty) {
+                unsortedGroups['no_status'] = noStatusTasks;
               }
-            }
 
-            // 各グループ内のタスクをソート
-            for (final entry in unsortedGroups.entries) {
-              groupedTasks[entry.key] =
-                  _sortTasksInGroup(entry.value, filterType, showCompleted);
-            }
+              // ソートされた順序でグループ化
+              for (final mapping in optionMappings) {
+                final optionId = mapping.$1;
 
-            return groupedTasks;
-          } catch (e) {
-            // エラー発生時は単純な完了/未完了グループに分ける
+                final taskList = tasks.where((task) {
+                  if (task.status is TaskStatusStatus) {
+                    final statusTask = task.status as TaskStatusStatus;
+                    return statusTask.option?.id == optionId;
+                  }
+                  return false;
+                }).toList();
+
+                if (taskList.isNotEmpty) {
+                  unsortedGroups[optionId] = taskList;
+                }
+              }
+
+              // 各グループ内のタスクをソート
+              for (final entry in unsortedGroups.entries) {
+                groupedTasks[entry.key] =
+                    _sortTasksInGroup(entry.value, filterType, showCompleted);
+              }
+
+              return groupedTasks;
+            } catch (e) {
+              // エラー発生時は単純な完了/未完了グループに分ける
+              return _fallbackGrouping(tasks, filterType);
+            }
+          case CheckboxCompleteStatusProperty _:
+          case null:
+            // Checkboxプロパティの場合、フォールバックグループ化を使用
             return _fallbackGrouping(tasks, filterType);
-          }
-        } else {
-          // Checkboxプロパティの場合、フォールバックグループ化を使用
-          return _fallbackGrouping(tasks, filterType);
         }
-
       case GroupType.priority:
         // 優先度ごとにグループ化
         final unsortedGroups = <String, List<Task>>{};

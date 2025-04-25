@@ -28,6 +28,12 @@ class TaskListTile extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final checked = useState(task.isCompleted);
 
+    final fillColor = switch (checked.value) {
+      true => (task.priority?.mColor ?? Theme.of(context).colorScheme.onSurface)
+          .withAlpha(120),
+      false => task.priority?.mColor.withAlpha(60)
+    };
+
     return ListTile(
       visualDensity: VisualDensity.comfortable,
       enabled: !task.isTemp,
@@ -65,8 +71,8 @@ class TaskListTile extends HookConsumerWidget {
       },
       leading: Checkbox(
         value: checked.value,
-        activeColor:
-            task.priority?.mColor ?? Theme.of(context).colorScheme.onSurface,
+        fillColor: WidgetStateProperty.all(fillColor),
+        activeColor: task.priority?.mColor,
         side: BorderSide(
             width: 1.2,
             color:

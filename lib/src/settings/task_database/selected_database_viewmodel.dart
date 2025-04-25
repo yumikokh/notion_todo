@@ -6,8 +6,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../common/snackbar/model/snackbar_state.dart';
 import '../../common/snackbar/snackbar.dart';
 import '../../notion/model/index.dart';
-import '../../notion/repository/notion_database_repository.dart';
-import 'task_database_service.dart';
+import '../../notion/api/notion_database_api.dart';
+import '../../notion/tasks/task_database_repository.dart';
 import 'task_database_viewmodel.dart';
 
 part 'selected_database_viewmodel.freezed.dart';
@@ -15,11 +15,12 @@ part 'selected_database_viewmodel.g.dart';
 
 @riverpod
 Future<List<Database>> accessibleDatabases(Ref ref) async {
-  final notionDatabaseRepository =
-      await ref.watch(notionDatabaseRepositoryProvider.future);
-  final taskDatabaseService =
-      TaskDatabaseService(notionDatabaseRepository: notionDatabaseRepository);
-  final dbs = await taskDatabaseService.fetchDatabases();
+  final taskDatabaseRepository =
+      await ref.watch(taskDatabaseRepositoryProvider.future);
+  if (taskDatabaseRepository == null) {
+    return [];
+  }
+  final dbs = await taskDatabaseRepository.fetchDatabases();
   return dbs;
 }
 
@@ -68,15 +69,13 @@ class SelectedDatabaseState with _$SelectedDatabaseState {
 
 @riverpod
 class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
-  late TaskDatabaseService _taskDatabaseService;
+  late TaskDatabaseRepository? _taskDatabaseRepository;
 
   @override
   Future<SelectedDatabaseState?> build() async {
     final taskDatabase = await ref.watch(taskDatabaseViewModelProvider.future);
-    final notionDatabaseRepository =
-        await ref.watch(notionDatabaseRepositoryProvider.future);
-    _taskDatabaseService =
-        TaskDatabaseService(notionDatabaseRepository: notionDatabaseRepository);
+    _taskDatabaseRepository =
+        await ref.watch(taskDatabaseRepositoryProvider.future);
     if (state.value != null) {
       return await _removeNoExistsProperties(state.value?.id, state.value);
     }
@@ -259,11 +258,11 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
 
   Future<Property> createProperty(CreatePropertyType type, String name) async {
     final databaseId = state.value?.id;
-    if (databaseId == null) {
-      throw Exception('databaseId is null');
+    final repository = _taskDatabaseRepository;
+    if (databaseId == null || repository == null) {
+      throw Exception('databaseId or repository is null');
     }
-    final property =
-        await _taskDatabaseService.createProperty(databaseId, type, name);
+    final property = await repository.createProperty(databaseId, type, name);
     if (property == null) {
       throw Exception('property is null');
     }

@@ -5,21 +5,21 @@ import 'package:tanzaku_todo/src/notion/common/filter_type.dart';
 import 'package:tanzaku_todo/src/notion/model/property.dart';
 import 'package:tanzaku_todo/src/notion/model/task.dart';
 import 'package:tanzaku_todo/src/notion/model/task_database.dart';
-import 'package:tanzaku_todo/src/notion/repository/notion_task_repository.dart';
-import 'package:tanzaku_todo/src/notion/tasks/task_service.dart';
+import 'package:tanzaku_todo/src/notion/api/notion_task_api.dart';
+import 'package:tanzaku_todo/src/notion/tasks/task_repository.dart';
 
 @GenerateNiceMocks([
-  MockSpec<NotionTaskRepository>(),
+  MockSpec<NotionTaskApi>(),
 ])
 import 'task_service_test.mocks.dart';
 
 void main() {
-  late TaskService service;
-  late MockNotionTaskRepository mockRepository;
+  late TaskRepository service;
+  late MockNotionTaskApi mockRepository;
   late TaskDatabase taskDatabase;
 
   setUp(() {
-    mockRepository = MockNotionTaskRepository();
+    mockRepository = MockNotionTaskApi();
     taskDatabase = TaskDatabase(
       id: 'test_id',
       name: 'test_database',
@@ -114,7 +114,7 @@ void main() {
         ),
       ),
     );
-    service = TaskService(mockRepository, taskDatabase);
+    service = TaskRepository(mockRepository, taskDatabase);
   });
 
   group('fetchTasks', () {

@@ -3,7 +3,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../common/analytics/analytics_service.dart';
 
-import 'notion_oauth_service.dart';
+import 'notion_oauth_repository.dart';
 
 part 'notion_oauth_viewmodel.g.dart';
 part 'notion_oauth_viewmodel.freezed.dart';
@@ -24,6 +24,8 @@ class NotionOAuth with _$NotionOAuth {
 // バックグラウンドモードでも保持されるようにする
 @Riverpod(keepAlive: true)
 class NotionOAuthViewModel extends _$NotionOAuthViewModel {
+  late NotionOAuthRepository _repository;
+
   @override
   Future<NotionOAuth> build() async {
     final currentState = state.valueOrNull;
@@ -31,14 +33,15 @@ class NotionOAuthViewModel extends _$NotionOAuthViewModel {
       return currentState;
     }
 
-    final accessToken = await ref.watch(notionOAuthServiceProvider.future);
+    _repository = await ref.watch(notionOAuthRepositoryProvider.future);
+
+    final accessToken = await _repository.loadAccessToken(); // kari
 
     return NotionOAuth(accessToken: accessToken);
   }
 
   Future<void> authenticate() async {
-    final notionOAuthService = ref.read(notionOAuthServiceProvider.notifier);
-    final accessToken = await notionOAuthService.authenticate();
+    final accessToken = await _repository.fetchAccessToken();
     if (accessToken == null) return;
 
     state = AsyncValue.data(NotionOAuth(accessToken: accessToken));
@@ -55,8 +58,7 @@ class NotionOAuthViewModel extends _$NotionOAuthViewModel {
   }
 
   Future<void> deauthenticate() async {
-    final notionOAuthService = ref.read(notionOAuthServiceProvider.notifier);
-    await notionOAuthService.deleteAccessToken();
+    await _repository.deleteAccessToken();
     state = AsyncValue.data(NotionOAuth.initialState());
 
     try {

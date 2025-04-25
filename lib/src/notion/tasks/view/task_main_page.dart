@@ -149,6 +149,7 @@ class TaskMainPage extends HookConsumerWidget {
                         list: taskSort.sortTasks(tasks, FilterType.today),
                         taskViewModel: todayViewModel,
                         showCompleted: todayViewModel.showCompleted,
+                        isLoading: todayTasks.isLoading,
                       ),
                       loading: () => const Center(
                         child: CircularProgressIndicator(),
@@ -167,6 +168,7 @@ class TaskMainPage extends HookConsumerWidget {
                         list: taskSort.sortTasks(tasks, FilterType.all),
                         taskViewModel: allViewModel,
                         showCompleted: false, // NOTE: Indexページでは常に未完了のみ表示対応
+                        isLoading: allTasks.isLoading,
                       ),
                       loading: () => const Center(
                         child: CircularProgressIndicator(),
