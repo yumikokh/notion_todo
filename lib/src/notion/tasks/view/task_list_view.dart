@@ -45,13 +45,6 @@ class TaskListView extends HookConsumerWidget {
     final expandedGroupsNotifier =
         ref.read(expandedGroupsProvider(expandedGroupsKey).notifier);
 
-    // 完了タスクセクションの開閉状態を取得
-    final isCompletedSectionExpanded = ref
-        .watch(completedTasksSectionExpandedProvider(taskViewModel.filterType));
-    final completedSectionNotifier = ref.read(
-        completedTasksSectionExpandedProvider(taskViewModel.filterType)
-            .notifier);
-
     // タスクをグループ化
     final groupedTasks = ref
         .watch(taskGroupProvider.notifier)
@@ -251,58 +244,16 @@ class TaskListView extends HookConsumerWidget {
                         themeMode: themeMode))
                     .toList(),
                 const Divider(height: 0),
-                const SizedBox(height: 30),
               ],
 
               // 完了タスク
               if (showCompleted && completedTasks.isNotEmpty) ...[
-                // 完了タスクのヘッダー（開閉操作可能に）
-                InkWell(
-                  splashFactory: NoSplash.splashFactory,
-                  highlightColor: Colors.transparent,
-                  onTap: () {
-                    HapticHelper.light();
-                    completedSectionNotifier.toggle();
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(32, 0, 32, 8),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            l.completed_tasks,
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleSmall
-                                ?.copyWith(
-                                  color:
-                                      Theme.of(context).colorScheme.secondary,
-                                ),
-                          ),
-                        ),
-                        // 矢印アイコン - 開閉状態に応じて回転
-                        AnimatedRotation(
-                          turns: isCompletedSectionExpanded ? 0 : -0.25,
-                          duration: const Duration(milliseconds: 200),
-                          child: Icon(
-                            Icons.keyboard_arrow_down,
-                            size: 20,
-                            color: Theme.of(context).colorScheme.secondary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                // 完了タスク一覧（セクションが開いている場合のみ表示）
-                if (isCompletedSectionExpanded)
-                  ...completedTasks
-                      .map((task) => TaskDismissible(
-                          taskViewModel: taskViewModel,
-                          task: task,
-                          themeMode: themeMode))
-                      .toList(),
+                ...completedTasks
+                    .map((task) => TaskDismissible(
+                        taskViewModel: taskViewModel,
+                        task: task,
+                        themeMode: themeMode))
+                    .toList(),
                 const Divider(height: 0),
               ],
             ],
