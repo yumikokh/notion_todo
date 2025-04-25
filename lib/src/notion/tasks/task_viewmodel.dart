@@ -210,6 +210,11 @@ class TaskViewModel extends _$TaskViewModel
 
       state = AsyncValue.data([...state.valueOrNull ?? [], tempTask]);
 
+      // ウィジェット更新
+      if (_filterType == FilterType.today) {
+        await _updateTodayWidget(state.valueOrNull ?? []);
+      }
+
       try {
         final t = await taskService.addTask(tempTask);
 
@@ -270,6 +275,10 @@ class TaskViewModel extends _$TaskViewModel
         for (final t in state.valueOrNull ?? [])
           if (t.id == task.id) task else t
       ]);
+      // ウィジェット更新
+      if (_filterType == FilterType.today) {
+        await _updateTodayWidget(state.valueOrNull ?? []);
+      }
 
       snackbar.show(l.task_update_success(task.title),
           type: SnackbarType.success, onUndo: () async {
@@ -317,6 +326,17 @@ class TaskViewModel extends _$TaskViewModel
 
       _isLoading = true;
       final prevState = state;
+
+      state = AsyncValue.data([
+        for (final t in state.valueOrNull ?? [])
+          if (t.id == task.id) task else t
+      ]);
+
+      // ウィジェット更新
+      if (_filterType == FilterType.today) {
+        await _updateTodayWidget(state.valueOrNull ?? []);
+      }
+
       try {
         final updatedTask =
             await taskService.updateCompleteStatus(task.id, isCompleted);
@@ -447,6 +467,10 @@ class TaskViewModel extends _$TaskViewModel
       for (final t in state.valueOrNull ?? [])
         if (t.id != task.id) t
     ]);
+    // ウィジェット更新
+    if (_filterType == FilterType.today) {
+      await _updateTodayWidget(state.valueOrNull ?? []);
+    }
     snackbar.show(l.task_delete_success(task.title), type: SnackbarType.success,
         onUndo: () async {
       undoDeleteTask(task);
