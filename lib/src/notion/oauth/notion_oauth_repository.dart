@@ -17,7 +17,7 @@ Future<NotionOAuthRepository> notionOAuthRepository(Ref ref) async {
     iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
   );
   final prefs = await SharedPreferences.getInstance();
-  return NotionOAuthRepository(
+  final repository = NotionOAuthRepository(
     Env.notionAuthUrl,
     Env.oAuthClientId,
     Env.oAuthClientSecret,
@@ -25,6 +25,10 @@ Future<NotionOAuthRepository> notionOAuthRepository(Ref ref) async {
     secureStorage,
     prefs,
   );
+
+  await repository.initialize();
+
+  return repository;
 }
 
 class NotionOAuthRepository {
@@ -40,6 +44,20 @@ class NotionOAuthRepository {
 
   NotionOAuthRepository(this.notionAuthUrl, this.clientId, this.clientSecret,
       this.redirectUri, this.secureStorage, this.sharedPreferences);
+
+  /// 初回起動時かつトークンが存在する場合のみ削除する
+  /// これにより、正常なアプリの初回起動時にはトークンを削除せず
+  /// アプリの再インストール時のみトークンを削除する
+  Future<void> initialize() async {
+    final isFirstLaunch = await this.isFirstLaunch();
+    if (isFirstLaunch) {
+      final currentToken = await loadAccessToken();
+      if (currentToken != null) {
+        await deleteAccessToken();
+      }
+    }
+    await setIsFirstLaunch(false);
+  }
 
   Future<bool> isFirstLaunch() async {
     return sharedPreferences.getBool(_isFirstLaunchKey) ?? true;
@@ -82,7 +100,9 @@ class NotionOAuthRepository {
           }),
         );
         final data = jsonDecode(res.body);
-        return data['access_token'];
+        final accessToken = data['access_token'];
+        await saveAccessToken(accessToken);
+        return accessToken;
       } else {
         throw Exception('oAuth Code is null');
       }
