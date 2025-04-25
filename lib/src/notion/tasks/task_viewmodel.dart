@@ -14,7 +14,7 @@ import '../../settings/task_database/task_database_viewmodel.dart';
 import '../common/filter_type.dart';
 import '../model/property.dart';
 import '../model/task.dart';
-import 'task_service.dart';
+import 'task_repository.dart';
 import '../../common/analytics/analytics_service.dart';
 import '../../common/app_review/app_review_service.dart';
 import '../../widget/widget_service.dart';
@@ -25,7 +25,7 @@ part 'task_viewmodel.g.dart';
 @riverpod
 class TaskViewModel extends _$TaskViewModel
     with DebouncedStateMixin<List<Task>> {
-  late TaskService? _taskService;
+  late TaskRepository? _taskRepository;
   late FilterType _filterType;
   late bool _hasCompleted;
   bool _hasMore = false;
@@ -48,16 +48,15 @@ class TaskViewModel extends _$TaskViewModel
 
     final taskDatabaseViewModel =
         await ref.refresh(taskDatabaseViewModelProvider.future);
-    _taskService =
-        await ref.watch(taskServiceProvider(taskDatabaseViewModel).future);
+    _taskRepository = await ref.watch(taskRepositoryProvider.future);
 
-    if (_taskService == null || taskDatabaseViewModel == null) {
+    if (_taskRepository == null || taskDatabaseViewModel == null) {
       await FlutterAppBadger.removeBadge();
       await _updateTodayWidget([]);
       return [];
     }
 
-    _showCompleted = await _taskService!.loadShowCompleted();
+    _showCompleted = await _taskRepository!.loadShowCompleted();
 
     _filterType = filterType;
     // MEMO: ユースケースを鑑みて読み込みは固定にする
@@ -100,8 +99,8 @@ class TaskViewModel extends _$TaskViewModel
   Future<void> toggleShowCompleted() async {
     _showCompleted = !_showCompleted;
     ref.notifyListeners();
-    if (_taskService != null) {
-      await _taskService!.saveShowCompleted(_showCompleted);
+    if (_taskRepository != null) {
+      await _taskRepository!.saveShowCompleted(_showCompleted);
     }
     try {
       final analytics = ref.read(analyticsServiceProvider);
@@ -140,7 +139,7 @@ class TaskViewModel extends _$TaskViewModel
   }
 
   Future<List<Task>> _fetchTasks({bool isFirstFetch = false}) async {
-    final taskService = _taskService;
+    final taskService = _taskRepository;
     if (taskService == null) {
       return [];
     }
@@ -200,7 +199,7 @@ class TaskViewModel extends _$TaskViewModel
     final locale = ref.read(settingsViewModelProvider).locale;
     final l = await AppLocalizations.delegate.load(locale);
     await _addOperation(() async {
-      final taskService = _taskService;
+      final taskService = _taskRepository;
       if (taskService == null || tempTask.title.trim().isEmpty) {
         return;
       }
@@ -252,7 +251,7 @@ class TaskViewModel extends _$TaskViewModel
 
   Future<void> updateTask(Task task, {bool fromUndo = false}) async {
     await _addOperation(() async {
-      final taskService = _taskService;
+      final taskService = _taskRepository;
       final prevState = state;
       final prevTask =
           prevState.valueOrNull?.where((t) => t.id == task.id).firstOrNull;
@@ -308,7 +307,7 @@ class TaskViewModel extends _$TaskViewModel
   Future<void> updateCompleteStatus(Task task, bool isCompleted,
       {bool fromUndo = false}) async {
     await _addOperation(() async {
-      final taskService = _taskService;
+      final taskService = _taskRepository;
       if (taskService == null) {
         return;
       }
@@ -343,8 +342,8 @@ class TaskViewModel extends _$TaskViewModel
 
           if (allTasksCompleted && tasks.isNotEmpty) {
             // showCompletedをオフにする
-            if (_taskService != null) {
-              await _taskService!.saveShowCompleted(false);
+            if (_taskRepository != null) {
+              await _taskRepository!.saveShowCompleted(false);
             }
             // レビューポップアップ
             final reviewService = AppReviewService.instance;
@@ -384,7 +383,7 @@ class TaskViewModel extends _$TaskViewModel
       return;
     }
     await _addOperation(() async {
-      final taskService = _taskService;
+      final taskService = _taskRepository;
       if (taskService == null) {
         return;
       }
@@ -435,7 +434,7 @@ class TaskViewModel extends _$TaskViewModel
     if (task.isTemp) {
       return;
     }
-    final taskService = _taskService;
+    final taskService = _taskRepository;
     if (taskService == null) {
       return;
     }
@@ -478,7 +477,7 @@ class TaskViewModel extends _$TaskViewModel
 
   Future<void> undoDeleteTask(Task prev) async {
     await _addOperation(() async {
-      final taskService = _taskService;
+      final taskService = _taskRepository;
       if (taskService == null) {
         return;
       }

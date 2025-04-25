@@ -4,12 +4,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../common/utils/notion_converter.dart';
+import '../../settings/task_database/task_database_viewmodel.dart';
+import '../../widget/widget_service.dart';
 import '../common/filter_type.dart';
 import '../model/task.dart';
 import '../model/task_database.dart';
-import '../repository/notion_task_repository.dart';
+import '../oauth/notion_oauth_viewmodel.dart';
+import '../api/notion_task_api.dart';
 
-part 'task_service.g.dart';
+part 'task_repository.g.dart';
 
 class TaskResult {
   final List<Task> tasks;
@@ -24,31 +27,37 @@ class TaskResult {
 }
 
 @riverpod
-Future<TaskService?> taskService(Ref ref, TaskDatabase? taskDatabase) async {
-  final repository = ref.watch(notionTaskRepositoryProvider(taskDatabase));
-  if (repository == null || taskDatabase == null) {
+Future<TaskRepository?> taskRepository(Ref ref) async {
+  final taskDatabase = await ref.watch(taskDatabaseViewModelProvider.future);
+  final accessToken =
+      ref.watch(notionOAuthViewModelProvider).valueOrNull?.accessToken;
+  WidgetService.sendDatabaseSettings(accessToken, taskDatabase);
+
+  if (accessToken == null || taskDatabase == null) {
     return null;
   }
-  return TaskService(repository, taskDatabase);
+  final notionTaskApi = NotionTaskApi(accessToken, taskDatabase);
+
+  return TaskRepository(notionTaskApi, taskDatabase);
 }
 
-class TaskService {
-  final NotionTaskRepository notionTaskRepository;
+class TaskRepository {
+  final NotionTaskApi notionTaskApi;
   final TaskDatabase taskDatabase;
 
-  TaskService(this.notionTaskRepository, this.taskDatabase);
+  TaskRepository(this.notionTaskApi, this.taskDatabase);
 
   Future<bool> loadShowCompleted() async {
-    return await notionTaskRepository.loadShowCompleted();
+    return await notionTaskApi.loadShowCompleted();
   }
 
   Future<void> saveShowCompleted(bool value) async {
-    await notionTaskRepository.saveShowCompleted(value);
+    await notionTaskApi.saveShowCompleted(value);
   }
 
   Future<TaskResult> fetchTasks(FilterType filterType, bool hasCompleted,
       {String? startCursor}) async {
-    final data = await notionTaskRepository.fetchPages(filterType, hasCompleted,
+    final data = await notionTaskApi.fetchPages(filterType, hasCompleted,
         startCursor: startCursor);
 
     final tasks = (data['results'] as List<dynamic>)
@@ -64,7 +73,7 @@ class TaskService {
   }
 
   Future<Task> addTask(Task task) async {
-    final data = await notionTaskRepository.addTask(task);
+    final data = await notionTaskApi.addTask(task);
     if (data == null || data.isEmpty || data['object'] == 'error') {
       throw Exception('Failed to add task');
     }
@@ -72,7 +81,7 @@ class TaskService {
   }
 
   Future<Task> updateTask(Task task) async {
-    final data = await notionTaskRepository.updateTask(task);
+    final data = await notionTaskApi.updateTask(task);
     if (data == null || data['id'] == null || data['object'] == 'error') {
       throw Exception('Failed to update task');
     }
@@ -80,8 +89,7 @@ class TaskService {
   }
 
   Future<Task> updateCompleteStatus(String taskId, bool isCompleted) async {
-    final data =
-        await notionTaskRepository.updateCompleteStatus(taskId, isCompleted);
+    final data = await notionTaskApi.updateCompleteStatus(taskId, isCompleted);
     if (data == null || data.isEmpty || data['object'] == 'error') {
       throw Exception('Failed to update task');
     }
@@ -90,7 +98,7 @@ class TaskService {
 
   Future<Task> updateInProgressStatus(String taskId, bool isInProgress) async {
     final data =
-        await notionTaskRepository.updateInProgressStatus(taskId, isInProgress);
+        await notionTaskApi.updateInProgressStatus(taskId, isInProgress);
     if (data == null || data.isEmpty || data['object'] == 'error') {
       throw Exception('Failed to update task');
     }
@@ -98,7 +106,7 @@ class TaskService {
   }
 
   Future<Task?> deleteTask(String taskId) async {
-    final data = await notionTaskRepository.deleteTask(taskId);
+    final data = await notionTaskApi.deleteTask(taskId);
     if (data == null || data.isEmpty || data['object'] == 'error') {
       return null;
     }
@@ -106,7 +114,7 @@ class TaskService {
   }
 
   Future<Task?> undoDeleteTask(String taskId) async {
-    final data = await notionTaskRepository.revertTask(taskId);
+    final data = await notionTaskApi.revertTask(taskId);
     if (data == null || data.isEmpty || data['object'] == 'error') {
       return null;
     }

@@ -1,15 +1,20 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
-import '../../notion/model/index.dart';
-import '../../notion/model/task_database.dart';
-import '../../notion/repository/notion_database_repository.dart';
+import '../model/index.dart';
+import '../model/task_database.dart';
+import '../oauth/notion_oauth_viewmodel.dart';
+import '../api/notion_database_api.dart';
 
-class TaskDatabaseService {
+part 'task_database_repository.g.dart';
+
+class TaskDatabaseRepository {
   static const _taskDatabaseKey = 'taskDatabase';
-  final NotionDatabaseRepository? notionDatabaseRepository;
+  final NotionDatabaseApi? notionDatabaseApi;
 
-  TaskDatabaseService({required this.notionDatabaseRepository});
+  TaskDatabaseRepository({required this.notionDatabaseApi});
 
   Future<TaskDatabase?> loadSetting() async {
     final pref = await SharedPreferences.getInstance();
@@ -41,7 +46,7 @@ class TaskDatabaseService {
 
   /// 指定されたIDのデータベースを取得する
   Future<Database> _fetchDatabase(String databaseId) async {
-    final data = await notionDatabaseRepository?.fetchDatabase(databaseId);
+    final data = await notionDatabaseApi?.fetchDatabase(databaseId);
     if (data == null) {
       throw Exception('Database not found');
     }
@@ -137,7 +142,7 @@ class TaskDatabaseService {
   }
 
   Future<List<Database>> fetchDatabases() async {
-    final data = await notionDatabaseRepository?.fetchAccessibleDatabases();
+    final data = await notionDatabaseApi?.fetchAccessibleDatabases();
     if (data == null) {
       return [];
     }
@@ -150,7 +155,7 @@ class TaskDatabaseService {
   Future<Property?> createProperty(
       String databaseId, CreatePropertyType type, String name) async {
     final data =
-        await notionDatabaseRepository?.createProperty(databaseId, type, name);
+        await notionDatabaseApi?.createProperty(databaseId, type, name);
     if (data == null) {
       return null;
     }
@@ -179,4 +184,16 @@ class TaskDatabaseService {
         .map<Property>((entry) => Property.fromJson(entry.value))
         .toList();
   }
+}
+
+@riverpod
+Future<TaskDatabaseRepository?> taskDatabaseRepository(Ref ref) async {
+  final accessToken = await ref
+      .watch(notionOAuthViewModelProvider.future)
+      .then((value) => value.accessToken);
+  if (accessToken == null) {
+    return null;
+  }
+  final notionDatabaseApi = NotionDatabaseApi(accessToken);
+  return TaskDatabaseRepository(notionDatabaseApi: notionDatabaseApi);
 }
