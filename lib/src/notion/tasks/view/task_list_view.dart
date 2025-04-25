@@ -303,12 +303,6 @@ class TaskListView extends HookConsumerWidget {
     for (final entry in groupedTasks.entries) {
       final groupId = entry.key;
       final tasksInGroup = entry.value;
-
-      // 完了済み専用セクションは表示しない（他のグループに含めるためスキップ）
-      if (groupId == 'completed') {
-        continue;
-      }
-
       // 空のグループはスキップ
       if (tasksInGroup.isEmpty) {
         continue;

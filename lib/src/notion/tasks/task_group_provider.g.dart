@@ -174,7 +174,7 @@ class _CurrentGroupTypeProviderElement
   FilterType get filterType => (origin as CurrentGroupTypeProvider).filterType;
 }
 
-String _$taskGroupHash() => r'3b38d811138863fca2d1d2f9bc5b16122d6b3eed';
+String _$taskGroupHash() => r'88c55ba7785de3477c26b6908402c075237cc92c';
 
 /// See also [TaskGroup].
 @ProviderFor(TaskGroup)
