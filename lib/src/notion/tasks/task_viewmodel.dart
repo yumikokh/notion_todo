@@ -14,6 +14,7 @@ import '../../settings/task_database/task_database_viewmodel.dart';
 import '../common/filter_type.dart';
 import '../model/property.dart';
 import '../model/task.dart';
+import '../model/task_database.dart';
 import 'task_repository.dart';
 import '../../common/analytics/analytics_service.dart';
 import '../../common/app_review/app_review_service.dart';
@@ -37,15 +38,20 @@ class TaskViewModel extends _$TaskViewModel
 
   static final DateHelper d = DateHelper();
 
+  bool get isToday => _filterType == FilterType.today;
+
   @override
   Future<List<Task>> build({
     FilterType filterType = FilterType.all,
   }) async {
+    // 最新のDB情報を事前に取得。ref.refreshするとstateが破棄されるので使わない
     final taskDatabaseViewModel =
-        await ref.refresh(taskDatabaseViewModelProvider.future);
+        ref.read(taskDatabaseViewModelProvider.notifier);
+    TaskDatabase? taskDatabase = await taskDatabaseViewModel.refresh();
+
     _taskRepository = await ref.watch(taskRepositoryProvider.future);
 
-    if (_taskRepository == null || taskDatabaseViewModel == null) {
+    if (_taskRepository == null || taskDatabase == null) {
       await FlutterAppBadger.removeBadge();
       await _updateTodayWidget([]);
       return [];
@@ -60,7 +66,7 @@ class TaskViewModel extends _$TaskViewModel
 
     final tasks = await _fetchTasks(isFirstFetch: true);
 
-    if (filterType == FilterType.today) {
+    if (isToday) {
       final showBadge =
           ref.watch(settingsViewModelProvider).showNotificationBadge;
       _updateBadge(tasks, showBadge);
@@ -74,7 +80,7 @@ class TaskViewModel extends _$TaskViewModel
     final dueDate = task.dueDate;
     if (dueDate == null) return false;
     if (dueDate.end != null) return true;
-    if (_filterType != FilterType.today) return true;
+    if (!isToday) return true;
     if (d.isToday(dueDate.start.datetime) && dueDate.start.isAllDay == true) {
       return false;
     }
@@ -98,7 +104,7 @@ class TaskViewModel extends _$TaskViewModel
       final analytics = ref.read(analyticsServiceProvider);
       await analytics.logCompletedTasksToggle(
         isVisible: _showCompleted,
-        screenName: _filterType == FilterType.today ? 'Today' : 'All',
+        screenName: isToday ? 'Today' : 'All',
       );
     } catch (e) {
       print('Analytics error: $e');
@@ -206,7 +212,7 @@ class TaskViewModel extends _$TaskViewModel
       state = AsyncValue.data([...state.valueOrNull ?? [], tempTask]);
 
       // ウィジェット更新
-      if (_filterType == FilterType.today) {
+      if (isToday) {
         await _updateTodayWidget(state.valueOrNull ?? []);
       }
 
@@ -271,7 +277,7 @@ class TaskViewModel extends _$TaskViewModel
           if (t.id == task.id) task else t
       ]);
       // ウィジェット更新
-      if (_filterType == FilterType.today) {
+      if (isToday) {
         await _updateTodayWidget(state.valueOrNull ?? []);
       }
 
@@ -328,7 +334,7 @@ class TaskViewModel extends _$TaskViewModel
       ]);
 
       // ウィジェット更新
-      if (_filterType == FilterType.today) {
+      if (isToday) {
         await _updateTodayWidget(state.valueOrNull ?? []);
       }
 
@@ -351,7 +357,7 @@ class TaskViewModel extends _$TaskViewModel
         ref.invalidateSelf();
 
         // 今日のタスクが全て完了したかチェック
-        if (!fromUndo && isCompleted && _filterType == FilterType.today) {
+        if (!fromUndo && isCompleted && isToday) {
           final tasks = state.valueOrNull ?? [];
           final allTasksCompleted = tasks.every((t) => t.isCompleted);
 
@@ -463,7 +469,7 @@ class TaskViewModel extends _$TaskViewModel
         if (t.id != task.id) t
     ]);
     // ウィジェット更新
-    if (_filterType == FilterType.today) {
+    if (isToday) {
       await _updateTodayWidget(state.valueOrNull ?? []);
     }
     snackbar.show(l.task_delete_success(task.title), type: SnackbarType.success,
