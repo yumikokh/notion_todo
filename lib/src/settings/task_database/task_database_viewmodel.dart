@@ -26,11 +26,11 @@ class TaskDatabaseViewModel extends _$TaskDatabaseViewModel
     final taskDatabase = await _taskDatabaseRepository!.loadSetting();
     if (taskDatabase == null) return null;
     try {
-      final updatedTaskDatabase = await debouncedFetch(() async {
+      final latestTaskDatabase = await debouncedFetch(() async {
         return await _taskDatabaseRepository!
             .updateDatabaseWithLatestInfo(taskDatabase);
       });
-      return updatedTaskDatabase ?? taskDatabase;
+      return latestTaskDatabase;
     } catch (e) {
       return taskDatabase;
     }
