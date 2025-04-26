@@ -22,7 +22,7 @@ import '../../common/debounced_state_mixin.dart';
 
 part 'task_viewmodel.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 class TaskViewModel extends _$TaskViewModel
     with DebouncedStateMixin<List<Task>> {
   late TaskRepository? _taskRepository;
