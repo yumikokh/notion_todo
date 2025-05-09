@@ -27,18 +27,14 @@ class TaskDatabaseRepository {
   }
 
   /// 保存されているデータベース情報を最新の情報で更新する
-  Future<TaskDatabase?> updateDatabaseWithLatestInfo(
+  Future<TaskDatabase> updateDatabaseWithLatestInfo(
       TaskDatabase taskDatabase) async {
     try {
       final latestDatabase = await _fetchDatabase(taskDatabase.id);
       final updatedTaskDatabase =
           _updateTaskDatabaseProperties(taskDatabase, latestDatabase);
-      final isEqual = _isEqualTaskDatabase(taskDatabase, updatedTaskDatabase);
-      if (!isEqual) {
-        await save(updatedTaskDatabase);
-        return updatedTaskDatabase;
-      }
-      return null;
+      await save(updatedTaskDatabase);
+      return updatedTaskDatabase;
     } catch (e) {
       rethrow;
     }
@@ -102,34 +98,6 @@ class TaskDatabaseRepository {
     );
   }
 
-  bool _isEqualTaskDatabase(TaskDatabase a, TaskDatabase b) {
-    // statusがStatusCompleteStatusPropertyの場合、optionのnameも比較する
-    final isSameStatusOptionName = switch ((a.status, b.status)) {
-      (
-        StatusCompleteStatusProperty statusA,
-        StatusCompleteStatusProperty statusB
-      ) =>
-        statusA.todoOption?.name == statusB.todoOption?.name &&
-            statusA.inProgressOption?.name == statusB.inProgressOption?.name &&
-            statusA.completeOption?.name == statusB.completeOption?.name,
-      _ => true,
-    };
-    // priorityがある場合、optionのnameも比較する
-    final isSamePriorityOptionName = switch ((a.priority, b.priority)) {
-      (SelectProperty priorityA, SelectProperty priorityB) =>
-        priorityA.select.options.map((e) => e.name).toList() ==
-            priorityB.select.options.map((e) => e.name).toList(),
-      _ => true,
-    };
-    return a.id == b.id &&
-        a.name == b.name &&
-        a.title.name == b.title.name &&
-        a.date.name == b.date.name &&
-        a.status.name == b.status.name &&
-        isSameStatusOptionName &&
-        isSamePriorityOptionName;
-  }
-
   Future<void> save(TaskDatabase taskDatabase) async {
     // 永続化する
     final pref = await SharedPreferences.getInstance();
@@ -148,7 +116,6 @@ class TaskDatabaseRepository {
     }
     final databases = data.map<Database>((e) => _getDatabase(e)).toList();
 
-    // print('databases: $databases');
     return databases;
   }
 

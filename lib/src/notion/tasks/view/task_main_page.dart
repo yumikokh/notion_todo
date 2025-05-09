@@ -140,6 +140,7 @@ class TaskMainPage extends HookConsumerWidget {
                   // Today Tasks
                   TaskRefreshIndicator(
                     onRefresh: () async {
+                      ref.invalidate(taskDatabaseViewModelProvider);
                       ref.invalidate(todayProvider);
                     },
                     child: todayTasks.when(
@@ -161,6 +162,7 @@ class TaskMainPage extends HookConsumerWidget {
                   // All Tasks
                   TaskRefreshIndicator(
                     onRefresh: () async {
+                      ref.invalidate(taskDatabaseViewModelProvider);
                       ref.invalidate(allProvider);
                     },
                     child: allTasks.when(

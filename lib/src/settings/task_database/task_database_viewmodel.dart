@@ -19,18 +19,21 @@ class TaskDatabaseViewModel extends _$TaskDatabaseViewModel
     _taskDatabaseRepository =
         await ref.watch(taskDatabaseRepositoryProvider.future);
 
+    return await _getLatestTaskDatabase();
+  }
+
+  Future<TaskDatabase?> _getLatestTaskDatabase() async {
     if (_taskDatabaseRepository == null) {
       return null;
     }
-
     final taskDatabase = await _taskDatabaseRepository!.loadSetting();
     if (taskDatabase == null) return null;
     try {
-      final updatedTaskDatabase = await debouncedFetch(() async {
+      final latestTaskDatabase = await debouncedFetch(() async {
         return await _taskDatabaseRepository!
             .updateDatabaseWithLatestInfo(taskDatabase);
       });
-      return updatedTaskDatabase ?? taskDatabase;
+      return latestTaskDatabase;
     } catch (e) {
       return taskDatabase;
     }
