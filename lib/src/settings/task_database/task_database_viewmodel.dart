@@ -22,13 +22,6 @@ class TaskDatabaseViewModel extends _$TaskDatabaseViewModel
     return await _getLatestTaskDatabase();
   }
 
-  Future<TaskDatabase?> refresh() async {
-    final latestTaskDatabase = await _getLatestTaskDatabase();
-    state = AsyncValue.data(latestTaskDatabase);
-
-    return latestTaskDatabase;
-  }
-
   Future<TaskDatabase?> _getLatestTaskDatabase() async {
     if (_taskDatabaseRepository == null) {
       return null;
