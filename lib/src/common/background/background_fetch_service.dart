@@ -2,6 +2,7 @@ import 'package:background_fetch/background_fetch.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/services.dart';
 
 import '../../notion/common/filter_type.dart';
 import '../../notion/api/notion_task_api.dart';
@@ -33,6 +34,12 @@ class BackgroundFetchService {
       // バックグラウンドフェッチの開始
       BackgroundFetch.start();
     } catch (e, stackTrace) {
+      // エラーコード1のPlatformExceptionは無視する（よくある例外で問題ない）
+      if (e is PlatformException && e.code == '1') {
+        print("[BackgroundFetch] Ignored expected PlatformException: $e");
+        return;
+      }
+
       print("[BackgroundFetch] configure error: $e");
       Sentry.captureException(e, stackTrace: stackTrace);
     }
@@ -44,8 +51,14 @@ class BackgroundFetchService {
     try {
       await _refreshTodayTasks();
     } catch (e, stackTrace) {
-      print("[BackgroundFetch] Error refreshing tasks: $e");
-      Sentry.captureException(e, stackTrace: stackTrace);
+      // エラーコード1のPlatformExceptionは無視する
+      if (e is PlatformException && e.code == '1') {
+        print(
+            "[BackgroundFetch] Ignored expected PlatformException in callback: $e");
+      } else {
+        print("[BackgroundFetch] Error refreshing tasks: $e");
+        Sentry.captureException(e, stackTrace: stackTrace);
+      }
     }
     BackgroundFetch.finish(taskId);
   }
