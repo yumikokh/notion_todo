@@ -4,18 +4,24 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
+import '../env/env.dart';
 import 'model/subscription_model.dart';
 
 part 'subscription_repository.g.dart';
 
 @riverpod
 Future<SubscriptionRepository> subscriptionRepository(Ref ref) async {
-  final repository = SubscriptionRepository();
+  final repository =
+      SubscriptionRepository(revenueCatApiKey: Env.revenueCatApiKey);
   await repository.initialize();
   return repository;
 }
 
 class SubscriptionRepository {
+  final String revenueCatApiKey;
+
+  SubscriptionRepository({required this.revenueCatApiKey});
+
   static const String _monthlyEntitlementId = 'monthly_pro';
   static const String _yearlyEntitlementId = 'yearly_pro';
   static const String _lifetimeEntitlementId = 'lifetime_pro';
@@ -29,10 +35,7 @@ class SubscriptionRepository {
     }
 
     // APIキーの設定（iOS/Androidで異なる場合は分岐する）
-    const apiKey = String.fromEnvironment('REVENUE_CAT_API_KEY',
-        defaultValue: 'your_revenue_cat_api_key');
-
-    await Purchases.configure(PurchasesConfiguration(apiKey));
+    await Purchases.configure(PurchasesConfiguration(revenueCatApiKey));
   }
 
   /// 利用可能なプランを取得します

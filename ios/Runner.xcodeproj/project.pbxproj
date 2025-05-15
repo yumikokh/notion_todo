@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 77;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -15,6 +15,7 @@
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
+		A87483132DD5EE8B0021E0C0 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A87483122DD5EE8B0021E0C0 /* StoreKit.framework */; };
 		A87511EC2D6EEC850075DFF8 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A87511EB2D6EEC850075DFF8 /* WidgetKit.framework */; };
 		A87511EE2D6EEC850075DFF8 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A87511ED2D6EEC850075DFF8 /* SwiftUI.framework */; };
 		A87511FD2D6EEC870075DFF8 /* TodayTasksWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A87511EA2D6EEC850075DFF8 /* TodayTasksWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -73,6 +74,7 @@
 		97C147001CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A65D251D1A9F983C76A70BBD /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A87483122DD5EE8B0021E0C0 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		A87511EA2D6EEC850075DFF8 /* TodayTasksWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = TodayTasksWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		A87511EB2D6EEC850075DFF8 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		A87511ED2D6EEC850075DFF8 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
@@ -124,6 +126,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BA1971C64C0627578CF3603F /* Pods_Runner.framework in Frameworks */,
+				A87483132DD5EE8B0021E0C0 /* StoreKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -143,6 +146,7 @@
 		19D174324D52F901A174C210 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A87483122DD5EE8B0021E0C0 /* StoreKit.framework */,
 				A65D251D1A9F983C76A70BBD /* Pods_Runner.framework */,
 				A87511EB2D6EEC850075DFF8 /* WidgetKit.framework */,
 				A87511ED2D6EEC850075DFF8 /* SwiftUI.framework */,
@@ -388,9 +392,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
