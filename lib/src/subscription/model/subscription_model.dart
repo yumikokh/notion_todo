@@ -1,7 +1,6 @@
 enum SubscriptionType {
   monthly,
   yearly,
-  lifetime,
   none,
 }
 
@@ -36,8 +35,7 @@ class SubscriptionStatus {
     this.isInTrial = false,
   });
 
-  bool get isLifetime => activeType == SubscriptionType.lifetime;
   bool get isExpired =>
       expirationDate != null && DateTime.now().isAfter(expirationDate!);
-  bool get isSubscribed => isActive && (isLifetime || !isExpired);
+  bool get isSubscribed => isActive && !isExpired;
 }

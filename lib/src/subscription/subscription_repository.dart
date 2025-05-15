@@ -22,9 +22,10 @@ class SubscriptionRepository {
 
   SubscriptionRepository({required this.revenueCatApiKey});
 
-  static const String _monthlyEntitlementId = 'monthly_pro';
-  static const String _yearlyEntitlementId = 'yearly_pro';
-  static const String _lifetimeEntitlementId = 'lifetime_pro';
+  static const String _monthlyEntitlementId =
+      'com.ymkokh.notionTodo.premium.monthly';
+  static const String _yearlyEntitlementId =
+      'com.ymkokh.notionTodo.premium.yearly';
 
   SubscriptionStatus? _cachedStatus;
 
@@ -130,16 +131,6 @@ class SubscriptionRepository {
 
   /// CustomerInfoからサブスクリプション状態を解析します
   SubscriptionStatus _parseSubscriptionStatus(CustomerInfo customerInfo) {
-    // ライフタイム購入チェック
-    final hasLifetime =
-        customerInfo.entitlements.active.containsKey(_lifetimeEntitlementId);
-    if (hasLifetime) {
-      return SubscriptionStatus(
-        isActive: true,
-        activeType: SubscriptionType.lifetime,
-      );
-    }
-
     // 月額サブスクリプションチェック
     final hasMonthly =
         customerInfo.entitlements.active.containsKey(_monthlyEntitlementId);
@@ -185,8 +176,6 @@ class SubscriptionRepository {
       return SubscriptionType.monthly;
     } else if (identifier.contains('yearly')) {
       return SubscriptionType.yearly;
-    } else if (identifier.contains('lifetime')) {
-      return SubscriptionType.lifetime;
     }
     return SubscriptionType.none;
   }
@@ -197,7 +186,7 @@ class SubscriptionRepository {
       case PackageType.monthly:
         return 7; // 7日間トライアル
       case PackageType.annual:
-        return 30; // 30日間トライアル
+        return 7; // 7日間トライアル
       default:
         return 0;
     }
