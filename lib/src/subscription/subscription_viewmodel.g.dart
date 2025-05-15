@@ -1,27 +1,27 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'task_database_viewmodel.dart';
+part of 'subscription_viewmodel.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$taskDatabaseViewModelHash() =>
-    r'fdd27e097c8b0490f4b425ba5a4b9f82acbad628';
+String _$subscriptionViewModelHash() =>
+    r'7729f271d19d0c7f6fbd68b54d2fc751d2e4ee69';
 
-/// See also [TaskDatabaseViewModel].
-@ProviderFor(TaskDatabaseViewModel)
-final taskDatabaseViewModelProvider = AutoDisposeAsyncNotifierProvider<
-    TaskDatabaseViewModel, TaskDatabase?>.internal(
-  TaskDatabaseViewModel.new,
-  name: r'taskDatabaseViewModelProvider',
+/// See also [SubscriptionViewModel].
+@ProviderFor(SubscriptionViewModel)
+final subscriptionViewModelProvider = AutoDisposeAsyncNotifierProvider<
+    SubscriptionViewModel, SubscriptionStatus>.internal(
+  SubscriptionViewModel.new,
+  name: r'subscriptionViewModelProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$taskDatabaseViewModelHash,
+      : _$subscriptionViewModelHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$TaskDatabaseViewModel = AutoDisposeAsyncNotifier<TaskDatabase?>;
+typedef _$SubscriptionViewModel = AutoDisposeAsyncNotifier<SubscriptionStatus>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

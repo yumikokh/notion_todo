@@ -1,0 +1,43 @@
+enum SubscriptionType {
+  monthly,
+  yearly,
+  lifetime,
+  none,
+}
+
+class SubscriptionPlan {
+  final String id;
+  final String name;
+  final String description;
+  final double price;
+  final SubscriptionType type;
+  final int trialDays;
+
+  SubscriptionPlan({
+    required this.id,
+    required this.name,
+    required this.description,
+    required this.price,
+    required this.type,
+    this.trialDays = 0,
+  });
+}
+
+class SubscriptionStatus {
+  final bool isActive;
+  final SubscriptionType activeType;
+  final DateTime? expirationDate;
+  final bool isInTrial;
+
+  SubscriptionStatus({
+    required this.isActive,
+    required this.activeType,
+    this.expirationDate,
+    this.isInTrial = false,
+  });
+
+  bool get isLifetime => activeType == SubscriptionType.lifetime;
+  bool get isExpired =>
+      expirationDate != null && DateTime.now().isAfter(expirationDate!);
+  bool get isSubscribed => isActive && (isLifetime || !isExpired);
+}
