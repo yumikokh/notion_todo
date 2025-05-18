@@ -43,9 +43,9 @@ class SubscriptionBanner extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Premium',
-                        style: TextStyle(
+                      Text(
+                        l.premium_features_title,
+                        style: const TextStyle(
                             color: Colors.white,
                             fontSize: 16,
                             fontWeight: FontWeight.bold),
@@ -72,12 +72,15 @@ class SubscriptionBanner extends StatelessWidget {
                   children: [
                     if (subscriptionStatus.isSubscribed)
                       Text(
-                        l.subscription_expires_in((subscriptionStatus
-                                    .expirationDate
-                                    ?.difference(DateTime.now())
-                                    .inDays ??
-                                0) +
-                            1),
+                        subscriptionStatus.activeType !=
+                                SubscriptionType.lifetime
+                            ? l.subscription_expires_in((subscriptionStatus
+                                        .expirationDate
+                                        ?.difference(DateTime.now())
+                                        .inDays ??
+                                    0) +
+                                1)
+                            : l.lifetime_purchase,
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.onPrimary,
                         ),
