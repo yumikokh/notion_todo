@@ -1,6 +1,7 @@
 enum SubscriptionType {
   monthly,
   yearly,
+  lifetime,
   none,
 }
 

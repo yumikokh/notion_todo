@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -22,6 +23,7 @@ class SubscriptionRepository {
 
   SubscriptionRepository({required this.revenueCatApiKey});
 
+  static const String _entitlementId = 'Premium';
   static const String _monthlyEntitlementId =
       'com.ymkokh.notionTodo.premium.monthly';
   static const String _yearlyEntitlementId =
@@ -67,6 +69,7 @@ class SubscriptionRepository {
 
       return plans;
     } catch (e, stackTrace) {
+      print('getAvailablePlans error: $e');
       Sentry.captureException(e, stackTrace: stackTrace);
       return [];
     }
@@ -80,6 +83,7 @@ class SubscriptionRepository {
 
     try {
       final customerInfo = await Purchases.getCustomerInfo();
+      print('customerInfo: $customerInfo');
       return _parseSubscriptionStatus(customerInfo);
     } catch (e, stackTrace) {
       Sentry.captureException(e, stackTrace: stackTrace);
@@ -109,6 +113,19 @@ class SubscriptionRepository {
       _cachedStatus = _parseSubscriptionStatus(result);
       return _cachedStatus!;
     } catch (e, stackTrace) {
+      print('purchasePlan error: $e');
+
+      // ユーザーキャンセルの場合は通常のフローとして扱う
+      if (e is PlatformException &&
+          (e.code == '1' ||
+              e.details?['userCancelled'] == true ||
+              e.details?['readableErrorCode'] == 'PURCHASE_CANCELLED')) {
+        print('ユーザーが購入をキャンセルしました');
+        // 現在のステータスを返す（変更なし）
+        return await getSubscriptionStatus();
+      }
+
+      // それ以外のエラーはSentryに記録して再スロー
       Sentry.captureException(e, stackTrace: stackTrace);
       rethrow;
     }
@@ -129,44 +146,51 @@ class SubscriptionRepository {
     }
   }
 
+  /// デバッグ専用：サブスクリプションをリセットします
+  /// このメソッドはデバッグビルドでのみ使用してください
+  Future<SubscriptionStatus> debugResetSubscription() async {
+    print('debugResetSubscription');
+    if (!kDebugMode) {
+      throw UnsupportedError('This method can only be used in debug mode');
+    }
+
+    try {
+      // 現在のユーザーをログアウトすることでサブスクリプション状態をリセット
+      await Purchases.logOut();
+      _cachedStatus = null;
+      return await getSubscriptionStatus();
+    } catch (e, stackTrace) {
+      Sentry.captureException(e, stackTrace: stackTrace);
+      return SubscriptionStatus(
+        isActive: false,
+        activeType: SubscriptionType.none,
+      );
+    }
+  }
+
   /// CustomerInfoからサブスクリプション状態を解析します
   SubscriptionStatus _parseSubscriptionStatus(CustomerInfo customerInfo) {
-    // 月額サブスクリプションチェック
-    final hasMonthly =
-        customerInfo.entitlements.active.containsKey(_monthlyEntitlementId);
-    if (hasMonthly) {
-      final entitlement =
-          customerInfo.entitlements.active[_monthlyEntitlementId]!;
+    final entitlement = customerInfo.entitlements.all[_entitlementId];
+    if (entitlement == null || !entitlement.isActive) {
       return SubscriptionStatus(
-        isActive: true,
-        activeType: SubscriptionType.monthly,
-        expirationDate: entitlement.expirationDate != null
-            ? DateTime.parse(entitlement.expirationDate!)
-            : null,
-        isInTrial: entitlement.periodType == PeriodType.trial,
+        isActive: false,
+        activeType: SubscriptionType.none,
       );
     }
 
-    // 年額サブスクリプションチェック
-    final hasYearly =
-        customerInfo.entitlements.active.containsKey(_yearlyEntitlementId);
-    if (hasYearly) {
-      final entitlement =
-          customerInfo.entitlements.active[_yearlyEntitlementId]!;
-      return SubscriptionStatus(
-        isActive: true,
-        activeType: SubscriptionType.yearly,
-        expirationDate: entitlement.expirationDate != null
-            ? DateTime.parse(entitlement.expirationDate!)
-            : null,
-        isInTrial: entitlement.periodType == PeriodType.trial,
-      );
-    }
+    final subscriptionType = switch (entitlement.productIdentifier) {
+      _monthlyEntitlementId => SubscriptionType.monthly,
+      _yearlyEntitlementId => SubscriptionType.yearly,
+      _ => throw Exception('Invalid entitlement product identifier'),
+    };
 
-    // アクティブなサブスクリプションがない
     return SubscriptionStatus(
-      isActive: false,
-      activeType: SubscriptionType.none,
+      isActive: true,
+      activeType: subscriptionType,
+      expirationDate: entitlement.expirationDate != null
+          ? DateTime.parse(entitlement.expirationDate!)
+          : null,
+      isInTrial: entitlement.periodType == PeriodType.trial,
     );
   }
 
@@ -174,7 +198,7 @@ class SubscriptionRepository {
   SubscriptionType _getSubscriptionType(String identifier) {
     if (identifier.contains('monthly')) {
       return SubscriptionType.monthly;
-    } else if (identifier.contains('yearly')) {
+    } else if (identifier.contains('annual')) {
       return SubscriptionType.yearly;
     }
     return SubscriptionType.none;
