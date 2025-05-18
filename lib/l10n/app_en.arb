@@ -323,5 +323,7 @@
       "days": {}
     }
   },
-  "manage_subscription": "Manage Subscription"
+  "manage_subscription": "Manage Subscription",
+  "monthly_price": "month",
+  "yearly_price": "year"
 }

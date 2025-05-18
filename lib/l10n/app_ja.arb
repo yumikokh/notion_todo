@@ -225,7 +225,7 @@
       }
     }
   },
-  "free_trial_days": "{days}日間の無料トライアルを試す",
+  "free_trial_days": "{days}日間の無料トライアル",
   "@free_trial_days": {
     "placeholders": {
       "days": {
@@ -233,5 +233,7 @@
       }
     }
   },
-  "manage_subscription": "サブスクリプション管理"
+  "manage_subscription": "サブスクリプション管理",
+  "monthly_price": "月",
+  "yearly_price": "年"
 }

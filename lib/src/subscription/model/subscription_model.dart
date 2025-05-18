@@ -10,6 +10,8 @@ class SubscriptionPlan {
   final String name;
   final String description;
   final double price;
+  final String priceString;
+  final String currencyCode;
   final SubscriptionType type;
   final int trialDays;
 
@@ -18,6 +20,8 @@ class SubscriptionPlan {
     required this.name,
     required this.description,
     required this.price,
+    required this.priceString,
+    required this.currencyCode,
     required this.type,
     this.trialDays = 0,
   });
