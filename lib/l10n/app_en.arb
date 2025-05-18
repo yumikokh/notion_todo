@@ -290,15 +290,25 @@
   "subscription_restore_success": "Successfully restored your purchases",
   "subscription_restore_none": "No purchases to restore",
   "subscription_restore_failed": "Failed to restore purchases",
-  "premium_features_title": "Premium Features",
+  "premium_features_title": "Premium",
   "premium_features_description": "Unlock all premium features with a subscription",
-  "monthly_subscription": "Monthly Subscription",
-  "yearly_subscription": "Yearly Subscription",
+  "monthly_subscription": "Monthly",
+  "yearly_subscription": "Yearly",
+  "lifetime_subscription": "Lifetime",
   "lifetime_purchase": "Lifetime Purchase",
-  "free_trial_days": "{days} days free trial",
-  "@free_trial_days": {
+  "subscription_expires_in": "{days, plural, =1{1 day left} other{{days} days left}}",
+  "@subscription_expires_in": {
     "placeholders": {
-      "days": {}
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "restore_purchases": "Restore Purchases",
+  "current_plan": "{plan}",
+  "@current_plan": {
+    "placeholders": {
+      "plan": {}
     }
   },
   "trial_ends_in": "Trial ends in {days} days",
@@ -307,17 +317,10 @@
       "days": {}
     }
   },
-  "subscription_expires_in": "Subscription expires in {days} days",
-  "@subscription_expires_in": {
+  "free_trial_days": "Try free for {days} days",
+  "@free_trial_days": {
     "placeholders": {
       "days": {}
-    }
-  },
-  "restore_purchases": "Restore Purchases",
-  "current_plan": "Current Plan: {plan}",
-  "@current_plan": {
-    "placeholders": {
-      "plan": {}
     }
   },
   "manage_subscription": "Manage Subscription"

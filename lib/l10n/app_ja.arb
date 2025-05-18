@@ -201,15 +201,37 @@
   "subscription_restore_success": "購入を復元しました",
   "subscription_restore_none": "復元可能な購入がありません",
   "subscription_restore_failed": "購入の復元に失敗しました",
-  "premium_features_title": "プレミアム機能",
+  "premium_features_title": "プレミアム",
   "premium_features_description": "サブスクリプションですべてのプレミアム機能をお使いいただけます",
-  "monthly_subscription": "月額プラン",
-  "yearly_subscription": "年額プラン",
+  "monthly_subscription": "月額",
+  "yearly_subscription": "年額",
+  "lifetime_subscription": "買い切り",
   "lifetime_purchase": "永久ライセンス",
-  "free_trial_days": "{days}日間無料トライアル",
-  "trial_ends_in": "トライアル期間終了まであと{days}日",
-  "subscription_expires_in": "サブスクリプション終了まであと{days}日",
+  "subscription_expires_in": "{days, plural, =1{残り1日} other{残り{days}日}}",
   "restore_purchases": "購入を復元",
-  "current_plan": "現在のプラン: {plan}",
+  "current_plan": "{plan}",
+  "@current_plan": {
+    "placeholders": {
+      "plan": {
+        "type": "String"
+      }
+    }
+  },
+  "trial_ends_in": "トライアル残り{days}日",
+  "@trial_ends_in": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "free_trial_days": "{days}日間の無料トライアルを試す",
+  "@free_trial_days": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
   "manage_subscription": "サブスクリプション管理"
 }
