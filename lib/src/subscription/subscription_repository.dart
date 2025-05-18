@@ -28,6 +28,7 @@ class SubscriptionRepository {
       'com.ymkokh.notionTodo.premium.monthly';
   static const String _yearlyEntitlementId =
       'com.ymkokh.notionTodo.premium.yearly';
+  static const String _lifetimeEntitlementId = 'com.ymkokh.notionTodo.Lifetime';
 
   SubscriptionStatus? _cachedStatus;
 
@@ -55,15 +56,20 @@ class SubscriptionRepository {
 
       for (final package in offering.availablePackages) {
         final product = package.storeProduct;
-        final subscriptionType = _getSubscriptionType(package.identifier);
+        final subscriptionType = _getSubscriptionType(product.identifier);
 
         plans.add(SubscriptionPlan(
           id: package.identifier,
           name: product.title,
           description: product.description,
           price: product.price,
+          priceString: product.priceString,
+          currencyCode: product.currencyCode,
           type: subscriptionType,
-          trialDays: _getTrialDays(package.packageType),
+          trialDays: switch (subscriptionType) {
+            SubscriptionType.yearly => 7,
+            _ => 0,
+          },
         ));
       }
 
@@ -196,23 +202,13 @@ class SubscriptionRepository {
 
   /// パッケージIDからサブスクリプションタイプを取得します
   SubscriptionType _getSubscriptionType(String identifier) {
-    if (identifier.contains('monthly')) {
+    if (identifier == _monthlyEntitlementId) {
       return SubscriptionType.monthly;
-    } else if (identifier.contains('annual')) {
+    } else if (identifier == _yearlyEntitlementId) {
       return SubscriptionType.yearly;
+    } else if (identifier == _lifetimeEntitlementId) {
+      return SubscriptionType.lifetime;
     }
     return SubscriptionType.none;
-  }
-
-  /// パッケージタイプからトライアル期間を取得します
-  int _getTrialDays(PackageType packageType) {
-    switch (packageType) {
-      case PackageType.monthly:
-        return 7; // 7日間トライアル
-      case PackageType.annual:
-        return 7; // 7日間トライアル
-      default:
-        return 0;
-    }
   }
 }
