@@ -12,7 +12,7 @@ import '../common/analytics/analytics_service.dart';
 
 part 'subscription_viewmodel.g.dart';
 
-@Riverpod(keepAlive: true)
+@riverpod
 class SubscriptionViewModel extends _$SubscriptionViewModel
     with DebouncedStateMixin<SubscriptionStatus> {
   late SubscriptionRepository? _subscriptionRepository;

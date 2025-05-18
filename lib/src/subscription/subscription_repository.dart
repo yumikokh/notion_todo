@@ -91,6 +91,7 @@ class SubscriptionRepository {
       final customerInfo = await Purchases.getCustomerInfo();
       return _parseSubscriptionStatus(customerInfo);
     } catch (e, stackTrace) {
+      print('getSubscriptionStatus error: $e');
       Sentry.captureException(e, stackTrace: stackTrace);
       return SubscriptionStatus(
         isActive: false,
@@ -153,18 +154,20 @@ class SubscriptionRepository {
   /// デバッグ専用：サブスクリプションをリセットします
   /// このメソッドはデバッグビルドでのみ使用してください
   Future<SubscriptionStatus> debugResetSubscription() async {
-    print('debugResetSubscription');
+    print('debugResetSubscription: $kDebugMode');
     if (!kDebugMode) {
       throw UnsupportedError('This method can only be used in debug mode');
     }
 
     try {
-      // 現在のユーザーをログアウトすることでサブスクリプション状態をリセット
-      await Purchases.logOut();
+      // await Purchases.logOut();
+      // RevenueCat SDKのキャッシュを無効化
+      await Purchases.invalidateCustomerInfoCache();
+      // アプリ内キャッシュをクリア
       _cachedStatus = null;
       return await getSubscriptionStatus();
-    } catch (e, stackTrace) {
-      Sentry.captureException(e, stackTrace: stackTrace);
+    } catch (e) {
+      print('debugResetSubscription error: $e');
       return SubscriptionStatus(
         isActive: false,
         activeType: SubscriptionType.none,
