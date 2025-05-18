@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -17,7 +16,6 @@ class PaywallSheet extends HookConsumerWidget {
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      useSafeArea: true,
       builder: (context) => const PaywallSheet(),
     );
   }
@@ -41,27 +39,25 @@ class PaywallSheet extends HookConsumerWidget {
                 : SubscriptionType.yearly))
         .firstOrNull);
 
-    return DraggableScrollableSheet(
-      initialChildSize: 1.0,
-      maxChildSize: 1.0,
-      minChildSize: 1.0,
-      expand: false,
-      builder: (context, scrollController) {
-        return Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).scaffoldBackgroundColor,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-          ),
-          child: Column(
-            children: [
-              // コンテンツ
-              Expanded(
-                child: SingleChildScrollView(
-                  controller: scrollController,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
+    return BottomSheet(
+      onClosing: () {},
+      enableDrag: true,
+      builder: (context) {
+        return Stack(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(16)),
+              ),
+              child: Column(
+                children: [
+                  // コンテンツ
+                  Expanded(
+                    child: ListView(
+                      padding: const EdgeInsets.only(
+                          top: 56, left: 16, right: 16, bottom: 16),
                       children: [
                         // 有料機能ハイライト
                         _buildFeatureHighlights(context),
@@ -83,12 +79,22 @@ class PaywallSheet extends HookConsumerWidget {
                       ],
                     ),
                   ),
-                ),
+                  _buildBottomPinnedArea(context, ref, selectedPlan.value,
+                      currentStatus, isLoading),
+                ],
               ),
-              _buildBottomPinnedArea(
-                  context, ref, selectedPlan.value, currentStatus, isLoading),
-            ],
-          ),
+            ),
+            Positioned(
+              top: 20,
+              right: 10,
+              child: IconButton(
+                icon: const Icon(Icons.close, size: 32),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ),
+          ],
         );
       },
     );
@@ -325,7 +331,8 @@ class PaywallSheet extends HookConsumerWidget {
     return const Center(
       child: Text(
         '購入することで、利用規約とプライバシーポリシーに同意したことになります。'
-        '\n定期購入はいつでもキャンセルできます。',
+        '\n定期購入はいつでもキャンセルできます。'
+        '\nプランを変更する場合は、現在のプラン終了後に自動的に変更されます。',
         textAlign: TextAlign.center,
         style: TextStyle(
           fontSize: 12,
