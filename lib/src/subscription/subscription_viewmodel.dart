@@ -176,7 +176,7 @@ class SubscriptionViewModel extends _$SubscriptionViewModel
       } else {
         // 復元するものがない
         snackbar.show(
-          l.subscription_restore_failed,
+          l.subscription_restore_none,
           type: SnackbarType.info,
         );
       }

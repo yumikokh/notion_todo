@@ -351,8 +351,12 @@ class PaywallSheet extends HookConsumerWidget {
 
     return TextButton(
       onPressed: () {
-        HapticHelper.selection();
-        ref.read(subscriptionViewModelProvider.notifier).restorePurchases();
+        try {
+          ref.read(subscriptionViewModelProvider.notifier).restorePurchases();
+          Navigator.of(context).pop();
+        } catch (e) {
+          print('error: $e');
+        }
       },
       child: Text(l.restore_purchases),
     );

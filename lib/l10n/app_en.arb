@@ -292,6 +292,7 @@
   "subscription_purchase_error_general": "An error occurred during purchase.",
   "subscription_restore_success": "Purchases restored successfully",
   "subscription_restore_failed": "Failed to restore purchases",
+  "subscription_restore_none": "No purchases to restore",
   "subscription_restore_error_general": "An error occurred while restoring purchases.",
   "premium_features_title": "Premium",
   "monthly_subscription": "Monthly",
