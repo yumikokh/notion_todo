@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../subscription/model/subscription_model.dart';
 
@@ -11,7 +10,7 @@ class SubscriptionBanner extends StatelessWidget {
     required this.onTap,
   });
 
-  final AsyncValue<SubscriptionStatus> subscriptionStatus;
+  final SubscriptionStatus subscriptionStatus;
   final VoidCallback onTap;
 
   @override
@@ -23,8 +22,8 @@ class SubscriptionBanner extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Theme.of(context).colorScheme.primary,
-            Theme.of(context).colorScheme.primary.withValues(alpha: .8),
+            Theme.of(context).colorScheme.tertiary,
+            Theme.of(context).colorScheme.tertiary.withValues(alpha: .8),
           ],
         ),
         borderRadius: BorderRadius.circular(12),
@@ -52,33 +51,29 @@ class SubscriptionBanner extends StatelessWidget {
                             fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 4),
-                      subscriptionStatus.maybeWhen(
-                        data: (status) => Text(
-                          l.current_plan(switch (status.activeType) {
-                            SubscriptionType.monthly => l.monthly_subscription,
-                            SubscriptionType.yearly => l.yearly_subscription,
-                            SubscriptionType.lifetime =>
-                              l.lifetime_subscription,
-                            SubscriptionType.none => l.free_trial_days(3),
-                          }),
-                          style: TextStyle(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onPrimary
-                                .withValues(alpha: .8),
-                          ),
+                      Text(
+                        l.current_plan(switch (subscriptionStatus.activeType) {
+                          SubscriptionType.monthly => l.monthly_subscription,
+                          SubscriptionType.yearly => l.yearly_subscription,
+                          SubscriptionType.lifetime => l.lifetime_subscription,
+                          SubscriptionType.none => l.free_trial_days(3),
+                        }),
+                        style: TextStyle(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onPrimary
+                              .withValues(alpha: .8),
                         ),
-                        orElse: () => const SizedBox.shrink(),
                       ),
                     ],
                   ),
                 ),
                 Row(
                   children: [
-                    if (subscriptionStatus.valueOrNull?.isSubscribed ?? false)
+                    if (subscriptionStatus.isSubscribed)
                       Text(
                         l.subscription_expires_in((subscriptionStatus
-                                    .valueOrNull?.expirationDate
+                                    .expirationDate
                                     ?.difference(DateTime.now())
                                     .inDays ??
                                 0) +

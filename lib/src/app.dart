@@ -52,6 +52,8 @@ class MyApp extends HookConsumerWidget {
   Widget build(BuildContext context, ref) {
     final settings = ref.watch(settingsViewModelProvider);
     final settingsViewModel = ref.read(settingsViewModelProvider.notifier);
+
+    // サブスクリプションの状態を監視
     ref.watch(subscriptionViewModelProvider);
 
     final TextTheme textTheme = createTextTheme(context, "Roboto", "Roboto");

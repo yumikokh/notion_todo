@@ -12,7 +12,7 @@ import '../common/analytics/analytics_service.dart';
 
 part 'subscription_viewmodel.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 class SubscriptionViewModel extends _$SubscriptionViewModel
     with DebouncedStateMixin<SubscriptionStatus> {
   late SubscriptionRepository? _subscriptionRepository;
@@ -97,14 +97,8 @@ class SubscriptionViewModel extends _$SubscriptionViewModel
         final status = await subscriptionRepository.getSubscriptionStatus();
         return status;
       } catch (e, stackTrace) {
-        final snackbar = ref.read(snackbarProvider.notifier);
-        final locale = ref.read(settingsViewModelProvider).locale;
-        final l = await AppLocalizations.delegate.load(locale);
-
-        Sentry.captureException(e, stackTrace: stackTrace);
-        snackbar.show(l.subscription_fetch_failed, type: SnackbarType.error);
         print('Unknown error: $e');
-
+        Sentry.captureException(e, stackTrace: stackTrace);
         return SubscriptionStatus(
           isActive: false,
           activeType: SubscriptionType.none,
@@ -149,12 +143,6 @@ class SubscriptionViewModel extends _$SubscriptionViewModel
       } catch (e) {
         print('Analytics error: $e');
       }
-    } catch (e, stackTrace) {
-      Sentry.captureException(e, stackTrace: stackTrace);
-      snackbar.show(
-        l.subscription_purchase_failed,
-        type: SnackbarType.error,
-      );
     } finally {
       _isLoading = false;
       ref.notifyListeners();

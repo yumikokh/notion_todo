@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -11,7 +12,6 @@ import '../subscription_viewmodel.dart';
 class PaywallSheet extends HookConsumerWidget {
   const PaywallSheet({super.key});
 
-  /// ボトムシートとして表示する
   static Future<void> show(BuildContext context) {
     HapticHelper.light();
     return showModalBottomSheet(
@@ -24,23 +24,22 @@ class PaywallSheet extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l = AppLocalizations.of(context)!;
     final subscriptionStatus = ref.watch(subscriptionViewModelProvider);
     final subscriptionViewModel =
         ref.watch(subscriptionViewModelProvider.notifier);
     final isLoading = subscriptionViewModel.isLoading;
     final plans = subscriptionViewModel.availablePlans;
-
-    final monthlyPlan =
-        plans.where((p) => p.type == SubscriptionType.monthly).firstOrNull;
-    final yearlyPlan =
-        plans.where((p) => p.type == SubscriptionType.yearly).firstOrNull;
-
     final currentStatus = subscriptionStatus.valueOrNull;
     final isSubscribed = currentStatus?.isSubscribed ?? false;
 
-    // 選択されたプランの状態
-    final selectedPlan = useState<SubscriptionPlan?>(yearlyPlan);
+    // 年額プランをデフォルトで選択
+    final selectedPlan = useState<SubscriptionPlan?>(plans
+        .where((p) =>
+            p.type ==
+            (currentStatus?.activeType != SubscriptionType.none
+                ? currentStatus?.activeType
+                : SubscriptionType.yearly))
+        .firstOrNull);
 
     return DraggableScrollableSheet(
       initialChildSize: 1.0,
@@ -57,56 +56,37 @@ class PaywallSheet extends HookConsumerWidget {
             children: [
               // コンテンツ
               Expanded(
-                child: isLoading
-                    ? const Center(child: CircularProgressIndicator())
-                    : SingleChildScrollView(
-                        controller: scrollController,
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              // debug: キャンセル
-                              // if (!isSubscribed)
-                              //   ListTile(
-                              //     title: const Text('サブスクリプションをリセット'),
-                              //     trailing: const Icon(Icons.chevron_right),
-                              //     onTap: () {
-                              //       subscriptionViewModel
-                              //           .debugResetSubscription();
-                              //     },
-                              //   ),
+                child: SingleChildScrollView(
+                  controller: scrollController,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        // 有料機能ハイライト
+                        _buildFeatureHighlights(context),
 
-                              // 有料機能ハイライト
-                              _buildFeatureHighlights(context),
+                        const SizedBox(height: 24),
 
-                              const SizedBox(height: 24),
+                        // プラン一覧
+                        _buildPlanOptions(context,
+                            plans: plans, selectedPlan: selectedPlan, ref: ref),
 
-                              // プラン一覧
-                              _buildPlanOptions(context,
-                                  plans: plans,
-                                  selectedPlan: selectedPlan,
-                                  ref: ref),
-
-                              if (!isSubscribed) ...[
-                                const SizedBox(height: 24),
-
-                                // 購入復元ボタン
-                                _buildRestoreButton(context, ref),
-
-                                // 利用規約とプライバシーポリシー
-                                const SizedBox(height: 16),
-                                _buildTermsAndPrivacy(context),
-                              ],
-                            ],
-                          ),
-                        ),
-                      ),
+                        if (!isSubscribed) ...[
+                          const SizedBox(height: 24),
+                          // 購入復元ボタン
+                          _buildRestoreButton(context, ref),
+                        ],
+                        // 利用規約とプライバシーポリシー
+                        const SizedBox(height: 16),
+                        _buildTermsAndPrivacy(context),
+                      ],
+                    ),
+                  ),
+                ),
               ),
-              // 下部固定エリア
-              if (!isSubscribed)
-                _buildBottomPinnedArea(
-                    context, ref, selectedPlan.value, monthlyPlan, yearlyPlan),
+              _buildBottomPinnedArea(
+                  context, ref, selectedPlan.value, currentStatus, isLoading),
             ],
           ),
         );
@@ -235,7 +215,9 @@ class PaywallSheet extends HookConsumerWidget {
           padding: const EdgeInsets.all(16.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: highlightText.isNotEmpty
+                ? CrossAxisAlignment.start
+                : CrossAxisAlignment.center,
             children: [
               Text(
                 switch (plan.type) {
@@ -331,7 +313,10 @@ class PaywallSheet extends HookConsumerWidget {
     final l = AppLocalizations.of(context)!;
 
     return TextButton(
-      onPressed: () => _restorePurchases(context, ref),
+      onPressed: () {
+        HapticHelper.selection();
+        ref.read(subscriptionViewModelProvider.notifier).restorePurchases();
+      },
       child: Text(l.restore_purchases),
     );
   }
@@ -350,106 +335,132 @@ class PaywallSheet extends HookConsumerWidget {
     );
   }
 
-  Future<void> _subscribeToPlan(
-      BuildContext context, WidgetRef ref, SubscriptionPlan plan) async {
-    HapticHelper.selection();
-
-    try {
-      await ref.read(subscriptionViewModelProvider.notifier).purchasePlan(plan);
-      // 成功時はスナックバーで表示（すでにViewModelで表示されている）
-    } catch (e) {
-      // エラー時の処理（すでにViewModelで表示されている）
-    }
-  }
-
-  Future<void> _restorePurchases(BuildContext context, WidgetRef ref) async {
-    HapticHelper.selection();
-
-    try {
-      await ref.read(subscriptionViewModelProvider.notifier).restorePurchases();
-      // 成功時はスナックバーで表示（すでにViewModelで表示されている）
-    } catch (e) {
-      // エラー時の処理（すでにViewModelで表示されている）
-    }
-  }
-
-  // 下部固定エリアのウィジェット (プレースホルダー)
   Widget _buildBottomPinnedArea(
     BuildContext context,
     WidgetRef ref,
     SubscriptionPlan? selectedPlan,
-    SubscriptionPlan? monthlyPlan, // 価格情報などのために必要かも
-    SubscriptionPlan? yearlyPlan, // 価格情報などのために必要かも
+    SubscriptionStatus? subscriptionStatus,
+    bool isLoading,
   ) {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
-    if (selectedPlan == null) {
-      // プランが選択されていない場合は何も表示しないか、デフォルトのメッセージ
-      return const SizedBox.shrink();
-    }
-
     String buttonText = '';
-    String subText = ''; // 年額プラン用の小さい文字
+    String subText = '';
+    bool isActive = true;
 
-    switch (selectedPlan.type) {
-      case SubscriptionType.monthly:
-        buttonText = 'つづける';
+    switch ((selectedPlan?.type, subscriptionStatus?.activeType)) {
+      case (_, SubscriptionType.lifetime):
+        buttonText = '永久ライセンス取得済み';
+        isActive = false;
         break;
-      case SubscriptionType.yearly:
+      case (SubscriptionType.monthly, SubscriptionType.monthly):
+      case (SubscriptionType.yearly, SubscriptionType.yearly):
+        buttonText = '購読中';
+        isActive = false;
+        break;
+      case (SubscriptionType.yearly, SubscriptionType.none):
         buttonText = '無料トライアルを開始';
         subText =
-            '${selectedPlan.trialDays}日間の無料体験の終了後は ${selectedPlan.priceString}/年';
+            '${selectedPlan?.trialDays}日間の無料体験の終了後は ${selectedPlan?.priceString}/${l.yearly_price}';
         break;
-      case SubscriptionType.lifetime:
-        buttonText = 'つづける';
+      case (SubscriptionType.monthly, SubscriptionType.none):
+      case (SubscriptionType.lifetime, SubscriptionType.none):
+        buttonText = '購入を続ける';
         break;
-      case SubscriptionType.none:
-        throw UnimplementedError();
+      case (SubscriptionType.monthly, SubscriptionType.yearly):
+      case (SubscriptionType.yearly, SubscriptionType.monthly):
+      case (SubscriptionType.lifetime, _):
+        buttonText = 'プランを変更';
+        subText = '現在のプラン: ${switch (subscriptionStatus?.activeType) {
+          SubscriptionType.monthly => l.monthly_subscription,
+          SubscriptionType.yearly => l.yearly_subscription,
+          _ => ''
+        }}';
+        break;
+      case (_, _):
+        buttonText = '購入を続ける';
     }
 
     return Container(
-      padding: const EdgeInsets.all(16).copyWith(
-          bottom: MediaQuery.of(context).padding.bottom + 16), // SafeArea対応
-      decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            spreadRadius: 0,
-            blurRadius: 10,
-            offset: const Offset(0, -5), // 上方向に影
-          ),
-        ],
-      ),
+      padding: const EdgeInsets.all(16)
+          .copyWith(bottom: MediaQuery.of(context).padding.bottom),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           ElevatedButton(
-              onPressed: () {
-                _subscribeToPlan(context, ref, selectedPlan);
-              },
+              onPressed: isActive && !isLoading
+                  ? () async {
+                      if (selectedPlan == null) return;
+                      HapticHelper.selection();
+                      try {
+                        await ref
+                            .read(subscriptionViewModelProvider.notifier)
+                            .purchasePlan(selectedPlan);
+                        ref.invalidate(subscriptionViewModelProvider);
+                        if (context.mounted) {
+                          Navigator.of(context).pop();
+                        }
+                      } catch (e) {
+                        print('error: $e');
+                      }
+                    }
+                  : null,
               style: ElevatedButton.styleFrom(
-                backgroundColor: theme.colorScheme.primary,
-                foregroundColor: theme.colorScheme.onPrimary,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                textStyle:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                padding: EdgeInsets.zero,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                animationDuration: const Duration(milliseconds: 10),
+                elevation: isActive ? 5 : 0,
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(buttonText),
-                  if (subText.isNotEmpty) ...[
-                    const SizedBox(height: 4),
-                    Text(
-                      subText,
-                      style: const TextStyle(
-                          fontSize: 12, fontWeight: FontWeight.normal),
-                    ),
-                  ]
-                ],
+              child: Ink(
+                decoration: BoxDecoration(
+                  gradient: isActive && !isLoading
+                      ? LinearGradient(
+                          colors: [
+                            theme.colorScheme.tertiary,
+                            theme.colorScheme.tertiary.withAlpha(210)
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        )
+                      : null,
+                  color: isActive ? null : Colors.grey,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  alignment: Alignment.center,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        buttonText,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: isActive
+                              ? theme.colorScheme.onPrimary
+                              : theme.colorScheme.onSurface.withAlpha(128),
+                        ),
+                      ),
+                      if (subText.isNotEmpty) ...[
+                        const SizedBox(height: 4),
+                        Text(
+                          subText,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: isActive
+                                ? theme.colorScheme.onPrimary.withAlpha(200)
+                                : theme.colorScheme.onSurface.withAlpha(128),
+                          ),
+                        ),
+                      ]
+                    ],
+                  ),
+                ),
               )),
           const SizedBox(height: 12),
         ],

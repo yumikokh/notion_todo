@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../subscription/model/subscription_model.dart';
 import '../task_database/task_database_viewmodel.dart';
 import 'language_settings_page.dart';
 import 'notification_settings_page.dart';
@@ -31,7 +32,8 @@ class SettingsPage extends ConsumerWidget {
     final database = ref.read(taskDatabaseViewModelProvider).valueOrNull;
     final analytics = ref.read(analyticsServiceProvider);
     final appVersionViewModel = ref.read(appVersionViewModelProvider);
-    final subscriptionStatus = ref.watch(subscriptionViewModelProvider);
+    final subscriptionStatus =
+        ref.watch(subscriptionViewModelProvider).valueOrNull;
     final l = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
@@ -43,7 +45,11 @@ class SettingsPage extends ConsumerWidget {
         child: ListView(
           children: [
             SubscriptionBanner(
-              subscriptionStatus: subscriptionStatus,
+              subscriptionStatus: subscriptionStatus ??
+                  SubscriptionStatus(
+                    isActive: false,
+                    activeType: SubscriptionType.none,
+                  ),
               onTap: () {
                 analytics.logScreenView(screenName: 'Paywall');
                 PaywallSheet.show(context);

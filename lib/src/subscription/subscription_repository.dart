@@ -89,7 +89,6 @@ class SubscriptionRepository {
 
     try {
       final customerInfo = await Purchases.getCustomerInfo();
-      print('customerInfo: $customerInfo');
       return _parseSubscriptionStatus(customerInfo);
     } catch (e, stackTrace) {
       Sentry.captureException(e, stackTrace: stackTrace);
@@ -127,8 +126,7 @@ class SubscriptionRepository {
               e.details?['userCancelled'] == true ||
               e.details?['readableErrorCode'] == 'PURCHASE_CANCELLED')) {
         print('ユーザーが購入をキャンセルしました');
-        // 現在のステータスを返す（変更なし）
-        return await getSubscriptionStatus();
+        rethrow;
       }
 
       // それ以外のエラーはSentryに記録して再スロー
@@ -187,6 +185,7 @@ class SubscriptionRepository {
     final subscriptionType = switch (entitlement.productIdentifier) {
       _monthlyEntitlementId => SubscriptionType.monthly,
       _yearlyEntitlementId => SubscriptionType.yearly,
+      _lifetimeEntitlementId => SubscriptionType.lifetime,
       _ => throw Exception('Invalid entitlement product identifier'),
     };
 
