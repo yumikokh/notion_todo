@@ -3,7 +3,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 import '../common/debounced_state_mixin.dart';
-import '../common/error.dart';
 import '../common/snackbar/model/snackbar_state.dart';
 import '../common/snackbar/snackbar.dart';
 import '../settings/settings_viewmodel.dart';
@@ -42,15 +41,41 @@ class SubscriptionViewModel extends _$SubscriptionViewModel
     return await _fetchSubscriptionStatus();
   }
 
+  // プレミアム機能が利用可能かどうかをチェック
+  bool canAccessPremiumFeature() {
+    final status = state.valueOrNull;
+    if (status == null) return false;
+
+    return status.isSubscribed;
+  }
+
+  // トライアル期間かどうかをチェック
+  bool isInTrialPeriod() {
+    final status = state.valueOrNull;
+    if (status == null) return false;
+
+    return status.isActive && status.isInTrial;
+  }
+
+  // 期限切れまでの日数を取得
+  int? getDaysUntilExpiration() {
+    final status = state.valueOrNull;
+    if (status == null || status.expirationDate == null) return null;
+
+    final now = DateTime.now();
+    final diff = status.expirationDate!.difference(now);
+    return diff.inDays;
+  }
+
   // 購入可能なプランを取得
   Future<List<SubscriptionPlan>> _fetchAvailablePlans() async {
-    final subscriptionService = _subscriptionRepository;
-    if (subscriptionService == null) {
+    final subscriptionRepository = _subscriptionRepository;
+    if (subscriptionRepository == null) {
       return [];
     }
 
     try {
-      return await subscriptionService.getAvailablePlans();
+      return await subscriptionRepository.getAvailablePlans();
     } catch (e, stackTrace) {
       Sentry.captureException(e, stackTrace: stackTrace);
       return [];
@@ -59,8 +84,8 @@ class SubscriptionViewModel extends _$SubscriptionViewModel
 
   // 現在のサブスクリプション状態を取得
   Future<SubscriptionStatus> _fetchSubscriptionStatus() async {
-    final subscriptionService = _subscriptionRepository;
-    if (subscriptionService == null) {
+    final subscriptionRepository = _subscriptionRepository;
+    if (subscriptionRepository == null) {
       return SubscriptionStatus(
         isActive: false,
         activeType: SubscriptionType.none,
@@ -69,26 +94,16 @@ class SubscriptionViewModel extends _$SubscriptionViewModel
 
     return await debouncedFetch(() async {
       try {
-        return await subscriptionService.getSubscriptionStatus();
+        final status = await subscriptionRepository.getSubscriptionStatus();
+        return status;
       } catch (e, stackTrace) {
         final snackbar = ref.read(snackbarProvider.notifier);
-        final analytics = ref.read(analyticsServiceProvider);
         final locale = ref.read(settingsViewModelProvider).locale;
         final l = await AppLocalizations.delegate.load(locale);
 
         Sentry.captureException(e, stackTrace: stackTrace);
-
-        if (e is NotionErrorException) {
-          snackbar.show(l.subscription_fetch_failed, type: SnackbarType.error);
-          await analytics.logError(
-            e.code,
-            error: e.message,
-            parameters: {'status_code': e.status},
-          );
-        } else {
-          snackbar.show(l.subscription_fetch_failed, type: SnackbarType.error);
-          print('Unknown error: $e');
-        }
+        snackbar.show(l.subscription_fetch_failed, type: SnackbarType.error);
+        print('Unknown error: $e');
 
         return SubscriptionStatus(
           isActive: false,
@@ -100,8 +115,8 @@ class SubscriptionViewModel extends _$SubscriptionViewModel
 
   // プランを購入する
   Future<void> purchasePlan(SubscriptionPlan plan) async {
-    final subscriptionService = _subscriptionRepository;
-    if (subscriptionService == null) {
+    final subscriptionRepository = _subscriptionRepository;
+    if (subscriptionRepository == null) {
       return;
     }
 
@@ -113,7 +128,7 @@ class SubscriptionViewModel extends _$SubscriptionViewModel
     ref.notifyListeners();
 
     try {
-      final result = await subscriptionService.purchasePlan(plan);
+      final result = await subscriptionRepository.purchasePlan(plan);
 
       // 購入成功
       state = AsyncValue.data(result);
@@ -148,8 +163,8 @@ class SubscriptionViewModel extends _$SubscriptionViewModel
 
   // 購入を復元する
   Future<void> restorePurchases() async {
-    final subscriptionService = _subscriptionRepository;
-    if (subscriptionService == null) {
+    final subscriptionRepository = _subscriptionRepository;
+    if (subscriptionRepository == null) {
       return;
     }
 
@@ -161,7 +176,7 @@ class SubscriptionViewModel extends _$SubscriptionViewModel
     ref.notifyListeners();
 
     try {
-      final result = await subscriptionService.restorePurchases();
+      final result = await subscriptionRepository.restorePurchases();
 
       if (result.isActive) {
         // 復元成功
@@ -202,29 +217,11 @@ class SubscriptionViewModel extends _$SubscriptionViewModel
     }
   }
 
-  // プレミアム機能が利用可能かどうかをチェック
-  bool canAccessPremiumFeature() {
-    final status = state.valueOrNull;
-    if (status == null) return false;
-
-    return status.isSubscribed;
-  }
-
-  // トライアル期間かどうかをチェック
-  bool isInTrialPeriod() {
-    final status = state.valueOrNull;
-    if (status == null) return false;
-
-    return status.isActive && status.isInTrial;
-  }
-
-  // 期限切れまでの日数を取得
-  int? getDaysUntilExpiration() {
-    final status = state.valueOrNull;
-    if (status == null || status.expirationDate == null) return null;
-
-    final now = DateTime.now();
-    final diff = status.expirationDate!.difference(now);
-    return diff.inDays;
+  Future<void> debugResetSubscription() async {
+    final subscriptionRepository = _subscriptionRepository;
+    if (subscriptionRepository == null) {
+      return;
+    }
+    await subscriptionRepository.debugResetSubscription();
   }
 }
