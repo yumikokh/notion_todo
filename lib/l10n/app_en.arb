@@ -283,20 +283,22 @@
   "subscription_purchase_success": "Successfully purchased {plan}",
   "@subscription_purchase_success": {
     "placeholders": {
-      "plan": {}
+      "plan": {
+        "type": "String"
+      }
     }
   },
-  "subscription_purchase_failed": "Failed to purchase subscription",
-  "subscription_restore_success": "Successfully restored your purchases",
-  "subscription_restore_none": "No purchases to restore",
+  "subscription_purchase_failed": "Purchase failed",
+  "subscription_purchase_error_general": "An error occurred during purchase.",
+  "subscription_restore_success": "Purchases restored successfully",
   "subscription_restore_failed": "Failed to restore purchases",
+  "subscription_restore_error_general": "An error occurred while restoring purchases.",
   "premium_features_title": "Premium",
-  "premium_features_description": "Unlock all premium features with a subscription",
   "monthly_subscription": "Monthly",
   "yearly_subscription": "Yearly",
   "lifetime_subscription": "Lifetime",
-  "lifetime_purchase": "Lifetime Purchase",
-  "subscription_expires_in": "{days, plural, =1{1 day left} other{{days} days left}}",
+  "lifetime_purchase": "Permanent License",
+  "subscription_expires_in": "Expires in {days} days",
   "@subscription_expires_in": {
     "placeholders": {
       "days": {
@@ -305,25 +307,52 @@
     }
   },
   "restore_purchases": "Restore Purchases",
-  "current_plan": "{plan}",
+  "current_plan": "{planName}",
   "@current_plan": {
     "placeholders": {
-      "plan": {}
+      "planName": {
+        "type": "String"
+      }
     }
   },
-  "trial_ends_in": "Trial ends in {days} days",
-  "@trial_ends_in": {
-    "placeholders": {
-      "days": {}
-    }
-  },
-  "free_trial_days": "Try free for {days} days",
+  "free_trial_days": "{days}-day free trial",
   "@free_trial_days": {
     "placeholders": {
       "days": {}
     }
   },
-  "manage_subscription": "Manage Subscription",
   "monthly_price": "month",
-  "yearly_price": "year"
+  "yearly_price": "year",
+  "upgrade_to_premium_description": "Upgrade to Premium and unlock all features!",
+  "unlock_all_widgets_title": "Unlock All Widgets",
+  "unlock_all_widgets_description": "Choose from multiple widget styles.",
+  "access_all_future_features_title": "Access to All Future Features",
+  "access_all_future_features_description": "Get new features as soon as they are added.",
+  "support_the_developer_title": "Support the Developer",
+  "support_the_developer_description": "Help support continued development.",
+  "lifetime_unlock_description": "Unlock all features with a one-time purchase.",
+  "purchase_terms_and_conditions": "By purchasing, you agree to the Terms of Service and Privacy Policy.\nSubscriptions can be canceled at any time.\nThe free trial is applicable only for the first purchase.\nWhen changing plans, the switch will occur automatically after the current plan ends.",
+  "lifetime_license_activated": "Lifetime License Activated",
+  "currently_subscribed": "Currently Subscribed",
+  "start_free_trial": "Start Free Trial",
+  "yearly_price_short": "year",
+  "trial_ends_then_price_per_year": "After {trialDays}-day free trial, then {priceString} / {yearlyPriceShort}",
+  "@trial_ends_then_price_per_year": {
+    "placeholders": {
+      "trialDays": {},
+      "priceString": {},
+      "yearlyPriceShort": {}
+    }
+  },
+  "continue_purchase": "Continue Purchase",
+  "change_plan": "Change Plan",
+  "current_plan_display": "Current Plan: {currentPlanName}",
+  "@current_plan_display": {
+    "placeholders": {
+      "currentPlanName": {}
+    }
+  },
+  "terms_of_service": "Terms of Service",
+  "privacy_policy": "Privacy Policy",
+  "purchase_terms_and_conditions_part3": ".\nSubscriptions can be canceled at any time.\nThe free trial is applicable only for the first purchase.\nWhen changing plans, the switch will occur automatically after the current plan ends."
 }

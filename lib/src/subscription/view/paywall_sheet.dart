@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter/gestures.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../helpers/haptic_helper.dart';
 import '../../helpers/number.dart';
@@ -74,7 +76,7 @@ class PaywallSheet extends HookConsumerWidget {
                           _buildRestoreButton(context, ref),
                         ],
                         // 利用規約とプライバシーポリシー
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 20),
                         _buildTermsAndPrivacy(context),
                       ],
                     ),
@@ -109,19 +111,21 @@ class PaywallSheet extends HookConsumerWidget {
       children: [
         const SizedBox(height: 24),
         Text(
-          // l.premium_features_description,
-          'プレミアムプランへアップグレードして、すべての機能を開放しましょう！',
+          l.upgrade_to_premium_description,
           style: theme.textTheme.bodyLarge,
         ),
         const SizedBox(height: 24),
 
         // 機能リスト
+        _buildFeatureItem(context, Icons.widgets, l.unlock_all_widgets_title,
+            l.unlock_all_widgets_description),
         _buildFeatureItem(
-            context, Icons.widgets, 'すべてのウィジェットを開放', '複数のウィジェットスタイルから選べます'),
-        _buildFeatureItem(
-            context, Icons.star, '今後追加される全機能へのアクセス', '新機能が追加されたらすぐに使えます'),
-        _buildFeatureItem(
-            context, Icons.favorite, 'デベロッパーを応援', '継続的な開発を支援できます'),
+            context,
+            Icons.star,
+            l.access_all_future_features_title,
+            l.access_all_future_features_description),
+        _buildFeatureItem(context, Icons.favorite,
+            l.support_the_developer_title, l.support_the_developer_description),
       ],
     );
   }
@@ -201,7 +205,7 @@ class PaywallSheet extends HookConsumerWidget {
           '${formattedCurrency(plan.price / 12, plan.currencyCode, locale: Localizations.localeOf(context).languageCode)} / ${l.monthly_price}';
       highlightText = l.free_trial_days(plan.trialDays);
     } else if (plan.type == SubscriptionType.lifetime) {
-      savingsText = '1回の購入で全ての機能をアンロック';
+      savingsText = l.lifetime_unlock_description;
       highlightText = l.lifetime_purchase;
     }
 
@@ -221,34 +225,40 @@ class PaywallSheet extends HookConsumerWidget {
         splashColor: Colors.transparent,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: highlightText.isNotEmpty
-                ? CrossAxisAlignment.start
-                : CrossAxisAlignment.center,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                switch (plan.type) {
-                  SubscriptionType.monthly => l.monthly_subscription,
-                  SubscriptionType.yearly => l.yearly_subscription,
-                  SubscriptionType.lifetime => l.lifetime_subscription,
-                  SubscriptionType.none => 'none'
-                },
-                style: theme.textTheme.titleLarge
-                    ?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: highlightText.isNotEmpty
+                    ? CrossAxisAlignment.start
+                    : CrossAxisAlignment.center,
                 children: [
-                  if (highlightText.isNotEmpty)
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
+                  Flexible(
+                    child: Text(
+                      switch (plan.type) {
+                        SubscriptionType.monthly => l.monthly_subscription,
+                        SubscriptionType.yearly => l.yearly_subscription,
+                        SubscriptionType.lifetime => l.lifetime_subscription,
+                        SubscriptionType.none => ''
+                      },
+                      style: theme.textTheme.titleLarge
+                          ?.copyWith(fontWeight: FontWeight.bold),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Flexible(
+                    flex: 2,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        if (highlightText.isNotEmpty)
+                        if (highlightText.isNotEmpty) ...[
                           Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 4),
-                            margin: const EdgeInsets.only(bottom: 4),
+                                horizontal: 10, vertical: 3),
                             decoration: BoxDecoration(
                               color: theme.colorScheme.primary,
                               borderRadius: BorderRadius.circular(16),
@@ -258,55 +268,74 @@ class PaywallSheet extends HookConsumerWidget {
                               style: TextStyle(
                                 color: theme.colorScheme.onPrimary,
                                 fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text(
-                                plan.priceString,
-                                style: theme.textTheme.headlineMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(width: 6),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 4),
-                                child: Text(
-                                  switch (plan.type) {
-                                    SubscriptionType.monthly =>
-                                      '/ ${l.monthly_price}',
-                                    SubscriptionType.yearly =>
-                                      '/ ${l.yearly_price}',
-                                    _ => ''
-                                  },
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          if (savingsText.isNotEmpty)
-                            Text(
-                              savingsText,
-                              style: TextStyle(
-                                color: theme.colorScheme.secondary,
                                 fontSize: 12,
                               ),
                             ),
+                          ),
+                          const SizedBox(height: 8),
                         ],
-                      ),
-                    ],
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Flexible(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Flexible(
+                                        child: Text(
+                                          plan.priceString,
+                                          style: theme.textTheme.headlineMedium
+                                              ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 4),
+                                        child: Text(
+                                          switch (plan.type) {
+                                            SubscriptionType.monthly =>
+                                              '/ ${l.monthly_price}',
+                                            SubscriptionType.yearly =>
+                                              '/ ${l.yearly_price}',
+                                            _ => ''
+                                          },
+                                          style: theme.textTheme.bodyMedium
+                                              ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  if (savingsText.isNotEmpty)
+                                    Text(
+                                      savingsText,
+                                      style: TextStyle(
+                                        color: theme.colorScheme.secondary,
+                                        fontSize: 12,
+                                      ),
+                                      textAlign: TextAlign.end,
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 2,
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -330,16 +359,56 @@ class PaywallSheet extends HookConsumerWidget {
   }
 
   Widget _buildTermsAndPrivacy(BuildContext context) {
-    return const Center(
-      child: Text(
-        '購入することで、利用規約とプライバシーポリシーに同意したことになります。'
-        '\n定期購入はいつでもキャンセルできます。'
-        '\n無料トライアルが適用されるのは、初回購入時のみです。'
-        '\nプランを変更時は現在のプラン終了後に自動的に切り替わります。',
+    final l = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+
+    const String termsUrl =
+        'https://yumikokh.notion.site/Terms-Conditions-14b54c37a54c808690add6c26c737f7c';
+    const String privacyUrl =
+        'https://yumikokh.notion.site/Privacy-Policy-14b54c37a54c80e1b288c0097bb6c7bd';
+
+    Future<void> launchUrlHelper(String url) async {
+      await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+    }
+
+    return Center(
+      child: RichText(
         textAlign: TextAlign.center,
-        style: TextStyle(
-          fontSize: 12,
-          color: Colors.grey,
+        text: TextSpan(
+          style: TextStyle(
+            fontSize: 12,
+            color: Colors.grey,
+            fontFamily: Theme.of(context).textTheme.bodyMedium?.fontFamily,
+          ),
+          children: <TextSpan>[
+            TextSpan(
+              text: l.terms_of_service,
+              style: TextStyle(
+                color: theme.colorScheme.primary,
+                decoration: TextDecoration.underline,
+              ),
+              recognizer: TapGestureRecognizer()
+                ..onTap = () {
+                  HapticHelper.selection();
+                  launchUrlHelper(termsUrl);
+                },
+            ),
+            const TextSpan(text: '・'),
+            TextSpan(
+              text: l.privacy_policy,
+              style: TextStyle(
+                color: theme.colorScheme.primary,
+                decoration: TextDecoration.underline,
+              ),
+              recognizer: TapGestureRecognizer()
+                ..onTap = () {
+                  HapticHelper.selection();
+                  launchUrlHelper(privacyUrl);
+                },
+            ),
+            const TextSpan(text: '\n'),
+            TextSpan(text: l.purchase_terms_and_conditions_part3),
+          ],
         ),
       ),
     );
@@ -361,35 +430,41 @@ class PaywallSheet extends HookConsumerWidget {
 
     switch ((selectedPlan?.type, subscriptionStatus?.activeType)) {
       case (_, SubscriptionType.lifetime):
-        buttonText = '永久ライセンス取得済み';
+        buttonText = l.lifetime_license_activated;
         isActive = false;
         break;
       case (SubscriptionType.monthly, SubscriptionType.monthly):
       case (SubscriptionType.yearly, SubscriptionType.yearly):
-        buttonText = '購読中';
+        buttonText = l.currently_subscribed;
         isActive = false;
         break;
       case (SubscriptionType.yearly, SubscriptionType.none):
-        buttonText = '無料トライアルを開始';
-        subText =
-            '${selectedPlan?.trialDays}日間の無料体験の終了後は ${selectedPlan?.priceString}/${l.yearly_price}';
+        buttonText = l.start_free_trial;
+        if (selectedPlan != null) {
+          subText = l.trial_ends_then_price_per_year(
+            selectedPlan.trialDays.toString(),
+            selectedPlan.priceString,
+            l.yearly_price_short,
+          );
+        }
         break;
       case (SubscriptionType.monthly, SubscriptionType.none):
       case (SubscriptionType.lifetime, SubscriptionType.none):
-        buttonText = '購入を続ける';
+        buttonText = l.continue_purchase;
         break;
       case (SubscriptionType.monthly, SubscriptionType.yearly):
       case (SubscriptionType.yearly, SubscriptionType.monthly):
       case (SubscriptionType.lifetime, _):
-        buttonText = 'プランを変更';
-        subText = '現在のプラン: ${switch (subscriptionStatus?.activeType) {
+        buttonText = l.change_plan;
+        subText =
+            l.current_plan_display(switch (subscriptionStatus?.activeType) {
           SubscriptionType.monthly => l.monthly_subscription,
           SubscriptionType.yearly => l.yearly_subscription,
           _ => ''
-        }}';
+        });
         break;
       case (_, _):
-        buttonText = '購入を続ける';
+        buttonText = l.continue_purchase;
     }
 
     return Container(
