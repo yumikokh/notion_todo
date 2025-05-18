@@ -107,36 +107,37 @@ class PaywallSheet extends HookConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        const SizedBox(height: 24),
         Text(
-          l.premium_features_title,
-          style: theme.textTheme.headlineMedium,
-        ),
-        const SizedBox(height: 8),
-        Text(
-          l.premium_features_description,
+          // l.premium_features_description,
+          'プレミアムプランへアップグレードして、すべての機能を開放しましょう！',
           style: theme.textTheme.bodyLarge,
         ),
         const SizedBox(height: 24),
 
         // 機能リスト
-        _buildFeatureItem(context, 'すべてのウィジェットを開放', '複数のウィジェットスタイルから選べます'),
-        _buildFeatureItem(context, '今後追加される全機能へのアクセス', '新機能が追加されたらすぐに使えます'),
-        _buildFeatureItem(context, 'デベロッパーを応援', '継続的な開発とサポートを支援できます'),
+        _buildFeatureItem(
+            context, Icons.widgets, 'すべてのウィジェットを開放', '複数のウィジェットスタイルから選べます'),
+        _buildFeatureItem(
+            context, Icons.star, '今後追加される全機能へのアクセス', '新機能が追加されたらすぐに使えます'),
+        _buildFeatureItem(
+            context, Icons.favorite, 'デベロッパーを応援', '継続的な開発を支援できます'),
       ],
     );
   }
 
   Widget _buildFeatureItem(
-      BuildContext context, String title, String description) {
+      BuildContext context, IconData icon, String title, String description) {
     final theme = Theme.of(context);
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const Icon(Icons.check_circle, color: Colors.green, size: 24),
-          const SizedBox(width: 12),
+          Icon(icon,
+              color: Theme.of(context).colorScheme.tertiaryContainer, size: 24),
+          const SizedBox(width: 20),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -200,6 +201,7 @@ class PaywallSheet extends HookConsumerWidget {
           '${formattedCurrency(plan.price / 12, plan.currencyCode, locale: Localizations.localeOf(context).languageCode)} / ${l.monthly_price}';
       highlightText = l.free_trial_days(plan.trialDays);
     } else if (plan.type == SubscriptionType.lifetime) {
+      savingsText = '1回の購入で全ての機能をアンロック';
       highlightText = l.lifetime_purchase;
     }
 
@@ -332,7 +334,8 @@ class PaywallSheet extends HookConsumerWidget {
       child: Text(
         '購入することで、利用規約とプライバシーポリシーに同意したことになります。'
         '\n定期購入はいつでもキャンセルできます。'
-        '\nプランを変更する場合は、現在のプラン終了後に自動的に変更されます。',
+        '\n無料トライアルが適用されるのは、初回購入時のみです。'
+        '\nプランを変更時は現在のプラン終了後に自動的に切り替わります。',
         textAlign: TextAlign.center,
         style: TextStyle(
           fontSize: 12,

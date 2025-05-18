@@ -201,7 +201,7 @@
   "subscription_restore_success": "購入を復元しました",
   "subscription_restore_none": "復元可能な購入がありません",
   "subscription_restore_failed": "購入の復元に失敗しました",
-  "premium_features_title": "プレミアム",
+  "premium_features_title": "Premium",
   "premium_features_description": "サブスクリプションですべてのプレミアム機能をお使いいただけます",
   "monthly_subscription": "月額",
   "yearly_subscription": "年額",
