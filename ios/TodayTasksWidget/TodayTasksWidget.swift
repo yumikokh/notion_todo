@@ -840,8 +840,8 @@ struct LockScreenAddTaskView: View {
         .fill(.ultraThinMaterial.opacity(0.5))
         .frame(width: size, height: size)
       Link(destination: URL(string: "notiontodo://add_task/today?homeWidget")!) {
-        Image("plus").scaleEffect(1.15)
-          .padding(EdgeInsets(top: 0, leading: 6, bottom: 4, trailing: 0))
+        Image("plus")
+          .aspectRatio(contentMode: .fill).clipShape(Circle())
       }
     }
     .compositingGroup()  // ブレンドモードを有効にするために必要
