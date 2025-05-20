@@ -16,6 +16,7 @@ jobs:
       NOTION_AUTH_URL: ${{ secrets.NOTION_AUTH_URL }}
       REDIRECT_URI: ${{ secrets.REDIRECT_URI }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+      REVENUE_CAT_API_KEY: ${{ secrets.REVENUE_CAT_API_KEY }}
     steps:
       - uses: actions/checkout@v4
 

@@ -58,6 +58,31 @@ class NotionUnknownException extends NotionErrorException {
   }) : super(status: status, code: code, message: message);
 }
 
+/// 購入エラー
+sealed class PurchaseErrorException implements Exception {
+  final String message;
+
+  const PurchaseErrorException({required this.message});
+
+  @override
+  String toString() => message;
+}
+
+class PurchaseAlreadyHasLifetimeSubscriptionException
+    extends PurchaseErrorException {
+  const PurchaseAlreadyHasLifetimeSubscriptionException()
+      : super(message: 'すでに買い切りプランを購入しています');
+}
+
+class PurchaseNoActiveSubscriptionException extends PurchaseErrorException {
+  const PurchaseNoActiveSubscriptionException()
+      : super(message: 'アクティブなサブスクリプションがありません');
+}
+
+class PurchaseCancelledException extends PurchaseErrorException {
+  const PurchaseCancelledException() : super(message: 'ユーザーが購入をキャンセルしました');
+}
+
 /// ネットワーク接続エラー
 class NetworkConnectionException implements Exception {
   final String message;

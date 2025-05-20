@@ -21,6 +21,7 @@ import 'settings/view/settings_page.dart';
 import 'settings/theme/theme.dart';
 import 'settings/theme/util.dart';
 import 'settings/view/theme_settings_page.dart';
+import 'subscription/subscription_viewmodel.dart';
 import 'widget/widget_service.dart';
 import 'notion/tasks/task_viewmodel.dart';
 
@@ -51,6 +52,9 @@ class MyApp extends HookConsumerWidget {
   Widget build(BuildContext context, ref) {
     final settings = ref.watch(settingsViewModelProvider);
     final settingsViewModel = ref.read(settingsViewModelProvider.notifier);
+
+    // サブスクリプションの状態を監視
+    ref.watch(subscriptionViewModelProvider);
 
     final TextTheme textTheme = createTextTheme(context, "Roboto", "Roboto");
     final MaterialTheme theme = MaterialTheme(textTheme);

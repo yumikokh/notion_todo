@@ -32,6 +32,7 @@ WidgetValue _$WidgetValueFromJson(Map<String, dynamic> json) => WidgetValue(
           ? null
           : TaskDatabase.fromJson(json['taskDatabase'] as Map<String, dynamic>),
       locale: json['locale'] as String?,
+      isSubscribed: json['isSubscribed'] as bool?,
     );
 
 Map<String, dynamic> _$WidgetValueToJson(WidgetValue instance) =>
@@ -40,4 +41,5 @@ Map<String, dynamic> _$WidgetValueToJson(WidgetValue instance) =>
       'accessToken': instance.accessToken,
       'taskDatabase': instance.taskDatabase,
       'locale': instance.locale,
+      'isSubscribed': instance.isSubscribed,
     };

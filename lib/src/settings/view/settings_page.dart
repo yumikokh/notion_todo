@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../subscription/model/subscription_model.dart';
 import '../task_database/task_database_viewmodel.dart';
 import 'language_settings_page.dart';
 import 'notification_settings_page.dart';
@@ -12,9 +13,12 @@ import 'notion_settings_page.dart';
 import '../settings_viewmodel.dart';
 import '../../common/analytics/analytics_service.dart';
 import '../../common/app_version/app_version_viewmodel.dart';
+import '../../subscription/view/paywall_sheet.dart';
+import '../../subscription/subscription_viewmodel.dart';
 import 'appearance_settings_page.dart';
 import 'behavior_settings_page.dart';
 import 'licenses_page.dart';
+import 'widget/subscription_banner.dart';
 
 class SettingsPage extends ConsumerWidget {
   static const routeName = '/settings';
@@ -28,6 +32,8 @@ class SettingsPage extends ConsumerWidget {
     final database = ref.read(taskDatabaseViewModelProvider).valueOrNull;
     final analytics = ref.read(analyticsServiceProvider);
     final appVersionViewModel = ref.read(appVersionViewModelProvider);
+    final subscriptionStatus =
+        ref.watch(subscriptionViewModelProvider).valueOrNull;
     final l = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
@@ -38,6 +44,18 @@ class SettingsPage extends ConsumerWidget {
         padding: const EdgeInsets.symmetric(vertical: 8),
         child: ListView(
           children: [
+            SubscriptionBanner(
+              subscriptionStatus: subscriptionStatus ??
+                  SubscriptionStatus(
+                    isActive: false,
+                    activeType: SubscriptionType.none,
+                  ),
+              onTap: () {
+                analytics.logScreenView(screenName: 'Paywall');
+                PaywallSheet.show(context);
+              },
+            ),
+            const SizedBox(height: 16),
             _buildSection(
               context,
               title: l.settings_view_app_settings_title,
