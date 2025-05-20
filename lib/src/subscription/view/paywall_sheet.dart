@@ -96,6 +96,13 @@ class PaywallSheet extends HookConsumerWidget {
                 },
               ),
             ),
+            if (isLoading)
+              Container(
+                color: Colors.black.withAlpha(128),
+                child: const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
           ],
         );
       },
