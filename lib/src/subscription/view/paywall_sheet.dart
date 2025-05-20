@@ -369,7 +369,38 @@ class PaywallSheet extends HookConsumerWidget {
               Navigator.of(context).pop();
             }
           } catch (e) {
-            print('error: $e');
+            if (!context.mounted) return;
+            if (e is PurchaseNoActiveSubscriptionException) {
+              await showDialog(
+                context: context,
+                builder: (dialogContext) => AlertDialog(
+                  content: Text(l.subscription_restore_none),
+                  contentPadding: const EdgeInsets.fromLTRB(24, 24, 24, 20),
+                  actionsPadding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
+                  actions: [
+                    TextButton(
+                      child: Text(l.ok),
+                      onPressed: () => Navigator.of(dialogContext).pop(),
+                    ),
+                  ],
+                ),
+              );
+            } else {
+              await showDialog(
+                context: context,
+                builder: (dialogContext) => AlertDialog(
+                  content: Text(l.subscription_restore_failed),
+                  contentPadding: const EdgeInsets.fromLTRB(24, 24, 24, 20),
+                  actionsPadding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
+                  actions: [
+                    TextButton(
+                      child: Text(l.ok),
+                      onPressed: () => Navigator.of(dialogContext).pop(),
+                    ),
+                  ],
+                ),
+              );
+            }
           }
         },
         child: Text(l.restore_purchases));

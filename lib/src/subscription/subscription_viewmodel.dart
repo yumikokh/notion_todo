@@ -191,21 +191,12 @@ class SubscriptionViewModel extends _$SubscriptionViewModel
           print('Analytics error: $e');
         }
       } else {
-        // TODO: 位置番手前のモーダルとしてエラー表示&throwしてモーダルを閉じないようにする
-        // 復元するものがない
-        snackbar.show(
-          l.subscription_restore_none,
-          type: SnackbarType.info,
-        );
+        throw const PurchaseNoActiveSubscriptionException();
       }
       return result;
     } catch (e) {
-      // TODO: 位置番手前のモーダルとしてエラー表示&throwしてモーダルを閉じないようにする
-      snackbar.show(
-        l.subscription_restore_failed,
-        type: SnackbarType.error,
-      );
-      return null;
+      print('restorePurchases error: $e');
+      rethrow;
     } finally {
       _isLoading = false;
       if (state.hasValue) {

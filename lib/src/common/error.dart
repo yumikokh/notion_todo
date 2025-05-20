@@ -74,6 +74,11 @@ class PurchaseAlreadyHasLifetimeSubscriptionException
       : super(message: 'すでに買い切りプランを購入しています');
 }
 
+class PurchaseNoActiveSubscriptionException extends PurchaseErrorException {
+  const PurchaseNoActiveSubscriptionException()
+      : super(message: 'アクティブなサブスクリプションがありません');
+}
+
 /// ネットワーク接続エラー
 class NetworkConnectionException implements Exception {
   final String message;
