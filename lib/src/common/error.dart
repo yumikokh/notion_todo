@@ -79,6 +79,10 @@ class PurchaseNoActiveSubscriptionException extends PurchaseErrorException {
       : super(message: 'アクティブなサブスクリプションがありません');
 }
 
+class PurchaseCancelledException extends PurchaseErrorException {
+  const PurchaseCancelledException() : super(message: 'ユーザーが購入をキャンセルしました');
+}
+
 /// ネットワーク接続エラー
 class NetworkConnectionException implements Exception {
   final String message;

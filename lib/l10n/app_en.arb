@@ -280,7 +280,7 @@
     }
   },
   "subscription_fetch_failed": "Failed to fetch subscription information",
-  "subscription_purchase_success": "Successfully purchased {plan}",
+  "subscription_purchase_success": "Successfully purchased {plan} plan",
   "@subscription_purchase_success": {
     "placeholders": {
       "plan": {
@@ -316,7 +316,7 @@
       }
     }
   },
-  "free_trial_days": "{days}-day free trial",
+  "free_trial_days": "First {days} days free trial",
   "@free_trial_days": {
     "placeholders": {
       "days": {}
@@ -332,7 +332,6 @@
   "support_the_developer_title": "Support the Developer",
   "support_the_developer_description": "Help support continued development.",
   "lifetime_unlock_description": "Unlock all features with a one-time purchase.",
-  "purchase_terms_and_conditions": "By purchasing, you agree to the Terms of Service and Privacy Policy.\nSubscriptions can be canceled at any time.\nThe free trial is applicable only for the first purchase.\nWhen changing plans, the switch will occur automatically after the current plan ends.",
   "lifetime_license_activated": "Lifetime License Activated",
   "currently_subscribed": "Currently Subscribed",
   "start_free_trial": "Start Free Trial",

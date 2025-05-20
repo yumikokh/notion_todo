@@ -5,6 +5,7 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
+import '../common/error.dart';
 import '../env/env.dart';
 import 'model/subscription_model.dart';
 
@@ -123,8 +124,7 @@ class SubscriptionRepository {
           (e.code == '1' ||
               e.details?['userCancelled'] == true ||
               e.details?['readableErrorCode'] == 'PURCHASE_CANCELLED')) {
-        print('ユーザーが購入をキャンセルしました');
-        rethrow;
+        throw const PurchaseCancelledException();
       }
       print('purchasePlan error: $e');
 

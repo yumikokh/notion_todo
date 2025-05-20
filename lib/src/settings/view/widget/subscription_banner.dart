@@ -56,7 +56,7 @@ class SubscriptionBanner extends StatelessWidget {
                           SubscriptionType.monthly => l.monthly_subscription,
                           SubscriptionType.yearly => l.yearly_subscription,
                           SubscriptionType.lifetime => l.lifetime_subscription,
-                          SubscriptionType.none => l.free_trial_days(3),
+                          SubscriptionType.none => l.free_trial_days(7),
                         }),
                         style: TextStyle(
                           color: Theme.of(context)

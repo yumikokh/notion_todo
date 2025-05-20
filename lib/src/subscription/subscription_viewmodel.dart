@@ -125,7 +125,14 @@ class SubscriptionViewModel extends _$SubscriptionViewModel
       // 購入成功
       state = AsyncValue.data(result);
       snackbar.show(
-        l.subscription_purchase_success(plan.name),
+        l.subscription_purchase_success(
+          switch (plan.type) {
+            SubscriptionType.monthly => l.monthly_subscription,
+            SubscriptionType.yearly => l.yearly_subscription,
+            SubscriptionType.lifetime => l.lifetime_subscription,
+            SubscriptionType.none => ''
+          },
+        ),
         type: SnackbarType.success,
       );
 
@@ -180,13 +187,7 @@ class SubscriptionViewModel extends _$SubscriptionViewModel
         );
         try {
           final analytics = ref.read(analyticsServiceProvider);
-          await analytics.logSubscription(
-            'subscription_restored',
-            parameters: {
-              'success': result.isActive,
-              'plan_type': result.activeType.toString(),
-            },
-          );
+          await analytics.logSubscription('subscription_restored');
         } catch (e) {
           print('Analytics error: $e');
         }

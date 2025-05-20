@@ -196,7 +196,7 @@
     }
   },
   "subscription_fetch_failed": "サブスクリプション情報の取得に失敗しました",
-  "subscription_purchase_success": "{plan}を購入しました",
+  "subscription_purchase_success": "{plan}プランを購入しました",
   "subscription_purchase_failed": "購入に失敗しました",
   "subscription_purchase_error_general": "購入処理中にエラーが発生しました。",
   "subscription_restore_success": "購入情報を復元しました",
@@ -225,7 +225,7 @@
       }
     }
   },
-  "free_trial_days": "{days}日間の無料トライアル",
+  "free_trial_days": "まずは{days}日間無料で体験",
   "@free_trial_days": {
     "placeholders": {
       "days": {
@@ -243,7 +243,6 @@
   "support_the_developer_title": "デベロッパーを応援",
   "support_the_developer_description": "継続的な開発を支援できます",
   "lifetime_unlock_description": "1回の購入で全ての機能をアンロック",
-  "purchase_terms_and_conditions": "購入することで、利用規約とプライバシーポリシーに同意したことになります。\n定期購入はいつでもキャンセルできます。\n無料トライアルが適用されるのは、初回購入時のみです。\nプランを変更時は現在のプラン終了後に自動的に切り替わります。",
   "lifetime_license_activated": "永久ライセンス取得済み",
   "currently_subscribed": "購読中",
   "start_free_trial": "無料トライアルを開始",

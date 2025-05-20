@@ -31,7 +31,6 @@ class PaywallSheet extends HookConsumerWidget {
     final isLoading = subscriptionViewModel.isLoading;
     final plans = subscriptionViewModel.availablePlans;
     final currentStatus = subscriptionStatus.valueOrNull;
-    final isSubscribed = currentStatus?.isSubscribed ?? false;
 
     // 年額プランをデフォルトで選択
     final selectedPlan = useState<SubscriptionPlan?>(plans
@@ -71,11 +70,10 @@ class PaywallSheet extends HookConsumerWidget {
                         _buildPlanOptions(context,
                             plans: plans, selectedPlan: selectedPlan, ref: ref),
 
-                        if (!isSubscribed) ...[
-                          const SizedBox(height: 24),
-                          // 購入復元ボタン
-                          _buildRestoreButton(context, ref),
-                        ],
+                        const SizedBox(height: 24),
+                        // 購入復元ボタン
+                        _buildRestoreButton(context, ref),
+
                         // 利用規約とプライバシーポリシー
                         const SizedBox(height: 20),
                         _buildTermsAndPrivacy(context),
@@ -454,7 +452,7 @@ class PaywallSheet extends HookConsumerWidget {
                   launchUrlHelper(privacyUrl);
                 },
             ),
-            const TextSpan(text: '\n'),
+            const TextSpan(text: '\n\n'),
             TextSpan(text: l.purchase_terms_and_conditions_part3),
           ],
         ),
@@ -532,20 +530,16 @@ class PaywallSheet extends HookConsumerWidget {
                             .read(subscriptionViewModelProvider.notifier)
                             .purchasePlan(selectedPlan);
 
-                        if (status.hasActiveSubscription && context.mounted) {
+                        if (status.hasLifetime &&
+                            status.hasActiveSubscription &&
+                            context.mounted) {
                           await showDialog(
                             context: context,
                             barrierDismissible: false,
                             builder: (dialogContext) => AlertDialog(
                               title:
                                   Text(l.subscription_purchase_success_title),
-                              titlePadding:
-                                  const EdgeInsets.fromLTRB(24, 24, 24, 12),
                               content: Text(l.switchToLifetimeNotificationBody),
-                              contentPadding:
-                                  const EdgeInsets.fromLTRB(24, 12, 24, 20),
-                              actionsPadding:
-                                  const EdgeInsets.fromLTRB(24, 0, 24, 16),
                               actions: [
                                 TextButton(
                                   child: Text(l.ok),
@@ -553,6 +547,12 @@ class PaywallSheet extends HookConsumerWidget {
                                       Navigator.of(dialogContext).pop(),
                                 ),
                               ],
+                              titlePadding:
+                                  const EdgeInsets.fromLTRB(24, 24, 24, 12),
+                              contentPadding:
+                                  const EdgeInsets.fromLTRB(24, 12, 24, 20),
+                              actionsPadding:
+                                  const EdgeInsets.fromLTRB(24, 0, 24, 16),
                             ),
                           );
                         }
@@ -561,6 +561,9 @@ class PaywallSheet extends HookConsumerWidget {
                           Navigator.of(context).pop();
                         }
                       } catch (e) {
+                        if (e is PurchaseCancelledException) {
+                          return;
+                        }
                         if (e is PurchaseAlreadyHasLifetimeSubscriptionException &&
                             context.mounted) {
                           await showDialog(
@@ -585,6 +588,24 @@ class PaywallSheet extends HookConsumerWidget {
                           if (context.mounted) {
                             Navigator.of(context).pop();
                           }
+                        } else if (context.mounted) {
+                          await showDialog(
+                            context: context,
+                            builder: (dialogContext) => AlertDialog(
+                              content: Text(l.subscription_purchase_failed),
+                              contentPadding:
+                                  const EdgeInsets.fromLTRB(24, 24, 24, 20),
+                              actionsPadding:
+                                  const EdgeInsets.fromLTRB(24, 0, 24, 16),
+                              actions: [
+                                TextButton(
+                                  child: Text(l.ok),
+                                  onPressed: () =>
+                                      Navigator.of(dialogContext).pop(),
+                                ),
+                              ],
+                            ),
+                          );
                         }
                         print('PaywallSheet purchase error: $e');
                       }
