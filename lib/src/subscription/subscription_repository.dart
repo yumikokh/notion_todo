@@ -195,6 +195,7 @@ class SubscriptionRepository {
           ? DateTime.parse(entitlement.expirationDate!)
           : null,
       isInTrial: entitlement.periodType == PeriodType.trial,
+      hasActiveSubscription: customerInfo.activeSubscriptions.isNotEmpty,
     );
   }
 

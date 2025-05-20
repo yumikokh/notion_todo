@@ -58,6 +58,22 @@ class NotionUnknownException extends NotionErrorException {
   }) : super(status: status, code: code, message: message);
 }
 
+/// 購入エラー
+sealed class PurchaseErrorException implements Exception {
+  final String message;
+
+  const PurchaseErrorException({required this.message});
+
+  @override
+  String toString() => message;
+}
+
+class PurchaseAlreadyHasLifetimeSubscriptionException
+    extends PurchaseErrorException {
+  const PurchaseAlreadyHasLifetimeSubscriptionException()
+      : super(message: 'すでに買い切りプランを購入しています');
+}
+
 /// ネットワーク接続エラー
 class NetworkConnectionException implements Exception {
   final String message;

@@ -266,5 +266,8 @@
   },
   "terms_of_service": "利用規約",
   "privacy_policy": "プライバシーポリシー",
-  "purchase_terms_and_conditions_part3": "に同意したことになります。\n定期購入はいつでもキャンセルできます。\n無料トライアルが適用されるのは、初回購入時のみです。\nプランを変更時は現在のプラン終了後に自動的に切り替わります。"
+  "purchase_terms_and_conditions_part3": "定期購入はいつでもキャンセルできます。\n無料トライアルが適用されるのは、初回購入時のみです。\n定期購入プラン変更時は現在のプラン終了後に自動的に切り替わります。",
+  "switchToLifetimeNotificationBody": "定期購入プランを購入済みの場合は、お手数ですがApp Store / Google Playのアカウント設定から自動更新停止をお願いいたします。",
+  "subscription_purchase_success_title": "永久ライセンスを取得しました！",
+  "subscription_purchase_success_body": "既に買い切りプランを購入済みです"
 }

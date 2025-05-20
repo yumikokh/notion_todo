@@ -5,6 +5,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter/gestures.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../common/error.dart';
 import '../../helpers/haptic_helper.dart';
 import '../../helpers/number.dart';
 import '../model/subscription_model.dart';
@@ -496,15 +497,65 @@ class PaywallSheet extends HookConsumerWidget {
                       if (selectedPlan == null) return;
                       HapticHelper.selection();
                       try {
-                        await ref
+                        final status = await ref
                             .read(subscriptionViewModelProvider.notifier)
                             .purchasePlan(selectedPlan);
+
+                        if (status.hasActiveSubscription && context.mounted) {
+                          await showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (dialogContext) => AlertDialog(
+                              title:
+                                  Text(l.subscription_purchase_success_title),
+                              titlePadding:
+                                  const EdgeInsets.fromLTRB(24, 24, 24, 12),
+                              content: Text(l.switchToLifetimeNotificationBody),
+                              contentPadding:
+                                  const EdgeInsets.fromLTRB(24, 12, 24, 20),
+                              actionsPadding:
+                                  const EdgeInsets.fromLTRB(24, 0, 24, 16),
+                              actions: [
+                                TextButton(
+                                  child: Text(l.ok),
+                                  onPressed: () =>
+                                      Navigator.of(dialogContext).pop(),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
 
                         if (context.mounted) {
                           Navigator.of(context).pop();
                         }
                       } catch (e) {
-                        print('error: $e');
+                        if (e is PurchaseAlreadyHasLifetimeSubscriptionException &&
+                            context.mounted) {
+                          await showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (dialogContext) => AlertDialog(
+                              content:
+                                  Text(l.subscription_purchase_success_body),
+                              contentPadding:
+                                  const EdgeInsets.fromLTRB(24, 24, 24, 20),
+                              actionsPadding:
+                                  const EdgeInsets.fromLTRB(24, 0, 24, 16),
+                              actions: [
+                                TextButton(
+                                  child: Text(l.ok),
+                                  onPressed: () =>
+                                      Navigator.of(dialogContext).pop(),
+                                ),
+                              ],
+                            ),
+                          );
+                          if (context.mounted) {
+                            Navigator.of(context).pop();
+                          }
+                        }
+                        print('PaywallSheet purchase error: $e');
                       }
                     }
                   : null,

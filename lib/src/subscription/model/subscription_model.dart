@@ -32,15 +32,18 @@ class SubscriptionStatus {
   final SubscriptionType activeType;
   final DateTime? expirationDate;
   final bool isInTrial;
+  final bool hasActiveSubscription;
 
   SubscriptionStatus({
     required this.isActive,
     required this.activeType,
     this.expirationDate,
     this.isInTrial = false,
+    this.hasActiveSubscription = false,
   });
 
   bool get isExpired =>
       expirationDate != null && DateTime.now().isAfter(expirationDate!);
   bool get isSubscribed => isActive && !isExpired;
+  bool get hasLifetime => activeType == SubscriptionType.lifetime && isActive;
 }

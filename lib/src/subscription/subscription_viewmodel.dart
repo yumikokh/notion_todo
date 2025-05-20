@@ -2,6 +2,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../common/debounced_state_mixin.dart';
+import '../common/error.dart';
 import '../common/snackbar/model/snackbar_state.dart';
 import '../common/snackbar/snackbar.dart';
 import '../settings/settings_viewmodel.dart';
@@ -99,10 +100,10 @@ class SubscriptionViewModel extends _$SubscriptionViewModel
   }
 
   // プランを購入する
-  Future<SubscriptionStatus?> purchasePlan(SubscriptionPlan plan) async {
+  Future<SubscriptionStatus> purchasePlan(SubscriptionPlan plan) async {
     final subscriptionRepository = _subscriptionRepository;
     if (subscriptionRepository == null) {
-      return null;
+      throw Exception('Subscription repository is not initialized');
     }
 
     final snackbar = ref.read(snackbarProvider.notifier);
@@ -113,8 +114,14 @@ class SubscriptionViewModel extends _$SubscriptionViewModel
     ref.notifyListeners();
 
     try {
-      final result = await subscriptionRepository.purchasePlan(plan);
+      // 以前買い切りを購入していないか確認
+      final status = await subscriptionRepository.restorePurchases();
+      if (status != null && status.hasLifetime) {
+        state = AsyncValue.data(status);
+        throw const PurchaseAlreadyHasLifetimeSubscriptionException();
+      }
 
+      final result = await subscriptionRepository.purchasePlan(plan);
       // 購入成功
       state = AsyncValue.data(result);
       snackbar.show(
