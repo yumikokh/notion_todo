@@ -350,16 +350,21 @@ class PaywallSheet extends HookConsumerWidget {
     final l = AppLocalizations.of(context)!;
 
     return TextButton(
-      onPressed: () {
-        try {
-          ref.read(subscriptionViewModelProvider.notifier).restorePurchases();
-          Navigator.of(context).pop();
-        } catch (e) {
-          print('error: $e');
-        }
-      },
-      child: Text(l.restore_purchases),
-    );
+        onPressed: () async {
+          HapticHelper.selection();
+          try {
+            await ref
+                .read(subscriptionViewModelProvider.notifier)
+                .restorePurchases();
+
+            if (context.mounted) {
+              Navigator.of(context).pop();
+            }
+          } catch (e) {
+            print('error: $e');
+          }
+        },
+        child: Text(l.restore_purchases));
   }
 
   Widget _buildTermsAndPrivacy(BuildContext context) {
@@ -487,7 +492,7 @@ class PaywallSheet extends HookConsumerWidget {
                         await ref
                             .read(subscriptionViewModelProvider.notifier)
                             .purchasePlan(selectedPlan);
-                        ref.invalidate(subscriptionViewModelProvider);
+
                         if (context.mounted) {
                           Navigator.of(context).pop();
                         }

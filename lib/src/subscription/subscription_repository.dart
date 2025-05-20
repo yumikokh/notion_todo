@@ -75,8 +75,8 @@ class SubscriptionRepository {
 
       return plans;
     } catch (e, stackTrace) {
-      print('getAvailablePlans error: $e');
       Sentry.captureException(e, stackTrace: stackTrace);
+      print('getAvailablePlans error: $e');
       return [];
     }
   }
@@ -119,9 +119,6 @@ class SubscriptionRepository {
       _cachedStatus = _parseSubscriptionStatus(result);
       return _cachedStatus!;
     } catch (e, stackTrace) {
-      print('purchasePlan error: $e');
-
-      // ユーザーキャンセルの場合は通常のフローとして扱う
       if (e is PlatformException &&
           (e.code == '1' ||
               e.details?['userCancelled'] == true ||
@@ -129,25 +126,24 @@ class SubscriptionRepository {
         print('ユーザーが購入をキャンセルしました');
         rethrow;
       }
+      print('purchasePlan error: $e');
 
-      // それ以外のエラーはSentryに記録して再スロー
+      // APIエラーの検出のためSentryに記録
       Sentry.captureException(e, stackTrace: stackTrace);
       rethrow;
     }
   }
 
   /// 購入を復元します
-  Future<SubscriptionStatus> restorePurchases() async {
+  Future<SubscriptionStatus?> restorePurchases() async {
     try {
       final customerInfo = await Purchases.restorePurchases();
       _cachedStatus = _parseSubscriptionStatus(customerInfo);
-      return _cachedStatus!;
+
+      return _cachedStatus;
     } catch (e, stackTrace) {
       Sentry.captureException(e, stackTrace: stackTrace);
-      return SubscriptionStatus(
-        isActive: false,
-        activeType: SubscriptionType.none,
-      );
+      rethrow;
     }
   }
 

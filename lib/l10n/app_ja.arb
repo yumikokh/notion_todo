@@ -199,7 +199,7 @@
   "subscription_purchase_success": "{plan}を購入しました",
   "subscription_purchase_failed": "購入に失敗しました",
   "subscription_purchase_error_general": "購入処理中にエラーが発生しました。",
-  "subscription_restore_success": "購入情報を正常に復元しました",
+  "subscription_restore_success": "購入情報を復元しました",
   "subscription_restore_failed": "購入情報の復元に失敗しました",
   "subscription_restore_none": "復元可能な購入がありません",
   "subscription_restore_error_general": "購入情報の復元中にエラーが発生しました。",
