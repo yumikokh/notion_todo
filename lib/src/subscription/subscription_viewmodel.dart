@@ -1,6 +1,5 @@
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
 
 import '../common/debounced_state_mixin.dart';
 import '../common/snackbar/model/snackbar_state.dart';
@@ -9,6 +8,7 @@ import '../settings/settings_viewmodel.dart';
 import 'model/subscription_model.dart';
 import 'subscription_repository.dart';
 import '../common/analytics/analytics_service.dart';
+import '../widget/widget_service.dart';
 
 part 'subscription_viewmodel.g.dart';
 
@@ -28,17 +28,21 @@ class SubscriptionViewModel extends _$SubscriptionViewModel
         await ref.watch(subscriptionRepositoryProvider.future);
 
     if (_subscriptionRepository == null) {
-      return SubscriptionStatus(
+      final status = SubscriptionStatus(
         isActive: false,
         activeType: SubscriptionType.none,
       );
+      WidgetService.updateSubscriptionStatusForWidget(status.isSubscribed);
+      return status;
     }
 
     // 利用可能なプランを取得
     _availablePlans = await _fetchAvailablePlans();
 
     // 現在のサブスクリプション状態を取得
-    return await _fetchSubscriptionStatus();
+    final status = await _fetchSubscriptionStatus();
+    WidgetService.updateSubscriptionStatusForWidget(status.isSubscribed);
+    return status;
   }
 
   // プレミアム機能が利用可能かどうかをチェック
@@ -74,12 +78,7 @@ class SubscriptionViewModel extends _$SubscriptionViewModel
       return [];
     }
 
-    try {
-      return await subscriptionRepository.getAvailablePlans();
-    } catch (e, stackTrace) {
-      Sentry.captureException(e, stackTrace: stackTrace);
-      return [];
-    }
+    return await subscriptionRepository.getAvailablePlans();
   }
 
   // 現在のサブスクリプション状態を取得
@@ -93,25 +92,17 @@ class SubscriptionViewModel extends _$SubscriptionViewModel
     }
 
     return await debouncedFetch(() async {
-      try {
-        final status = await subscriptionRepository.getSubscriptionStatus();
-        return status;
-      } catch (e, stackTrace) {
-        print('Unknown error: $e');
-        Sentry.captureException(e, stackTrace: stackTrace);
-        return SubscriptionStatus(
-          isActive: false,
-          activeType: SubscriptionType.none,
-        );
-      }
+      final status = await subscriptionRepository.getSubscriptionStatus();
+      WidgetService.updateSubscriptionStatusForWidget(status.isSubscribed);
+      return status;
     });
   }
 
   // プランを購入する
-  Future<void> purchasePlan(SubscriptionPlan plan) async {
+  Future<SubscriptionStatus?> purchasePlan(SubscriptionPlan plan) async {
     final subscriptionRepository = _subscriptionRepository;
     if (subscriptionRepository == null) {
-      return;
+      return null;
     }
 
     final snackbar = ref.read(snackbarProvider.notifier);
@@ -143,17 +134,24 @@ class SubscriptionViewModel extends _$SubscriptionViewModel
       } catch (e) {
         print('Analytics error: $e');
       }
+      return result;
+    } catch (e) {
+      rethrow;
     } finally {
       _isLoading = false;
+      if (state.hasValue) {
+        WidgetService.updateSubscriptionStatusForWidget(
+            state.value!.isSubscribed);
+      }
       ref.notifyListeners();
     }
   }
 
   // 購入を復元する
-  Future<void> restorePurchases() async {
+  Future<SubscriptionStatus?> restorePurchases() async {
     final subscriptionRepository = _subscriptionRepository;
     if (subscriptionRepository == null) {
-      return;
+      return null;
     }
 
     final snackbar = ref.read(snackbarProvider.notifier);
@@ -166,41 +164,47 @@ class SubscriptionViewModel extends _$SubscriptionViewModel
     try {
       final result = await subscriptionRepository.restorePurchases();
 
-      if (result.isActive) {
+      if (result != null && result.isActive) {
         // 復元成功
         state = AsyncValue.data(result);
         snackbar.show(
           l.subscription_restore_success,
           type: SnackbarType.success,
         );
+        try {
+          final analytics = ref.read(analyticsServiceProvider);
+          await analytics.logSubscription(
+            'subscription_restored',
+            parameters: {
+              'success': result.isActive,
+              'plan_type': result.activeType.toString(),
+            },
+          );
+        } catch (e) {
+          print('Analytics error: $e');
+        }
       } else {
+        // TODO: 位置番手前のモーダルとしてエラー表示&throwしてモーダルを閉じないようにする
         // 復元するものがない
         snackbar.show(
           l.subscription_restore_none,
           type: SnackbarType.info,
         );
       }
-
-      try {
-        final analytics = ref.read(analyticsServiceProvider);
-        await analytics.logSubscription(
-          'subscription_restored',
-          parameters: {
-            'success': result.isActive,
-            'plan_type': result.activeType.toString(),
-          },
-        );
-      } catch (e) {
-        print('Analytics error: $e');
-      }
-    } catch (e, stackTrace) {
-      Sentry.captureException(e, stackTrace: stackTrace);
+      return result;
+    } catch (e) {
+      // TODO: 位置番手前のモーダルとしてエラー表示&throwしてモーダルを閉じないようにする
       snackbar.show(
         l.subscription_restore_failed,
         type: SnackbarType.error,
       );
+      return null;
     } finally {
       _isLoading = false;
+      if (state.hasValue) {
+        WidgetService.updateSubscriptionStatusForWidget(
+            state.value!.isSubscribed);
+      }
       ref.notifyListeners();
     }
   }

@@ -43,8 +43,14 @@ class WidgetValue {
   final String? accessToken;
   final TaskDatabase? taskDatabase;
   final String? locale;
+  final bool? isSubscribed;
 
-  WidgetValue({this.tasks, this.accessToken, this.taskDatabase, this.locale});
+  WidgetValue(
+      {this.tasks,
+      this.accessToken,
+      this.taskDatabase,
+      this.locale,
+      this.isSubscribed});
 
   factory WidgetValue.fromJson(Map<String, dynamic> json) =>
       _$WidgetValueFromJson(json);
@@ -62,6 +68,7 @@ class WidgetService {
   static const String taskDatabaseKey = 'task_database';
   static const String lastUpdatedTaskKey = 'last_updated_task';
   static const String localeKey = 'widget_locale';
+  static const String subscriptionStatusKey = 'subscription_status';
   static const String lastCompletedTaskIdKey = 'last_completed_task_id';
 
   static const String widgetScheme = 'notiontodo';
@@ -189,6 +196,9 @@ class WidgetService {
     final rowTaskDatabase =
         await HomeWidget.getWidgetData<String?>(taskDatabaseKey);
     final locale = await getWidgetLocale();
+    final isSubscribed = await HomeWidget.getWidgetData<bool?>(
+        subscriptionStatusKey,
+        defaultValue: false);
 
     final List<dynamic>? tasksJson =
         rowTasks != null ? jsonDecode(rowTasks) as List<dynamic> : null;
@@ -205,7 +215,8 @@ class WidgetService {
         tasks: tasks,
         accessToken: accessToken,
         taskDatabase: taskDatabase,
-        locale: locale);
+        locale: locale,
+        isSubscribed: isSubscribed);
   }
 
   static initialize(Function(Uri?) interactivityCallback) async {
@@ -392,5 +403,11 @@ class WidgetService {
   static Future<String> getWidgetLocale() async {
     final locale = await HomeWidget.getWidgetData<String?>(localeKey);
     return locale ?? 'en';
+  }
+
+  static Future<void> updateSubscriptionStatusForWidget(
+      bool isSubscribed) async {
+    await HomeWidget.saveWidgetData<bool>(subscriptionStatusKey, isSubscribed);
+    await _updateWidget();
   }
 }
