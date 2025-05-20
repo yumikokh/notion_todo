@@ -319,7 +319,9 @@
   "free_trial_days": "First {days} days free trial",
   "@free_trial_days": {
     "placeholders": {
-      "days": {}
+      "days": {
+        "type": "int"
+      }
     }
   },
   "monthly_price": "month",
