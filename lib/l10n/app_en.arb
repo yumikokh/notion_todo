@@ -25,11 +25,11 @@
   "notion_settings_view_database_settings_change_database_settings": "Change Database Settings",
   "task_database_settings_title": "Task Database Settings",
   "database": "Database",
-  "status_property": "Status Property",
+  "status_property": "Status",
   "status_property_todo_option": "To-do Option",
   "status_property_in_progress_option": "In Progress Option",
   "status_property_complete_option": "Complete Option",
-  "date_property": "Date Property",
+  "date_property": "Date",
   "todo_option_description": "Status for not completed",
   "in_progress_option_description": "Status for in progress",
   "complete_option_description": "Status for completed",
@@ -138,6 +138,7 @@
     }
   },
   "task_delete_failed_undo": "Failed to restore \"{title}\"",
+  "loading_failed": "Failed to load",
   "@task_delete_failed_undo": {
     "placeholders": {
       "title": {
@@ -147,6 +148,7 @@
   },
   "re_set_database": "Re-setting is required.",
   "not_found_property": "No appropriate property found.",
+  "task_fetch_failed": "Failed to fetch tasks",
   "load_more": "Load More",
   "wakelock_title": "Prevent sleep while the app is running",
   "wakelock_description": "Battery consumption may be affected.",
@@ -240,6 +242,7 @@
       }
     }
   },
+  "reschedule": "Reschedule",
   "continuous_task_addition_title": "Continuous Task Addition",
   "continuous_task_addition_description": "Allow continuous task addition",
   "behavior_settings_title": "Behavior",
@@ -254,5 +257,107 @@
   "licenses_page_title": "Licenses",
   "licenses_page_no_licenses": "No license information available.",
   "sound_credit_title": "Sound Credit",
-  "sound_credit_description": "OtoLogic (CC BY 4.0)"
+  "sound_credit_description": "OtoLogic (CC BY 4.0)",
+  "priority_property": "Priority",
+  "priority_property_description": "Type: Select",
+  "title_property": "Title",
+  "task_priority_dialog_title": "Priority Property Not Set",
+  "task_priority_dialog_content": "Set up the Priority property in database settings to prioritize your tasks!",
+  "task_priority_dialog_cancel": "Cancel",
+  "task_priority_dialog_settings": "Settings",
+  "show_completed_tasks": "Show Completed Tasks",
+  "completed_tasks": "Completed",
+  "sort_by": "Sort by",
+  "sort_by_default": "Default",
+  "group_by": "Group by",
+  "group_by_none": "None",
+  "no_property": "No {property}",
+  "@no_property": {
+    "placeholders": {
+      "property": {
+        "type": "String"
+      }
+    }
+  },
+  "subscription_fetch_failed": "Failed to fetch subscription information",
+  "subscription_purchase_success": "Successfully purchased {plan} plan",
+  "@subscription_purchase_success": {
+    "placeholders": {
+      "plan": {
+        "type": "String"
+      }
+    }
+  },
+  "subscription_purchase_failed": "Purchase failed",
+  "subscription_purchase_error_general": "An error occurred during purchase.",
+  "subscription_restore_success": "Purchases restored successfully",
+  "subscription_restore_failed": "Failed to restore purchases",
+  "subscription_restore_none": "No purchases to restore",
+  "subscription_restore_error_general": "An error occurred while restoring purchases.",
+  "premium_features_title": "Premium",
+  "monthly_subscription": "Monthly",
+  "yearly_subscription": "Yearly",
+  "lifetime_subscription": "Lifetime",
+  "lifetime_purchase": "Permanent License",
+  "subscription_expires_in": "Expires in {days} days",
+  "@subscription_expires_in": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "restore_purchases": "Restore Purchases",
+  "current_plan": "{planName}",
+  "@current_plan": {
+    "placeholders": {
+      "planName": {
+        "type": "String"
+      }
+    }
+  },
+  "free_trial_days": "First {days} days free trial",
+  "@free_trial_days": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "monthly_price": "month",
+  "yearly_price": "year",
+  "upgrade_to_premium_description": "Upgrade to Premium and unlock all features!",
+  "unlock_all_widgets_title": "Unlock All Widgets",
+  "unlock_all_widgets_description": "Choose from multiple widget styles.",
+  "access_all_future_features_title": "Access to All Future Features",
+  "access_all_future_features_description": "Get new features as soon as they are added.",
+  "support_the_developer_title": "Support the Developer",
+  "support_the_developer_description": "Help support continued development.",
+  "lifetime_unlock_description": "Unlock all features with a one-time purchase.",
+  "lifetime_license_activated": "Lifetime License Activated",
+  "currently_subscribed": "Currently Subscribed",
+  "start_free_trial": "Start Free Trial",
+  "yearly_price_short": "year",
+  "trial_ends_then_price_per_year": "After {trialDays}-day free trial, then {priceString} / {yearlyPriceShort}",
+  "@trial_ends_then_price_per_year": {
+    "placeholders": {
+      "trialDays": {},
+      "priceString": {},
+      "yearlyPriceShort": {}
+    }
+  },
+  "continue_purchase": "Continue Purchase",
+  "change_plan": "Change Plan",
+  "current_plan_display": "Current Plan: {currentPlanName}",
+  "@current_plan_display": {
+    "placeholders": {
+      "currentPlanName": {}
+    }
+  },
+  "terms_of_service": "Terms of Service",
+  "privacy_policy": "Privacy Policy",
+  "purchase_terms_and_conditions_part3": ".\nSubscriptions can be canceled at any time.\nThe free trial is applicable only for the first purchase.\nWhen changing plans, the switch will occur automatically after the current plan ends.",
+  "switchToLifetimeNotificationBody": "If you are subscribed to a monthly or yearly plan, please remember to cancel its auto-renewal from your App Store / Google Play account settings.",
+  "subscription_purchase_success_title": "You got the Lifetime plan!",
+  "subscription_purchase_success_body": "You already have a lifetime plan!"
 }

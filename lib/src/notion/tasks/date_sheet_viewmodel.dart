@@ -22,7 +22,7 @@ class DateSheetViewModel extends ChangeNotifier {
       _selectedDateTime?.end?.datetime.toLocal();
 
   DateTime _focusedDay;
-  DateTime get focusedDay => _focusedDay;
+  DateTime get focusedDay => _focusedDay.toLocal();
 
   DateTime get calenderFirstDay {
     final initial = initialDateTime;
@@ -30,7 +30,9 @@ class DateSheetViewModel extends ChangeNotifier {
     if (initial == null) {
       return now;
     }
-    return initial.start.datetime.isBefore(now) ? initial.start.datetime : now;
+    return initial.start.datetime.isBefore(now)
+        ? initial.start.datetime.toLocal()
+        : now;
   }
 
   DateTime get calenderLastDay {
@@ -40,7 +42,10 @@ class DateSheetViewModel extends ChangeNotifier {
   String get selectedSegment {
     final selectedDateTime = _selectedDateTime;
     if (selectedDateTime == null) return 'no-date';
-    return selectedDateTime.start.submitFormat.split('T')[0];
+    return selectedDateTime.start.datetime
+        .toLocal()
+        .toIso8601String()
+        .split('T')[0];
   }
 
   TaskDate? get submitDateForSegment {

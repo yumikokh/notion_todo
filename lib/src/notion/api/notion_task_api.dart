@@ -1,21 +1,15 @@
 import 'dart:convert';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../common/error.dart';
 import '../../helpers/date.dart';
 import '../model/property.dart';
+import '../model/task.dart';
 import '../model/task_database.dart';
-import '../oauth/notion_oauth_viewmodel.dart';
-import '../../settings/task_database/task_database_viewmodel.dart';
+import '../common/filter_type.dart';
 
-part 'notion_task_repository.g.dart';
-
-enum FilterType { today, all }
-
-class NotionTaskRepository {
+class NotionTaskApi {
   final String accessToken;
   final TaskDatabase database;
   late final Map<String, String> headers;
@@ -24,7 +18,7 @@ class NotionTaskRepository {
   static final DateHelper d = DateHelper();
   static const _pageSize = 100; // NOTE: NotionAPIの最大許容サイズ
 
-  NotionTaskRepository(this.accessToken, this.database) {
+  NotionTaskApi(this.accessToken, this.database) {
     headers = {
       'Content-Type': 'application/json',
       'Notion-Version': '2022-06-28',
@@ -52,6 +46,7 @@ class NotionTaskRepository {
     final databaseId = db.id;
     final dateProperty = db.date;
     final statusProperty = db.status;
+    final priorityProperty = db.priority;
     final now = DateTime.now();
     final todayStart = d.startTimeOfDay(now).toUtc().toIso8601String();
     final todayEnd = d.endTimeOfDay(now).toUtc().toIso8601String();
@@ -64,27 +59,27 @@ class NotionTaskRepository {
             {
               "and": [
                 {
-                  "property": dateProperty.name,
+                  "property": dateProperty.id,
                   "date": {"on_or_after": todayStart}
                 },
                 {
-                  "property": dateProperty.name,
+                  "property": dateProperty.id,
                   "date": {"on_or_before": todayEnd}
                 },
-                ...getCompleteStatusFilter(statusProperty, onlyComplete: true),
+                ..._getCompleteStatusFilter(statusProperty, onlyComplete: true),
               ],
             },
             {
               "and": [
                 {
-                  "property": dateProperty.name,
+                  "property": dateProperty.id,
                   "date": {"on_or_after": todayStart}
                 },
                 {
-                  "property": dateProperty.name,
+                  "property": dateProperty.id,
                   "date": {"on_or_before": todayEnd}
                 },
-                ...getNotCompleteStatusFilter(statusProperty,
+                ..._getNotCompleteStatusFilter(statusProperty,
                     onlyNotComplete: true),
               ],
             }
@@ -93,14 +88,14 @@ class NotionTaskRepository {
             {
               "and": [
                 {
-                  "property": dateProperty.name,
+                  "property": dateProperty.id,
                   "date": {"on_or_after": todayStart}
                 },
                 {
-                  "property": dateProperty.name,
+                  "property": dateProperty.id,
                   "date": {"on_or_before": todayEnd}
                 },
-                ...getNotCompleteStatusFilter(statusProperty,
+                ..._getNotCompleteStatusFilter(statusProperty,
                     onlyNotComplete: true),
               ],
             },
@@ -108,20 +103,20 @@ class NotionTaskRepository {
           {
             "and": [
               {
-                "property": dateProperty.name,
+                "property": dateProperty.id,
                 "date": {"before": todayStart}
               },
-              ...getNotCompleteStatusFilter(statusProperty,
+              ..._getNotCompleteStatusFilter(statusProperty,
                   onlyNotComplete: true)
             ]
           },
           // 進行中のタスク
-          ...getInProgressStatusFilter(db)
+          ..._getInProgressStatusFilter(db)
         ]
       };
     } else if (filterType == FilterType.all && !hasCompleted) {
       filter = {
-        "and": [...getNotCompleteStatusFilter(statusProperty)]
+        "and": [..._getNotCompleteStatusFilter(statusProperty)]
       };
     } else {
       filter = null;
@@ -134,6 +129,8 @@ class NotionTaskRepository {
         if (filter != null) "filter": filter,
         "sorts": [
           {"property": dateProperty.name, "direction": "ascending"},
+          if (priorityProperty != null)
+            {"property": priorityProperty.name, "direction": "ascending"},
           {"timestamp": "created_time", "direction": "ascending"}
         ],
         if (startCursor != null) "start_cursor": startCursor,
@@ -141,8 +138,8 @@ class NotionTaskRepository {
       }),
     );
     final data = jsonDecode(res.body);
-    if (data['object'] == 'error') {
-      throw TaskException(data['message'], data['status']);
+    if (NotionErrorException.isErrorResponse(data)) {
+      throw NotionErrorException.fromJson(data);
     }
     return {
       'results': data['results'],
@@ -151,32 +148,31 @@ class NotionTaskRepository {
     };
   }
 
-  Future addTask(String title, String? startDate, String? endDate) async {
+  Future addTask(Task task) async {
     final db = database;
-    final status = db.status;
-    final statusReady = switch (status) {
-      StatusCompleteStatusProperty() => {
-          "status": {"name": status.todoOption?.name}
-        },
-      CheckboxCompleteStatusProperty() => {"checkbox": false},
-    };
+    if (db.id.isEmpty) return;
 
-    if (db.id.isEmpty) {
-      return;
-    }
+    final status = db.status;
+    final startDate = task.dueDate?.start.submitFormat;
+    final endDate = task.dueDate?.end?.submitFormat;
+
     final properties = {
-      db.title.name: {
+      db.title.id: {
         "title": [
           {
             "type": "text",
-            "text": {"content": title}
+            "text": {"content": task.title}
           }
         ]
       },
-      db.status.name: statusReady,
+      db.status.id: CompleteStatusProperty.initialJson(status),
       if (startDate != null)
-        db.date.name: {
+        db.date.id: {
           "date": {"start": startDate, if (endDate != null) "end": endDate}
+        },
+      if (db.priority != null && task.priority != null)
+        db.priority!.id: {
+          "select": {"name": task.priority!.name}
         }
     };
 
@@ -189,43 +185,45 @@ class NotionTaskRepository {
       }),
     );
     final data = jsonDecode(res.body);
-    if (data['object'] == 'error') {
-      throw Exception(data['message']);
+    if (NotionErrorException.isErrorResponse(data)) {
+      throw NotionErrorException.fromJson(data);
     }
     return data;
   }
 
-  Future updateTask(
-      String taskId, String title, String? startDate, String? endDate) async {
+  Future updateTask(Task task) async {
     final db = database;
-    if (db.id.isEmpty) {
-      return;
-    }
+    if (db.id.isEmpty) return;
+
+    final startDate = task.dueDate?.start.submitFormat;
+    final endDate = task.dueDate?.end?.submitFormat;
+
     final properties = {
-      db.title.name: {
-        "id": db.title.id,
+      db.title.id: {
         "title": [
           {
             "type": "text",
-            "text": {"content": title}
+            "text": {"content": task.title}
           }
         ]
       },
-      db.date.name: {
-        "id": db.date.id,
+      db.date.id: {
         "date": startDate != null
             ? {
                 "start": startDate,
                 if (endDate != null) "end": endDate,
                 // timezoneは時間指定しないとエラーになる see: https://developers.notion.com/changelog/time-zone-support
-                // REVIEW: 時間指定がないときのtimezoneがあっているか？
-                // if (dueDate.contains('T')) "time_zone": "Asia/Tokyo",
               }
             : null
-      }
+      },
+      if (db.priority != null)
+        db.priority!.id: {
+          "select":
+              task.priority?.name != null ? {"name": task.priority!.name} : null
+        }
     };
     final res = await http.patch(
-      Uri.parse('https://api.notion.com/v1/pages/$taskId'),
+      Uri.parse('https://api.notion.com/v1/pages/${task.id}'),
       headers: headers,
       body: jsonEncode({"properties": properties}),
     );
@@ -241,23 +239,24 @@ class NotionTaskRepository {
     final status = db.status;
     final statusProperties = switch ((status, isCompleted)) {
       (
-        StatusCompleteStatusProperty(completeOption: var completeOption),
+        StatusCompleteStatusProperty(completeOption: var completeOption?),
         true
       ) =>
         {
-          "status": {"name": completeOption?.name ?? 'Done'}
+          "status": {"id": completeOption.id}
         },
-      (StatusCompleteStatusProperty(todoOption: var todoOption), false) => {
-          "status": {"name": todoOption?.name ?? 'To-do'}
+      (StatusCompleteStatusProperty(todoOption: var todoOption?), false) => {
+          "status": {"id": todoOption.id}
         },
       (CheckboxCompleteStatusProperty(), _) => {"checkbox": isCompleted},
+      (_, _) => throw Exception('Invalid status property'),
     };
 
     final res = await http.patch(
       Uri.parse('https://api.notion.com/v1/pages/$taskId'),
       headers: headers,
       body: jsonEncode({
-        "properties": {status.name: statusProperties},
+        "properties": {status.id: statusProperties},
       }),
     );
     return jsonDecode(res.body);
@@ -273,24 +272,25 @@ class NotionTaskRepository {
 
     final statusProperties = switch ((status, isInProgress)) {
       (
-        StatusCompleteStatusProperty(inProgressOption: var inProgressOption),
+        StatusCompleteStatusProperty(inProgressOption: var inProgressOption?),
         true
       ) =>
         {
-          "status": {"name": inProgressOption?.name ?? 'In Progress'}
+          "status": {"id": inProgressOption.id}
         },
-      (StatusCompleteStatusProperty(todoOption: var todoOption), false) => {
-          "status": {"name": todoOption?.name ?? 'To-do'}
+      (StatusCompleteStatusProperty(todoOption: var todoOption?), false) => {
+          "status": {"id": todoOption.id}
         },
       // checkboxは更新しない
       (CheckboxCompleteStatusProperty(), _) => {"checkbox": false},
+      (_, _) => throw Exception('Invalid status property'),
     };
 
     final res = await http.patch(
       Uri.parse('https://api.notion.com/v1/pages/$taskId'),
       headers: headers,
       body: jsonEncode({
-        "properties": {status.name: statusProperties},
+        "properties": {status.id: statusProperties},
       }),
     );
     return jsonDecode(res.body);
@@ -317,17 +317,17 @@ class NotionTaskRepository {
   }
 }
 
-List<dynamic> getCompleteStatusFilter(CompleteStatusProperty property,
+List<dynamic> _getCompleteStatusFilter(CompleteStatusProperty property,
     {bool onlyComplete = false}) {
   switch ((property, onlyComplete)) {
     case (
-        StatusCompleteStatusProperty(completeOption: var completeOption),
+        StatusCompleteStatusProperty(completeOption: var completeOption?),
         true
       ):
       return [
         {
-          "property": property.name,
-          "status": {"equals": completeOption?.name}
+          "property": property.id,
+          "status": {"equals": completeOption.name}
         }
       ];
     case (StatusCompleteStatusProperty(status: var status), false):
@@ -345,29 +345,31 @@ List<dynamic> getCompleteStatusFilter(CompleteStatusProperty property,
           throw Exception('Complete option name not found');
         }
         return {
-          "property": property.name,
+          "property": property.id,
           "status": {"equals": completeOptionName}
         };
       }).toList();
     case (CheckboxCompleteStatusProperty(), _):
       return [
         {
-          "property": property.name,
+          "property": property.id,
           "checkbox": {"equals": true}
         }
       ];
+    case (StatusCompleteStatusProperty(completeOption: null), true):
+      return [];
   }
 }
 
-List<dynamic> getNotCompleteStatusFilter(CompleteStatusProperty property,
+List<dynamic> _getNotCompleteStatusFilter(CompleteStatusProperty property,
     {bool onlyNotComplete = false}) {
   switch ((property, onlyNotComplete)) {
-    case (StatusCompleteStatusProperty(todoOption: var todoOption), true):
+    case (StatusCompleteStatusProperty(todoOption: var todoOption?), true):
       // 未完了に指定されたオプションステータスのみ
       return [
         {
-          "property": property.name,
-          "status": {"equals": todoOption?.name}
+          "property": property.id,
+          "status": {"equals": todoOption.name}
         }
       ];
     case (StatusCompleteStatusProperty(status: var status), false):
@@ -385,24 +387,26 @@ List<dynamic> getNotCompleteStatusFilter(CompleteStatusProperty property,
           throw Exception('Complete option name not found');
         }
         return {
-          "property": property.name,
+          "property": property.id,
           "status": {"does_not_equal": completeOptionName}
         };
       }).toList();
     case (CheckboxCompleteStatusProperty(), _):
       return [
         {
-          "property": property.name,
+          "property": property.id,
           "checkbox": {"equals": false}
         }
       ];
+    case (StatusCompleteStatusProperty(todoOption: null), true):
+      return [];
   }
 }
 
-List<dynamic> getInProgressStatusFilter(TaskDatabase database) {
+List<dynamic> _getInProgressStatusFilter(TaskDatabase database) {
   switch (database.status) {
     case StatusCompleteStatusProperty(
-        name: var name,
+        id: var id,
         inProgressOption: var inProgressOption
       ):
       if (inProgressOption == null) {
@@ -410,22 +414,11 @@ List<dynamic> getInProgressStatusFilter(TaskDatabase database) {
       }
       return [
         {
-          "property": name,
+          "property": id,
           "status": {"equals": inProgressOption.name}
         }
       ];
     case CheckboxCompleteStatusProperty():
       return [];
   }
-}
-
-@riverpod
-NotionTaskRepository? notionTaskRepository(Ref ref) {
-  final accessToken =
-      ref.watch(notionOAuthViewModelProvider).valueOrNull?.accessToken;
-  final taskDatabase = ref.watch(taskDatabaseViewModelProvider).valueOrNull;
-  if (accessToken == null || taskDatabase == null) {
-    return null;
-  }
-  return NotionTaskRepository(accessToken, taskDatabase);
 }

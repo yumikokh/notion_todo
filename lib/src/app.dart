@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'common/snackbar/view/snackbar_listener.dart';
 import 'helpers/date.dart';
+import 'common/app_lifecycle_observer.dart';
 import 'common/app_version/view/app_version_notifier.dart';
+import 'notion/common/filter_type.dart';
 import 'settings/task_database/view/task_database_setting_page.dart';
 import 'notion/tasks/view/task_main_page.dart';
 import 'settings/view/appearance_settings_page.dart';
@@ -18,23 +21,64 @@ import 'settings/view/settings_page.dart';
 import 'settings/theme/theme.dart';
 import 'settings/theme/util.dart';
 import 'settings/view/theme_settings_page.dart';
+import 'subscription/subscription_viewmodel.dart';
+import 'widget/widget_service.dart';
+import 'notion/tasks/task_viewmodel.dart';
 
 /// The Widget that configures your application.
-class MyApp extends ConsumerWidget {
-  const MyApp({
-    super.key,
-  });
+class MyApp extends HookConsumerWidget {
+  const MyApp({Key? key}) : super(key: key);
+
+  static bool _isInitialized = false;
+  static GlobalKey<NavigatorState> globalNavigatorKey =
+      GlobalKey<NavigatorState>();
+  static GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
+      GlobalKey<ScaffoldMessengerState>();
+
+  void _initializeApp(BuildContext context, WidgetRef ref) {
+    if (_isInitialized) return;
+
+    // アプリ起動時にアップデートチェックを実行
+    AppVersionNotifier.checkAndShow(context, ref);
+
+    // ウィジェットからの起動処理
+    WidgetService.registerInitialLaunchFromWidget(globalNavigatorKey, ref);
+    WidgetService.startListeningWidgetClicks(globalNavigatorKey, ref);
+
+    _isInitialized = true;
+  }
 
   @override
   Widget build(BuildContext context, ref) {
     final settings = ref.watch(settingsViewModelProvider);
     final settingsViewModel = ref.read(settingsViewModelProvider.notifier);
-    final scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
+
+    // サブスクリプションの状態を監視
+    ref.watch(subscriptionViewModelProvider);
 
     final TextTheme textTheme = createTextTheme(context, "Roboto", "Roboto");
     final MaterialTheme theme = MaterialTheme(textTheme);
 
     DateHelper().setup(settings.locale.languageCode);
+
+    // アプリのライフサイクル管理
+    useEffect(() {
+      // アプリ復帰時にウィジェットの変更を適用
+      Future<void> applyWidgetChanges() async {
+        final lastUpdated = await WidgetService.getLastUpdatedTask();
+        if (lastUpdated == null) return;
+        // 今日のタスクとすべてのタスク両方に適用
+        ref.invalidate(taskViewModelProvider(filterType: FilterType.today));
+        ref.invalidate(taskViewModelProvider(filterType: FilterType.all));
+        await WidgetService.clearLastUpdatedTask();
+      }
+
+      applyWidgetChanges();
+
+      final observer = AppLifecycleObserver(applyWidgetChanges);
+      WidgetsBinding.instance.addObserver(observer);
+      return () => WidgetsBinding.instance.removeObserver(observer);
+    }, []);
 
     return AnimatedBuilder(
       animation: settingsViewModel,
@@ -64,6 +108,17 @@ class MyApp extends ConsumerWidget {
           darkTheme: theme.dark(),
           themeMode: settings.themeMode,
 
+          navigatorKey: globalNavigatorKey,
+
+          builder: (context, child) {
+            if (!_isInitialized) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                _initializeApp(context, ref);
+              });
+            }
+            return child ?? const SizedBox.shrink();
+          },
+
           // Define a function to handle named routes in order to support
           // Flutter web url navigation and deep linking.
           onGenerateRoute: (RouteSettings routeSettings) {
@@ -90,23 +145,16 @@ class MyApp extends ConsumerWidget {
                   case LicensesPage.routeName:
                     return const LicensesPage();
                   case TaskMainPage.routeName:
-                    return const TaskMainPage();
-
+                    final arguments =
+                        routeSettings.arguments as Map<String, dynamic>?;
+                    final tab = arguments?['tab'] as String?;
+                    return TaskMainPage(initialTab: tab);
                   default:
-                    return const TaskMainPage();
+                    return const TaskMainPage(initialTab: 'today');
                 }
               },
             );
           },
-          home: Builder(
-            builder: (context) {
-              // アプリ起動時にアップデートチェックを実行
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                AppVersionNotifier.checkAndShow(context, ref);
-              });
-              return const TaskMainPage();
-            },
-          ),
         ),
       ),
     );

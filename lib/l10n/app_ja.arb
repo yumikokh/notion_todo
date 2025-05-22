@@ -25,16 +25,16 @@
   "notion_settings_view_database_settings_change_database_settings": "データベース設定を変更",
   "task_database_settings_title": "タスクデータベース設定",
   "database": "データベース",
-  "status_property": "ステータスプロパティ",
+  "status_property": "ステータス",
   "status_property_todo_option": "未完了オプション",
   "status_property_in_progress_option": "進行中オプション",
   "status_property_complete_option": "完了オプション",
-  "date_property": "日付プロパティ",
+  "date_property": "日付",
   "todo_option_description": "未完了として指定するステータス",
   "in_progress_option_description": "進行中として指定するステータス",
   "complete_option_description": "完了として指定するステータス",
-  "status_property_description": "種類: Status, Checkbox",
-  "date_property_description": "種類: Date",
+  "status_property_description": "種類: ステータス,チェックボックス",
+  "date_property_description": "種類: 日付",
   "save": "保存",
   "not_found_database": "アクセス可能なデータベースが見つかりませんでした。",
   "not_found_database_description": "設定をやり直してください。",
@@ -77,8 +77,10 @@
   "task_delete_undo": "「{title}」を復元しました",
   "task_delete_failed": "「{title}」の削除に失敗しました",
   "task_delete_failed_undo": "復元に失敗しました",
+  "loading_failed": "読み込みに失敗しました",
   "re_set_database": "再設定が必要です。",
   "not_found_property": "適切なプロパティが見つかりませんでした。",
+  "task_fetch_failed": "タスクの取得に失敗しました",
   "load_more": "もっと見る",
   "wakelock_title": "アプリ起動中のスリープを防ぐ",
   "wakelock_description": "バッテリーに影響を与える可能性があります。",
@@ -164,11 +166,107 @@
       }
     }
   },
+  "reschedule": "リスケジュール",
   "morning_message": "新しい一日の始まりです。\n何から始めますか？",
   "afternoon_message": "こんにちは！\n何から始めますか？",
   "evening_message": "こんばんは。\n今日中に取り組みたいことはありますか？",
   "licenses_page_title": "ライセンス",
   "licenses_page_no_licenses": "ライセンス情報がありません。",
   "sound_credit_title": "サウンド提供",
-  "sound_credit_description": "OtoLogic (CC BY 4.0)"
+  "sound_credit_description": "OtoLogic (CC BY 4.0)",
+  "priority_property": "優先度",
+  "priority_property_description": "種類: セレクト",
+  "title_property": "タイトル",
+  "task_priority_dialog_title": "優先度プロパティが未設定です",
+  "task_priority_dialog_content": "タスクの優先度を設定するには、データベース設定で優先度プロパティを設定してください。",
+  "task_priority_dialog_cancel": "キャンセル",
+  "task_priority_dialog_settings": "設定",
+  "show_completed_tasks": "完了したタスクを表示",
+  "completed_tasks": "完了済",
+  "sort_by": "並び替え",
+  "sort_by_default": "デフォルト",
+  "group_by": "グループ",
+  "group_by_none": "なし",
+  "no_property": "{property}なし",
+  "@no_property": {
+    "placeholders": {
+      "property": {
+        "type": "String"
+      }
+    }
+  },
+  "subscription_fetch_failed": "サブスクリプション情報の取得に失敗しました",
+  "subscription_purchase_success": "{plan}プランを購入しました",
+  "subscription_purchase_failed": "購入に失敗しました",
+  "subscription_purchase_error_general": "購入処理中にエラーが発生しました。",
+  "subscription_restore_success": "購入情報を復元しました",
+  "subscription_restore_failed": "購入情報の復元に失敗しました",
+  "subscription_restore_none": "復元可能な購入がありません",
+  "subscription_restore_error_general": "購入情報の復元中にエラーが発生しました。",
+  "premium_features_title": "Premium",
+  "monthly_subscription": "月額",
+  "yearly_subscription": "年額",
+  "lifetime_subscription": "買い切り",
+  "lifetime_purchase": "永久ライセンス",
+  "subscription_expires_in": "{days, plural, =1{残り1日} other{残り{days}日}}",
+  "@subscription_expires_in": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "restore_purchases": "購入を復元",
+  "current_plan": "{planName}",
+  "@current_plan": {
+    "placeholders": {
+      "planName": {
+        "type": "String"
+      }
+    }
+  },
+  "free_trial_days": "まずは{days}日間無料で体験",
+  "@free_trial_days": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "monthly_price": "月",
+  "yearly_price": "年",
+  "upgrade_to_premium_description": "プレミアムプランへアップグレードして、すべての機能を開放しましょう！",
+  "unlock_all_widgets_title": "すべてのウィジェットを開放",
+  "unlock_all_widgets_description": "複数のウィジェットスタイルから選べます",
+  "access_all_future_features_title": "今後追加される全機能へのアクセス",
+  "access_all_future_features_description": "新機能が追加されたらすぐに使えます",
+  "support_the_developer_title": "デベロッパーを応援",
+  "support_the_developer_description": "継続的な開発を支援できます",
+  "lifetime_unlock_description": "1回の購入で全ての機能をアンロック",
+  "lifetime_license_activated": "永久ライセンス取得済み",
+  "currently_subscribed": "購読中",
+  "start_free_trial": "無料トライアルを開始",
+  "yearly_price_short": "年",
+  "trial_ends_then_price_per_year": "{trialDays}日間の無料体験の終了後は {priceString} / {yearlyPriceShort}",
+  "@trial_ends_then_price_per_year": {
+    "placeholders": {
+      "trialDays": {},
+      "priceString": {},
+      "yearlyPriceShort": {}
+    }
+  },
+  "continue_purchase": "購入を続ける",
+  "change_plan": "プランを変更",
+  "current_plan_display": "現在のプラン: {currentPlanName}",
+  "@current_plan_display": {
+    "placeholders": {
+      "currentPlanName": {}
+    }
+  },
+  "terms_of_service": "利用規約",
+  "privacy_policy": "プライバシーポリシー",
+  "purchase_terms_and_conditions_part3": "定期購入はいつでもキャンセルできます。\n無料トライアルが適用されるのは、初回購入時のみです。\n定期購入プラン変更時は現在のプラン終了後に自動的に切り替わります。",
+  "switchToLifetimeNotificationBody": "定期購入プランを購入済みの場合は、お手数ですがApp Store / Google Playのアカウント設定から自動更新停止をお願いいたします。",
+  "subscription_purchase_success_title": "永久ライセンスを取得しました！",
+  "subscription_purchase_success_body": "既に買い切りプランを購入済みです"
 }

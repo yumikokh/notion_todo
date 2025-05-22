@@ -25,26 +25,34 @@ class DateChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
+    final avatarColor = TaskDate.getColor(context, date);
+
     return InputChip(
       label: date == null
-          ? Text(l.select_date)
+          ? Text(l.select_date,
+              style: const TextStyle(
+                fontSize: 14,
+              ))
           : DateLabel(
               date: date,
               context: context,
               showColor: false,
               showToday: true,
-              showIcon: false),
+              showIcon: false,
+              size: 14),
+      labelPadding: const EdgeInsets.symmetric(horizontal: 6),
       selected: selected,
       onDeleted: selected ? onDeleted : null,
       onSelected: onSelected,
-      deleteIcon: const Icon(Icons.clear),
+      deleteIcon:
+          Icon(Icons.clear, size: 14, color: Theme.of(context).disabledColor),
       showCheckmark: false,
-      labelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-      avatar: const Icon(Icons.event_rounded, size: 14),
+      avatar: Icon(Icons.event_rounded, size: 18, color: avatarColor),
       visualDensity: VisualDensity.compact,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(6),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+      side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
+      backgroundColor: Theme.of(context).cardColor,
+      selectedColor: Theme.of(context).cardColor,
     );
   }
 }

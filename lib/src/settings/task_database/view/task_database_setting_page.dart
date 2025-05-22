@@ -4,7 +4,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../helpers/haptic_helper.dart';
 import '../../../notion/model/property.dart';
 import '../../../notion/oauth/notion_oauth_viewmodel.dart';
-import '../../../notion/repository/notion_database_repository.dart';
+import '../../../notion/api/notion_database_api.dart';
 import '../../../notion/tasks/view/task_main_page.dart';
 import '../selected_database_viewmodel.dart';
 import '../task_database_viewmodel.dart';
@@ -93,7 +93,8 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                                 context: context,
                               ),
                               loading: () => const CircularProgressIndicator(),
-                              error: (error, stack) => Text(error.toString()),
+                              error: (error, stack) =>
+                                  Center(child: Text(l.loading_failed)),
                             ),
                         const SizedBox(height: 24),
 
@@ -179,7 +180,48 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                                 context: context,
                               ),
                               loading: () => const CircularProgressIndicator(),
-                              error: (error, stack) => Text(error.toString()),
+                              error: (error, stack) =>
+                                  Center(child: Text(l.loading_failed)),
+                            ),
+                        const SizedBox(height: 32),
+
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            // 優先度プロパティセクション
+                            _buildSectionTitle(context, l.priority_property,
+                                tooltip: l.priority_property_description,
+                                isRequired: false),
+                            PropertyCreateButton(
+                              type: CreatePropertyType.select,
+                              selectedDatabaseViewModel:
+                                  selectedDatabaseViewModel,
+                              onDatabaseRefreshed: () async {
+                                await ref
+                                    .read(accessibleDatabasesProvider.future);
+                              },
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        ref
+                            .watch(propertiesProvider(
+                                SettingPropertyType.priority))
+                            .when(
+                              data: (properties) => _buildDropdown(
+                                value: selectedDatabase.priority?.id,
+                                items: properties
+                                    .map((prop) => DropdownMenuItem(
+                                        value: prop.id, child: Text(prop.name)))
+                                    .toList(),
+                                onChanged: (value) =>
+                                    selectedDatabaseViewModel.selectProperty(
+                                        value, SettingPropertyType.priority),
+                                context: context,
+                              ),
+                              loading: () => const CircularProgressIndicator(),
+                              error: (error, stack) =>
+                                  Center(child: Text(l.loading_failed)),
                             ),
                         const SizedBox(height: 32),
                       ],
@@ -229,7 +271,7 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                 ),
               ),
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(child: Text(error.toString())),
+        error: (error, stack) => Center(child: Text(l.loading_failed)),
       ),
     );
   }

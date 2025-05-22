@@ -1,20 +1,25 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
-import 'package:background_fetch/background_fetch.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 
+import 'src/common/background/background_fetch_service.dart';
 import 'src/app.dart';
 import 'src/env/env.dart';
-import 'src/notion/repository/notion_task_repository.dart';
-import 'src/notion/tasks/task_viewmodel.dart';
+import 'src/widget/widget_service.dart';
 import 'firebase_options.dart';
+
+// バックグラウンドコールバック関数（iOS 17のインタラクティブウィジェット用）
+@pragma('vm:entry-point')
+Future<void> interactivityCallback(Uri? uri) async {
+  await WidgetService.interactivityCallback(uri);
+}
 
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -29,11 +34,15 @@ void main() async {
   await FirebaseAnalytics.instance
       .setAnalyticsCollectionEnabled(trackingEnabled);
 
+  // ウィジェットの初期化
+  await WidgetService.initialize(interactivityCallback);
+
+  // BackgroundFetchの初期化
+  await BackgroundFetchService.initialize();
+
   final app = ProviderScope(
     observers: trackingEnabled ? [SentryProviderObserver()] : [],
-    child: const BackgroundFetchInitializer(
-      child: MyApp(),
-    ),
+    child: const MyApp(),
   );
 
   if (trackingEnabled) {
@@ -93,33 +102,5 @@ class SentryProviderObserver extends ProviderObserver {
     }
 
     return false;
-  }
-}
-
-class BackgroundFetchInitializer extends HookConsumerWidget {
-  final Widget child;
-  const BackgroundFetchInitializer({super.key, required this.child});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    useEffect(() {
-      BackgroundFetch.configure(
-        BackgroundFetchConfig(minimumFetchInterval: 15),
-        (String taskId) async {
-          print("[BackgroundFetch] Event received $taskId");
-          // fetchとバッジ更新
-          await ref
-              .read(taskViewModelProvider(filterType: FilterType.today).future);
-          BackgroundFetch.finish(taskId);
-        },
-        (String taskId) {
-          print("[BackgroundFetch] TASK TIMEOUT taskId: $taskId");
-          BackgroundFetch.finish(taskId);
-        },
-      );
-      return null;
-    }, []);
-
-    return child;
   }
 }

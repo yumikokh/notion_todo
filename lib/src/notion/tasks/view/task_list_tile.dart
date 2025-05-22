@@ -6,9 +6,9 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../helpers/haptic_helper.dart';
 import '../../../common/sound/sound_viewmodel.dart';
 import '../../../settings/task_database/task_database_viewmodel.dart';
+import '../../common/filter_type.dart';
 import '../../model/property.dart';
 import '../../model/task.dart';
-import '../../repository/notion_task_repository.dart';
 import '../task_viewmodel.dart';
 import 'date_label.dart';
 import 'task_sheet/task_sheet.dart';
@@ -28,7 +28,14 @@ class TaskListTile extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final checked = useState(task.isCompleted);
 
+    final fillColor = switch (checked.value) {
+      true => (task.priority?.mColor ?? Theme.of(context).colorScheme.onSurface)
+          .withAlpha(120),
+      false => task.priority?.mColor.withAlpha(60)
+    };
+
     return ListTile(
+      visualDensity: VisualDensity.comfortable,
       enabled: !task.isTemp,
       onLongPress: () async {
         // TODO: メニューを表示
@@ -51,16 +58,9 @@ class TaskListTile extends HookConsumerWidget {
           isScrollControlled: true,
           builder: (context) {
             return TaskSheet(
-              initialDueDate: task.dueDate,
-              initialTitle: task.title,
-              onSubmitted: (title, dueDate, {bool? needSnackbarFloating}) {
-                final due = dueDate == null
-                    ? null
-                    : TaskDate(start: dueDate.start, end: dueDate.end);
-                taskViewModel.updateTask(task.copyWith(
-                  title: title,
-                  dueDate: due,
-                ));
+              initialTask: task,
+              onSubmitted: (task, {bool? needSnackbarFloating}) {
+                taskViewModel.updateTask(task);
               },
               onDeleted: () {
                 taskViewModel.deleteTask(task);
@@ -71,9 +71,12 @@ class TaskListTile extends HookConsumerWidget {
       },
       leading: Checkbox(
         value: checked.value,
-        activeColor: Theme.of(context).colorScheme.onSurface,
-        side:
-            BorderSide(width: 1, color: Theme.of(context).colorScheme.outline),
+        fillColor: WidgetStateProperty.all(fillColor),
+        activeColor: task.priority?.mColor,
+        side: BorderSide(
+            width: 1.2,
+            color:
+                task.priority?.mColor ?? Theme.of(context).colorScheme.outline),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(0),
         ),
@@ -86,8 +89,12 @@ class TaskListTile extends HookConsumerWidget {
             final soundSettings = ref.read(soundViewModelProvider);
             await soundSettings.playSound();
           }
-          checked.value = willComplete;
-          await taskViewModel.updateCompleteStatus(task, willComplete);
+          try {
+            checked.value = willComplete;
+            await taskViewModel.updateCompleteStatus(task, willComplete);
+          } catch (e) {
+            checked.value = !willComplete;
+          }
         },
       ),
       trailing: taskViewModel.showStarButton(task)
@@ -122,13 +129,19 @@ class TaskListTile extends HookConsumerWidget {
               width: double.infinity,
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.only(top: 2),
-                child: DateLabel(
-                  date: task.dueDate,
-                  showToday: taskViewModel.filterType != FilterType.today,
-                  context: context,
-                  showColor: !task.isCompleted,
-                  showIcon: true,
+                padding: const EdgeInsets.only(top: 4),
+                child: Row(
+                  spacing: 6,
+                  children: [
+                    if (taskViewModel.showDueDate(task))
+                      DateLabel(
+                        date: task.dueDate,
+                        showToday: taskViewModel.filterType != FilterType.today,
+                        context: context,
+                        showColor: !task.isCompleted,
+                        showIcon: true,
+                      ),
+                  ],
                 ),
               ),
             )

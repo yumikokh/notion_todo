@@ -12,21 +12,22 @@ class AnalyticsService {
   AnalyticsService(this._analytics);
 
   // タスク関連のイベント
-  Future<void> logTask(String eventName,
-      {bool? hasDueDate,
-      bool? isCompleted,
+  Future<void> logTask(String action,
+      {bool? isCompleted,
+      bool? hasDueDate,
       int? pageSize,
       bool? fromUndo}) async {
-    final params = {
-      if (hasDueDate != null) 'has_due_date': hasDueDate ? 'true' : 'false',
-      if (isCompleted != null) 'is_completed': isCompleted ? 'true' : 'false',
+    await _logEvent(action, parameters: {
+      if (isCompleted != null) 'is_completed': isCompleted,
+      if (hasDueDate != null) 'has_due_date': hasDueDate,
       if (pageSize != null) 'page_size': pageSize,
-      if (fromUndo != null) 'is_undo': fromUndo ? 'true' : 'false',
-    };
-    await _analytics.logEvent(
-      name: eventName,
-      parameters: params,
-    );
+      if (fromUndo != null) 'from_undo': fromUndo,
+    });
+  }
+
+  Future<void> logSubscription(String action,
+      {Map<String, dynamic>? parameters}) async {
+    await _logEvent(action, parameters: parameters);
   }
 
   // 画面遷移のイベント
@@ -108,6 +109,14 @@ class AnalyticsService {
     await _analytics.logEvent(
       name: 'notion_auth',
       parameters: {'action': action},
+    );
+  }
+
+  Future<void> _logEvent(String name,
+      {Map<String, dynamic>? parameters}) async {
+    await _analytics.logEvent(
+      name: name,
+      parameters: parameters,
     );
   }
 }

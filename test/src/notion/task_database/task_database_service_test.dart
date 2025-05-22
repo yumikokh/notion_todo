@@ -1,17 +1,17 @@
 import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tanzaku_todo/src/settings/task_database/task_database_service.dart';
+import 'package:tanzaku_todo/src/notion/tasks/task_database_repository.dart';
 import 'package:tanzaku_todo/src/notion/model/task_database.dart';
 import 'package:tanzaku_todo/src/notion/model/property.dart';
 
 void main() {
-  late TaskDatabaseService service;
+  late TaskDatabaseRepository service;
 
   setUp(() {
     // ignore: invalid_use_of_visible_for_testing_member
     SharedPreferences.setMockInitialValues({});
-    service = TaskDatabaseService(notionDatabaseRepository: null);
+    service = TaskDatabaseRepository(notionDatabaseApi: null);
   });
 
   group('TaskDatabaseService', () {
@@ -32,7 +32,7 @@ void main() {
         status: CheckboxCompleteStatusProperty(
           id: 'status-id',
           name: 'Status',
-          checked: false,
+          checkbox: false,
         ),
         date: DateProperty(
           id: 'date-id',
@@ -72,7 +72,7 @@ void main() {
         status: CheckboxCompleteStatusProperty(
           id: 'status-id',
           name: 'Status',
-          checked: false,
+          checkbox: false,
         ),
         date: DateProperty(
           id: 'date-id',
@@ -87,12 +87,10 @@ void main() {
       expect(result, isNull);
     });
 
-    test('不正なJSONデータが保存されている場合はnullを返す', () async {
+    test('不正なJSONデータが保存されている場合はエラーをスローされる', () async {
       final pref = await SharedPreferences.getInstance();
       await pref.setString('taskDatabase', '{"invalid": "json"}');
-
-      final result = await service.loadSetting();
-      expect(result, isNull);
+      expect(service.loadSetting(), throwsA(anything));
     });
   });
 }

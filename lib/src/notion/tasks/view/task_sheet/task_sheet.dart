@@ -4,34 +4,36 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../model/task.dart';
+import '../../../model/property.dart';
 import '../../../../helpers/haptic_helper.dart';
+import '../../../../settings/task_database/task_database_viewmodel.dart';
 import 'date_chip.dart';
+import 'priority_chip.dart';
 import 'task_date_sheet.dart';
+import 'task_priority_sheet.dart';
 import '../../../../settings/settings_viewmodel.dart';
 
 class TaskSheet extends HookConsumerWidget {
-  final TaskDate? initialDueDate;
-  final String? initialTitle;
-  final Function(String title, TaskDate? dueDate, {bool? needSnackbarFloating})
-      onSubmitted;
+  final Task initialTask;
+  final Function(Task task, {bool? needSnackbarFloating}) onSubmitted;
   final Function()? onDeleted;
 
   const TaskSheet({
     Key? key,
-    required this.initialDueDate,
-    required this.initialTitle,
+    required this.initialTask,
     required this.onSubmitted,
     this.onDeleted,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final titleController = useTextEditingController(text: initialTitle);
+    final titleController = useTextEditingController(text: initialTask.title);
     final focusNode = useFocusNode();
-    final selectedDueDate = useState<TaskDate?>(initialDueDate);
-    final isValidTitle = useState<bool>(initialTitle?.isNotEmpty ?? false);
+    final selectedDueDate = useState<TaskDate?>(initialTask.dueDate);
+    final selectedPriority = useState<SelectOption?>(initialTask.priority);
+    final isValidTitle = useState<bool>(initialTask.title.isNotEmpty);
     final l = AppLocalizations.of(context)!;
-    final isNewTask = initialTitle == null;
+    final isNewTask = initialTask.isTemp;
     final continuousTaskAddition =
         ref.watch(settingsViewModelProvider).continuousTaskAddition;
 
@@ -46,23 +48,32 @@ class TaskSheet extends HookConsumerWidget {
 
     final changeSelectedDueDate = useCallback(
       (TaskDate? newDueDate) {
-        if (newDueDate == null) {
-          selectedDueDate.value = null;
-          return;
-        }
         selectedDueDate.value = newDueDate;
       },
       [selectedDueDate],
     );
 
+    final changeSelectedPriority = useCallback(
+      (SelectOption? newPriority) {
+        selectedPriority.value = newPriority;
+      },
+      [selectedPriority],
+    );
+
     final submitHandler = useCallback(() {
       final willClose = !isNewTask || !continuousTaskAddition;
-      final value = titleController.text;
-      if (value.trim().isNotEmpty) {
+      final titleValue = titleController.text;
+
+      if (titleValue.trim().isNotEmpty) {
         HapticHelper.selection();
-        onSubmitted(value, selectedDueDate.value,
-            needSnackbarFloating: !willClose);
+        final updatedTask = initialTask.copyWith(
+          title: titleValue,
+          dueDate: selectedDueDate.value,
+          priority: selectedPriority.value,
+        );
+        onSubmitted(updatedTask, needSnackbarFloating: !willClose);
       }
+
       if (willClose) {
         Navigator.pop(context);
       } else {
@@ -76,14 +87,16 @@ class TaskSheet extends HookConsumerWidget {
       focusNode,
       titleController,
       selectedDueDate,
-      onSubmitted
+      selectedPriority,
+      onSubmitted,
+      initialTask,
     ]);
 
     return Padding(
       padding: MediaQuery.of(context).viewInsets,
       child: Wrap(children: <Widget>[
         Padding(
-          padding: const EdgeInsets.fromLTRB(24, 8, 24, 30),
+          padding: const EdgeInsets.fromLTRB(24, 14, 24, 30),
           child: Column(
             children: [
               TextField(
@@ -96,7 +109,7 @@ class TaskSheet extends HookConsumerWidget {
                   border: InputBorder.none,
                 ),
                 style: const TextStyle(
-                  fontSize: 18,
+                  fontSize: 20,
                 ),
                 onEditingComplete: submitHandler,
               ),
@@ -107,26 +120,87 @@ class TaskSheet extends HookConsumerWidget {
                   Expanded(
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
-                      child: DateChip(
-                        date: selectedDueDate.value,
-                        context: context,
-                        onSelected: (selected) {
-                          showModalBottomSheet(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
+                      child: Row(
+                        children: [
+                          DateChip(
+                            date: selectedDueDate.value,
                             context: context,
-                            builder: (context) => TaskDateSheet(
-                              selectedDate: selectedDueDate.value,
-                              onSelected: (TaskDate? date) {
-                                changeSelectedDueDate(date);
-                              },
-                            ),
-                          );
-                        },
-                        onDeleted: () {
-                          changeSelectedDueDate(null);
-                        },
+                            onSelected: (selected) {
+                              showModalBottomSheet(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                context: context,
+                                builder: (context) => TaskDateSheet(
+                                  selectedDate: selectedDueDate.value,
+                                  onSelected: (TaskDate? date) {
+                                    changeSelectedDueDate(date);
+                                  },
+                                ),
+                              );
+                            },
+                            onDeleted: () {
+                              changeSelectedDueDate(null);
+                            },
+                          ),
+                          const SizedBox(width: 8),
+                          PriorityChip(
+                            priority: selectedPriority.value,
+                            context: context,
+                            onSelected: (selected) async {
+                              final taskDatabase = await ref
+                                  .read(taskDatabaseViewModelProvider.future);
+                              if (taskDatabase?.priority == null) {
+                                if (context.mounted) {
+                                  await showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      title: Text(l.task_priority_dialog_title,
+                                          style: const TextStyle(fontSize: 18)),
+                                      content:
+                                          Text(l.task_priority_dialog_content),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: Text(
+                                              l.task_priority_dialog_cancel),
+                                        ),
+                                        FilledButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                            Navigator.pushNamed(context,
+                                                '/settings/task_database');
+                                          },
+                                          child: Text(
+                                              l.task_priority_dialog_settings),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                  return;
+                                }
+                              } else if (context.mounted) {
+                                showModalBottomSheet(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  context: context,
+                                  builder: (context) => TaskPrioritySheet(
+                                    selectedPriority: selectedPriority.value,
+                                    onSelected: (SelectOption? priority) {
+                                      changeSelectedPriority(priority);
+                                    },
+                                  ),
+                                );
+                              }
+                            },
+                            onDeleted: () {
+                              changeSelectedPriority(null);
+                            },
+                          ),
+                        ],
                       ),
                     ),
                   ),

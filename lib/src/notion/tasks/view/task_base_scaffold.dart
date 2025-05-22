@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import '../../../common/ui/custom_popup_menu.dart';
 import '../../../helpers/haptic_helper.dart';
 import '../../../settings/view/settings_page.dart';
+import '../../common/filter_type.dart';
 import '../../model/task.dart';
+import '../task_group_provider.dart';
+import '../task_sort_provider.dart';
+import 'group_options_bottom_sheet.dart';
+import 'sort_options_bottom_sheet.dart';
 import 'task_sheet/task_sheet.dart';
 
-class TaskBaseScaffold extends StatelessWidget {
+class TaskBaseScaffold extends HookConsumerWidget {
   final Widget body;
   final int currentIndex;
   final bool? showCompleted;
@@ -13,7 +20,7 @@ class TaskBaseScaffold extends StatelessWidget {
   final bool hideNavigationLabel;
   final void Function(int) onIndexChanged;
   final void Function(bool) onShowCompletedChanged;
-  final void Function(String, TaskDate?, bool) onAddTask;
+  final void Function(Task, {bool? needSnackbarFloating}) onAddTask;
 
   const TaskBaseScaffold({
     Key? key,
@@ -28,10 +35,75 @@ class TaskBaseScaffold extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final isToday = currentIndex == 0;
-    final showCompleted = this.showCompleted;
+    final filterType = isToday ? FilterType.today : FilterType.all;
+
+    // カスタムメニューの設定
+    final customMenu = useCustomPopupMenu(
+      items: [
+        if (showCompleted != null)
+          CustomPopupMenuItem(
+            id: 'toggle_completed',
+            title: Text(l.show_completed_tasks),
+            trailing: showCompleted!
+                ? Icon(
+                    Icons.check,
+                    size: 18,
+                    color: Theme.of(context).colorScheme.primary,
+                  )
+                : null,
+            onTap: () {
+              HapticHelper.selection();
+              onShowCompletedChanged(!showCompleted!);
+            },
+          ),
+        // 並び替えメニュー
+        CustomPopupMenuItem(
+          id: 'sort_options',
+          title: Text(l.sort_by),
+          leading: Icon(
+            Icons.sort,
+            size: 18,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+          trailing: Text(
+            ref.watch(currentSortTypeProvider(filterType)).getLocalizedName(l),
+            style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
+          ),
+          onTap: () async {
+            HapticHelper.selection();
+            await showSortOptionsBottomSheet(context, filterType);
+          },
+        ),
+        // グループメニュー
+        CustomPopupMenuItem(
+          id: 'group_options',
+          title: Text(l.group_by),
+          leading: Icon(
+            Icons.workspaces_outline,
+            size: 18,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+          trailing: Text(
+            ref.watch(currentGroupTypeProvider(filterType)).getLocalizedName(l),
+            style: Theme.of(context)
+                .textTheme
+                .bodySmall!
+                .copyWith(color: Theme.of(context).colorScheme.secondary),
+          ),
+          onTap: () async {
+            HapticHelper.selection();
+            await showGroupOptionsBottomSheet(context, filterType);
+          },
+        ),
+      ],
+      animationDuration: const Duration(milliseconds: 30),
+      animationCurve: Curves.easeOut,
+    );
 
     return Scaffold(
         key: key,
@@ -41,36 +113,27 @@ class TaskBaseScaffold extends StatelessWidget {
                 ? Text(l.navigation_index, style: const TextStyle(fontSize: 20))
                 : null,
             actions: [
-              if (showCompleted != null) ...[
-                IconButton(
-                  icon: Icon(
-                    showCompleted
-                        ? Icons.visibility_rounded
-                        : Icons.visibility_off_outlined,
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                  onPressed: () {
-                    HapticHelper.selection();
-                    onShowCompletedChanged(!showCompleted);
-                  },
-                )
-              ],
-              Stack(
-                children: [
-                  IconButton(
-                    icon: showSettingBadge
-                        ? Icon(Icons.settings_outlined,
-                            color: Theme.of(context).colorScheme.onSurface)
-                        : Badge(
-                            child: Icon(Icons.settings_outlined,
-                                color: Theme.of(context).colorScheme.onSurface),
-                          ),
-                    onPressed: () {
-                      Navigator.restorablePushNamed(
-                          context, SettingsPage.routeName);
-                    },
-                  ),
-                ],
+              IconButton(
+                key: customMenu.buttonKey,
+                icon: Icon(
+                  Icons.more_horiz_rounded,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+                onPressed: customMenu.toggle,
+              ),
+              // TODO: サイドバーができたら移動する
+              IconButton(
+                icon: showSettingBadge
+                    ? Icon(Icons.settings_rounded,
+                        color: Theme.of(context).colorScheme.onSurface)
+                    : Badge(
+                        child: Icon(Icons.settings_outlined,
+                            color: Theme.of(context).colorScheme.onSurface),
+                      ),
+                onPressed: () {
+                  Navigator.restorablePushNamed(
+                      context, SettingsPage.routeName);
+                },
               ),
             ]),
         body: body,
@@ -108,19 +171,12 @@ class TaskBaseScaffold extends StatelessWidget {
                     context: context,
                     isScrollControlled: true,
                     builder: (context) => TaskSheet(
-                      initialDueDate: isToday
-                          ? TaskDate(
-                              start: NotionDateTime(
-                                datetime: DateTime.now(),
-                                isAllDay: true,
-                              ),
-                            )
-                          : null,
-                      initialTitle: null,
-                      onSubmitted: (title, dueDate,
-                          {bool? needSnackbarFloating}) {
-                        onAddTask(
-                            title, dueDate, needSnackbarFloating ?? false);
+                      initialTask: Task.temp(
+                        dueDate: isToday ? TaskDate.todayAllDay() : null,
+                      ),
+                      onSubmitted: (task, {bool? needSnackbarFloating}) {
+                        onAddTask(task,
+                            needSnackbarFloating: needSnackbarFloating);
                       },
                     ),
                   );

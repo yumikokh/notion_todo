@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../helpers/haptic_helper.dart';
-import '../../../notion/repository/notion_database_repository.dart';
+import '../../../notion/api/notion_database_api.dart';
 import '../selected_database_viewmodel.dart';
 
 class PropertyCreateButton extends StatelessWidget {
@@ -94,7 +94,8 @@ class PropertyCreateButton extends StatelessWidget {
 
             final propertyType = switch (type) {
               CreatePropertyType.date => SettingPropertyType.date,
-              CreatePropertyType.checkbox => SettingPropertyType.status
+              CreatePropertyType.checkbox => SettingPropertyType.status,
+              CreatePropertyType.select => SettingPropertyType.priority,
             };
 
             selectedDatabaseViewModel.selectProperty(property.id, propertyType);

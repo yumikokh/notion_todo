@@ -4,6 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl_standalone.dart' as intl_standalone;
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../widget/widget_service.dart';
+
 class SettingsService {
   static const _themeModeKey = 'themeMode';
   static const _languageKey = 'language';
@@ -36,12 +38,16 @@ class SettingsService {
         (supportedLocales.any((l) => l.languageCode == systemLanguageCode)
             ? systemLanguageCode
             : 'en');
+
+    WidgetService.updateLocaleForWidget(languageCode);
     return Locale(languageCode);
   }
 
   Future<void> updateLocale(Locale locale) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_languageKey, locale.languageCode);
+    final languageCode = locale.languageCode;
+    await prefs.setString(_languageKey, languageCode);
+    WidgetService.updateLocaleForWidget(languageCode);
   }
 
   /* wakelock */
@@ -109,5 +115,20 @@ class SettingsService {
   Future<void> updateSoundEnabled(bool value) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_soundEnabledKey, value);
+  }
+
+  // 言語設定を保存
+  Future<void> saveLocale(String languageCode) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('locale', languageCode);
+    await WidgetService.updateLocaleForWidget(languageCode);
+  }
+
+  // 言語設定を取得
+  Future<String> loadLocale() async {
+    final prefs = await SharedPreferences.getInstance();
+    final languageCode = prefs.getString('locale') ?? 'en';
+    await WidgetService.updateLocaleForWidget(languageCode);
+    return languageCode;
   }
 }

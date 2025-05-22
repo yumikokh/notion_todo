@@ -9,7 +9,7 @@ class DateLabel extends StatelessWidget {
   final bool showToday;
   final bool showColor;
   final bool showIcon;
-
+  final double? size;
   static final DateHelper d = DateHelper();
 
   const DateLabel(
@@ -18,30 +18,15 @@ class DateLabel extends StatelessWidget {
       required this.showToday,
       required this.context,
       required this.showColor,
-      required this.showIcon});
+      required this.showIcon,
+      this.size = 12.0});
 
   Color? get color {
     if (!showColor) return null;
     final dueDate = date;
     if (dueDate == null) return null;
-    final now = DateTime.now();
-    final dueDateStart = dueDate.start.datetime;
-    final dueDateEnd = dueDate.end?.datetime;
 
-    // 終日かつ今日
-    if (dueDateEnd == null &&
-        d.isToday(dueDateStart) &&
-        dueDate.start.isAllDay == true) {
-      return Theme.of(context).colorScheme.tertiary; // 今日だったら青
-    }
-
-    // 時間があり、すぎている
-    if ((dueDateEnd != null && dueDateEnd.isBefore(now)) ||
-        (dueDateEnd == null && dueDateStart.isBefore(now))) {
-      return Theme.of(context).colorScheme.error; // 過ぎてたら赤
-    }
-
-    return Theme.of(context).colorScheme.secondary; // それ以外は灰色
+    return TaskDate.getColor(context, dueDate);
   }
 
   List<String> get dateStrings {
@@ -63,8 +48,6 @@ class DateLabel extends StatelessWidget {
             showToday: showToday, showOnlyTime: isSameDay),
     ].whereType<String>().toList();
   }
-
-  double get size => 12.0;
 
   @override
   Widget build(BuildContext context) {

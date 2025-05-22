@@ -1,6 +1,7 @@
 import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 import 'dart:collection';
 
@@ -10,69 +11,61 @@ import '../../common/snackbar/snackbar.dart';
 import '../../helpers/date.dart';
 import '../../settings/settings_viewmodel.dart';
 import '../../settings/task_database/task_database_viewmodel.dart';
+import '../common/filter_type.dart';
 import '../model/property.dart';
 import '../model/task.dart';
-import '../repository/notion_task_repository.dart';
-import 'task_service.dart';
+import 'task_repository.dart';
 import '../../common/analytics/analytics_service.dart';
 import '../../common/app_review/app_review_service.dart';
+import '../../widget/widget_service.dart';
+import '../../common/debounced_state_mixin.dart';
 
 part 'task_viewmodel.g.dart';
 
-@riverpod
-class TaskViewModel extends _$TaskViewModel {
-  late TaskService? _taskService;
+@Riverpod(keepAlive: true)
+class TaskViewModel extends _$TaskViewModel
+    with DebouncedStateMixin<List<Task>> {
+  late TaskRepository? _taskRepository;
   late FilterType _filterType;
   late bool _hasCompleted;
   bool _hasMore = false;
   bool get hasMore => _hasMore;
   String? _nextCursor;
   bool _isLoading = false;
-  bool get isLoading => _isLoading;
   bool _showCompleted = false;
   bool get showCompleted => _showCompleted;
 
   static final DateHelper d = DateHelper();
 
+  bool get isToday => _filterType == FilterType.today;
+
   @override
   Future<List<Task>> build({
     FilterType filterType = FilterType.all,
   }) async {
-    _taskService = await ref.watch(taskServiceProvider.future);
+    final taskDatabase = await ref.watch(taskDatabaseViewModelProvider.future);
+    _taskRepository = await ref.watch(taskRepositoryProvider.future);
 
-    if (_taskService == null) {
+    if (_taskRepository == null || taskDatabase == null) {
       await FlutterAppBadger.removeBadge();
+      await _updateTodayWidget([]);
       return [];
     }
 
-    _showCompleted = await _taskService!.loadShowCompleted();
+    _showCompleted = await _taskRepository!.loadShowCompleted();
 
     _filterType = filterType;
     // MEMO: ユースケースを鑑みて読み込みは固定にする
     // もしpageSize以上のタスクがあったとき、「showCompleted」と「Load more」の不整合がおきるがいったん無視
     _hasCompleted = filterType == FilterType.today;
 
-    final statusProperty =
-        ref.watch(taskDatabaseViewModelProvider).valueOrNull?.status;
     final tasks = await _fetchTasks(isFirstFetch: true);
 
-    // バッジ更新
-    if (filterType == FilterType.today) {
+    if (isToday) {
       final showBadge =
           ref.watch(settingsViewModelProvider).showNotificationBadge;
       _updateBadge(tasks, showBadge);
-    }
-
-    if (statusProperty is StatusCompleteStatusProperty) {
-      final inProgressOption = statusProperty.inProgressOption;
-      if (inProgressOption == null) {
-        return tasks;
-      }
-      // task.inProgressを先頭にする
-      return [
-        ...tasks.where((task) => task.isInProgress(inProgressOption)),
-        ...tasks.where((task) => !task.isInProgress(inProgressOption)),
-      ];
+      _updateTodayWidget(tasks);
     }
 
     return tasks;
@@ -82,7 +75,7 @@ class TaskViewModel extends _$TaskViewModel {
     final dueDate = task.dueDate;
     if (dueDate == null) return false;
     if (dueDate.end != null) return true;
-    if (_filterType != FilterType.today) return true;
+    if (!isToday) return true;
     if (d.isToday(dueDate.start.datetime) && dueDate.start.isAllDay == true) {
       return false;
     }
@@ -98,19 +91,19 @@ class TaskViewModel extends _$TaskViewModel {
 
   Future<void> toggleShowCompleted() async {
     _showCompleted = !_showCompleted;
-    if (_taskService != null) {
-      await _taskService!.saveShowCompleted(_showCompleted);
+    ref.notifyListeners();
+    if (_taskRepository != null) {
+      await _taskRepository!.saveShowCompleted(_showCompleted);
     }
     try {
       final analytics = ref.read(analyticsServiceProvider);
       await analytics.logCompletedTasksToggle(
         isVisible: _showCompleted,
-        screenName: _filterType == FilterType.today ? 'Today' : 'All',
+        screenName: isToday ? 'Today' : 'All',
       );
     } catch (e) {
       print('Analytics error: $e');
     }
-    ref.notifyListeners();
   }
 
   Future<void> loadMore() async {
@@ -133,133 +126,109 @@ class TaskViewModel extends _$TaskViewModel {
     }
   }
 
-  // 操作のキューを管理するための変数
-  final _operationQueue = Queue<Future<void> Function()>();
-  bool _isProcessing = false;
-
-  // キューを処理する関数
-  Future<void> _processQueue() async {
-    if (_isProcessing) return;
-
-    _isProcessing = true;
-    try {
-      while (_operationQueue.isNotEmpty) {
-        final operation = _operationQueue.removeFirst();
-        await operation();
-      }
-    } finally {
-      _isProcessing = false;
-    }
-  }
-
   // キューに操作を追加する関数
   Future<void> _addOperation(Future<void> Function() operation) async {
-    _operationQueue.add(operation);
-    await _processQueue();
+    operation(); // 即時実行するようにする
   }
 
   Future<List<Task>> _fetchTasks({bool isFirstFetch = false}) async {
-    final taskService = _taskService;
+    final taskService = _taskRepository;
     if (taskService == null) {
       return [];
     }
     final locale = ref.read(settingsViewModelProvider).locale;
     final l = await AppLocalizations.delegate.load(locale);
     _isLoading = true;
-    ref.notifyListeners(); // ローディング状態が更新されるようにする
-    try {
-      final cursor = isFirstFetch ? null : _nextCursor;
-      final result = await taskService.fetchTasks(_filterType, _hasCompleted,
-          startCursor: cursor);
-      _hasMore = result.hasMore;
-      _nextCursor = result.nextCursor;
-      return result.tasks;
-    } catch (e) {
-      if (e is TaskException && e.statusCode == 404) {
+
+    return await debouncedFetch(() async {
+      try {
+        final cursor = isFirstFetch ? null : _nextCursor;
+        final result = await taskService.fetchTasks(_filterType, _hasCompleted,
+            startCursor: cursor);
+        _hasMore = result.hasMore;
+        _nextCursor = result.nextCursor;
+        return result.tasks;
+      } catch (e, stackTrace) {
         final snackbar = ref.read(snackbarProvider.notifier);
         final taskDatabaseViewModel =
             ref.read(taskDatabaseViewModelProvider.notifier);
         final analytics = ref.read(analyticsServiceProvider);
 
-        taskDatabaseViewModel.clear();
-        snackbar.show("${l.not_found_database} ${l.re_set_database}",
-            type: SnackbarType.error);
+        Sentry.captureException(e, stackTrace: stackTrace);
 
-        try {
+        if (e is NotionErrorException) {
+          switch (e) {
+            // MEMO: IDベースでリクエストしているため、プロパティが削除されない限り起こらないはず
+            case NotionValidationException():
+              snackbar.show(l.not_found_property, type: SnackbarType.error);
+              break;
+            case NotionInvalidException():
+              taskDatabaseViewModel.clear();
+              snackbar.show("${l.not_found_database} ${l.re_set_database}",
+                  type: SnackbarType.error);
+              break;
+            case NotionUnknownException():
+              snackbar.show(l.task_fetch_failed, type: SnackbarType.error);
+              break;
+          }
           await analytics.logError(
-            'database_not_found',
-            error: e,
-            parameters: {'status_code': 404},
+            e.code,
+            error: e.message,
+            parameters: {'status_code': e.status},
           );
-        } catch (trackingError) {
-          print('Analytics error: $trackingError');
+        } else {
+          // その他のエラー処理
+          snackbar.show(l.task_fetch_failed, type: SnackbarType.error);
+          print('Unknown error: $e');
         }
-      }
-      if (e is TaskException && e.statusCode == 400) {
-        final snackbar = ref.read(snackbarProvider.notifier);
-        final taskDatabaseViewModel =
-            ref.read(taskDatabaseViewModelProvider.notifier);
-        final analytics = ref.read(analyticsServiceProvider);
 
-        taskDatabaseViewModel.clear();
-        snackbar.show("${l.not_found_property} ${l.re_set_database}",
-            type: SnackbarType.error);
-
-        try {
-          await analytics.logError(
-            'property_not_found',
-            error: e,
-            parameters: {'status_code': 400},
-          );
-        } catch (trackingError) {
-          print('Analytics error: $trackingError');
-        }
+        // TODO: エラー表示をつくったらthrowする。ネットワークがつながらないときなど
+        return [];
+      } finally {
+        _isLoading = false;
       }
-      return [];
-    } finally {
-      _isLoading = false;
-    }
+    });
   }
 
-  Future<void> addTask(
-      String title, TaskDate? dueDate, bool needSnackbarFloating) async {
+  Future<void> addTask(Task tempTask,
+      {bool? needSnackbarFloating = false}) async {
     final locale = ref.read(settingsViewModelProvider).locale;
     final l = await AppLocalizations.delegate.load(locale);
     await _addOperation(() async {
-      final taskService = _taskService;
-      if (taskService == null || title.trim().isEmpty) {
+      final taskService = _taskRepository;
+      if (taskService == null || tempTask.title.trim().isEmpty) {
         return;
       }
       final snackbar = ref.read(snackbarProvider.notifier);
       final analytics = ref.read(analyticsServiceProvider);
 
       final prevState = state;
-      final tempId = "temp_${DateTime.now().millisecondsSinceEpoch.toString()}";
-      final tempTask = Task(
-          id: tempId,
-          title: title,
-          status: const TaskStatus.checkbox(checked: false),
-          dueDate: dueDate,
-          url: null);
 
       state = AsyncValue.data([...state.valueOrNull ?? [], tempTask]);
 
+      // ウィジェット更新
+      if (isToday) {
+        await _updateTodayWidget(state.valueOrNull ?? []);
+      }
+
       try {
-        final t = await taskService.addTask(tempTask.title, tempTask.dueDate);
+        final t = await taskService.addTask(tempTask);
 
         // 最新のstateを使用して更新
-        state = AsyncValue.data([
-          for (final task in state.valueOrNull ?? [])
-            if (task.id == tempId) t else task
-        ]);
+        state = state.whenData((tasks) {
+          return tasks.map((task) {
+            if (task.isTemp) return t;
+            return task;
+          }).toList();
+        });
 
         snackbar.show(
-          l.add_task_success(title),
+          l.add_task_success(t.title),
           type: SnackbarType.success,
           onUndo: () {
             deleteTask(t);
           },
-          isFloating: needSnackbarFloating,
+          isFloating: needSnackbarFloating ?? false,
         );
         ref.invalidateSelf();
 
@@ -283,7 +252,7 @@ class TaskViewModel extends _$TaskViewModel {
 
   Future<void> updateTask(Task task, {bool fromUndo = false}) async {
     await _addOperation(() async {
-      final taskService = _taskService;
+      final taskService = _taskRepository;
       final prevState = state;
       final prevTask =
           prevState.valueOrNull?.where((t) => t.id == task.id).firstOrNull;
@@ -294,13 +263,6 @@ class TaskViewModel extends _$TaskViewModel {
         return;
       }
 
-      TaskDate? updatedDueDate;
-      final inputDueDate = task.dueDate;
-      // 入力された日付がある場合のみ
-      if (inputDueDate != null) {
-        updatedDueDate = inputDueDate;
-      }
-
       final snackbar = ref.read(snackbarProvider.notifier);
       final locale = ref.read(settingsViewModelProvider).locale;
       final l = await AppLocalizations.delegate.load(locale);
@@ -309,6 +271,10 @@ class TaskViewModel extends _$TaskViewModel {
         for (final t in state.valueOrNull ?? [])
           if (t.id == task.id) task else t
       ]);
+      // ウィジェット更新
+      if (isToday) {
+        await _updateTodayWidget(state.valueOrNull ?? []);
+      }
 
       snackbar.show(l.task_update_success(task.title),
           type: SnackbarType.success, onUndo: () async {
@@ -316,8 +282,7 @@ class TaskViewModel extends _$TaskViewModel {
       });
 
       try {
-        final updatedTask =
-            await taskService.updateTask(task.id, task.title, updatedDueDate);
+        final updatedTask = await taskService.updateTask(task);
 
         state = AsyncValue.data([
           for (final Task t in state.valueOrNull ?? [])
@@ -347,26 +312,39 @@ class TaskViewModel extends _$TaskViewModel {
   Future<void> updateCompleteStatus(Task task, bool isCompleted,
       {bool fromUndo = false}) async {
     await _addOperation(() async {
-      final taskService = _taskService;
+      final taskService = _taskRepository;
       if (taskService == null) {
         return;
       }
       final snackbar = ref.read(snackbarProvider.notifier);
       final locale = ref.read(settingsViewModelProvider).locale;
       final l = await AppLocalizations.delegate.load(locale);
-      snackbar.show(
-          isCompleted
-              ? l.task_update_status_success(task.title)
-              : l.task_update_status_undo(task.title),
-          type: SnackbarType.success, onUndo: () async {
-        updateCompleteStatus(task, !isCompleted, fromUndo: true);
-      });
 
       _isLoading = true;
       final prevState = state;
+
+      state = AsyncValue.data([
+        for (final t in state.valueOrNull ?? [])
+          if (t.id == task.id) task else t
+      ]);
+
+      // ウィジェット更新
+      if (isToday) {
+        await _updateTodayWidget(state.valueOrNull ?? []);
+      }
+
       try {
         final updatedTask =
             await taskService.updateCompleteStatus(task.id, isCompleted);
+
+        snackbar.show(
+            isCompleted
+                ? l.task_update_status_success(task.title)
+                : l.task_update_status_undo(task.title),
+            type: SnackbarType.success, onUndo: () async {
+          updateCompleteStatus(task, !isCompleted, fromUndo: true);
+        });
+
         state = AsyncValue.data([
           for (final t in state.valueOrNull ?? [])
             if (t.id == updatedTask.id) updatedTask else t
@@ -374,14 +352,14 @@ class TaskViewModel extends _$TaskViewModel {
         ref.invalidateSelf();
 
         // 今日のタスクが全て完了したかチェック
-        if (!fromUndo && isCompleted && _filterType == FilterType.today) {
+        if (!fromUndo && isCompleted && isToday) {
           final tasks = state.valueOrNull ?? [];
           final allTasksCompleted = tasks.every((t) => t.isCompleted);
 
           if (allTasksCompleted && tasks.isNotEmpty) {
             // showCompletedをオフにする
-            if (_taskService != null) {
-              await _taskService!.saveShowCompleted(false);
+            if (_taskRepository != null) {
+              await _taskRepository!.saveShowCompleted(false);
             }
             // レビューポップアップ
             final reviewService = AppReviewService.instance;
@@ -407,6 +385,7 @@ class TaskViewModel extends _$TaskViewModel {
       } catch (e) {
         state = prevState;
         snackbar.show(l.task_update_status_failed, type: SnackbarType.error);
+        rethrow;
       } finally {
         _isLoading = false;
       }
@@ -420,7 +399,7 @@ class TaskViewModel extends _$TaskViewModel {
       return;
     }
     await _addOperation(() async {
-      final taskService = _taskService;
+      final taskService = _taskRepository;
       if (taskService == null) {
         return;
       }
@@ -439,7 +418,6 @@ class TaskViewModel extends _$TaskViewModel {
       });
 
       _isLoading = true;
-
       try {
         final updatedTask =
             await taskService.updateInProgressStatus(task.id, willBeInProgress);
@@ -472,7 +450,7 @@ class TaskViewModel extends _$TaskViewModel {
     if (task.isTemp) {
       return;
     }
-    final taskService = _taskService;
+    final taskService = _taskRepository;
     if (taskService == null) {
       return;
     }
@@ -485,6 +463,10 @@ class TaskViewModel extends _$TaskViewModel {
       for (final t in state.valueOrNull ?? [])
         if (t.id != task.id) t
     ]);
+    // ウィジェット更新
+    if (isToday) {
+      await _updateTodayWidget(state.valueOrNull ?? []);
+    }
     snackbar.show(l.task_delete_success(task.title), type: SnackbarType.success,
         onUndo: () async {
       undoDeleteTask(task);
@@ -515,7 +497,7 @@ class TaskViewModel extends _$TaskViewModel {
 
   Future<void> undoDeleteTask(Task prev) async {
     await _addOperation(() async {
-      final taskService = _taskService;
+      final taskService = _taskRepository;
       if (taskService == null) {
         return;
       }
@@ -571,5 +553,9 @@ class TaskViewModel extends _$TaskViewModel {
     }
     final notCompletedCount = tasks.where((task) => !task.isCompleted).length;
     await FlutterAppBadger.updateBadgeCount(notCompletedCount);
+  }
+
+  Future<void> _updateTodayWidget(List<Task> tasks) async {
+    await WidgetService.applyTasks(tasks);
   }
 }

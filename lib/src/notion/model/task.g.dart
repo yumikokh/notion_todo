@@ -36,14 +36,14 @@ Map<String, dynamic> _$$TaskDateImplToJson(_$TaskDateImpl instance) =>
 _$TaskStatusCheckboxImpl _$$TaskStatusCheckboxImplFromJson(
         Map<String, dynamic> json) =>
     _$TaskStatusCheckboxImpl(
-      checked: json['checked'] as bool,
+      checkbox: json['checkbox'] as bool,
       $type: json['runtimeType'] as String?,
     );
 
 Map<String, dynamic> _$$TaskStatusCheckboxImplToJson(
         _$TaskStatusCheckboxImpl instance) =>
     <String, dynamic>{
-      'checked': instance.checked,
+      'checkbox': instance.checkbox,
       'runtimeType': instance.$type,
     };
 
@@ -75,6 +75,9 @@ _$TaskImpl _$$TaskImplFromJson(Map<String, dynamic> json) => _$TaskImpl(
           ? null
           : TaskDate.fromJson(json['dueDate'] as Map<String, dynamic>),
       url: json['url'] as String?,
+      priority: json['priority'] == null
+          ? null
+          : SelectOption.fromJson(json['priority'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$$TaskImplToJson(_$TaskImpl instance) =>
@@ -84,4 +87,5 @@ Map<String, dynamic> _$$TaskImplToJson(_$TaskImpl instance) =>
       'status': instance.status,
       'dueDate': instance.dueDate,
       'url': instance.url,
+      'priority': instance.priority,
     };

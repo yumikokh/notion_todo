@@ -1,29 +1,27 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'notion_task_repository.dart';
+part of 'subscription_viewmodel.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$notionTaskRepositoryHash() =>
-    r'3766e577ec44a9d27997bf4a33510bc6a1008b9e';
+String _$subscriptionViewModelHash() =>
+    r'17ca83d7ffa187af096fc9b4df649d9b9cd324e5';
 
-/// See also [notionTaskRepository].
-@ProviderFor(notionTaskRepository)
-final notionTaskRepositoryProvider =
-    AutoDisposeProvider<NotionTaskRepository?>.internal(
-  notionTaskRepository,
-  name: r'notionTaskRepositoryProvider',
+/// See also [SubscriptionViewModel].
+@ProviderFor(SubscriptionViewModel)
+final subscriptionViewModelProvider = AutoDisposeAsyncNotifierProvider<
+    SubscriptionViewModel, SubscriptionStatus>.internal(
+  SubscriptionViewModel.new,
+  name: r'subscriptionViewModelProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$notionTaskRepositoryHash,
+      : _$subscriptionViewModelHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef NotionTaskRepositoryRef = AutoDisposeProviderRef<NotionTaskRepository?>;
+typedef _$SubscriptionViewModel = AutoDisposeAsyncNotifier<SubscriptionStatus>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

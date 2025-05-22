@@ -18,4 +18,7 @@ abstract class Env {
 
   @EnviedField(varName: 'SENTRY_DSN')
   static const String sentryDsn = _Env.sentryDsn;
+
+  @EnviedField(varName: 'REVENUE_CAT_API_KEY')
+  static const String revenueCatApiKey = _Env.revenueCatApiKey;
 }

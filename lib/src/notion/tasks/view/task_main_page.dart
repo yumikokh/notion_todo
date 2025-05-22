@@ -4,14 +4,16 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:page_transition/page_transition.dart';
 
 import '../../../common/analytics/analytics_service.dart';
 import '../../../helpers/date.dart';
 import '../../../helpers/haptic_helper.dart';
 import '../../../settings/settings_viewmodel.dart';
 import '../../../settings/view/notion_settings_page.dart';
-import '../../repository/notion_task_repository.dart';
+import '../../common/filter_type.dart';
 import '../../../settings/task_database/task_database_viewmodel.dart';
+import '../task_sort_provider.dart';
 import '../task_viewmodel.dart';
 import 'task_list_view.dart';
 import 'task_base_scaffold.dart';
@@ -20,30 +22,43 @@ import '../../../settings/font/font_settings_viewmodel.dart';
 const int updateIntervalSec = 60;
 
 class TaskMainPage extends HookConsumerWidget {
-  const TaskMainPage({Key? key}) : super(key: key);
+  const TaskMainPage({
+    Key? key,
+    this.initialTab,
+  }) : super(key: key);
 
   static const routeName = '/';
   static final DateHelper d = DateHelper();
 
+  // タブの種類を定義
+  static const String tabToday = 'today';
+  static const String tabAll = 'all';
+  final String? initialTab;
+
   @override
-  Widget build(BuildContext context, ref) {
-    final currentIndex = useState(0);
+  Widget build(BuildContext context, WidgetRef ref) {
     final todayProvider = taskViewModelProvider(filterType: FilterType.today);
     final allProvider = taskViewModelProvider(filterType: FilterType.all);
     final todayTasks = ref.watch(todayProvider);
     final allTasks = ref.watch(allProvider);
-    final todayViewModel = ref.watch(todayProvider.notifier);
-    final allViewModel = ref.watch(allProvider.notifier);
+    final todayViewModel = ref.read(todayProvider.notifier);
+    final allViewModel = ref.read(allProvider.notifier);
     final taskDatabase = ref.watch(taskDatabaseViewModelProvider);
     final wakelock = ref.watch(settingsViewModelProvider).wakelock;
     final hideNavigationLabel =
         ref.watch(settingsViewModelProvider).hideNavigationLabel;
     final fontSettings = ref.watch(fontSettingsViewModelProvider);
+    final taskSort = ref.watch(taskSortProvider.notifier);
 
-    final isToday = currentIndex.value == 0;
+    // initialTabがnullまたはtabTodayの場合はtrue（今日タブを表示）
+    final isToday = initialTab == null || initialTab == tabToday;
+    final currentIndex = useMemoized(() => isToday ? 0 : 1);
+    ref.watch(
+        currentSortTypeProvider(isToday ? FilterType.today : FilterType.all));
 
     final l = AppLocalizations.of(context)!;
 
+    // アナリティクス
     useEffect(() {
       final analytics = ref.read(analyticsServiceProvider);
       final screenName = isToday ? 'Today' : 'All';
@@ -52,7 +67,6 @@ class TaskMainPage extends HookConsumerWidget {
     }, [isToday]);
 
     // ポーリングする
-    // TODO: 前回の実行時間を記録して、余分にリクエストしないようにする
     useEffect(() {
       final provider = switch (isToday) {
         true => todayProvider,
@@ -86,65 +100,83 @@ class TaskMainPage extends HookConsumerWidget {
 
     return TaskBaseScaffold(
       key: Key('taskMainPage/${isToday ? 'Today' : 'All'}'),
-      currentIndex: currentIndex.value,
+      currentIndex: currentIndex,
       showCompleted: isToday ? todayViewModel.showCompleted : null,
       showSettingBadge: taskDatabase.valueOrNull != null,
       hideNavigationLabel: hideNavigationLabel,
       onIndexChanged: (index) {
-        currentIndex.value = index;
+        final nextTab = index == 0 ? tabToday : tabAll;
+        Navigator.pushReplacement(
+          context,
+          PageTransition(
+            type: PageTransitionType.fade,
+            duration: const Duration(milliseconds: 0),
+            child: TaskMainPage(initialTab: nextTab),
+          ),
+        );
       },
       onShowCompletedChanged: (value) async {
         todayViewModel.toggleShowCompleted();
       },
-      onAddTask: (title, dueDate, needSnackbarFloating) {
+      onAddTask: (task, {bool? needSnackbarFloating}) {
         switch (isToday) {
           case true:
-            todayViewModel.addTask(title, dueDate, needSnackbarFloating);
+            todayViewModel.addTask(
+              task,
+              needSnackbarFloating: needSnackbarFloating,
+            );
           case false:
-            allViewModel.addTask(title, dueDate, needSnackbarFloating);
+            allViewModel.addTask(
+              task,
+              needSnackbarFloating: needSnackbarFloating,
+            );
         }
       },
       body: taskDatabase.when(
         data: (db) => db != null
             ? IndexedStack(
-                index: currentIndex.value,
+                index: currentIndex,
                 children: [
                   // Today Tasks
                   TaskRefreshIndicator(
                     onRefresh: () async {
+                      ref.invalidate(taskDatabaseViewModelProvider);
                       ref.invalidate(todayProvider);
                     },
                     child: todayTasks.when(
                       data: (tasks) => TaskListView(
                         title: d.formatDateForTitle(DateTime.now(),
                             locale: fontSettings.value?.languageCode),
-                        list: tasks,
+                        list: taskSort.sortTasks(tasks, FilterType.today),
                         taskViewModel: todayViewModel,
                         showCompleted: todayViewModel.showCompleted,
+                        isLoading: todayTasks.isLoading,
                       ),
                       loading: () => const Center(
                         child: CircularProgressIndicator(),
                       ),
                       error: (error, stack) =>
-                          Center(child: Text(error.toString())),
+                          Center(child: Text(l.loading_failed)),
                     ),
                   ),
                   // All Tasks
                   TaskRefreshIndicator(
                     onRefresh: () async {
+                      ref.invalidate(taskDatabaseViewModelProvider);
                       ref.invalidate(allProvider);
                     },
                     child: allTasks.when(
                       data: (tasks) => TaskListView(
-                        list: tasks,
+                        list: taskSort.sortTasks(tasks, FilterType.all),
                         taskViewModel: allViewModel,
                         showCompleted: false, // NOTE: Indexページでは常に未完了のみ表示対応
+                        isLoading: allTasks.isLoading,
                       ),
                       loading: () => const Center(
                         child: CircularProgressIndicator(),
                       ),
                       error: (error, stack) =>
-                          Center(child: Text(error.toString())),
+                          Center(child: Text(l.loading_failed)),
                     ),
                   ),
                 ],
@@ -175,7 +207,7 @@ class TaskMainPage extends HookConsumerWidget {
                 ),
               ),
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(child: Text(error.toString())),
+        error: (error, stack) => Center(child: Text(l.loading_failed)),
       ),
     );
   }

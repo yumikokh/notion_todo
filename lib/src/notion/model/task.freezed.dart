@@ -401,19 +401,19 @@ TaskStatus _$TaskStatusFromJson(Map<String, dynamic> json) {
 mixin _$TaskStatus {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(bool checked) checkbox,
+    required TResult Function(bool checkbox) checkbox,
     required TResult Function(StatusGroup? group, StatusOption? option) status,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(bool checked)? checkbox,
+    TResult? Function(bool checkbox)? checkbox,
     TResult? Function(StatusGroup? group, StatusOption? option)? status,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(bool checked)? checkbox,
+    TResult Function(bool checkbox)? checkbox,
     TResult Function(StatusGroup? group, StatusOption? option)? status,
     required TResult orElse(),
   }) =>
@@ -469,7 +469,7 @@ abstract class _$$TaskStatusCheckboxImplCopyWith<$Res> {
           $Res Function(_$TaskStatusCheckboxImpl) then) =
       __$$TaskStatusCheckboxImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({bool checked});
+  $Res call({bool checkbox});
 }
 
 /// @nodoc
@@ -485,12 +485,12 @@ class __$$TaskStatusCheckboxImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? checked = null,
+    Object? checkbox = null,
   }) {
     return _then(_$TaskStatusCheckboxImpl(
-      checked: null == checked
-          ? _value.checked
-          : checked // ignore: cast_nullable_to_non_nullable
+      checkbox: null == checkbox
+          ? _value.checkbox
+          : checkbox // ignore: cast_nullable_to_non_nullable
               as bool,
     ));
   }
@@ -499,21 +499,21 @@ class __$$TaskStatusCheckboxImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$TaskStatusCheckboxImpl implements TaskStatusCheckbox {
-  const _$TaskStatusCheckboxImpl({required this.checked, final String? $type})
+  const _$TaskStatusCheckboxImpl({required this.checkbox, final String? $type})
       : $type = $type ?? 'checkbox';
 
   factory _$TaskStatusCheckboxImpl.fromJson(Map<String, dynamic> json) =>
       _$$TaskStatusCheckboxImplFromJson(json);
 
   @override
-  final bool checked;
+  final bool checkbox;
 
   @JsonKey(name: 'runtimeType')
   final String $type;
 
   @override
   String toString() {
-    return 'TaskStatus.checkbox(checked: $checked)';
+    return 'TaskStatus.checkbox(checkbox: $checkbox)';
   }
 
   @override
@@ -521,12 +521,13 @@ class _$TaskStatusCheckboxImpl implements TaskStatusCheckbox {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$TaskStatusCheckboxImpl &&
-            (identical(other.checked, checked) || other.checked == checked));
+            (identical(other.checkbox, checkbox) ||
+                other.checkbox == checkbox));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, checked);
+  int get hashCode => Object.hash(runtimeType, checkbox);
 
   /// Create a copy of TaskStatus
   /// with the given fields replaced by the non-null parameter values.
@@ -540,30 +541,30 @@ class _$TaskStatusCheckboxImpl implements TaskStatusCheckbox {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(bool checked) checkbox,
+    required TResult Function(bool checkbox) checkbox,
     required TResult Function(StatusGroup? group, StatusOption? option) status,
   }) {
-    return checkbox(checked);
+    return checkbox(this.checkbox);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(bool checked)? checkbox,
+    TResult? Function(bool checkbox)? checkbox,
     TResult? Function(StatusGroup? group, StatusOption? option)? status,
   }) {
-    return checkbox?.call(checked);
+    return checkbox?.call(this.checkbox);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(bool checked)? checkbox,
+    TResult Function(bool checkbox)? checkbox,
     TResult Function(StatusGroup? group, StatusOption? option)? status,
     required TResult orElse(),
   }) {
     if (checkbox != null) {
-      return checkbox(checked);
+      return checkbox(this.checkbox);
     }
     return orElse();
   }
@@ -608,13 +609,13 @@ class _$TaskStatusCheckboxImpl implements TaskStatusCheckbox {
 }
 
 abstract class TaskStatusCheckbox implements TaskStatus {
-  const factory TaskStatusCheckbox({required final bool checked}) =
+  const factory TaskStatusCheckbox({required final bool checkbox}) =
       _$TaskStatusCheckboxImpl;
 
   factory TaskStatusCheckbox.fromJson(Map<String, dynamic> json) =
       _$TaskStatusCheckboxImpl.fromJson;
 
-  bool get checked;
+  bool get checkbox;
 
   /// Create a copy of TaskStatus
   /// with the given fields replaced by the non-null parameter values.
@@ -709,7 +710,7 @@ class _$TaskStatusStatusImpl implements TaskStatusStatus {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(bool checked) checkbox,
+    required TResult Function(bool checkbox) checkbox,
     required TResult Function(StatusGroup? group, StatusOption? option) status,
   }) {
     return status(group, option);
@@ -718,7 +719,7 @@ class _$TaskStatusStatusImpl implements TaskStatusStatus {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(bool checked)? checkbox,
+    TResult? Function(bool checkbox)? checkbox,
     TResult? Function(StatusGroup? group, StatusOption? option)? status,
   }) {
     return status?.call(group, option);
@@ -727,7 +728,7 @@ class _$TaskStatusStatusImpl implements TaskStatusStatus {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(bool checked)? checkbox,
+    TResult Function(bool checkbox)? checkbox,
     TResult Function(StatusGroup? group, StatusOption? option)? status,
     required TResult orElse(),
   }) {
@@ -805,6 +806,7 @@ mixin _$Task {
   TaskStatus get status => throw _privateConstructorUsedError;
   TaskDate? get dueDate => throw _privateConstructorUsedError;
   String? get url => throw _privateConstructorUsedError;
+  SelectOption? get priority => throw _privateConstructorUsedError;
 
   /// Serializes this Task to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -825,7 +827,8 @@ abstract class $TaskCopyWith<$Res> {
       String title,
       TaskStatus status,
       TaskDate? dueDate,
-      String? url});
+      String? url,
+      SelectOption? priority});
 
   $TaskStatusCopyWith<$Res> get status;
   $TaskDateCopyWith<$Res>? get dueDate;
@@ -851,6 +854,7 @@ class _$TaskCopyWithImpl<$Res, $Val extends Task>
     Object? status = null,
     Object? dueDate = freezed,
     Object? url = freezed,
+    Object? priority = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -873,6 +877,10 @@ class _$TaskCopyWithImpl<$Res, $Val extends Task>
           ? _value.url
           : url // ignore: cast_nullable_to_non_nullable
               as String?,
+      priority: freezed == priority
+          ? _value.priority
+          : priority // ignore: cast_nullable_to_non_nullable
+              as SelectOption?,
     ) as $Val);
   }
 
@@ -913,7 +921,8 @@ abstract class _$$TaskImplCopyWith<$Res> implements $TaskCopyWith<$Res> {
       String title,
       TaskStatus status,
       TaskDate? dueDate,
-      String? url});
+      String? url,
+      SelectOption? priority});
 
   @override
   $TaskStatusCopyWith<$Res> get status;
@@ -938,6 +947,7 @@ class __$$TaskImplCopyWithImpl<$Res>
     Object? status = null,
     Object? dueDate = freezed,
     Object? url = freezed,
+    Object? priority = freezed,
   }) {
     return _then(_$TaskImpl(
       id: null == id
@@ -960,6 +970,10 @@ class __$$TaskImplCopyWithImpl<$Res>
           ? _value.url
           : url // ignore: cast_nullable_to_non_nullable
               as String?,
+      priority: freezed == priority
+          ? _value.priority
+          : priority // ignore: cast_nullable_to_non_nullable
+              as SelectOption?,
     ));
   }
 }
@@ -972,7 +986,8 @@ class _$TaskImpl extends _Task {
       required this.title,
       required this.status,
       required this.dueDate,
-      required this.url})
+      required this.url,
+      this.priority})
       : super._();
 
   factory _$TaskImpl.fromJson(Map<String, dynamic> json) =>
@@ -988,10 +1003,12 @@ class _$TaskImpl extends _Task {
   final TaskDate? dueDate;
   @override
   final String? url;
+  @override
+  final SelectOption? priority;
 
   @override
   String toString() {
-    return 'Task(id: $id, title: $title, status: $status, dueDate: $dueDate, url: $url)';
+    return 'Task(id: $id, title: $title, status: $status, dueDate: $dueDate, url: $url, priority: $priority)';
   }
 
   @override
@@ -1003,12 +1020,15 @@ class _$TaskImpl extends _Task {
             (identical(other.title, title) || other.title == title) &&
             (identical(other.status, status) || other.status == status) &&
             (identical(other.dueDate, dueDate) || other.dueDate == dueDate) &&
-            (identical(other.url, url) || other.url == url));
+            (identical(other.url, url) || other.url == url) &&
+            (identical(other.priority, priority) ||
+                other.priority == priority));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, title, status, dueDate, url);
+  int get hashCode =>
+      Object.hash(runtimeType, id, title, status, dueDate, url, priority);
 
   /// Create a copy of Task
   /// with the given fields replaced by the non-null parameter values.
@@ -1032,7 +1052,8 @@ abstract class _Task extends Task {
       required final String title,
       required final TaskStatus status,
       required final TaskDate? dueDate,
-      required final String? url}) = _$TaskImpl;
+      required final String? url,
+      final SelectOption? priority}) = _$TaskImpl;
   const _Task._() : super._();
 
   factory _Task.fromJson(Map<String, dynamic> json) = _$TaskImpl.fromJson;
@@ -1047,6 +1068,8 @@ abstract class _Task extends Task {
   TaskDate? get dueDate;
   @override
   String? get url;
+  @override
+  SelectOption? get priority;
 
   /// Create a copy of Task
   /// with the given fields replaced by the non-null parameter values.

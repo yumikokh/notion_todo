@@ -1,24 +1,25 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:tanzaku_todo/src/notion/common/filter_type.dart';
 import 'package:tanzaku_todo/src/notion/model/property.dart';
 import 'package:tanzaku_todo/src/notion/model/task.dart';
 import 'package:tanzaku_todo/src/notion/model/task_database.dart';
-import 'package:tanzaku_todo/src/notion/repository/notion_task_repository.dart';
-import 'package:tanzaku_todo/src/notion/tasks/task_service.dart';
+import 'package:tanzaku_todo/src/notion/api/notion_task_api.dart';
+import 'package:tanzaku_todo/src/notion/tasks/task_repository.dart';
 
 @GenerateNiceMocks([
-  MockSpec<NotionTaskRepository>(),
+  MockSpec<NotionTaskApi>(),
 ])
 import 'task_service_test.mocks.dart';
 
 void main() {
-  late TaskService service;
-  late MockNotionTaskRepository mockRepository;
+  late TaskRepository service;
+  late MockNotionTaskApi mockRepository;
   late TaskDatabase taskDatabase;
 
   setUp(() {
-    mockRepository = MockNotionTaskRepository();
+    mockRepository = MockNotionTaskApi();
     taskDatabase = TaskDatabase(
       id: 'test_id',
       name: 'test_database',
@@ -35,19 +36,19 @@ void main() {
             StatusGroup(
               id: 'todo_group',
               name: StatusGroupType.todo.value,
-              color: 'gray',
+              color: NotionColor.gray,
               optionIds: ['todo_option'],
             ),
             StatusGroup(
               id: 'in_progress_group',
               name: StatusGroupType.inProgress.value,
-              color: 'blue',
+              color: NotionColor.blue,
               optionIds: ['in_progress_option'],
             ),
             StatusGroup(
               id: 'complete_group',
               name: StatusGroupType.complete.value,
-              color: 'green',
+              color: NotionColor.green,
               optionIds: ['complete_option'],
             ),
           ],
@@ -55,42 +56,65 @@ void main() {
             StatusOption(
               id: 'todo_option',
               name: 'To-do',
-              color: 'gray',
+              color: NotionColor.gray,
             ),
             StatusOption(
               id: 'in_progress_option',
               name: 'In Progress',
-              color: 'blue',
+              color: NotionColor.blue,
             ),
             StatusOption(
               id: 'complete_option',
               name: 'Complete',
-              color: 'green',
+              color: NotionColor.green,
             ),
           ],
         ),
         todoOption: StatusOption(
           id: 'todo_option',
           name: 'To-do',
-          color: 'gray',
+          color: NotionColor.gray,
         ),
         inProgressOption: StatusOption(
           id: 'in_progress_option',
           name: 'In Progress',
-          color: 'blue',
+          color: NotionColor.blue,
         ),
         completeOption: StatusOption(
           id: 'complete_option',
           name: 'Complete',
-          color: 'green',
+          color: NotionColor.green,
         ),
       ),
       date: DateProperty(
         id: 'date_id',
         name: 'Date',
       ),
+      priority: SelectProperty(
+        id: 'priority_id',
+        name: 'Priority',
+        select: (
+          options: [
+            SelectOption(
+              id: 'high_priority',
+              name: 'High',
+              color: NotionColor.red,
+            ),
+            SelectOption(
+              id: 'medium_priority',
+              name: 'Medium',
+              color: NotionColor.yellow,
+            ),
+            SelectOption(
+              id: 'low_priority',
+              name: 'Low',
+              color: NotionColor.blue,
+            ),
+          ],
+        ),
+      ),
     );
-    service = TaskService(mockRepository, taskDatabase);
+    service = TaskRepository(mockRepository, taskDatabase);
   });
 
   group('fetchTasks', () {
@@ -100,14 +124,26 @@ void main() {
           'id': 'task1',
           'properties': {
             'Title': {
+              'id': 'title',
               'type': 'title',
               'title': [
                 {'plain_text': 'Test Task'}
               ]
             },
-            'Status': {'checkbox': false},
+            'Status': {
+              'id': 'status_id',
+              'type': 'checkbox',
+              'checkbox': false
+            },
             'Date': {
+              'id': 'date_id',
+              'type': 'date',
               'date': {'start': '2024-03-20', 'end': null}
+            },
+            'Priority': {
+              'id': 'priority_id',
+              'type': 'select',
+              'select': {'id': 'high_priority', 'name': 'High', 'color': 'red'}
             }
           },
           'url': 'https://notion.so/task1'
@@ -129,6 +165,7 @@ void main() {
       expect(result.tasks[0].title, 'Test Task');
       expect(result.tasks[0].isCompleted, false);
       expect(result.tasks[0].dueDate?.start.submitFormat, '2024-03-20');
+      expect(result.tasks[0].priority?.name, 'High');
       expect(result.hasMore, false);
       expect(result.nextCursor, null);
     });
@@ -140,12 +177,15 @@ void main() {
             'id': 'task1',
             'properties': {
               'Title': {
+                'id': 'title',
                 'type': 'title',
                 'title': [
                   {'plain_text': 'Today Task'}
                 ]
               },
               'Status': {
+                'id': 'status_id',
+                'type': 'status',
                 'status': {
                   'id': 'todo_option',
                   'name': 'To-do',
@@ -153,7 +193,18 @@ void main() {
                 }
               },
               'Date': {
+                'id': 'date_id',
+                'type': 'date',
                 'date': {'start': DateTime.now().toIso8601String(), 'end': null}
+              },
+              'Priority': {
+                'id': 'priority_id',
+                'type': 'select',
+                'select': {
+                  'id': 'medium_priority',
+                  'name': 'Medium',
+                  'color': 'yellow'
+                }
               }
             },
             'url': 'https://notion.so/task1'
@@ -162,12 +213,15 @@ void main() {
             'id': 'task2',
             'properties': {
               'Title': {
+                'id': 'title',
                 'type': 'title',
                 'title': [
                   {'plain_text': 'In Progress Task'}
                 ]
               },
               'Status': {
+                'id': 'status_id',
+                'type': 'status',
                 'status': {
                   'id': 'in_progress_option',
                   'name': 'In Progress',
@@ -175,7 +229,14 @@ void main() {
                 }
               },
               'Date': {
+                'id': 'date_id',
+                'type': 'date',
                 'date': {'start': '2024-04-01', 'end': null}
+              },
+              'Priority': {
+                'id': 'priority_id',
+                'type': 'select',
+                'select': {'id': 'low_priority', 'name': 'Low', 'color': 'blue'}
               }
             },
             'url': 'https://notion.so/task2'
@@ -201,6 +262,7 @@ void main() {
         isA<TaskStatusStatus>()
             .having((s) => s.option?.name, 'option.name', 'To-do'),
       );
+      expect(result.tasks[0].priority?.name, 'Medium');
 
       // 進行中のタスク
       expect(result.tasks[1].id, 'task2');
@@ -211,6 +273,7 @@ void main() {
             .having((s) => s.option?.name, 'option.name', 'In Progress'),
       );
       expect(result.tasks[1].dueDate?.start.submitFormat, '2024-04-01');
+      expect(result.tasks[1].priority?.name, 'Low');
 
       expect(result.hasMore, false);
       expect(result.nextCursor, null);
@@ -222,36 +285,52 @@ void main() {
       'id': 'new_task',
       'properties': {
         'Title': {
+          'id': 'title',
           'type': 'title',
           'title': [
             {'plain_text': 'New Task'}
           ]
         },
-        'Status': {'checkbox': false},
+        'Status': {'id': 'status_id', 'type': 'checkbox', 'checkbox': false},
         'Date': {
+          'id': 'date_id',
+          'type': 'date',
           'date': {'start': '2024-03-20', 'end': null}
+        },
+        'Priority': {
+          'id': 'priority_id',
+          'type': 'select',
+          'select': {'id': 'high_priority', 'name': 'High', 'color': 'red'}
         }
       },
       'url': 'https://notion.so/new_task'
     };
 
     test('タスクを追加できる', () async {
-      when(mockRepository.addTask(any, any, any))
-          .thenAnswer((_) async => mockResponse);
+      when(mockRepository.addTask(any)).thenAnswer((_) async => mockResponse);
 
-      final result = await service.addTask(
-          'New Task',
-          TaskDate(
-            start: NotionDateTime(
-              datetime: DateTime.parse('2024-03-20'),
-              isAllDay: true,
-            ),
-          ));
+      final newTask = Task.temp(
+        title: 'New Task',
+        dueDate: TaskDate(
+          start: NotionDateTime(
+            datetime: DateTime.parse('2024-03-20'),
+            isAllDay: true,
+          ),
+        ),
+        priority: SelectOption(
+          id: 'high_priority',
+          name: 'High',
+          color: NotionColor.red,
+        ),
+      );
+
+      final result = await service.addTask(newTask);
 
       expect(result.id, 'new_task');
       expect(result.title, 'New Task');
       expect(result.isCompleted, false);
       expect(result.dueDate?.start.submitFormat, '2024-03-20');
+      expect(result.priority?.name, 'High');
     });
   });
 
@@ -260,37 +339,57 @@ void main() {
       'id': 'task1',
       'properties': {
         'Title': {
+          'id': 'title',
           'type': 'title',
           'title': [
             {'plain_text': 'Updated Task'}
           ]
         },
-        'Status': {'checkbox': false},
+        'Status': {'id': 'status_id', 'type': 'checkbox', 'checkbox': false},
         'Date': {
+          'id': 'date_id',
+          'type': 'date',
           'date': {'start': '2024-03-21', 'end': null}
+        },
+        'Priority': {
+          'id': 'priority_id',
+          'type': 'select',
+          'select': {
+            'id': 'medium_priority',
+            'name': 'Medium',
+            'color': 'yellow'
+          }
         }
       },
       'url': 'https://notion.so/task1'
     };
 
     test('タスクを更新できる', () async {
-      when(mockRepository.updateTask(any, any, any, any))
+      when(mockRepository.updateTask(any))
           .thenAnswer((_) async => mockResponse);
 
-      final result = await service.updateTask(
-        'task1',
-        'Updated Task',
-        TaskDate(
+      final taskToUpdate = Task.temp(
+        title: 'Updated Task',
+        dueDate: TaskDate(
           start: NotionDateTime(
             datetime: DateTime.parse('2024-03-21'),
             isAllDay: true,
           ),
         ),
+        priority: SelectOption(
+          id: 'medium_priority',
+          name: 'Medium',
+          color: NotionColor.yellow,
+        ),
       );
+
+      final result = await service.updateTask(taskToUpdate);
+
       expect(result.id, 'task1');
       expect(result.title, 'Updated Task');
       expect(result.isCompleted, false);
       expect(result.dueDate?.start.submitFormat, '2024-03-21');
+      expect(result.priority?.name, 'Medium');
     });
   });
 
@@ -299,12 +398,15 @@ void main() {
       'id': 'task1',
       'properties': {
         'Title': {
+          'id': 'title',
           'type': 'title',
           'title': [
             {'plain_text': 'Test Task'}
           ]
         },
         'Status': {
+          'id': 'status_id',
+          'type': 'status',
           'status': {
             'id': 'complete_option',
             'name': 'Complete',
@@ -312,7 +414,14 @@ void main() {
           }
         },
         'Date': {
+          'id': 'date_id',
+          'type': 'date',
           'date': {'start': '2024-03-20', 'end': null}
+        },
+        'Priority': {
+          'id': 'priority_id',
+          'type': 'select',
+          'select': {'id': 'high_priority', 'name': 'High', 'color': 'red'}
         }
       },
       'url': 'https://notion.so/task1'
@@ -328,6 +437,7 @@ void main() {
       expect(result.title, 'Test Task');
       expect(result.isCompleted, true);
       expect(result.dueDate?.start.submitFormat, '2024-03-20');
+      expect(result.priority?.name, 'High');
     });
   });
 
@@ -336,14 +446,22 @@ void main() {
       'id': 'task1',
       'properties': {
         'Title': {
+          'id': 'title',
           'type': 'title',
           'title': [
             {'plain_text': 'Test Task'}
           ]
         },
-        'Status': {'checkbox': false},
+        'Status': {'id': 'status_id', 'type': 'checkbox', 'checkbox': false},
         'Date': {
+          'id': 'date_id',
+          'type': 'date',
           'date': {'start': '2024-03-20', 'end': null}
+        },
+        'Priority': {
+          'id': 'priority_id',
+          'type': 'select',
+          'select': {'id': 'low_priority', 'name': 'Low', 'color': 'blue'}
         }
       },
       'url': 'https://notion.so/task1'
@@ -359,6 +477,7 @@ void main() {
       expect(result?.title, 'Test Task');
       expect(result?.isCompleted, false);
       expect(result?.dueDate?.start.submitFormat, '2024-03-20');
+      expect(result?.priority?.name, 'Low');
     });
   });
 
@@ -368,16 +487,28 @@ void main() {
         'id': 'task1',
         'properties': {
           'Title': {
+            'id': 'title',
             'type': 'title',
             'title': [
               {'plain_text': 'Test Task'}
             ]
           },
           'Status': {
+            'id': 'status_id',
+            'type': 'status',
             'status': {
               'id': 'in_progress_option',
               'name': 'In Progress',
               'color': 'blue',
+            }
+          },
+          'Priority': {
+            'id': 'priority_id',
+            'type': 'select',
+            'select': {
+              'id': 'medium_priority',
+              'name': 'Medium',
+              'color': 'yellow'
             }
           }
         }
@@ -396,8 +527,9 @@ void main() {
         isA<TaskStatusStatus>()
             .having((s) => s.option?.id, 'option.id', 'in_progress_option')
             .having((s) => s.option?.name, 'option.name', 'In Progress')
-            .having((s) => s.option?.color, 'option.color', 'blue'),
+            .having((s) => s.option?.color, 'option.color', NotionColor.blue),
       );
+      expect(updatedTask.priority?.name, 'Medium');
     });
 
     test('タスクのステータスを進行中から未着手に更新できる', () async {
@@ -408,16 +540,28 @@ void main() {
                 'id': taskId,
                 'properties': {
                   'Title': {
+                    'id': 'title',
                     'type': 'title',
                     'title': [
                       {'plain_text': taskTitle}
                     ]
                   },
                   'Status': {
+                    'id': 'status_id',
+                    'type': 'status',
                     'status': {
                       'id': 'todo_option',
                       'name': 'To-do',
                       'color': 'gray',
+                    }
+                  },
+                  'Priority': {
+                    'id': 'priority_id',
+                    'type': 'select',
+                    'select': {
+                      'id': 'low_priority',
+                      'name': 'Low',
+                      'color': 'blue'
                     }
                   }
                 }
@@ -433,8 +577,9 @@ void main() {
         isA<TaskStatusStatus>()
             .having((s) => s.option?.id, 'option.id', 'todo_option')
             .having((s) => s.option?.name, 'option.name', 'To-do')
-            .having((s) => s.option?.color, 'option.color', 'gray'),
+            .having((s) => s.option?.color, 'option.color', NotionColor.gray),
       );
+      expect(updatedTask.priority?.name, 'Low');
     });
 
     test('API呼び出しに失敗した場合に例外がスローされる', () async {
@@ -447,6 +592,120 @@ void main() {
         throwsA(isA<Exception>()),
       );
       verify(mockRepository.updateInProgressStatus(taskId, true)).called(1);
+    });
+  });
+
+  group('_priority', () {
+    test('priorityプロパティからSelectOptionが正しく取得できる', () {
+      // _priorityメソッドは非公開なので、addTaskを通して間接的に確認する
+      final mockResponse = {
+        'id': 'task1',
+        'properties': {
+          'Title': {
+            'id': 'title',
+            'type': 'title',
+            'title': [
+              {'plain_text': 'Test Task'}
+            ]
+          },
+          'Status': {
+            'id': 'status_id',
+            'type': 'checkbox',
+            'checkbox': false,
+          },
+          'Priority': {
+            'id': 'priority_id',
+            'type': 'select',
+            'select': {'id': 'high_priority', 'name': 'High', 'color': 'red'}
+          }
+        },
+        'url': 'https://notion.so/task1'
+      };
+
+      when(mockRepository.addTask(any)).thenAnswer((_) async => mockResponse);
+
+      final task = Task.temp(
+        title: 'Test Task',
+        priority: SelectOption(
+          id: 'high_priority',
+          name: 'High',
+          color: NotionColor.red,
+        ),
+      );
+
+      service.addTask(task).then((result) {
+        expect(result.priority?.id, 'high_priority');
+        expect(result.priority?.name, 'High');
+        expect(result.priority?.color, NotionColor.red);
+      });
+    });
+
+    test('priorityプロパティが存在しない場合はnullを返す', () {
+      final mockResponse = {
+        'id': 'task1',
+        'properties': {
+          'Title': {
+            'id': 'title',
+            'type': 'title',
+            'title': [
+              {'plain_text': 'Test Task'}
+            ]
+          },
+          'Status': {
+            'id': 'status_id',
+            'type': 'checkbox',
+            'checkbox': false,
+          },
+          // Priorityプロパティなし
+        },
+        'url': 'https://notion.so/task1'
+      };
+
+      when(mockRepository.addTask(any)).thenAnswer((_) async => mockResponse);
+
+      final task = Task.temp(
+        title: 'Test Task',
+      );
+
+      service.addTask(task).then((result) {
+        expect(result.priority, isNull);
+      });
+    });
+
+    test('優先度が選択されていない場合はnullを返す', () {
+      final mockResponse = {
+        'id': 'task1',
+        'properties': {
+          'Title': {
+            'id': 'title',
+            'type': 'title',
+            'title': [
+              {'plain_text': 'Test Task'}
+            ]
+          },
+          'Status': {
+            'id': 'status_id',
+            'type': 'checkbox',
+            'checkbox': false,
+          },
+          'Priority': {
+            'id': 'priority_id',
+            'type': 'select',
+            'select': null, // 選択なし
+          }
+        },
+        'url': 'https://notion.so/task1'
+      };
+
+      when(mockRepository.addTask(any)).thenAnswer((_) async => mockResponse);
+
+      final task = Task.temp(
+        title: 'Test Task',
+      );
+
+      service.addTask(task).then((result) {
+        expect(result.priority, isNull);
+      });
     });
   });
 }
