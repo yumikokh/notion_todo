@@ -265,6 +265,7 @@ class StatusCompleteStatusProperty extends StatusProperty
     );
   }
 
+  @override
   StatusCompleteStatusProperty copyWith({
     String? id,
     String? name,
