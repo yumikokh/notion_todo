@@ -488,7 +488,7 @@ class PaywallSheet extends HookConsumerWidget {
         buttonText = l.start_free_trial;
         if (selectedPlan != null) {
           subText = l.trial_ends_then_price_per_year(
-            selectedPlan.trialDays.toString(),
+            selectedPlan.trialDays,
             selectedPlan.priceString,
             l.yearly_price_short,
           );
