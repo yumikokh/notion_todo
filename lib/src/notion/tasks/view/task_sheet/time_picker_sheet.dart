@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../../../../l10n/app_localizations.dart';
 import '../../../model/task.dart';
 import '../../../../helpers/haptic_helper.dart';
 import '../../time_sheet_viewmodel.dart';

@@ -1,6 +1,6 @@
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../common/debounced_state_mixin.dart';
 import '../common/error.dart';
 import '../common/snackbar/model/snackbar_state.dart';
