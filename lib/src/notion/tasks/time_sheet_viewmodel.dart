@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../helpers/date.dart';
 import '../model/task.dart';
 

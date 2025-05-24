@@ -1,10 +1,9 @@
+import 'dart:collection';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
-import 'dart:collection';
-
+import '../../../../l10n/app_localizations.dart';
 import '../../common/error.dart';
 import '../../common/snackbar/model/snackbar_state.dart';
 import '../../common/snackbar/snackbar.dart';

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../../l10n/app_localizations.dart';
 import '../../helpers/haptic_helper.dart';
 import '../settings_viewmodel.dart';
 import '../../common/analytics/analytics_service.dart';
