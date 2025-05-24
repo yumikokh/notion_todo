@@ -57,7 +57,8 @@ class AppLocalizationsJa extends AppLocalizations {
   String get notion_settings_view_auth_status_connected => 'Notionに接続されています';
 
   @override
-  String get notion_settings_view_auth_status_disconnected => 'Notionに接続されていません';
+  String get notion_settings_view_auth_status_disconnected =>
+      'Notionに接続されていません';
 
   @override
   String get notion_settings_view_auth_status_disconnect => 'Notionの接続を解除';
@@ -69,13 +70,15 @@ class AppLocalizationsJa extends AppLocalizations {
   String get notion_settings_view_database_settings_title => 'データベース設定';
 
   @override
-  String get notion_settings_view_database_settings_description => '該当プロパティの名前や種類などが変わった場合は、再設定が必要です';
+  String get notion_settings_view_database_settings_description =>
+      '該当プロパティの名前や種類などが変わった場合は、再設定が必要です';
 
   @override
   String get notion_settings_view_database_settings_database_name => 'データベース名';
 
   @override
-  String get notion_settings_view_database_settings_change_database_settings => 'データベース設定を変更';
+  String get notion_settings_view_database_settings_change_database_settings =>
+      'データベース設定を変更';
 
   @override
   String get task_database_settings_title => 'タスクデータベース設定';
@@ -275,13 +278,16 @@ class AppLocalizationsJa extends AppLocalizations {
   String get wakelock_description => 'バッテリーに影響を与える可能性があります。';
 
   @override
-  String get notion_settings_view_not_found_database_description => 'データベースをまだお持ちでないですか？';
+  String get notion_settings_view_not_found_database_description =>
+      'データベースをまだお持ちでないですか？';
 
   @override
-  String get notion_settings_view_not_found_database_template_description => '認証時に「提供されたテンプレートを使う」（上のボタン）を選ぶと、すぐに使えるタスク管理用のデータベースが追加されます！';
+  String get notion_settings_view_not_found_database_template_description =>
+      '認証時に「提供されたテンプレートを使う」（上のボタン）を選ぶと、すぐに使えるタスク管理用のデータベースが追加されます！';
 
   @override
-  String get notion_settings_view_not_found_database_select_description => 'もし既にお使いのデータベースがあれば、「共有するページの選択」（下のボタン）から選んでください。';
+  String get notion_settings_view_not_found_database_select_description =>
+      'もし既にお使いのデータベースがあれば、「共有するページの選択」（下のボタン）から選んでください。';
 
   @override
   String get go_to_settings => '設定ページへ';
@@ -361,7 +367,8 @@ class AppLocalizationsJa extends AppLocalizations {
   String get task_star_button_dialog_title => '進行中オプションが未設定です';
 
   @override
-  String get task_star_button_dialog_content => 'データベース設定から設定して、今集中すべきタスクを確認してみましょう！';
+  String get task_star_button_dialog_content =>
+      'データベース設定から設定して、今集中すべきタスクを確認してみましょう！';
 
   @override
   String get task_star_button_dialog_cancel => 'キャンセル';
@@ -463,7 +470,8 @@ class AppLocalizationsJa extends AppLocalizations {
   String get task_priority_dialog_title => '優先度プロパティが未設定です';
 
   @override
-  String get task_priority_dialog_content => 'タスクの優先度を設定するには、データベース設定で優先度プロパティを設定してください。';
+  String get task_priority_dialog_content =>
+      'タスクの優先度を設定するには、データベース設定で優先度プロパティを設定してください。';
 
   @override
   String get task_priority_dialog_cancel => 'キャンセル';
@@ -566,7 +574,8 @@ class AppLocalizationsJa extends AppLocalizations {
   String get yearly_price => '年';
 
   @override
-  String get upgrade_to_premium_description => 'プレミアムプランへアップグレードして、すべての機能を開放しましょう！';
+  String get upgrade_to_premium_description =>
+      'プレミアムプランへアップグレードして、すべての機能を開放しましょう！';
 
   @override
   String get unlock_all_widgets_title => 'すべてのウィジェットを開放';
@@ -602,7 +611,8 @@ class AppLocalizationsJa extends AppLocalizations {
   String get yearly_price_short => '年';
 
   @override
-  String trial_ends_then_price_per_year(int trialDays, String priceString, String yearlyPriceShort) {
+  String trial_ends_then_price_per_year(
+      int trialDays, String priceString, String yearlyPriceShort) {
     return '$trialDays日間の無料体験の終了後は $priceString / $yearlyPriceShort';
   }
 
@@ -624,10 +634,12 @@ class AppLocalizationsJa extends AppLocalizations {
   String get privacy_policy => 'プライバシーポリシー';
 
   @override
-  String get purchase_terms_and_conditions_part3 => '定期購入はいつでもキャンセルできます。\n無料トライアルが適用されるのは、初回購入時のみです。\n定期購入プラン変更時は現在のプラン終了後に自動的に切り替わります。';
+  String get purchase_terms_and_conditions_part3 =>
+      '定期購入はいつでもキャンセルできます。\n無料トライアルが適用されるのは、初回購入時のみです。\n定期購入プラン変更時は現在のプラン終了後に自動的に切り替わります。';
 
   @override
-  String get switchToLifetimeNotificationBody => '定期購入プランを購入済みの場合は、お手数ですがApp Store / Google Playのアカウント設定から自動更新停止をお願いいたします。';
+  String get switchToLifetimeNotificationBody =>
+      '定期購入プランを購入済みの場合は、お手数ですがApp Store / Google Playのアカウント設定から自動更新停止をお願いいたします。';
 
   @override
   String get subscription_purchase_success_title => '永久ライセンスを取得しました！';

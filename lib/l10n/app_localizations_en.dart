@@ -21,7 +21,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings_view_notion_settings_title => 'Notion Settings';
 
   @override
-  String get settings_view_notion_settings_description => 'Database settings are required';
+  String get settings_view_notion_settings_description =>
+      'Database settings are required';
 
   @override
   String get settings_view_theme_settings_title => 'Theme';
@@ -33,7 +34,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings_view_support_faq_title => 'FAQ';
 
   @override
-  String get settings_view_support_feedback_title => 'Bug Report・Request・Contact';
+  String get settings_view_support_feedback_title =>
+      'Bug Report・Request・Contact';
 
   @override
   String get settings_view_support_privacy_policy_title => 'Privacy Policy';
@@ -54,28 +56,35 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notion_settings_view_auth_status => 'Authentication Status';
 
   @override
-  String get notion_settings_view_auth_status_connected => 'Connected to Notion';
+  String get notion_settings_view_auth_status_connected =>
+      'Connected to Notion';
 
   @override
-  String get notion_settings_view_auth_status_disconnected => 'Disconnected from Notion';
+  String get notion_settings_view_auth_status_disconnected =>
+      'Disconnected from Notion';
 
   @override
-  String get notion_settings_view_auth_status_disconnect => 'Disconnect from Notion';
+  String get notion_settings_view_auth_status_disconnect =>
+      'Disconnect from Notion';
 
   @override
   String get notion_settings_view_auth_status_connect => 'Connect to Notion';
 
   @override
-  String get notion_settings_view_database_settings_title => 'Database Settings';
+  String get notion_settings_view_database_settings_title =>
+      'Database Settings';
 
   @override
-  String get notion_settings_view_database_settings_description => 'If the name or type of the corresponding property changes, re-setting is required';
+  String get notion_settings_view_database_settings_description =>
+      'If the name or type of the corresponding property changes, re-setting is required';
 
   @override
-  String get notion_settings_view_database_settings_database_name => 'Database Name';
+  String get notion_settings_view_database_settings_database_name =>
+      'Database Name';
 
   @override
-  String get notion_settings_view_database_settings_change_database_settings => 'Change Database Settings';
+  String get notion_settings_view_database_settings_change_database_settings =>
+      'Change Database Settings';
 
   @override
   String get task_database_settings_title => 'Task Database Settings';
@@ -138,7 +147,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get property_name_input => 'Enter the property name';
 
   @override
-  String get property_name_error => 'A property with the same name already exists';
+  String get property_name_error =>
+      'A property with the same name already exists';
 
   @override
   String get error => 'Error';
@@ -275,19 +285,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get wakelock_description => 'Battery consumption may be affected.';
 
   @override
-  String get notion_settings_view_not_found_database_description => 'Don\'t have a database yet?';
+  String get notion_settings_view_not_found_database_description =>
+      'Don\'t have a database yet?';
 
   @override
-  String get notion_settings_view_not_found_database_template_description => 'Select \"Use a template provided\" (button above) during authentication to get a ready-to-use task management database!';
+  String get notion_settings_view_not_found_database_template_description =>
+      'Select \"Use a template provided\" (button above) during authentication to get a ready-to-use task management database!';
 
   @override
-  String get notion_settings_view_not_found_database_select_description => 'If you already have your own database, choose \"Select pages to share\" (button below) to use it.';
+  String get notion_settings_view_not_found_database_select_description =>
+      'If you already have your own database, choose \"Select pages to share\" (button below) to use it.';
 
   @override
   String get go_to_settings => 'Go to Settings';
 
   @override
-  String get notion_database_settings_required => 'Notion database settings are required.';
+  String get notion_database_settings_required =>
+      'Notion database settings are required.';
 
   @override
   String updateMessage(String version) {
@@ -337,10 +351,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hide_navigation_label_title => 'Hide Navigation Labels';
 
   @override
-  String get hide_navigation_label_description => 'Hide labels in the bottom navigation bar';
+  String get hide_navigation_label_description =>
+      'Hide labels in the bottom navigation bar';
 
   @override
-  String get font_settings_description => 'Customize the date title of the today task list';
+  String get font_settings_description =>
+      'Customize the date title of the today task list';
 
   @override
   String current_setting(String setting) {
@@ -361,7 +377,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get task_star_button_dialog_title => 'In Progress Option Not Set';
 
   @override
-  String get task_star_button_dialog_content => 'Set up the In Progress option in database settings to track what you should focus on!';
+  String get task_star_button_dialog_content =>
+      'Set up the In Progress option in database settings to track what you should focus on!';
 
   @override
   String get task_star_button_dialog_cancel => 'Cancel';
@@ -409,7 +426,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get continuous_task_addition_title => 'Continuous Task Addition';
 
   @override
-  String get continuous_task_addition_description => 'Allow continuous task addition';
+  String get continuous_task_addition_description =>
+      'Allow continuous task addition';
 
   @override
   String get behavior_settings_title => 'Behavior';
@@ -418,7 +436,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get task_completion_sound_title => 'Task Completion Sound';
 
   @override
-  String get task_completion_sound_description => 'Play a sound when a task is completed';
+  String get task_completion_sound_description =>
+      'Play a sound when a task is completed';
 
   @override
   String get sound_settings_title => 'Task Completion Sound';
@@ -427,16 +446,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sound_enabled => 'Enable Sound';
 
   @override
-  String get sound_enabled_description => 'Play a sound when a task is completed';
+  String get sound_enabled_description =>
+      'Play a sound when a task is completed';
 
   @override
-  String get morning_message => 'A new day begins.\nWhat would you like to start with?';
+  String get morning_message =>
+      'A new day begins.\nWhat would you like to start with?';
 
   @override
-  String get afternoon_message => 'Good afternoon!\nWhat would you like to start with?';
+  String get afternoon_message =>
+      'Good afternoon!\nWhat would you like to start with?';
 
   @override
-  String get evening_message => 'Good evening.\nWhat would you like to accomplish today?';
+  String get evening_message =>
+      'Good evening.\nWhat would you like to accomplish today?';
 
   @override
   String get licenses_page_title => 'Licenses';
@@ -463,7 +486,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get task_priority_dialog_title => 'Priority Property Not Set';
 
   @override
-  String get task_priority_dialog_content => 'Set up the Priority property in database settings to prioritize your tasks!';
+  String get task_priority_dialog_content =>
+      'Set up the Priority property in database settings to prioritize your tasks!';
 
   @override
   String get task_priority_dialog_cancel => 'Cancel';
@@ -495,7 +519,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get subscription_fetch_failed => 'Failed to fetch subscription information';
+  String get subscription_fetch_failed =>
+      'Failed to fetch subscription information';
 
   @override
   String subscription_purchase_success(String plan) {
@@ -506,7 +531,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get subscription_purchase_failed => 'Purchase failed';
 
   @override
-  String get subscription_purchase_error_general => 'An error occurred during purchase.';
+  String get subscription_purchase_error_general =>
+      'An error occurred during purchase.';
 
   @override
   String get subscription_restore_success => 'Purchases restored successfully';
@@ -518,7 +544,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get subscription_restore_none => 'No purchases to restore';
 
   @override
-  String get subscription_restore_error_general => 'An error occurred while restoring purchases.';
+  String get subscription_restore_error_general =>
+      'An error occurred while restoring purchases.';
 
   @override
   String get premium_features_title => 'Premium';
@@ -560,28 +587,34 @@ class AppLocalizationsEn extends AppLocalizations {
   String get yearly_price => 'year';
 
   @override
-  String get upgrade_to_premium_description => 'Upgrade to Premium and unlock all features!';
+  String get upgrade_to_premium_description =>
+      'Upgrade to Premium and unlock all features!';
 
   @override
   String get unlock_all_widgets_title => 'Unlock All Widgets';
 
   @override
-  String get unlock_all_widgets_description => 'Choose from multiple widget styles.';
+  String get unlock_all_widgets_description =>
+      'Choose from multiple widget styles.';
 
   @override
-  String get access_all_future_features_title => 'Access to All Future Features';
+  String get access_all_future_features_title =>
+      'Access to All Future Features';
 
   @override
-  String get access_all_future_features_description => 'Get new features as soon as they are added.';
+  String get access_all_future_features_description =>
+      'Get new features as soon as they are added.';
 
   @override
   String get support_the_developer_title => 'Support the Developer';
 
   @override
-  String get support_the_developer_description => 'Help support continued development.';
+  String get support_the_developer_description =>
+      'Help support continued development.';
 
   @override
-  String get lifetime_unlock_description => 'Unlock all features with a one-time purchase.';
+  String get lifetime_unlock_description =>
+      'Unlock all features with a one-time purchase.';
 
   @override
   String get lifetime_license_activated => 'Lifetime License Activated';
@@ -596,7 +629,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get yearly_price_short => 'year';
 
   @override
-  String trial_ends_then_price_per_year(int trialDays, String priceString, String yearlyPriceShort) {
+  String trial_ends_then_price_per_year(
+      int trialDays, String priceString, String yearlyPriceShort) {
     return 'After $trialDays-day free trial, then $priceString / $yearlyPriceShort';
   }
 
@@ -618,14 +652,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get privacy_policy => 'Privacy Policy';
 
   @override
-  String get purchase_terms_and_conditions_part3 => '.\nSubscriptions can be canceled at any time.\nThe free trial is applicable only for the first purchase.\nWhen changing plans, the switch will occur automatically after the current plan ends.';
+  String get purchase_terms_and_conditions_part3 =>
+      '.\nSubscriptions can be canceled at any time.\nThe free trial is applicable only for the first purchase.\nWhen changing plans, the switch will occur automatically after the current plan ends.';
 
   @override
-  String get switchToLifetimeNotificationBody => 'If you are subscribed to a monthly or yearly plan, please remember to cancel its auto-renewal from your App Store / Google Play account settings.';
+  String get switchToLifetimeNotificationBody =>
+      'If you are subscribed to a monthly or yearly plan, please remember to cancel its auto-renewal from your App Store / Google Play account settings.';
 
   @override
-  String get subscription_purchase_success_title => 'You got the Lifetime plan!';
+  String get subscription_purchase_success_title =>
+      'You got the Lifetime plan!';
 
   @override
-  String get subscription_purchase_success_body => 'You already have a lifetime plan!';
+  String get subscription_purchase_success_body =>
+      'You already have a lifetime plan!';
 }
