@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:table_calendar/table_calendar.dart';
 
+import '../../../../../l10n/app_localizations.dart';
 import '../../../model/task.dart';
 import '../../../../helpers/haptic_helper.dart';
 import '../../const/date.dart';

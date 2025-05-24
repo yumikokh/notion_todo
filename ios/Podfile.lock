@@ -127,7 +127,7 @@ PODS:
     - RevenueCat (= 5.22.2)
   - RevenueCat (5.22.2)
   - Sentry/HybridSDK (8.46.0)
-  - sentry_flutter (8.14.1):
+  - sentry_flutter (8.14.2):
     - Flutter
     - FlutterMacOS
     - Sentry/HybridSDK (= 8.46.0)
@@ -248,7 +248,7 @@ SPEC CHECKSUMS:
   PurchasesHybridCommon: 1728ff834821ecfc85e987a565d51eda36213958
   RevenueCat: 234d2361e453ce1282cee7e18449d01aba45ebbf
   Sentry: da60d980b197a46db0b35ea12cb8f39af48d8854
-  sentry_flutter: 6a134f9d381e49f22ea25a67736cf0cf4d02ec9c
+  sentry_flutter: 2df8b0aab7e4aba81261c230cbea31c82a62dd1b
   shared_preferences_foundation: fcdcbc04712aee1108ac7fda236f363274528f78
   uni_links: d97da20c7701486ba192624d99bffaaffcfc298a
   url_launcher_ios: 5334b05cef931de560670eeae103fd3e431ac3fe
