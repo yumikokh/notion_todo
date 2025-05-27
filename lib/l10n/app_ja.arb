@@ -250,15 +250,9 @@
   "trial_ends_then_price_per_year": "{trialDays}日間の無料体験の終了後は {priceString} / {yearlyPriceShort}",
   "@trial_ends_then_price_per_year": {
     "placeholders": {
-      "trialDays": {
-        "type": "int"
-      },
-      "priceString": {
-        "type": "String"
-      },
-      "yearlyPriceShort": {
-        "type": "String"
-      }
+      "trialDays": {},
+      "priceString": {},
+      "yearlyPriceShort": {}
     }
   },
   "continue_purchase": "購入を続ける",
@@ -266,9 +260,7 @@
   "current_plan_display": "現在のプラン: {currentPlanName}",
   "@current_plan_display": {
     "placeholders": {
-      "currentPlanName": {
-        "type": "String"
-      }
+      "currentPlanName": {}
     }
   },
   "terms_of_service": "利用規約",

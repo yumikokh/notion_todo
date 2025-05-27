@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../l10n/app_localizations.dart';
 import 'common/snackbar/view/snackbar_listener.dart';
 import 'helpers/date.dart';
 import 'common/app_lifecycle_observer.dart';

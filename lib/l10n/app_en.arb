@@ -341,15 +341,9 @@
   "trial_ends_then_price_per_year": "After {trialDays}-day free trial, then {priceString} / {yearlyPriceShort}",
   "@trial_ends_then_price_per_year": {
     "placeholders": {
-      "trialDays": {
-        "type": "int"
-      },
-      "priceString": {
-        "type": "String"
-      },
-      "yearlyPriceShort": {
-        "type": "String"
-      }
+      "trialDays": {},
+      "priceString": {},
+      "yearlyPriceShort": {}
     }
   },
   "continue_purchase": "Continue Purchase",
@@ -357,9 +351,7 @@
   "current_plan_display": "Current Plan: {currentPlanName}",
   "@current_plan_display": {
     "placeholders": {
-      "currentPlanName": {
-        "type": "String"
-      }
+      "currentPlanName": {}
     }
   },
   "terms_of_service": "Terms of Service",

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl_standalone.dart' as intl_standalone;
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../../l10n/app_localizations.dart';
 import '../widget/widget_service.dart';
 
 class SettingsService {
