@@ -34,6 +34,9 @@ class SettingsPage extends ConsumerWidget {
     final appVersionViewModel = ref.read(appVersionViewModelProvider);
     final subscriptionStatus =
         ref.watch(subscriptionViewModelProvider).valueOrNull;
+    final subscriptionViewModel =
+        ref.read(subscriptionViewModelProvider.notifier);
+
     final l = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
@@ -44,18 +47,20 @@ class SettingsPage extends ConsumerWidget {
         padding: const EdgeInsets.symmetric(vertical: 8),
         child: ListView(
           children: [
-            SubscriptionBanner(
-              subscriptionStatus: subscriptionStatus ??
-                  SubscriptionStatus(
-                    isActive: false,
-                    activeType: SubscriptionType.none,
-                  ),
-              onTap: () {
-                analytics.logScreenView(screenName: 'Paywall');
-                PaywallSheet.show(context);
-              },
-            ),
-            const SizedBox(height: 16),
+            if (subscriptionViewModel.shouldShowSubscriptionBanner) ...[
+              SubscriptionBanner(
+                subscriptionStatus: subscriptionStatus ??
+                    SubscriptionStatus(
+                      isActive: false,
+                      activeType: SubscriptionType.none,
+                    ),
+                onTap: () {
+                  analytics.logScreenView(screenName: 'Paywall');
+                  PaywallSheet.show(context);
+                },
+              ),
+              const SizedBox(height: 16),
+            ],
             _buildSection(
               context,
               title: l.settings_view_app_settings_title,
@@ -120,6 +125,8 @@ class SettingsPage extends ConsumerWidget {
                 ),
               ],
             ),
+            const SizedBox(height: 16),
+            _buildPlanListTile(context, subscriptionStatus, analytics, l),
             const SizedBox(height: 16),
             _buildSection(
               context,
@@ -248,6 +255,39 @@ class SettingsPage extends ConsumerWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildPlanListTile(
+      BuildContext context,
+      SubscriptionStatus? subscriptionStatus,
+      AnalyticsService analytics,
+      AppLocalizations l) {
+    String planText = l.free_plan;
+    if (subscriptionStatus?.isActive == true) {
+      planText = l.premium_plan;
+    }
+
+    return _buildSection(
+      context,
+      title: l.account_settings_title,
+      children: [
+        ListTile(
+          title: Text(l.plan_title),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(planText, style: const TextStyle(fontSize: 14)),
+              const SizedBox(width: 8),
+              const Icon(Icons.chevron_right),
+            ],
+          ),
+          onTap: () {
+            analytics.logScreenView(screenName: 'Paywall');
+            PaywallSheet.show(context);
+          },
+        ),
+      ],
     );
   }
 

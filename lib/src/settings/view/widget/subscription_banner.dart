@@ -70,9 +70,7 @@ class SubscriptionBanner extends StatelessWidget {
                 ),
                 Row(
                   children: [
-                    if (subscriptionStatus.activeType ==
-                            SubscriptionType.yearly &&
-                        subscriptionStatus.isInTrial)
+                    if (subscriptionStatus.isInTrial)
                       Text(
                         l.trial_subscription_expires_in((subscriptionStatus
                                     .expirationDate
