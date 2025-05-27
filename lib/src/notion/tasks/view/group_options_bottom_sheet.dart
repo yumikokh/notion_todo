@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../../../l10n/app_localizations.dart';
 import '../../../helpers/haptic_helper.dart';
 import '../../common/filter_type.dart';
 import '../task_group_provider.dart';
