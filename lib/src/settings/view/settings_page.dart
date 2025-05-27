@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../notion/model/task_database.dart';
 import '../../subscription/model/subscription_model.dart';
 import '../task_database/task_database_viewmodel.dart';
 import 'language_settings_page.dart';
@@ -29,7 +30,7 @@ class SettingsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ref) {
-    final database = ref.read(taskDatabaseViewModelProvider).valueOrNull;
+    final database = ref.watch(taskDatabaseViewModelProvider).valueOrNull;
     final analytics = ref.read(analyticsServiceProvider);
     final appVersionViewModel = ref.read(appVersionViewModelProvider);
     final subscriptionStatus =
@@ -61,35 +62,24 @@ class SettingsPage extends ConsumerWidget {
               ),
               const SizedBox(height: 16),
             ],
+            _buildPlanListTile(
+                context, subscriptionStatus, database, analytics, l),
+            const SizedBox(height: 16),
             _buildSection(
               context,
               title: l.settings_view_app_settings_title,
               children: [
                 ListTile(
-                  title: Text(l.settings_view_notion_settings_title),
-                  subtitle: database != null
-                      ? Text(database.name)
-                      : Row(
-                          children: [
-                            Icon(Icons.warning_rounded,
-                                size: 16,
-                                color: Theme.of(context).colorScheme.error),
-                            const SizedBox(width: 8),
-                            Text(l.settings_view_notion_settings_description),
-                          ],
-                        ),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () {
-                    analytics.logScreenView(screenName: 'NotionSettings');
-                    Navigator.of(context)
-                        .pushNamed(NotionSettingsPage.routeName);
-                  },
-                ),
-                ListTile(
                   title: Text(l.language_settings_title),
-                  subtitle: Text(
-                      ref.watch(settingsViewModelProvider).languageName(l)),
-                  trailing: const Icon(Icons.chevron_right),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(ref.watch(settingsViewModelProvider).languageName(l),
+                          style: const TextStyle(fontSize: 14)),
+                      const SizedBox(width: 8),
+                      const Icon(Icons.chevron_right),
+                    ],
+                  ),
                   onTap: () {
                     analytics.logScreenView(screenName: 'LanguageSettings');
                     Navigator.of(context)
@@ -125,8 +115,6 @@ class SettingsPage extends ConsumerWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-            _buildPlanListTile(context, subscriptionStatus, analytics, l),
             const SizedBox(height: 16),
             _buildSection(
               context,
@@ -261,6 +249,7 @@ class SettingsPage extends ConsumerWidget {
   Widget _buildPlanListTile(
       BuildContext context,
       SubscriptionStatus? subscriptionStatus,
+      TaskDatabase? database,
       AnalyticsService analytics,
       AppLocalizations l) {
     String planText = l.free_plan;
@@ -285,6 +274,32 @@ class SettingsPage extends ConsumerWidget {
           onTap: () {
             analytics.logScreenView(screenName: 'Paywall');
             PaywallSheet.show(context);
+          },
+        ),
+        ListTile(
+          title: Text(l.settings_view_notion_settings_title),
+          subtitle: database == null
+              ? Row(
+                  children: [
+                    Icon(Icons.warning_rounded,
+                        size: 16, color: Theme.of(context).colorScheme.error),
+                    const SizedBox(width: 8),
+                    Text(l.settings_view_notion_settings_description),
+                  ],
+                )
+              : null,
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(database != null ? database.name : '',
+                  style: const TextStyle(fontSize: 14)),
+              const SizedBox(width: 8),
+              const Icon(Icons.chevron_right),
+            ],
+          ),
+          onTap: () {
+            analytics.logScreenView(screenName: 'NotionSettings');
+            Navigator.of(context).pushNamed(NotionSettingsPage.routeName);
           },
         ),
       ],

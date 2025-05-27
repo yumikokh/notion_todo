@@ -362,6 +362,6 @@
   "subscription_purchase_success_body": "You already have a lifetime plan!",
   "account_settings_title": "Account",
   "free_plan": "Free Plan",
-  "premium_plan": "Premium Plan Joined",
+  "premium_plan": "Premium Plan Active",
   "plan_title": "Plan"
 }
