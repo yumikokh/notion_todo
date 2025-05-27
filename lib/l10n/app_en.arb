@@ -299,8 +299,8 @@
   "yearly_subscription": "Yearly",
   "lifetime_subscription": "Lifetime",
   "lifetime_purchase": "Permanent License",
-  "subscription_expires_in": "Expires in {days} days",
-  "@subscription_expires_in": {
+  "trial_subscription_expires_in": "{days, plural, =1{Trial expires in 1 day} other{Trial expires in {days} days}}",
+  "@trial_subscription_expires_in": {
     "placeholders": {
       "days": {
         "type": "int"

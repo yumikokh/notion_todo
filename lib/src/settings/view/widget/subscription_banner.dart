@@ -70,17 +70,16 @@ class SubscriptionBanner extends StatelessWidget {
                 ),
                 Row(
                   children: [
-                    if (subscriptionStatus.isSubscribed)
+                    if (subscriptionStatus.activeType ==
+                            SubscriptionType.yearly &&
+                        subscriptionStatus.isInTrial)
                       Text(
-                        subscriptionStatus.activeType !=
-                                SubscriptionType.lifetime
-                            ? l.subscription_expires_in((subscriptionStatus
-                                        .expirationDate
-                                        ?.difference(DateTime.now())
-                                        .inDays ??
-                                    0) +
-                                1)
-                            : l.lifetime_purchase,
+                        l.trial_subscription_expires_in((subscriptionStatus
+                                    .expirationDate
+                                    ?.difference(DateTime.now())
+                                    .inDays ??
+                                0) +
+                            1),
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.onPrimary,
                         ),

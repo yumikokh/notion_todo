@@ -208,8 +208,8 @@
   "yearly_subscription": "年額",
   "lifetime_subscription": "買い切り",
   "lifetime_purchase": "永久ライセンス",
-  "subscription_expires_in": "{days, plural, =1{残り1日} other{残り{days}日}}",
-  "@subscription_expires_in": {
+  "trial_subscription_expires_in": "無料期間残り{days}日",
+  "@trial_subscription_expires_in": {
     "placeholders": {
       "days": {
         "type": "int"
