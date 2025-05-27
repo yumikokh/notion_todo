@@ -127,7 +127,7 @@ struct LockScreenProgressWidget: Widget {
 
   var body: some WidgetConfiguration {
     StaticConfiguration(kind: kind, provider: Provider()) { entry in
-      LockScreenProgressView(entry: entry).containerBackground(.fill.tertiary, for: .widget)
+      LockScreenProgressView(entry: entry).containerBackground(.white, for: .widget)
     }
     .configurationDisplayName(
       LocalizedStrings.getLocalizedString(
@@ -148,7 +148,7 @@ struct LockScreenAddTaskWidget: Widget {
 
   var body: some WidgetConfiguration {
     StaticConfiguration(kind: kind, provider: Provider()) { entry in
-      LockScreenAddTaskView().containerBackground(.fill.tertiary, for: .widget)
+      LockScreenAddTaskView().containerBackground(.white, for: .widget)
     }
     .configurationDisplayName(
       LocalizedStrings.getLocalizedString(
@@ -169,7 +169,7 @@ struct LockScreenTaskListWidget: Widget {
 
   var body: some WidgetConfiguration {
     StaticConfiguration(kind: kind, provider: Provider()) { entry in
-      LockScreenTaskListView(entry: entry).containerBackground(.fill.tertiary, for: .widget)
+      LockScreenTaskListView(entry: entry).containerBackground(.white, for: .widget)
     }
     .configurationDisplayName(
       LocalizedStrings.getLocalizedString(
@@ -629,11 +629,11 @@ struct TaskProgressWidgetEntryView: View {
           }
         }
       }
-      .containerBackground(.fill.tertiary, for: .widget)
+      .containerBackground(.white, for: .widget)
       .widgetURL(URL(string: "notiontodo://open/today?homeWidget")!)
     default:
       Text("Unsupported widget size")
-        .containerBackground(.fill.tertiary, for: .widget)
+        .containerBackground(.white, for: .widget)
     }
   }
 }
@@ -672,7 +672,7 @@ struct TodayTasksWidgetEntryView: View {
             TaskListView(entry: entry, maxCount: getMaxTaskCount())
               .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
           }
-          .containerBackground(.fill.tertiary, for: .widget)
+          .containerBackground(.white, for: .widget)
           .widgetURL(URL(string: "notiontodo://open/today?homeWidget")!)
 
         // メディアム、ラージサイズ
@@ -713,7 +713,7 @@ struct TodayTasksWidgetEntryView: View {
               Spacer()
             }
           }
-          .containerBackground(.fill.tertiary, for: .widget)  // iOS 17以降のWidget背景スタイル
+          .containerBackground(.white, for: .widget)  // iOS 17以降のWidget背景スタイル
           .widgetURL(URL(string: "notiontodo://open/today?homeWidget")!)
         }
       } else {
@@ -726,7 +726,7 @@ struct TodayTasksWidgetEntryView: View {
             .padding(.horizontal, 8)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .containerBackground(.fill.tertiary, for: .widget)
+        .containerBackground(.white, for: .widget)
         .widgetURL(URL(string: "notiontodo://open/today?homeWidget")!)
       }
     } else {
@@ -745,7 +745,7 @@ struct TodayTasksWidgetEntryView: View {
       }
       .padding(.bottom, 6)
       .frame(maxWidth: .infinity, maxHeight: .infinity)
-      .containerBackground(.fill.tertiary, for: .widget)
+      .containerBackground(.white, for: .widget)
       .widgetURL(URL(string: "notiontodo://open/today?homeWidget")!)
     }
   }
