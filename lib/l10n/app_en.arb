@@ -299,8 +299,8 @@
   "yearly_subscription": "Yearly",
   "lifetime_subscription": "Lifetime",
   "lifetime_purchase": "Permanent License",
-  "subscription_expires_in": "Expires in {days} days",
-  "@subscription_expires_in": {
+  "trial_subscription_expires_in": "{days, plural, =1{Trial expires in 1 day} other{Trial expires in {days} days}}",
+  "@trial_subscription_expires_in": {
     "placeholders": {
       "days": {
         "type": "int"
@@ -359,5 +359,9 @@
   "purchase_terms_and_conditions_part3": ".\nSubscriptions can be canceled at any time.\nThe free trial is applicable only for the first purchase.\nWhen changing plans, the switch will occur automatically after the current plan ends.",
   "switchToLifetimeNotificationBody": "If you are subscribed to a monthly or yearly plan, please remember to cancel its auto-renewal from your App Store / Google Play account settings.",
   "subscription_purchase_success_title": "You got the Lifetime plan!",
-  "subscription_purchase_success_body": "You already have a lifetime plan!"
+  "subscription_purchase_success_body": "You already have a lifetime plan!",
+  "account_settings_title": "Account",
+  "free_plan": "Free Plan",
+  "premium_plan": "Premium Plan Active",
+  "plan_title": "Plan"
 }

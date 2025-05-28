@@ -21,9 +21,8 @@ class GroupOptionsBottomSheet extends HookConsumerWidget {
 
     return Container(
       padding: const EdgeInsets.only(bottom: 32),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: const BorderRadius.only(
+      decoration: const BoxDecoration(
+        borderRadius: BorderRadius.only(
           topLeft: Radius.circular(16),
           topRight: Radius.circular(16),
         ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../../settings/theme/theme.dart';
 import '../../../subscription/model/subscription_model.dart';
 
 class SubscriptionBanner extends StatelessWidget {
@@ -22,9 +23,16 @@ class SubscriptionBanner extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Theme.of(context).colorScheme.tertiary,
-            Theme.of(context).colorScheme.tertiary.withValues(alpha: .8),
+            Theme.of(context).colorScheme.warmBeige.color,
+            Theme.of(context)
+                .colorScheme
+                .warmBeige
+                .color
+                .withValues(alpha: 0.8),
+            Theme.of(context).colorScheme.warmBeige.color,
           ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(12),
       ),
@@ -37,7 +45,8 @@ class SubscriptionBanner extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             child: Row(
               children: [
-                const Icon(Icons.diamond, color: Colors.white),
+                const Icon(Icons.diamond,
+                    color: Color.fromARGB(211, 255, 255, 255)),
                 const SizedBox(width: 16),
                 Expanded(
                   child: Column(
@@ -55,7 +64,7 @@ class SubscriptionBanner extends StatelessWidget {
                         l.current_plan(switch (subscriptionStatus.activeType) {
                           SubscriptionType.monthly => l.monthly_subscription,
                           SubscriptionType.yearly => l.yearly_subscription,
-                          SubscriptionType.lifetime => l.lifetime_subscription,
+                          SubscriptionType.lifetime => l.lifetime_purchase,
                           SubscriptionType.none => l.free_trial_days(7),
                         }),
                         style: TextStyle(
@@ -70,17 +79,14 @@ class SubscriptionBanner extends StatelessWidget {
                 ),
                 Row(
                   children: [
-                    if (subscriptionStatus.isSubscribed)
+                    if (subscriptionStatus.isInTrial)
                       Text(
-                        subscriptionStatus.activeType !=
-                                SubscriptionType.lifetime
-                            ? l.subscription_expires_in((subscriptionStatus
-                                        .expirationDate
-                                        ?.difference(DateTime.now())
-                                        .inDays ??
-                                    0) +
-                                1)
-                            : l.lifetime_purchase,
+                        l.trial_subscription_expires_in((subscriptionStatus
+                                    .expirationDate
+                                    ?.difference(DateTime.now())
+                                    .inDays ??
+                                0) +
+                            1),
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.onPrimary,
                         ),

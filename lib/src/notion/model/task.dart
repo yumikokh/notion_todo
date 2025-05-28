@@ -65,7 +65,7 @@ class TaskDate with _$TaskDate {
     if (dueDateEnd == null &&
         d.isToday(dueDateStart) &&
         dueDate.start.isAllDay == true) {
-      return Theme.of(context).colorScheme.tertiary; // 今日だったら青
+      return Theme.of(context).colorScheme.tertiaryContainer; // 今日だったら青
     }
 
     // 時間があり、すぎている

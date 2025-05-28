@@ -62,6 +62,25 @@ class SubscriptionViewModel extends _$SubscriptionViewModel
     return status.isActive && status.isInTrial;
   }
 
+  // サブスクリプションバナーを表示するかどうかをチェック
+  bool get shouldShowSubscriptionBanner {
+    final status = state.valueOrNull;
+    if (status == null) return true; // Show for free users
+
+    // Show for free users
+    if (!status.isActive || status.activeType == SubscriptionType.none) {
+      return true;
+    }
+
+    // Show for trial users
+    if (status.isInTrial) {
+      return true;
+    }
+
+    // Don't show for paid users (monthly, yearly, lifetime)
+    return false;
+  }
+
   // 期限切れまでの日数を取得
   int? getDaysUntilExpiration() {
     final status = state.valueOrNull;

@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import '../../../common/analytics/analytics_service.dart';
 import '../../../common/ui/custom_popup_menu.dart';
 import '../../../helpers/haptic_helper.dart';
+import '../../../settings/theme/theme.dart';
 import '../../../settings/view/settings_page.dart';
+import '../../../subscription/subscription_viewmodel.dart';
+import '../../../subscription/view/paywall_sheet.dart';
 import '../../common/filter_type.dart';
 import '../../model/task.dart';
 import '../task_group_provider.dart';
@@ -39,6 +43,9 @@ class TaskBaseScaffold extends HookConsumerWidget {
     final l = AppLocalizations.of(context)!;
     final isToday = currentIndex == 0;
     final filterType = isToday ? FilterType.today : FilterType.all;
+    final subscriptionStatus =
+        ref.watch(subscriptionViewModelProvider).valueOrNull;
+    final analytics = ref.read(analyticsServiceProvider);
 
     // カスタムメニューの設定
     final customMenu = useCustomPopupMenu(
@@ -113,6 +120,33 @@ class TaskBaseScaffold extends HookConsumerWidget {
                 ? Text(l.navigation_index, style: const TextStyle(fontSize: 20))
                 : null,
             actions: [
+              if (subscriptionStatus?.isActive == false)
+                IconButton(
+                  icon: ShaderMask(
+                    shaderCallback: (bounds) => LinearGradient(
+                      colors: [
+                        Theme.of(context).colorScheme.warmBeige.color,
+                        Theme.of(context)
+                            .colorScheme
+                            .warmBeige
+                            .color
+                            .withValues(alpha: 0.4),
+                        Theme.of(context).colorScheme.orange.color,
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ).createShader(bounds),
+                    child: const Icon(
+                      Icons.diamond,
+                      color: Colors.white,
+                    ),
+                  ),
+                  onPressed: () {
+                    analytics.logScreenView(
+                        screenName: 'Paywall', value: 'TaskMainPage');
+                    PaywallSheet.show(context);
+                  },
+                ),
               IconButton(
                 key: customMenu.buttonKey,
                 icon: Icon(
@@ -143,6 +177,7 @@ class TaskBaseScaffold extends HookConsumerWidget {
             HapticHelper.selection();
             onIndexChanged(index);
           },
+          backgroundColor: Theme.of(context).colorScheme.surface,
           labelBehavior: hideNavigationLabel
               ? NavigationDestinationLabelBehavior.alwaysHide
               : NavigationDestinationLabelBehavior.alwaysShow,
