@@ -29,8 +29,8 @@ class TaskListTile extends HookConsumerWidget {
     final checked = useState(task.isCompleted);
 
     final fillColor = switch (checked.value) {
-      true => (task.priority?.mColor ?? Theme.of(context).colorScheme.onSurface)
-          .withAlpha(120),
+      true =>
+        (task.priority?.mColor ?? Theme.of(context).colorScheme.onSurface),
       false => task.priority?.mColor.withAlpha(60)
     };
 
