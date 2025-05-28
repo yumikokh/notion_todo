@@ -381,16 +381,16 @@ enum NotionColor {
 
   Color toColor() {
     return switch (this) {
-      NotionColor.blue => const Color.fromARGB(255, 66, 135, 136),
-      NotionColor.brown => const Color.fromARGB(255, 109, 93, 81),
-      NotionColor.gray => const Color.fromARGB(255, 105, 99, 90),
-      NotionColor.green => const Color.fromARGB(255, 75, 113, 70),
-      NotionColor.orange => const Color.fromARGB(255, 194, 110, 46),
-      NotionColor.pink => const Color.fromARGB(255, 175, 87, 102),
-      NotionColor.purple => const Color.fromARGB(255, 97, 107, 161),
-      NotionColor.red => const Color.fromARGB(255, 148, 26, 26),
-      NotionColor.yellow => const Color.fromARGB(255, 167, 144, 54),
-      NotionColor.defaultColor => const Color.fromARGB(255, 86, 78, 59),
+      NotionColor.blue => const Color.fromARGB(255, 120, 160, 170),
+      NotionColor.brown => const Color.fromARGB(255, 150, 100, 40),
+      NotionColor.gray => const Color.fromARGB(255, 130, 130, 130),
+      NotionColor.green => const Color.fromARGB(255, 95, 164, 95),
+      NotionColor.orange => const Color.fromARGB(255, 200, 130, 0),
+      NotionColor.pink => const Color.fromARGB(255, 200, 140, 150),
+      NotionColor.purple => const Color.fromARGB(255, 170, 120, 170),
+      NotionColor.red => const Color.fromARGB(255, 200, 65, 40),
+      NotionColor.yellow => const Color.fromARGB(255, 203, 182, 63),
+      NotionColor.defaultColor => const Color.fromARGB(255, 170, 170, 170),
     };
   }
 

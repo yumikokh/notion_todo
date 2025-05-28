@@ -8,6 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../common/error.dart';
 import '../../helpers/haptic_helper.dart';
 import '../../helpers/number.dart';
+import '../../settings/theme/theme.dart';
 import '../model/subscription_model.dart';
 import '../subscription_viewmodel.dart';
 
@@ -64,7 +65,7 @@ class PaywallSheet extends HookConsumerWidget {
                         // 有料機能ハイライト
                         _buildFeatureHighlights(context),
 
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 40),
 
                         // プラン一覧
                         _buildPlanOptions(context,
@@ -110,17 +111,11 @@ class PaywallSheet extends HookConsumerWidget {
 
   Widget _buildFeatureHighlights(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 24),
-        Text(
-          l.upgrade_to_premium_description,
-          style: theme.textTheme.bodyLarge,
-        ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 60),
 
         // 機能リスト
         _buildFeatureItem(context, Icons.widgets, l.unlock_all_widgets_title,
@@ -145,8 +140,26 @@ class PaywallSheet extends HookConsumerWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Icon(icon,
-              color: Theme.of(context).colorScheme.tertiaryContainer, size: 24),
+          ShaderMask(
+            shaderCallback: (bounds) => LinearGradient(
+              colors: [
+                Theme.of(context).colorScheme.warmBeige.color,
+                Theme.of(context)
+                    .colorScheme
+                    .warmBeige
+                    .color
+                    .withValues(alpha: 0.6),
+                Theme.of(context).colorScheme.warmBeige.colorContainer
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ).createShader(bounds),
+            child: Icon(
+              icon,
+              color: Colors.white,
+              size: 24,
+            ),
+          ),
           const SizedBox(width: 20),
           Expanded(
             child: Column(
@@ -158,9 +171,10 @@ class PaywallSheet extends HookConsumerWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+                const SizedBox(height: 2),
                 Text(
                   description,
-                  style: theme.textTheme.bodyMedium,
+                  style: theme.textTheme.bodySmall,
                 ),
               ],
             ),
@@ -221,7 +235,7 @@ class PaywallSheet extends HookConsumerWidget {
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(
             color: isSelected
-                ? theme.colorScheme.primary
+                ? theme.colorScheme.warmBeige.color
                 : theme.dividerColor.withAlpha(80),
             width: isSelected ? 3.5 : 2),
       ),
@@ -266,7 +280,17 @@ class PaywallSheet extends HookConsumerWidget {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 3),
                             decoration: BoxDecoration(
-                              color: theme.colorScheme.primary,
+                              gradient: LinearGradient(
+                                colors: [
+                                  theme.colorScheme.warmBeige.color,
+                                  theme.colorScheme.warmBeige.color
+                                      .withValues(alpha: 0.6),
+                                  theme.colorScheme.warmBeige.color
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                stops: const [0.0, 0.83, 1.0],
+                              ),
                               borderRadius: BorderRadius.circular(16),
                             ),
                             child: Text(
@@ -298,7 +322,7 @@ class PaywallSheet extends HookConsumerWidget {
                                       Flexible(
                                         child: Text(
                                           plan.priceString,
-                                          style: theme.textTheme.headlineMedium
+                                          style: theme.textTheme.titleLarge
                                               ?.copyWith(
                                             fontWeight: FontWeight.bold,
                                           ),
@@ -478,6 +502,7 @@ class PaywallSheet extends HookConsumerWidget {
       case (_, SubscriptionType.lifetime):
         buttonText = l.lifetime_license_activated;
         isActive = false;
+        // isActive = true; // debug
         break;
       case (SubscriptionType.monthly, SubscriptionType.monthly):
       case (SubscriptionType.yearly, SubscriptionType.yearly):
@@ -624,8 +649,8 @@ class PaywallSheet extends HookConsumerWidget {
                   gradient: isActive && !isLoading
                       ? LinearGradient(
                           colors: [
-                            theme.colorScheme.tertiary,
-                            theme.colorScheme.tertiary.withAlpha(210)
+                            theme.colorScheme.primary,
+                            theme.colorScheme.primary.withValues(alpha: 0.9),
                           ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,

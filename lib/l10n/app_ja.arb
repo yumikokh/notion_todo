@@ -208,8 +208,8 @@
   "yearly_subscription": "年額",
   "lifetime_subscription": "買い切り",
   "lifetime_purchase": "永久ライセンス",
-  "subscription_expires_in": "{days, plural, =1{残り1日} other{残り{days}日}}",
-  "@subscription_expires_in": {
+  "trial_subscription_expires_in": "無料期間残り{days}日",
+  "@trial_subscription_expires_in": {
     "placeholders": {
       "days": {
         "type": "int"
@@ -268,5 +268,9 @@
   "purchase_terms_and_conditions_part3": "定期購入はいつでもキャンセルできます。\n無料トライアルが適用されるのは、初回購入時のみです。\n定期購入プラン変更時は現在のプラン終了後に自動的に切り替わります。",
   "switchToLifetimeNotificationBody": "定期購入プランを購入済みの場合は、お手数ですがApp Store / Google Playのアカウント設定から自動更新停止をお願いいたします。",
   "subscription_purchase_success_title": "永久ライセンスを取得しました！",
-  "subscription_purchase_success_body": "既に買い切りプランを購入済みです"
+  "subscription_purchase_success_body": "既に買い切りプランを購入済みです",
+  "account_settings_title": "アカウント",
+  "free_plan": "無料プラン",
+  "premium_plan": "プレミアムプラン加入済",
+  "plan_title": "プラン"
 }
