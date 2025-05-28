@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../common/analytics/analytics_service.dart';
 import '../../../common/ui/custom_popup_menu.dart';
 import '../../../helpers/haptic_helper.dart';
+import '../../../settings/theme/theme.dart';
 import '../../../settings/view/settings_page.dart';
 import '../../../subscription/subscription_viewmodel.dart';
 import '../../../subscription/view/paywall_sheet.dart';
@@ -121,9 +122,24 @@ class TaskBaseScaffold extends HookConsumerWidget {
             actions: [
               if (subscriptionStatus?.isActive == false)
                 IconButton(
-                  icon: Icon(
-                    Icons.diamond,
-                    color: Theme.of(context).colorScheme.tertiaryContainer,
+                  icon: ShaderMask(
+                    shaderCallback: (bounds) => LinearGradient(
+                      colors: [
+                        Theme.of(context).colorScheme.warmBeige.color,
+                        Theme.of(context)
+                            .colorScheme
+                            .warmBeige
+                            .color
+                            .withValues(alpha: 0.4),
+                        Theme.of(context).colorScheme.orange.color,
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ).createShader(bounds),
+                    child: const Icon(
+                      Icons.diamond,
+                      color: Colors.white,
+                    ),
                   ),
                   onPressed: () {
                     analytics.logScreenView(

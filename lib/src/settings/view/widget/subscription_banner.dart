@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../../settings/theme/theme.dart';
 import '../../../subscription/model/subscription_model.dart';
 
 class SubscriptionBanner extends StatelessWidget {
@@ -22,9 +23,16 @@ class SubscriptionBanner extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Theme.of(context).colorScheme.tertiary,
-            Theme.of(context).colorScheme.tertiary.withValues(alpha: .8),
+            Theme.of(context).colorScheme.warmBeige.color,
+            Theme.of(context)
+                .colorScheme
+                .warmBeige
+                .color
+                .withValues(alpha: 0.8),
+            Theme.of(context).colorScheme.warmBeige.color,
           ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(12),
       ),
@@ -37,7 +45,8 @@ class SubscriptionBanner extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             child: Row(
               children: [
-                const Icon(Icons.diamond, color: Colors.white),
+                const Icon(Icons.diamond,
+                    color: Color.fromARGB(211, 255, 255, 255)),
                 const SizedBox(width: 16),
                 Expanded(
                   child: Column(
