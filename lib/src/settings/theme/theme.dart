@@ -392,6 +392,48 @@ class MaterialTheme {
     ),
   );
 
+  /// Warm Beige
+  static const warmBeige = ExtendedColor(
+    seed: Color(0xffc4a484),
+    value: Color(0xffc4a484),
+    light: ColorFamily(
+      color: Color(0xffa08660),
+      onColor: Color(0xffffffff),
+      colorContainer: Color(0xffc4a484),
+      onColorContainer: Color(0xff2a1f15),
+    ),
+    lightMediumContrast: ColorFamily(
+      color: Color(0xffa08660),
+      onColor: Color(0xffffffff),
+      colorContainer: Color(0xffc4a484),
+      onColorContainer: Color(0xff2a1f15),
+    ),
+    lightHighContrast: ColorFamily(
+      color: Color(0xffa08660),
+      onColor: Color(0xffffffff),
+      colorContainer: Color(0xffc4a484),
+      onColorContainer: Color(0xff2a1f15),
+    ),
+    dark: ColorFamily(
+      color: Color(0xffd4c4a4),
+      onColor: Color(0xff3a2f25),
+      colorContainer: Color(0xffc4a484),
+      onColorContainer: Color(0xff2a1f15),
+    ),
+    darkMediumContrast: ColorFamily(
+      color: Color(0xffd4c4a4),
+      onColor: Color(0xff3a2f25),
+      colorContainer: Color(0xffc4a484),
+      onColorContainer: Color(0xff2a1f15),
+    ),
+    darkHighContrast: ColorFamily(
+      color: Color(0xffd4c4a4),
+      onColor: Color(0xff3a2f25),
+      colorContainer: Color(0xffc4a484),
+      onColorContainer: Color(0xff2a1f15),
+    ),
+  );
+
   /// Blue
   static const blue = ExtendedColor(
     seed: Color(0xff54a2a3),
@@ -436,6 +478,7 @@ class MaterialTheme {
 
   List<ExtendedColor> get extendedColors => [
         orange,
+        warmBeige,
         blue,
       ];
 }
@@ -473,4 +516,18 @@ class ColorFamily {
   final Color onColor;
   final Color colorContainer;
   final Color onColorContainer;
+}
+
+extension ExtendedColorScheme on ColorScheme {
+  ColorFamily get orange => brightness == Brightness.light
+      ? MaterialTheme.orange.light
+      : MaterialTheme.orange.dark;
+
+  ColorFamily get warmBeige => brightness == Brightness.light
+      ? MaterialTheme.warmBeige.light
+      : MaterialTheme.warmBeige.dark;
+
+  ColorFamily get blue => brightness == Brightness.light
+      ? MaterialTheme.blue.light
+      : MaterialTheme.blue.dark;
 }
