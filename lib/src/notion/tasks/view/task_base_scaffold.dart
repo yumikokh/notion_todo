@@ -161,6 +161,7 @@ class TaskBaseScaffold extends HookConsumerWidget {
             HapticHelper.selection();
             onIndexChanged(index);
           },
+          backgroundColor: Theme.of(context).colorScheme.surface,
           labelBehavior: hideNavigationLabel
               ? NavigationDestinationLabelBehavior.alwaysHide
               : NavigationDestinationLabelBehavior.alwaysShow,
