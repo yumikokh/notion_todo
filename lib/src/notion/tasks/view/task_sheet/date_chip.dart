@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../../../common/widgets/base_input_chip.dart';
 import '../../../../helpers/date.dart';
 import '../../../model/task.dart';
 import '../date_label.dart';
@@ -27,7 +28,8 @@ class DateChip extends StatelessWidget {
     final l = AppLocalizations.of(context)!;
     final avatarColor = TaskDate.getColor(context, date);
 
-    return InputChip(
+    return BaseInputChip.standard(
+      context: context,
       label: date == null
           ? Text(l.select_date,
               style: const TextStyle(
@@ -40,19 +42,10 @@ class DateChip extends StatelessWidget {
               showToday: true,
               showIcon: false,
               size: 14),
-      labelPadding: const EdgeInsets.symmetric(horizontal: 6),
       selected: selected,
       onDeleted: selected ? onDeleted : null,
       onSelected: onSelected,
-      deleteIcon:
-          Icon(Icons.clear, size: 14, color: Theme.of(context).disabledColor),
-      showCheckmark: false,
       avatar: Icon(Icons.event_rounded, size: 18, color: avatarColor),
-      visualDensity: VisualDensity.compact,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-      side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
-      backgroundColor: Theme.of(context).cardColor,
-      selectedColor: Theme.of(context).cardColor,
     );
   }
 }
