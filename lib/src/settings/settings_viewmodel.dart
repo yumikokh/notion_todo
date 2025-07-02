@@ -4,8 +4,9 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'settings_service.dart';
 import '../common/analytics/analytics_service.dart';
+import '../common/mixins/settings_update_mixin.dart';
 
-class SettingsViewModel with ChangeNotifier {
+class SettingsViewModel with ChangeNotifier, SettingsUpdateMixin {
   final SettingsService _settingsService;
   final AnalyticsService _analytics;
 
@@ -38,15 +39,17 @@ class SettingsViewModel with ChangeNotifier {
 
   Future<void> updateThemeMode(ThemeMode? newThemeMode) async {
     if (newThemeMode == null) return;
-    if (newThemeMode == _themeMode) return;
-
-    _themeMode = newThemeMode;
-    notifyListeners();
-
-    await _settingsService.updateThemeMode(newThemeMode);
-    await _analytics.logSettingsChanged(
-      settingName: 'theme_mode',
-      value: newThemeMode.name,
+    
+    await updateEnumSetting(
+      newValue: newThemeMode,
+      currentValue: _themeMode,
+      updateFunction: (value) => _themeMode = value,
+      saveFunction: () => _settingsService.updateThemeMode(newThemeMode),
+      analyticsKey: 'theme_mode',
+      logAnalytics: (key, value) => _analytics.logSettingsChanged(
+        settingName: key,
+        value: value,
+      ),
     );
   }
 
@@ -60,15 +63,16 @@ class SettingsViewModel with ChangeNotifier {
       };
 
   Future<void> updateLocale(Locale locale) async {
-    if (locale == _locale) return;
-
-    _locale = locale;
-    notifyListeners();
-
-    await _settingsService.updateLocale(locale);
-    await _analytics.logSettingsChanged(
-      settingName: 'locale',
-      value: locale.languageCode,
+    await updateSetting(
+      newValue: locale,
+      currentValue: _locale,
+      updateFunction: (value) => _locale = value,
+      saveFunction: () => _settingsService.updateLocale(locale),
+      analyticsKey: 'locale',
+      logAnalytics: (key, _) => _analytics.logSettingsChanged(
+        settingName: key,
+        value: locale.languageCode,
+      ),
     );
   }
 
@@ -76,15 +80,16 @@ class SettingsViewModel with ChangeNotifier {
   late bool _wakelock;
   bool get wakelock => _wakelock;
   Future<void> updateWakelock(bool wakelock) async {
-    if (wakelock == _wakelock) return;
-
-    _wakelock = wakelock;
-    notifyListeners();
-
-    await _settingsService.updateWakelock(wakelock);
-    await _analytics.logSettingsChanged(
-      settingName: 'wakelock',
-      value: wakelock ? 'enabled' : 'disabled',
+    await updateBoolSetting(
+      newValue: wakelock,
+      currentValue: _wakelock,
+      updateFunction: (value) => _wakelock = value,
+      saveFunction: () => _settingsService.updateWakelock(wakelock),
+      analyticsKey: 'wakelock',
+      logAnalytics: (key, value) => _analytics.logSettingsChanged(
+        settingName: key,
+        value: value,
+      ),
     );
   }
 
@@ -93,15 +98,16 @@ class SettingsViewModel with ChangeNotifier {
   bool get hideNavigationLabel => _hideNavigationLabel;
 
   Future<void> updateHideNavigationLabel(bool value) async {
-    if (value == _hideNavigationLabel) return;
-
-    _hideNavigationLabel = value;
-    notifyListeners();
-
-    await _settingsService.saveHideNavigationLabel(value);
-    await _analytics.logSettingsChanged(
-      settingName: 'hide_navigation_label',
-      value: value ? 'hidden' : 'shown',
+    await updateSetting(
+      newValue: value,
+      currentValue: _hideNavigationLabel,
+      updateFunction: (v) => _hideNavigationLabel = v,
+      saveFunction: () => _settingsService.saveHideNavigationLabel(value),
+      analyticsKey: 'hide_navigation_label',
+      logAnalytics: (key, _) => _analytics.logSettingsChanged(
+        settingName: key,
+        value: value ? 'hidden' : 'shown',
+      ),
     );
   }
 
@@ -109,15 +115,16 @@ class SettingsViewModel with ChangeNotifier {
   late bool _showNotificationBadge;
   bool get showNotificationBadge => _showNotificationBadge;
   Future<void> updateShowNotificationBadge(bool value) async {
-    if (value == _showNotificationBadge) return;
-
-    _showNotificationBadge = value;
-    notifyListeners();
-
-    await _settingsService.updateShowNotificationBadge(value);
-    await _analytics.logSettingsChanged(
-      settingName: 'show_notification_badge',
-      value: value ? 'enabled' : 'disabled',
+    await updateBoolSetting(
+      newValue: value,
+      currentValue: _showNotificationBadge,
+      updateFunction: (v) => _showNotificationBadge = v,
+      saveFunction: () => _settingsService.updateShowNotificationBadge(value),
+      analyticsKey: 'show_notification_badge',
+      logAnalytics: (key, value) => _analytics.logSettingsChanged(
+        settingName: key,
+        value: value,
+      ),
     );
   }
 
@@ -125,15 +132,16 @@ class SettingsViewModel with ChangeNotifier {
   late bool _continuousTaskAddition;
   bool get continuousTaskAddition => _continuousTaskAddition;
   Future<void> updateContinuousTaskAddition(bool value) async {
-    if (value == _continuousTaskAddition) return;
-
-    _continuousTaskAddition = value;
-    notifyListeners();
-
-    await _settingsService.updateContinuousTaskAddition(value);
-    await _analytics.logSettingsChanged(
-      settingName: 'continuous_task_addition',
-      value: value ? 'enabled' : 'disabled',
+    await updateBoolSetting(
+      newValue: value,
+      currentValue: _continuousTaskAddition,
+      updateFunction: (v) => _continuousTaskAddition = v,
+      saveFunction: () => _settingsService.updateContinuousTaskAddition(value),
+      analyticsKey: 'continuous_task_addition',
+      logAnalytics: (key, value) => _analytics.logSettingsChanged(
+        settingName: key,
+        value: value,
+      ),
     );
   }
 
@@ -141,15 +149,16 @@ class SettingsViewModel with ChangeNotifier {
   late bool _soundEnabled;
   bool get soundEnabled => _soundEnabled;
   Future<void> updateSoundEnabled(bool value) async {
-    if (value == _soundEnabled) return;
-
-    _soundEnabled = value;
-    notifyListeners();
-
-    await _settingsService.updateSoundEnabled(value);
-    await _analytics.logSettingsChanged(
-      settingName: 'sound_enabled',
-      value: value ? 'enabled' : 'disabled',
+    await updateBoolSetting(
+      newValue: value,
+      currentValue: _soundEnabled,
+      updateFunction: (v) => _soundEnabled = v,
+      saveFunction: () => _settingsService.updateSoundEnabled(value),
+      analyticsKey: 'sound_enabled',
+      logAnalytics: (key, value) => _analytics.logSettingsChanged(
+        settingName: key,
+        value: value,
+      ),
     );
   }
 }
