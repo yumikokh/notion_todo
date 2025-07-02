@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../../helpers/haptic_helper.dart';
+import '../../common/widgets/settings_list_tile.dart';
 import '../settings_viewmodel.dart';
-import '../../common/analytics/analytics_service.dart';
 
 class BehaviorSettingsPage extends ConsumerWidget {
   static const routeName = '/settings/behavior';
@@ -14,7 +13,7 @@ class BehaviorSettingsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, ref) {
     final l = AppLocalizations.of(context)!;
-    final analytics = ref.read(analyticsServiceProvider);
+    final settingsViewModel = ref.watch(settingsViewModelProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -25,78 +24,55 @@ class BehaviorSettingsPage extends ConsumerWidget {
         padding: const EdgeInsets.symmetric(vertical: 8),
         child: ListView(
           children: [
-            ListTile(
-              title: Text(l.wakelock_title),
-              subtitle: Row(
+            SettingsListTile(
+              title: l.wakelock_title,
+              subtitle: l.wakelock_description,
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   const Icon(Icons.warning_rounded, size: 14),
-                  const SizedBox(width: 2),
-                  Flexible(
-                    child: Text(l.wakelock_description,
-                        style: const TextStyle(fontSize: 10)),
+                  const SizedBox(width: 8),
+                  Switch(
+                    value: settingsViewModel.wakelock,
+                    onChanged: (value) {
+                      ref
+                          .read(settingsViewModelProvider.notifier)
+                          .updateWakelock(value);
+                    },
                   ),
                 ],
               ),
-              trailing: Switch(
-                value: ref.watch(settingsViewModelProvider).wakelock,
-                onChanged: (value) {
-                  ref
-                      .read(settingsViewModelProvider.notifier)
-                      .updateWakelock(value);
-                  analytics.logSettingsChanged(
-                    settingName: 'wakelock',
-                    value: value ? 'enabled' : 'disabled',
-                  );
-                  HapticHelper.light();
-                },
-              ),
+              analyticsSettingName: 'wakelock',
+              analyticsValue: (!settingsViewModel.wakelock) ? 'enabled' : 'disabled',
+              onTap: () {
+                ref
+                    .read(settingsViewModelProvider.notifier)
+                    .updateWakelock(!settingsViewModel.wakelock);
+              },
             ),
-            ListTile(
-              title: Text(l.continuous_task_addition_title),
-              subtitle: Text(l.continuous_task_addition_description,
-                  style: const TextStyle(fontSize: 10)),
-              trailing: Switch(
-                value:
-                    ref.watch(settingsViewModelProvider).continuousTaskAddition,
-                onChanged: (value) {
-                  ref
-                      .read(settingsViewModelProvider.notifier)
-                      .updateContinuousTaskAddition(value);
-                  analytics.logSettingsChanged(
-                    settingName: 'continuous_task_addition',
-                    value: value ? 'enabled' : 'disabled',
-                  );
-                  HapticHelper.light();
-                },
-              ),
+            SettingsListTile.switchTile(
+              title: l.continuous_task_addition_title,
+              subtitle: l.continuous_task_addition_description,
+              value: settingsViewModel.continuousTaskAddition,
+              analyticsSettingName: 'continuous_task_addition',
+              onChanged: (value) {
+                ref
+                    .read(settingsViewModelProvider.notifier)
+                    .updateContinuousTaskAddition(value);
+              },
             ),
 
             // タスク完了時の音設定
-            ListTile(
-              title: Text(l.task_completion_sound_title),
-              subtitle: Row(
-                children: [
-                  Flexible(
-                    child: Text(
-                      l.task_completion_sound_description,
-                      style: const TextStyle(fontSize: 10),
-                    ),
-                  ),
-                ],
-              ),
-              trailing: Switch(
-                value: ref.watch(settingsViewModelProvider).soundEnabled,
-                onChanged: (value) {
-                  ref
-                      .read(settingsViewModelProvider.notifier)
-                      .updateSoundEnabled(value);
-                  analytics.logSettingsChanged(
-                    settingName: 'sound_enabled',
-                    value: value ? 'enabled' : 'disabled',
-                  );
-                  HapticHelper.light();
-                },
-              ),
+            SettingsListTile.switchTile(
+              title: l.task_completion_sound_title,
+              subtitle: l.task_completion_sound_description,
+              value: settingsViewModel.soundEnabled,
+              analyticsSettingName: 'sound_enabled',
+              onChanged: (value) {
+                ref
+                    .read(settingsViewModelProvider.notifier)
+                    .updateSoundEnabled(value);
+              },
             ),
 
             // 将来的に追加される他のふるまい設定

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../../../common/widgets/base_input_chip.dart';
 import '../../../model/property.dart';
 
 class PriorityChip extends StatelessWidget {
@@ -23,7 +24,8 @@ class PriorityChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
 
-    return InputChip(
+    return BaseInputChip.standard(
+      context: context,
       label: Text(
         priority?.name ?? l.priority_property,
         style: const TextStyle(fontSize: 14),
@@ -34,17 +36,9 @@ class PriorityChip extends StatelessWidget {
         size: 18,
         color: isSelected ? priority?.mColor : Theme.of(context).hintColor,
       ),
-      deleteIcon:
-          Icon(Icons.clear, size: 14, color: Theme.of(context).disabledColor),
       onDeleted: isSelected ? onDeleted : null,
       onSelected: onSelected,
       selected: isSelected,
-      showCheckmark: false,
-      visualDensity: VisualDensity.compact,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-      side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
-      backgroundColor: Theme.of(context).cardColor,
-      selectedColor: Theme.of(context).cardColor,
     );
   }
 }
