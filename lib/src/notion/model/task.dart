@@ -104,6 +104,7 @@ class Task with _$Task {
     required TaskDate? dueDate,
     required String? url,
     SelectOption? priority,
+    List<RelationOption>? project,
     // required String createdTime,
     // required String updatedTime,
   }) = _Task;
@@ -114,6 +115,7 @@ class Task with _$Task {
     String? title,
     TaskDate? dueDate,
     SelectOption? priority,
+    List<RelationOption>? project,
   }) =>
       Task(
         id: 'temp_${DateTime.now().millisecondsSinceEpoch}',
@@ -122,6 +124,7 @@ class Task with _$Task {
         dueDate: dueDate,
         url: null,
         priority: priority,
+        project: project,
       );
 
   static final DateHelper d = DateHelper();

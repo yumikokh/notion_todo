@@ -9,6 +9,7 @@ enum PropertyType {
   checkbox,
   status,
   select,
+  relation,
 }
 
 /// プロパティの基底クラス
@@ -29,6 +30,7 @@ sealed class Property {
         CheckboxProperty checkbox => checkbox.toJson(),
         StatusProperty status => status.toJson(),
         SelectProperty select => select.toJson(),
+        RelationProperty relation => relation.toJson(),
       };
 
   factory Property.fromJson(Map<String, dynamic> json) {
@@ -45,6 +47,8 @@ sealed class Property {
         return StatusProperty.fromJson(json);
       case PropertyType.select:
         return SelectProperty.fromJson(json);
+      case PropertyType.relation:
+        return RelationProperty.fromJson(json);
     }
   }
 }
@@ -401,4 +405,46 @@ enum NotionColor {
       orElse: () => NotionColor.defaultColor,
     );
   }
+}
+
+/// RelationプロパティのオプションクラスNotionのRelation
+@JsonSerializable()
+class RelationOption {
+  final String id;
+  final String? title;
+
+  RelationOption({
+    required this.id,
+    this.title,
+  });
+
+  factory RelationOption.fromJson(Map<String, dynamic> json) =>
+      _$RelationOptionFromJson(json);
+
+  Map<String, dynamic> toJson() => _$RelationOptionToJson(this);
+}
+
+@JsonSerializable(explicitToJson: true)
+class RelationProperty extends Property {
+  @JsonKey(fromJson: _relationFromJson)
+  final Map<String, dynamic> relation;
+
+  RelationProperty({
+    required String id,
+    required String name,
+    required this.relation,
+  }) : super(id: id, name: name, type: PropertyType.relation);
+  
+  static Map<String, dynamic> _relationFromJson(dynamic json) {
+    if (json is Map<String, dynamic>) {
+      return json;
+    }
+    return {};
+  }
+
+  factory RelationProperty.fromJson(Map<String, dynamic> json) =>
+      _$RelationPropertyFromJson(json);
+
+  @override
+  Map<String, dynamic> toJson() => _$RelationPropertyToJson(this);
 }

@@ -27,6 +27,7 @@ const _$PropertyTypeEnumMap = {
   PropertyType.checkbox: 'checkbox',
   PropertyType.status: 'status',
   PropertyType.select: 'select',
+  PropertyType.relation: 'relation',
 };
 
 DateProperty _$DatePropertyFromJson(Map<String, dynamic> json) => DateProperty(
@@ -230,4 +231,31 @@ Map<String, dynamic> _$StatusGroupToJson(StatusGroup instance) =>
       'name': instance.name,
       'color': _$NotionColorEnumMap[instance.color],
       'option_ids': instance.optionIds,
+    };
+
+RelationOption _$RelationOptionFromJson(Map<String, dynamic> json) =>
+    RelationOption(
+      id: json['id'] as String,
+      title: json['title'] as String?,
+    );
+
+Map<String, dynamic> _$RelationOptionToJson(RelationOption instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'title': instance.title,
+    };
+
+RelationProperty _$RelationPropertyFromJson(Map<String, dynamic> json) =>
+    RelationProperty(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      relation: RelationProperty._relationFromJson(json['relation']),
+    )..type = $enumDecode(_$PropertyTypeEnumMap, json['type']);
+
+Map<String, dynamic> _$RelationPropertyToJson(RelationProperty instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+      'type': _$PropertyTypeEnumMap[instance.type]!,
+      'relation': instance.relation,
     };

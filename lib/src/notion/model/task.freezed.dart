@@ -807,6 +807,7 @@ mixin _$Task {
   TaskDate? get dueDate => throw _privateConstructorUsedError;
   String? get url => throw _privateConstructorUsedError;
   SelectOption? get priority => throw _privateConstructorUsedError;
+  List<RelationOption>? get project => throw _privateConstructorUsedError;
 
   /// Serializes this Task to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -828,7 +829,8 @@ abstract class $TaskCopyWith<$Res> {
       TaskStatus status,
       TaskDate? dueDate,
       String? url,
-      SelectOption? priority});
+      SelectOption? priority,
+      List<RelationOption>? project});
 
   $TaskStatusCopyWith<$Res> get status;
   $TaskDateCopyWith<$Res>? get dueDate;
@@ -855,6 +857,7 @@ class _$TaskCopyWithImpl<$Res, $Val extends Task>
     Object? dueDate = freezed,
     Object? url = freezed,
     Object? priority = freezed,
+    Object? project = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -881,6 +884,10 @@ class _$TaskCopyWithImpl<$Res, $Val extends Task>
           ? _value.priority
           : priority // ignore: cast_nullable_to_non_nullable
               as SelectOption?,
+      project: freezed == project
+          ? _value.project
+          : project // ignore: cast_nullable_to_non_nullable
+              as List<RelationOption>?,
     ) as $Val);
   }
 
@@ -922,7 +929,8 @@ abstract class _$$TaskImplCopyWith<$Res> implements $TaskCopyWith<$Res> {
       TaskStatus status,
       TaskDate? dueDate,
       String? url,
-      SelectOption? priority});
+      SelectOption? priority,
+      List<RelationOption>? project});
 
   @override
   $TaskStatusCopyWith<$Res> get status;
@@ -948,6 +956,7 @@ class __$$TaskImplCopyWithImpl<$Res>
     Object? dueDate = freezed,
     Object? url = freezed,
     Object? priority = freezed,
+    Object? project = freezed,
   }) {
     return _then(_$TaskImpl(
       id: null == id
@@ -974,6 +983,10 @@ class __$$TaskImplCopyWithImpl<$Res>
           ? _value.priority
           : priority // ignore: cast_nullable_to_non_nullable
               as SelectOption?,
+      project: freezed == project
+          ? _value._project
+          : project // ignore: cast_nullable_to_non_nullable
+              as List<RelationOption>?,
     ));
   }
 }
@@ -987,8 +1000,10 @@ class _$TaskImpl extends _Task {
       required this.status,
       required this.dueDate,
       required this.url,
-      this.priority})
-      : super._();
+      this.priority,
+      final List<RelationOption>? project})
+      : _project = project,
+        super._();
 
   factory _$TaskImpl.fromJson(Map<String, dynamic> json) =>
       _$$TaskImplFromJson(json);
@@ -1005,10 +1020,19 @@ class _$TaskImpl extends _Task {
   final String? url;
   @override
   final SelectOption? priority;
+  final List<RelationOption>? _project;
+  @override
+  List<RelationOption>? get project {
+    final value = _project;
+    if (value == null) return null;
+    if (_project is EqualUnmodifiableListView) return _project;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
 
   @override
   String toString() {
-    return 'Task(id: $id, title: $title, status: $status, dueDate: $dueDate, url: $url, priority: $priority)';
+    return 'Task(id: $id, title: $title, status: $status, dueDate: $dueDate, url: $url, priority: $priority, project: $project)';
   }
 
   @override
@@ -1022,13 +1046,14 @@ class _$TaskImpl extends _Task {
             (identical(other.dueDate, dueDate) || other.dueDate == dueDate) &&
             (identical(other.url, url) || other.url == url) &&
             (identical(other.priority, priority) ||
-                other.priority == priority));
+                other.priority == priority) &&
+            const DeepCollectionEquality().equals(other._project, _project));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, id, title, status, dueDate, url, priority);
+  int get hashCode => Object.hash(runtimeType, id, title, status, dueDate, url,
+      priority, const DeepCollectionEquality().hash(_project));
 
   /// Create a copy of Task
   /// with the given fields replaced by the non-null parameter values.
@@ -1053,7 +1078,8 @@ abstract class _Task extends Task {
       required final TaskStatus status,
       required final TaskDate? dueDate,
       required final String? url,
-      final SelectOption? priority}) = _$TaskImpl;
+      final SelectOption? priority,
+      final List<RelationOption>? project}) = _$TaskImpl;
   const _Task._() : super._();
 
   factory _Task.fromJson(Map<String, dynamic> json) = _$TaskImpl.fromJson;
@@ -1070,6 +1096,8 @@ abstract class _Task extends Task {
   String? get url;
   @override
   SelectOption? get priority;
+  @override
+  List<RelationOption>? get project;
 
   /// Create a copy of Task
   /// with the given fields replaced by the non-null parameter values.
