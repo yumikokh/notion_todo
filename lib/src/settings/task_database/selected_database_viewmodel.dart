@@ -28,6 +28,7 @@ enum SettingPropertyType {
   status,
   date,
   priority,
+  project,
 }
 
 @riverpod
@@ -50,6 +51,7 @@ Future<List<Property>> properties(
     SettingPropertyType.status => [PropertyType.status, PropertyType.checkbox],
     SettingPropertyType.date => [PropertyType.date],
     SettingPropertyType.priority => [PropertyType.select],
+    SettingPropertyType.project => [PropertyType.relation],
   };
 
   return properties.where((property) => types.contains(property.type)).toList();
@@ -64,6 +66,7 @@ class SelectedDatabaseState with _$SelectedDatabaseState {
     required CompleteStatusProperty? status,
     required DateProperty? date,
     SelectProperty? priority,
+    RelationProperty? project,
   }) = _SelectedDatabaseState;
 }
 
@@ -93,6 +96,7 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
         status: CompleteStatusProperty.fromJson(taskDatabase.status.toJson()),
         date: taskDatabase.date,
         priority: taskDatabase.priority,
+        project: taskDatabase.project,
       ),
     );
   }
@@ -115,6 +119,7 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
         status: null,
         date: null,
         priority: null,
+        project: null,
       );
     });
   }
@@ -157,10 +162,21 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
         .isEmpty) {
       noPriority = true;
     }
+    bool noProject = false;
+    if (s.project != null &&
+        properties
+            .where((p) =>
+                p is RelationProperty &&
+                p.id == s.project?.id &&
+                p.name == s.project?.name)
+            .isEmpty) {
+      noProject = true;
+    }
     return s.copyWith(
         status: noStatus ? null : s.status,
         date: noDate ? null : s.date,
-        priority: noPriority ? null : s.priority);
+        priority: noPriority ? null : s.priority,
+        project: noProject ? null : s.project);
   }
 
   void selectProperty(String? propertyId, SettingPropertyType type) async {
@@ -211,6 +227,14 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
               id: p.id,
               name: p.name,
               select: p.select,
+            ),
+          );
+        case (SettingPropertyType.project, RelationProperty p):
+          return value.copyWith(
+            project: RelationProperty(
+              id: p.id,
+              name: p.name,
+              relation: p.relation,
             ),
           );
         default:

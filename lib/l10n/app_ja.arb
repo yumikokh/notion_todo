@@ -176,6 +176,8 @@
   "sound_credit_description": "OtoLogic (CC BY 4.0)",
   "priority_property": "優先度",
   "priority_property_description": "種類: セレクト",
+  "project_property": "プロジェクト",
+  "project_property_description": "種類: セレクト",
   "title_property": "タイトル",
   "task_priority_dialog_title": "優先度プロパティが未設定です",
   "task_priority_dialog_content": "タスクの優先度を設定するには、データベース設定で優先度プロパティを設定してください。",

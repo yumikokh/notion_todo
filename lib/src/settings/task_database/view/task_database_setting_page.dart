@@ -224,6 +224,32 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                                   Center(child: Text(l.loading_failed)),
                             ),
                         const SizedBox(height: 32),
+
+                        // プロジェクトプロパティセクション
+                        _buildSectionTitle(context, l.project_property,
+                            tooltip: l.project_property_description,
+                            isRequired: false),
+                        const SizedBox(height: 8),
+                        ref
+                            .watch(
+                                propertiesProvider(SettingPropertyType.project))
+                            .when(
+                              data: (properties) => _buildDropdown(
+                                value: selectedDatabase.project?.id,
+                                items: properties
+                                    .map((prop) => DropdownMenuItem(
+                                        value: prop.id, child: Text(prop.name)))
+                                    .toList(),
+                                onChanged: (value) =>
+                                    selectedDatabaseViewModel.selectProperty(
+                                        value, SettingPropertyType.project),
+                                context: context,
+                              ),
+                              loading: () => const CircularProgressIndicator(),
+                              error: (error, stack) =>
+                                  Center(child: Text('Project Error: $error')),
+                            ),
+                        const SizedBox(height: 32),
                       ],
 
                       // 保存ボタン
@@ -271,7 +297,17 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                 ),
               ),
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(child: Text(l.loading_failed)),
+        error: (error, stack) => Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(l.loading_failed),
+              const SizedBox(height: 8),
+              Text(error.toString(),
+                  style: Theme.of(context).textTheme.bodySmall),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -327,13 +363,13 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: DropdownButton<String>(
         hint: Text(l.select),
-        disabledHint: Text(l.create_property),
+        disabledHint: items.isEmpty ? Text(l.create_property) : Text(l.select),
         value: value,
         items: items,
         onTap: () {
           HapticHelper.light();
         },
-        onChanged: (value) {
+        onChanged: items.isEmpty ? null : (value) {
           onChanged(value);
           HapticHelper.selection();
         },

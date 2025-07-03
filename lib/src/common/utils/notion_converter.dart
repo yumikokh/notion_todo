@@ -93,6 +93,27 @@ class NotionConverter {
     );
   }
 
+  /// プロジェクトプロパティからRelationOptionのリストを抽出する
+  static List<RelationOption>? extractProject(
+      Map<String, dynamic> data, TaskDatabase taskDatabase) {
+    final property = taskDatabase.project;
+    if (property == null) {
+      return null;
+    }
+    final propertyData = findPropertyById(data, property.id);
+    if (propertyData == null || propertyData['relation'] == null) {
+      return null;
+    }
+    final relationData = propertyData['relation'] as List;
+    
+    return relationData.map((item) {
+      return RelationOption(
+        id: item['id'],
+        title: item['title']?[0]?['plain_text'],
+      );
+    }).toList();
+  }
+
   /// APIレスポンスをTaskオブジェクトのリストに変換する
   static List<Task> convertToTasks(
       Map<String, dynamic> result, TaskDatabase taskDatabase) {
@@ -104,6 +125,7 @@ class NotionConverter {
               dueDate: extractDate(page, taskDatabase),
               url: page['url'],
               priority: extractPriority(page, taskDatabase),
+              project: extractProject(page, taskDatabase),
             ))
         .toList();
   }
@@ -118,6 +140,7 @@ class NotionConverter {
       dueDate: NotionConverter.extractDate(data, taskDatabase),
       url: data['url'],
       priority: NotionConverter.extractPriority(data, taskDatabase),
+      project: NotionConverter.extractProject(data, taskDatabase),
     );
   }
 }
