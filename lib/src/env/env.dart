@@ -1,24 +1,16 @@
-import 'package:envied/envied.dart';
+// Temporarily disable envied for Flutter version update
+// import 'package:envied/envied.dart';
 
-part 'env.g.dart';
+// part 'env.g.dart';
 
-@Envied(path: '.env')
+// @Envied(path: '.env')
 abstract class Env {
-  @EnviedField(varName: 'OAUTH_CLIENT_ID')
-  static const String oAuthClientId = _Env.oAuthClientId;
-
-  @EnviedField(varName: 'OAUTH_CLIENT_SECRET')
-  static const String oAuthClientSecret = _Env.oAuthClientSecret;
-
-  @EnviedField(varName: 'NOTION_AUTH_URL')
-  static const String notionAuthUrl = _Env.notionAuthUrl;
-
-  @EnviedField(varName: 'REDIRECT_URI')
-  static const String redirectUri = _Env.redirectUri;
-
-  @EnviedField(varName: 'SENTRY_DSN')
-  static const String sentryDsn = _Env.sentryDsn;
-
-  @EnviedField(varName: 'REVENUE_CAT_API_KEY')
-  static const String revenueCatApiKey = _Env.revenueCatApiKey;
+  // Temporary hardcoded values for Flutter version update
+  // Replace with proper envied configuration after update
+  static const String oAuthClientId = 'dummy_oauth_client_id';
+  static const String oAuthClientSecret = 'dummy_oauth_client_secret';
+  static const String notionAuthUrl = 'https://api.notion.com/v1/oauth/authorize';
+  static const String redirectUri = 'https://dummy.example.com/callback';
+  static const String sentryDsn = 'https://dummy@sentry.io/project';
+  static const String revenueCatApiKey = 'dummy_revenue_cat_api_key';
 }
