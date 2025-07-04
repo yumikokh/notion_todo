@@ -136,8 +136,9 @@ class TaskListView extends HookConsumerWidget {
         ),
         context: context,
         builder: (context) => TaskDateSheet(
-          selectedDate: TaskDate.todayAllDay(),
+          selectedDate: null, // リスケジュール時は既存の日時情報を無視
           confirmable: true,
+          isRescheduleMode: true, // リスケジュールモードを有効化
           onSelected: (TaskDate? date) async {
             // 期限切れタスクすべてを更新
             for (final task in overdueTasks) {

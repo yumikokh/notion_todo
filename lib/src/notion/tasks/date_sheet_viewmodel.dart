@@ -5,9 +5,11 @@ import '../model/task.dart';
 
 class DateSheetViewModel extends ChangeNotifier {
   final TaskDate? initialDateTime;
+  final bool isRescheduleMode; // リスケジュールモード（時間情報を保持しない）
 
   DateSheetViewModel({
     required this.initialDateTime,
+    this.isRescheduleMode = false,
   }) : _focusedDay = initialDateTime?.start.datetime ?? DateTime.now() {
     _selectedDateTime = initialDateTime;
   }
@@ -75,8 +77,8 @@ class DateSheetViewModel extends ChangeNotifier {
     } else if (first is String) {
       final start = NotionDateTime.fromString(first);
       final selectedDateTime = _selectedDateTime;
-      if (selectedDateTime != null && !selectedDateTime.start.isAllDay) {
-        // 既存の時間を保持
+      if (!isRescheduleMode && selectedDateTime != null && !selectedDateTime.start.isAllDay) {
+        // 既存の時間を保持（リスケジュールモードでない場合のみ）
         final localTime = selectedDateTime.start.datetime.toLocal();
         final end = selectedDateTime.end;
         final duration =
@@ -117,7 +119,8 @@ class DateSheetViewModel extends ChangeNotifier {
   // カレンダーが選択されたときの処理
   void handleCalendarSelected(DateTime date, DateTime focusedDate) {
     final selectedDateTime = _selectedDateTime;
-    if (selectedDateTime == null) {
+    if (selectedDateTime == null || isRescheduleMode) {
+      // 新しい選択、またはリスケジュールモードの場合は終日で作成
       _selectedDateTime = TaskDate(
         start: NotionDateTime(
           datetime: DateTime(date.year, date.month, date.day),
@@ -126,7 +129,7 @@ class DateSheetViewModel extends ChangeNotifier {
         end: null,
       );
     } else {
-      // 既存の時間を保持したまま日付のみ更新
+      // 既存の時間を保持したまま日付のみ更新（リスケジュールモードでない場合のみ）
       final localDate = selectedDateTime.start.datetime.toLocal();
       final start = selectedDateTime.start.copyWith(
         datetime: DateTime(

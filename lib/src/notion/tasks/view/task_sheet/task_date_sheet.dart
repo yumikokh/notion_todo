@@ -14,16 +14,21 @@ class TaskDateSheet extends HookWidget {
   final TaskDate? selectedDate;
   final Function(TaskDate?) onSelected;
   final bool confirmable;
+  final bool isRescheduleMode; // リスケジュールモード（時間情報を保持しない）
   const TaskDateSheet({
     super.key,
     required this.selectedDate,
     required this.onSelected,
     this.confirmable = false,
+    this.isRescheduleMode = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = DateSheetViewModel(initialDateTime: selectedDate);
+    final viewModel = DateSheetViewModel(
+      initialDateTime: selectedDate,
+      isRescheduleMode: isRescheduleMode,
+    );
     final options = dateStyleConfigs(context);
     final l = Localizations.localeOf(context);
     final localeCode = "${l.languageCode}_${l.countryCode}";
