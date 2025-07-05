@@ -17,16 +17,17 @@ class AnalyticsService {
       bool? hasDueDate,
       int? pageSize,
       bool? fromUndo}) async {
-    await _logEvent(action, parameters: {
-      if (isCompleted != null) 'is_completed': isCompleted,
-      if (hasDueDate != null) 'has_due_date': hasDueDate,
-      if (pageSize != null) 'page_size': pageSize,
-      if (fromUndo != null) 'from_undo': fromUndo,
-    });
+    final Map<String, Object> parameters = {};
+    if (isCompleted != null) parameters['is_completed'] = isCompleted;
+    if (hasDueDate != null) parameters['has_due_date'] = hasDueDate;
+    if (pageSize != null) parameters['page_size'] = pageSize;
+    if (fromUndo != null) parameters['from_undo'] = fromUndo;
+    
+    await _logEvent(action, parameters: parameters.isNotEmpty ? parameters : null);
   }
 
   Future<void> logSubscription(String action,
-      {Map<String, dynamic>? parameters}) async {
+      {Map<String, Object>? parameters}) async {
     await _logEvent(action, parameters: parameters);
   }
 
@@ -62,13 +63,13 @@ class AnalyticsService {
   Future<void> logError(
     String errorName, {
     dynamic error,
-    Map<String, dynamic>? parameters,
+    Map<String, Object>? parameters,
   }) async {
     await _analytics.logEvent(
       name: 'error',
       parameters: {
         'error_name': errorName,
-        'error_message': error?.toString(),
+        if (error != null) 'error_message': error.toString(),
         ...?parameters,
       },
     );
@@ -113,7 +114,7 @@ class AnalyticsService {
   }
 
   Future<void> _logEvent(String name,
-      {Map<String, dynamic>? parameters}) async {
+      {Map<String, Object>? parameters}) async {
     await _analytics.logEvent(
       name: name,
       parameters: parameters,

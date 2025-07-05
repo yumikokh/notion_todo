@@ -91,4 +91,3 @@ flutter_gen:
   line_length: 80
   integrations:
     flutter_svg: true
-    flare_flutter: true
