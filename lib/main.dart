@@ -27,6 +27,7 @@ void main() async {
   GoogleFonts.config.allowRuntimeFetching = false;
 
   const trackingEnabled = kReleaseMode;
+  // const trackingEnabled = true; // dev: デバッグモードでもAnalyticsを有効にする
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
