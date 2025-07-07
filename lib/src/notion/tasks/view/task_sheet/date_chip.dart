@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../../l10n/app_localizations.dart';
+import 'package:tanzaku_todo/generated/app_localizations.dart';
 
 import '../../../../common/widgets/base_input_chip.dart';
 import '../../../../helpers/date.dart';

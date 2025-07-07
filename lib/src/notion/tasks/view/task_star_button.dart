@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import '../../../../l10n/app_localizations.dart';
+import 'package:tanzaku_todo/generated/app_localizations.dart';
 
 import '../../../helpers/haptic_helper.dart';
 import '../../../settings/task_database/task_database_viewmodel.dart';

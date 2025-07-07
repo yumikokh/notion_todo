@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../../l10n/app_localizations.dart';
+import 'package:tanzaku_todo/generated/app_localizations.dart';
 
 import '../../settings/task_database/task_database_viewmodel.dart';
 import '../common/filter_type.dart';

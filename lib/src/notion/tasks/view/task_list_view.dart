@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../l10n/app_localizations.dart';
+import 'package:tanzaku_todo/generated/app_localizations.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../helpers/date.dart';
@@ -231,8 +231,7 @@ class TaskListView extends HookConsumerWidget {
                     .map((task) => TaskDismissible(
                         taskViewModel: taskViewModel,
                         task: task,
-                        themeMode: themeMode))
-                    .toList(),
+                        themeMode: themeMode)),
                 const Divider(height: 0),
                 const SizedBox(height: 30),
               ],
@@ -243,8 +242,7 @@ class TaskListView extends HookConsumerWidget {
                     .map((task) => TaskDismissible(
                         taskViewModel: taskViewModel,
                         task: task,
-                        themeMode: themeMode))
-                    .toList(),
+                        themeMode: themeMode)),
                 const Divider(height: 0),
               ],
 
@@ -254,8 +252,7 @@ class TaskListView extends HookConsumerWidget {
                     .map((task) => TaskDismissible(
                         taskViewModel: taskViewModel,
                         task: task,
-                        themeMode: themeMode))
-                    .toList(),
+                        themeMode: themeMode)),
                 const Divider(height: 0),
               ],
             ],
@@ -393,8 +390,7 @@ class TaskListView extends HookConsumerWidget {
                 .map((task) => TaskDismissible(
                     taskViewModel: taskViewModel,
                     task: task,
-                    themeMode: themeMode))
-                .toList(),
+                    themeMode: themeMode)),
 
             // 完了済みタスク（showCompletedがtrueの場合のみ表示）
             if (showCompleted && completedTasksInGroup.isNotEmpty)
@@ -402,8 +398,7 @@ class TaskListView extends HookConsumerWidget {
                   .map((task) => TaskDismissible(
                       taskViewModel: taskViewModel,
                       task: task,
-                      themeMode: themeMode))
-                  .toList(),
+                      themeMode: themeMode)),
           ],
 
           const Divider(height: 0),

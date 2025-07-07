@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../l10n/app_localizations.dart';
+import 'package:tanzaku_todo/generated/app_localizations.dart';
 
 import '../../../helpers/haptic_helper.dart';
 import '../../../notion/api/notion_database_api.dart';
@@ -57,8 +57,8 @@ class PropertyCreateButton extends StatelessWidget {
                               : null;
                       HapticHelper.selection();
                       if (errorMessage != null) {
+                        if (!context.mounted) return;
                         showDialog(
-                          // ignore: use_build_context_synchronously
                           context: context,
                           builder: (BuildContext context) {
                             return AlertDialog(
@@ -75,7 +75,7 @@ class PropertyCreateButton extends StatelessWidget {
                         );
                         return;
                       }
-                      // ignore: use_build_context_synchronously
+                      if (!context.mounted) return;
                       Navigator.of(context).pop(tempName);
                     },
                     child: Text(l.confirm),

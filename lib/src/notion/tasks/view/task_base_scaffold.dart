@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../l10n/app_localizations.dart';
+import 'package:tanzaku_todo/generated/app_localizations.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../common/analytics/analytics_service.dart';
 import '../../../common/ui/custom_popup_menu.dart';
@@ -27,7 +27,7 @@ class TaskBaseScaffold extends HookConsumerWidget {
   final void Function(Task, {bool? needSnackbarFloating}) onAddTask;
 
   const TaskBaseScaffold({
-    Key? key,
+    super.key,
     required this.body,
     required this.currentIndex,
     required this.showCompleted,
@@ -36,7 +36,7 @@ class TaskBaseScaffold extends HookConsumerWidget {
     required this.onIndexChanged,
     required this.onShowCompletedChanged,
     required this.onAddTask,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

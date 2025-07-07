@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import '../../../l10n/app_localizations.dart';
+import 'package:tanzaku_todo/generated/app_localizations.dart';
 
 import '../../helpers/date.dart';
 import '../model/task.dart';

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../l10n/app_localizations.dart';
+import 'package:tanzaku_todo/generated/app_localizations.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../common/widgets/base_options_bottom_sheet.dart';

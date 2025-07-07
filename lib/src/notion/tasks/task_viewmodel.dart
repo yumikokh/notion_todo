@@ -1,5 +1,5 @@
 import 'package:flutter_app_badger/flutter_app_badger.dart';
-import '../../../l10n/app_localizations.dart';
+import 'package:tanzaku_todo/generated/app_localizations.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
@@ -268,7 +268,7 @@ class TaskViewModel extends _$TaskViewModel
       final l = await AppLocalizations.delegate.load(locale);
 
       state = AsyncValue.data([
-        for (final t in state.valueOrNull ?? [])
+        for (final Task t in state.valueOrNull ?? [])
           if (t.id == task.id) task else t
       ]);
       // ウィジェット更新
@@ -324,7 +324,7 @@ class TaskViewModel extends _$TaskViewModel
       final prevState = state;
 
       state = AsyncValue.data([
-        for (final t in state.valueOrNull ?? [])
+        for (final Task t in state.valueOrNull ?? [])
           if (t.id == task.id) task else t
       ]);
 
@@ -346,7 +346,7 @@ class TaskViewModel extends _$TaskViewModel
         });
 
         state = AsyncValue.data([
-          for (final t in state.valueOrNull ?? [])
+          for (final Task t in state.valueOrNull ?? [])
             if (t.id == updatedTask.id) updatedTask else t
         ]);
         ref.invalidateSelf();
@@ -422,7 +422,7 @@ class TaskViewModel extends _$TaskViewModel
         final updatedTask =
             await taskService.updateInProgressStatus(task.id, willBeInProgress);
         state = AsyncValue.data([
-          for (final t in state.valueOrNull ?? [])
+          for (final Task t in state.valueOrNull ?? [])
             if (t.id == updatedTask.id) updatedTask else t
         ]);
         ref.invalidateSelf();
@@ -460,7 +460,7 @@ class TaskViewModel extends _$TaskViewModel
     final locale = ref.read(settingsViewModelProvider).locale;
     final l = await AppLocalizations.delegate.load(locale);
     state = AsyncValue.data([
-      for (final t in state.valueOrNull ?? [])
+      for (final Task t in state.valueOrNull ?? [])
         if (t.id != task.id) t
     ]);
     // ウィジェット更新

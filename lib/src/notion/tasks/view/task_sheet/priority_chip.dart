@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../../l10n/app_localizations.dart';
+import 'package:tanzaku_todo/generated/app_localizations.dart';
 
 import '../../../../common/widgets/base_input_chip.dart';
 import '../../../model/property.dart';
@@ -11,12 +11,12 @@ class PriorityChip extends StatelessWidget {
   final Function() onDeleted;
 
   const PriorityChip({
-    Key? key,
+    super.key,
     required this.priority,
     required this.context,
     required this.onSelected,
     required this.onDeleted,
-  }) : super(key: key);
+  });
 
   bool get isSelected => priority != null;
 
