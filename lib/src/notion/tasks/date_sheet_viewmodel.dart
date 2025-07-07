@@ -54,6 +54,11 @@ class DateSheetViewModel extends ChangeNotifier {
     final selectedDateTime = _selectedDateTime;
     if (selectedDateTime == null) return null;
 
+    // リスケジュールモードで時間が設定されている場合は、その時間情報を保持
+    if (isRescheduleMode && !selectedDateTime.start.isAllDay) {
+      return selectedDateTime;
+    }
+
     return TaskDate(
         start: NotionDateTime(
           datetime: DateTime(
@@ -77,32 +82,43 @@ class DateSheetViewModel extends ChangeNotifier {
     } else if (first is String) {
       final start = NotionDateTime.fromString(first);
       final selectedDateTime = _selectedDateTime;
-      if (!isRescheduleMode && selectedDateTime != null && !selectedDateTime.start.isAllDay) {
-        // 既存の時間を保持（リスケジュールモードでない場合のみ）
-        final localTime = selectedDateTime.start.datetime.toLocal();
-        final end = selectedDateTime.end;
-        final duration =
-            end?.datetime.difference(selectedDateTime.start.datetime);
-        final newStartDateTime = DateTime(
-          start.datetime.year,
-          start.datetime.month,
-          start.datetime.day,
-          localTime.hour,
-          localTime.minute,
-        );
-        final newEnd = duration != null && end != null
-            ? NotionDateTime(
-                datetime: newStartDateTime.add(duration),
-                isAllDay: end.isAllDay,
-              )
-            : null;
-        date = TaskDate(
-          start: NotionDateTime(
-            datetime: newStartDateTime,
-            isAllDay: false,
-          ),
-          end: newEnd,
-        );
+      if (selectedDateTime != null && !selectedDateTime.start.isAllDay) {
+        // 時間情報が設定されている場合は保持
+        // リスケジュールモードでは初期値の時間は無視するが、新しく設定された時間は保持
+        final shouldKeepTime = isRescheduleMode ? 
+          (selectedDateTime != initialDateTime) : true;
+        
+        if (shouldKeepTime) {
+          final localTime = selectedDateTime.start.datetime.toLocal();
+          final end = selectedDateTime.end;
+          final duration =
+              end?.datetime.difference(selectedDateTime.start.datetime);
+          final newStartDateTime = DateTime(
+            start.datetime.year,
+            start.datetime.month,
+            start.datetime.day,
+            localTime.hour,
+            localTime.minute,
+          );
+          final newEnd = duration != null && end != null
+              ? NotionDateTime(
+                  datetime: newStartDateTime.add(duration),
+                  isAllDay: end.isAllDay,
+                )
+              : null;
+          date = TaskDate(
+            start: NotionDateTime(
+              datetime: newStartDateTime,
+              isAllDay: false,
+            ),
+            end: newEnd,
+          );
+        } else {
+          date = TaskDate(
+            start: start,
+            end: null,
+          );
+        }
       } else {
         date = TaskDate(
           start: start,
@@ -119,8 +135,8 @@ class DateSheetViewModel extends ChangeNotifier {
   // カレンダーが選択されたときの処理
   void handleCalendarSelected(DateTime date, DateTime focusedDate) {
     final selectedDateTime = _selectedDateTime;
-    if (selectedDateTime == null || isRescheduleMode) {
-      // 新しい選択、またはリスケジュールモードの場合は終日で作成
+    if (selectedDateTime == null) {
+      // 新しい選択の場合は終日で作成
       _selectedDateTime = TaskDate(
         start: NotionDateTime(
           datetime: DateTime(date.year, date.month, date.day),
@@ -128,8 +144,34 @@ class DateSheetViewModel extends ChangeNotifier {
         ),
         end: null,
       );
+    } else if (isRescheduleMode) {
+      // リスケジュールモードの場合は現在選択中の時間情報を保持
+      final localDate = selectedDateTime.start.datetime.toLocal();
+      final start = NotionDateTime(
+        datetime: DateTime(
+          date.year,
+          date.month,
+          date.day,
+          localDate.hour,
+          localDate.minute,
+        ),
+        isAllDay: selectedDateTime.start.isAllDay,
+      );
+
+      // 終了日がある場合は、現在の間隔を保持
+      final end = selectedDateTime.end;
+      final duration =
+          end?.datetime.difference(selectedDateTime.start.datetime);
+      final newEnd = duration != null && end != null
+          ? NotionDateTime(
+              datetime: start.datetime.add(duration),
+              isAllDay: end.isAllDay,
+            )
+          : null;
+
+      _selectedDateTime = TaskDate(start: start, end: newEnd);
     } else {
-      // 既存の時間を保持したまま日付のみ更新（リスケジュールモードでない場合のみ）
+      // 通常モードの場合は既存の時間を保持したまま日付のみ更新
       final localDate = selectedDateTime.start.datetime.toLocal();
       final start = selectedDateTime.start.copyWith(
         datetime: DateTime(
@@ -152,7 +194,6 @@ class DateSheetViewModel extends ChangeNotifier {
             )
           : null;
 
-      // 終了日は削除
       _selectedDateTime = TaskDate(start: start, end: newEnd);
     }
     _focusedDay = focusedDate;
