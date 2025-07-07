@@ -18,10 +18,10 @@ class AnalyticsService {
       int? pageSize,
       bool? fromUndo}) async {
     final Map<String, Object> parameters = {};
-    if (isCompleted != null) parameters['is_completed'] = isCompleted;
-    if (hasDueDate != null) parameters['has_due_date'] = hasDueDate;
+    if (isCompleted != null) parameters['is_completed'] = isCompleted ? 'true' : 'false';
+    if (hasDueDate != null) parameters['has_due_date'] = hasDueDate ? 'true' : 'false';
     if (pageSize != null) parameters['page_size'] = pageSize;
-    if (fromUndo != null) parameters['from_undo'] = fromUndo;
+    if (fromUndo != null) parameters['from_undo'] = fromUndo ? 'true' : 'false';
     
     await _logEvent(action, parameters: parameters.isNotEmpty ? parameters : null);
   }
