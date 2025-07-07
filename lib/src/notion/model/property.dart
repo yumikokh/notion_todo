@@ -55,16 +55,16 @@ class TitleProperty extends Property {
   final String? title;
 
   TitleProperty({
-    required String id,
-    required String name,
+    required super.id,
+    required super.name,
     required this.title,
-  }) : super(id: id, name: name, type: PropertyType.title);
+  }) : super(type: PropertyType.title);
 
   static String? _titleFromJson(dynamic json) {
     if (json == null) return null;
     if (json is String) return json;
     if (json is List && json.isNotEmpty) {
-      return json[0]['plain_text'] as String;
+      return (json[0] as Map<String, dynamic>)['plain_text'] as String;
     }
     return null;
   }
@@ -79,9 +79,9 @@ class TitleProperty extends Property {
 @JsonSerializable()
 class DateProperty extends Property {
   DateProperty({
-    required String id,
-    required String name,
-  }) : super(id: id, name: name, type: PropertyType.date);
+    required super.id,
+    required super.name,
+  }) : super(type: PropertyType.date);
 
   factory DateProperty.fromJson(Map<String, dynamic> json) =>
       _$DatePropertyFromJson(json);
@@ -95,10 +95,10 @@ class SelectProperty extends Property {
   final ({List<SelectOption> options}) select;
 
   SelectProperty({
-    required String id,
-    required String name,
+    required super.id,
+    required super.name,
     required this.select,
-  }) : super(id: id, name: name, type: PropertyType.select);
+  }) : super(type: PropertyType.select);
 
   factory SelectProperty.fromJson(Map<String, dynamic> json) =>
       _$SelectPropertyFromJson(json);
@@ -112,11 +112,11 @@ class CheckboxProperty extends Property {
   final bool checkbox;
 
   CheckboxProperty({
-    required String id,
-    required String name,
+    required super.id,
+    required super.name,
     required this.checkbox,
     required PropertyType type,
-  }) : super(id: id, name: name, type: PropertyType.checkbox);
+  }) : super(type: PropertyType.checkbox);
 
   factory CheckboxProperty.fromJson(Map<String, dynamic> json) {
     // checkboxの値が空のオブジェクト{}の場合はfalseとして扱う
@@ -135,10 +135,10 @@ class StatusProperty extends Property {
   final ({List<StatusOption> options, List<StatusGroup> groups}) status;
 
   StatusProperty({
-    required String id,
-    required String name,
+    required super.id,
+    required super.name,
     required this.status,
-  }) : super(id: id, name: name, type: PropertyType.status);
+  }) : super(type: PropertyType.status);
 
   StatusProperty copyWith({
     String? id,
@@ -202,13 +202,10 @@ sealed class CompleteStatusProperty {
 class CheckboxCompleteStatusProperty extends CheckboxProperty
     implements CompleteStatusProperty {
   CheckboxCompleteStatusProperty({
-    required String id,
-    required String name,
-    required bool checkbox,
+    required super.id,
+    required super.name,
+    required super.checkbox,
   }) : super(
-            id: id,
-            name: name,
-            checkbox: checkbox,
             type: PropertyType.checkbox);
 
   factory CheckboxCompleteStatusProperty.fromJson(Map<String, dynamic> json) {
@@ -231,13 +228,13 @@ class StatusCompleteStatusProperty extends StatusProperty
   final StatusOption? completeOption;
 
   StatusCompleteStatusProperty({
-    required String id,
-    required String name,
-    required ({List<StatusOption> options, List<StatusGroup> groups}) status,
+    required super.id,
+    required super.name,
+    required super.status,
     required this.todoOption,
     required this.inProgressOption,
     required this.completeOption,
-  }) : super(id: id, name: name, status: status);
+  });
 
   /// 既存のStatusCompleteStatusPropertyのオプションIDを使用して、
   /// 新しいStatusPropertyから対応するStatusCompleteStatusPropertyを作成します
@@ -265,6 +262,7 @@ class StatusCompleteStatusProperty extends StatusProperty
     );
   }
 
+  @override
   StatusCompleteStatusProperty copyWith({
     String? id,
     String? name,
@@ -307,10 +305,10 @@ abstract interface class OptionBase {
 @JsonSerializable(explicitToJson: true)
 class SelectOption extends OptionBase {
   SelectOption({
-    required String id,
-    required String name,
-    @JsonKey(fromJson: NotionColor.fromString) NotionColor? color,
-  }) : super(id: id, name: name, color: color);
+    required super.id,
+    required super.name,
+    @JsonKey(fromJson: NotionColor.fromString) super.color,
+  });
 
   factory SelectOption.fromJson(Map<String, dynamic> json) =>
       _$SelectOptionFromJson(json);
@@ -321,10 +319,10 @@ class SelectOption extends OptionBase {
 @JsonSerializable(explicitToJson: true)
 class StatusOption extends OptionBase {
   StatusOption({
-    required String id,
-    required String name,
-    @JsonKey(fromJson: NotionColor.fromString) NotionColor? color,
-  }) : super(id: id, name: name, color: color);
+    required super.id,
+    required super.name,
+    @JsonKey(fromJson: NotionColor.fromString) super.color,
+  });
 
   factory StatusOption.fromJson(Map<String, dynamic> json) =>
       _$StatusOptionFromJson(json);
@@ -347,11 +345,11 @@ class StatusGroup extends OptionBase {
   final List<String> optionIds;
 
   StatusGroup({
-    required String id,
-    required String name,
-    @JsonKey(fromJson: NotionColor.fromString) NotionColor? color,
+    required super.id,
+    required super.name,
+    @JsonKey(fromJson: NotionColor.fromString) super.color,
     required this.optionIds,
-  }) : super(id: id, name: name, color: color);
+  });
 
   List<StatusOption> getStatusOptionsByGroup(
     List<StatusOption> options,

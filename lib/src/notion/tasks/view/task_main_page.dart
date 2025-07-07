@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:tanzaku_todo/generated/app_localizations.dart';
 import 'package:page_transition/page_transition.dart';
 
 import '../../../common/analytics/analytics_service.dart';
@@ -23,9 +23,9 @@ const int updateIntervalSec = 60;
 
 class TaskMainPage extends HookConsumerWidget {
   const TaskMainPage({
-    Key? key,
+    super.key,
     this.initialTab,
-  }) : super(key: key);
+  });
 
   static const routeName = '/';
   static final DateHelper d = DateHelper();
@@ -86,11 +86,11 @@ class TaskMainPage extends HookConsumerWidget {
           case true:
             await WakelockPlus.enable();
             final enabled = await WakelockPlus.enabled;
-            print('Wakelock enabled: $enabled'); // true であることを確認
+            debugPrint('Wakelock enabled: $enabled'); // true であることを確認
           case false:
             await WakelockPlus.disable();
             final enabled = await WakelockPlus.enabled;
-            print('Wakelock disabled: $enabled'); // false であることを確認
+            debugPrint('Wakelock disabled: $enabled'); // false であることを確認
         }
       }
 
@@ -218,10 +218,10 @@ class TaskRefreshIndicator extends HookWidget {
   final Future<void> Function() onRefresh;
 
   const TaskRefreshIndicator({
-    Key? key,
+    super.key,
     required this.child,
     required this.onRefresh,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
