@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:tanzaku_todo/generated/app_localizations.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../model/task.dart';
@@ -19,11 +19,11 @@ class TaskSheet extends HookConsumerWidget {
   final Function()? onDeleted;
 
   const TaskSheet({
-    Key? key,
+    super.key,
     required this.initialTask,
     required this.onSubmitted,
     this.onDeleted,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

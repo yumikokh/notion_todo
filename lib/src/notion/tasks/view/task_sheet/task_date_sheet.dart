@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:tanzaku_todo/generated/app_localizations.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../../../model/task.dart';
@@ -14,16 +14,21 @@ class TaskDateSheet extends HookWidget {
   final TaskDate? selectedDate;
   final Function(TaskDate?) onSelected;
   final bool confirmable;
+  final bool isRescheduleMode; // リスケジュールモード（時間情報を保持しない）
   const TaskDateSheet({
     super.key,
     required this.selectedDate,
     required this.onSelected,
     this.confirmable = false,
+    this.isRescheduleMode = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = DateSheetViewModel(initialDateTime: selectedDate);
+    final viewModel = DateSheetViewModel(
+      initialDateTime: selectedDate,
+      isRescheduleMode: isRescheduleMode,
+    );
     final options = dateStyleConfigs(context);
     final l = Localizations.localeOf(context);
     final localeCode = "${l.languageCode}_${l.countryCode}";

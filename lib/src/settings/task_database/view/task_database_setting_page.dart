@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:tanzaku_todo/generated/app_localizations.dart';
 import '../../../helpers/haptic_helper.dart';
 import '../../../notion/model/property.dart';
 import '../../../notion/oauth/notion_oauth_viewmodel.dart';
