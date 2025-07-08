@@ -201,8 +201,8 @@ class TaskListView extends HookConsumerWidget {
 
             // グループ化しない場合の表示
             if (groupType == GroupType.none) ...[
-              // 期限切れタスク
-              if (overdueTasks.isNotEmpty) ...[
+              // 期限切れタスク（Todayページのみで表示）
+              if (overdueTasks.isNotEmpty && taskViewModel.filterType == FilterType.today) ...[
                 Padding(
                   padding: const EdgeInsets.fromLTRB(32, 0, 32, 8),
                   child: InkWell(
