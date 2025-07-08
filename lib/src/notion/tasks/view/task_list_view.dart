@@ -36,6 +36,7 @@ class TaskListView extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isToday = taskViewModel.filterType == FilterType.today;
     // グループタイプを取得
     final groupType =
         ref.watch(currentGroupTypeProvider(taskViewModel.filterType));
@@ -54,15 +55,17 @@ class TaskListView extends HookConsumerWidget {
 
     // 未グループ化の場合の通常表示用データ取得
     final notCompletedTasks = list.where((task) => !task.isCompleted).toList();
-    final overdueTasks =
-        notCompletedTasks.where((task) => task.isOverdueToday).toList();
-    final remainingNotCompletedTasks =
-        notCompletedTasks.where((task) => !task.isOverdueToday).toList();
+    final overdueTasks = notCompletedTasks
+        .where((task) => task.isOverdueToday && isToday)
+        .toList();
+    final remainingNotCompletedTasks = notCompletedTasks
+        .where((task) => !task.isOverdueToday || !isToday)
+        .toList();
     final completedTasks = list.where((task) => task.isCompleted).toList();
 
     final fontSettings = ref.watch(fontSettingsViewModelProvider);
     final themeMode = ref.watch(settingsViewModelProvider).themeMode;
-    final isToday = taskViewModel.filterType == FilterType.today;
+
     final l = AppLocalizations.of(context)!;
 
     // 時間に応じたメッセージを取得（Todayページの場合）
@@ -136,8 +139,9 @@ class TaskListView extends HookConsumerWidget {
         ),
         context: context,
         builder: (context) => TaskDateSheet(
-          selectedDate: TaskDate.todayAllDay(),
+          selectedDate: null, // リスケジュール時は既存の日時情報を無視
           confirmable: true,
+          isRescheduleMode: true, // リスケジュールモードを有効化
           onSelected: (TaskDate? date) async {
             // 期限切れタスクすべてを更新
             for (final task in overdueTasks) {
@@ -200,7 +204,7 @@ class TaskListView extends HookConsumerWidget {
 
             // グループ化しない場合の表示
             if (groupType == GroupType.none) ...[
-              // 期限切れタスク
+              // 期限切れタスク（Todayページのみで表示）
               if (overdueTasks.isNotEmpty) ...[
                 Padding(
                   padding: const EdgeInsets.fromLTRB(32, 0, 32, 8),
@@ -227,32 +231,29 @@ class TaskListView extends HookConsumerWidget {
                     ),
                   ),
                 ),
-                ...overdueTasks
-                    .map((task) => TaskDismissible(
-                        taskViewModel: taskViewModel,
-                        task: task,
-                        themeMode: themeMode)),
+                ...overdueTasks.map((task) => TaskDismissible(
+                    taskViewModel: taskViewModel,
+                    task: task,
+                    themeMode: themeMode)),
                 const Divider(height: 0),
                 const SizedBox(height: 30),
               ],
 
               // 残りの未完了タスク
               if (remainingNotCompletedTasks.isNotEmpty) ...[
-                ...remainingNotCompletedTasks
-                    .map((task) => TaskDismissible(
-                        taskViewModel: taskViewModel,
-                        task: task,
-                        themeMode: themeMode)),
+                ...remainingNotCompletedTasks.map((task) => TaskDismissible(
+                    taskViewModel: taskViewModel,
+                    task: task,
+                    themeMode: themeMode)),
                 const Divider(height: 0),
               ],
 
               // 完了タスク
               if (showCompleted && completedTasks.isNotEmpty) ...[
-                ...completedTasks
-                    .map((task) => TaskDismissible(
-                        taskViewModel: taskViewModel,
-                        task: task,
-                        themeMode: themeMode)),
+                ...completedTasks.map((task) => TaskDismissible(
+                    taskViewModel: taskViewModel,
+                    task: task,
+                    themeMode: themeMode)),
                 const Divider(height: 0),
               ],
             ],
@@ -386,19 +387,17 @@ class TaskListView extends HookConsumerWidget {
           // グループが開いている場合のみタスクを表示
           if (isExpanded) ...[
             // 未完了タスク
-            ...nonCompletedTasks
-                .map((task) => TaskDismissible(
-                    taskViewModel: taskViewModel,
-                    task: task,
-                    themeMode: themeMode)),
+            ...nonCompletedTasks.map((task) => TaskDismissible(
+                taskViewModel: taskViewModel,
+                task: task,
+                themeMode: themeMode)),
 
             // 完了済みタスク（showCompletedがtrueの場合のみ表示）
             if (showCompleted && completedTasksInGroup.isNotEmpty)
-              ...completedTasksInGroup
-                  .map((task) => TaskDismissible(
-                      taskViewModel: taskViewModel,
-                      task: task,
-                      themeMode: themeMode)),
+              ...completedTasksInGroup.map((task) => TaskDismissible(
+                  taskViewModel: taskViewModel,
+                  task: task,
+                  themeMode: themeMode)),
           ],
 
           const Divider(height: 0),
@@ -449,6 +448,14 @@ class TaskListView extends HookConsumerWidget {
             return option.name;
           }
           break;
+        case GroupType.date:
+          // 日付グループの場合、ISO形式（2025-07-08）を解析してフォーマット
+          try {
+            final date = DateTime.parse(id);
+            return d.formatDateTime(date, true, showToday: true) ?? id;
+          } catch (e) {
+            return id;
+          }
         default:
           break;
       }
