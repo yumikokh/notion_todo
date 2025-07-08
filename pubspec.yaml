@@ -89,5 +89,6 @@ flutter_native_splash:
 flutter_gen:
   output: lib/generated/
   line_length: 80
+  synthetic-package: false
   integrations:
     flutter_svg: true
