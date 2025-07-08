@@ -36,6 +36,7 @@ class TaskListView extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isToday = taskViewModel.filterType == FilterType.today;
     // グループタイプを取得
     final groupType =
         ref.watch(currentGroupTypeProvider(taskViewModel.filterType));
@@ -54,15 +55,17 @@ class TaskListView extends HookConsumerWidget {
 
     // 未グループ化の場合の通常表示用データ取得
     final notCompletedTasks = list.where((task) => !task.isCompleted).toList();
-    final overdueTasks =
-        notCompletedTasks.where((task) => task.isOverdueToday).toList();
-    final remainingNotCompletedTasks =
-        notCompletedTasks.where((task) => !task.isOverdueToday).toList();
+    final overdueTasks = notCompletedTasks
+        .where((task) => task.isOverdueToday && isToday)
+        .toList();
+    final remainingNotCompletedTasks = notCompletedTasks
+        .where((task) => !task.isOverdueToday || !isToday)
+        .toList();
     final completedTasks = list.where((task) => task.isCompleted).toList();
 
     final fontSettings = ref.watch(fontSettingsViewModelProvider);
     final themeMode = ref.watch(settingsViewModelProvider).themeMode;
-    final isToday = taskViewModel.filterType == FilterType.today;
+
     final l = AppLocalizations.of(context)!;
 
     // 時間に応じたメッセージを取得（Todayページの場合）
@@ -202,7 +205,7 @@ class TaskListView extends HookConsumerWidget {
             // グループ化しない場合の表示
             if (groupType == GroupType.none) ...[
               // 期限切れタスク（Todayページのみで表示）
-              if (overdueTasks.isNotEmpty && taskViewModel.filterType == FilterType.today) ...[
+              if (overdueTasks.isNotEmpty) ...[
                 Padding(
                   padding: const EdgeInsets.fromLTRB(32, 0, 32, 8),
                   child: InkWell(
@@ -228,32 +231,29 @@ class TaskListView extends HookConsumerWidget {
                     ),
                   ),
                 ),
-                ...overdueTasks
-                    .map((task) => TaskDismissible(
-                        taskViewModel: taskViewModel,
-                        task: task,
-                        themeMode: themeMode)),
+                ...overdueTasks.map((task) => TaskDismissible(
+                    taskViewModel: taskViewModel,
+                    task: task,
+                    themeMode: themeMode)),
                 const Divider(height: 0),
                 const SizedBox(height: 30),
               ],
 
               // 残りの未完了タスク
               if (remainingNotCompletedTasks.isNotEmpty) ...[
-                ...remainingNotCompletedTasks
-                    .map((task) => TaskDismissible(
-                        taskViewModel: taskViewModel,
-                        task: task,
-                        themeMode: themeMode)),
+                ...remainingNotCompletedTasks.map((task) => TaskDismissible(
+                    taskViewModel: taskViewModel,
+                    task: task,
+                    themeMode: themeMode)),
                 const Divider(height: 0),
               ],
 
               // 完了タスク
               if (showCompleted && completedTasks.isNotEmpty) ...[
-                ...completedTasks
-                    .map((task) => TaskDismissible(
-                        taskViewModel: taskViewModel,
-                        task: task,
-                        themeMode: themeMode)),
+                ...completedTasks.map((task) => TaskDismissible(
+                    taskViewModel: taskViewModel,
+                    task: task,
+                    themeMode: themeMode)),
                 const Divider(height: 0),
               ],
             ],
@@ -387,19 +387,17 @@ class TaskListView extends HookConsumerWidget {
           // グループが開いている場合のみタスクを表示
           if (isExpanded) ...[
             // 未完了タスク
-            ...nonCompletedTasks
-                .map((task) => TaskDismissible(
-                    taskViewModel: taskViewModel,
-                    task: task,
-                    themeMode: themeMode)),
+            ...nonCompletedTasks.map((task) => TaskDismissible(
+                taskViewModel: taskViewModel,
+                task: task,
+                themeMode: themeMode)),
 
             // 完了済みタスク（showCompletedがtrueの場合のみ表示）
             if (showCompleted && completedTasksInGroup.isNotEmpty)
-              ...completedTasksInGroup
-                  .map((task) => TaskDismissible(
-                      taskViewModel: taskViewModel,
-                      task: task,
-                      themeMode: themeMode)),
+              ...completedTasksInGroup.map((task) => TaskDismissible(
+                  taskViewModel: taskViewModel,
+                  task: task,
+                  themeMode: themeMode)),
           ],
 
           const Divider(height: 0),
