@@ -162,15 +162,18 @@ class Task with _$Task {
   }
 
   bool get isOverdueToday {
-    final endOfToday = d.endTimeOfDay(DateTime.now());
-    final startOfToday = d.startTimeOfDay(DateTime.now());
+    final now = DateTime.now();
+    final endOfToday = d.endTimeOfDay(now);
+    final startOfToday = d.startTimeOfDay(now);
     final dueDateStart = dueDate?.start.datetime;
     final dueDateEnd = dueDate?.end?.datetime;
 
-    if (dueDateEnd != null && dueDateEnd.isBefore(endOfToday)) {
+    // 終了日時がある場合は、現在時刻より前なら期限切れ
+    if (dueDateEnd != null && dueDateEnd.isBefore(now)) {
       return true;
     }
 
+    // 開始日時のみの場合、今日の始まりより前なら期限切れ
     if (dueDateStart != null && dueDateStart.isBefore(startOfToday)) {
       return true;
     }
