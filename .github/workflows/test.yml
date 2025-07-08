@@ -24,7 +24,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           cache: true
-          flutter-version-file: pubspec.yaml
+          flutter-version-file: .flutter-version
 
       - name: Flutter version
         run: flutter --version

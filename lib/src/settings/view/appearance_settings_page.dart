@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:tanzaku_todo/generated/app_localizations.dart';
 import '../../common/widgets/settings_list_tile.dart';
 import '../font/view/font_settings_view.dart';
 import '../settings_viewmodel.dart';

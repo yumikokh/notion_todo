@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:tanzaku_todo/generated/app_localizations.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -27,7 +27,7 @@ import 'notion/tasks/task_viewmodel.dart';
 
 /// The Widget that configures your application.
 class MyApp extends HookConsumerWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   static bool _isInitialized = false;
   static GlobalKey<NavigatorState> globalNavigatorKey =
