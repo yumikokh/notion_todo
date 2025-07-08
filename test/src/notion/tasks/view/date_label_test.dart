@@ -199,10 +199,11 @@ void main() {
       testWidgets('昨日から今日の日付範囲で両方の日付が表示される', (WidgetTester tester) async {
         final yesterday = DateTime.now().subtract(const Duration(days: 1));
         final today = DateTime.now();
-        
+
         final date = TaskDate(
           start: NotionDateTime(
-            datetime: DateTime(yesterday.year, yesterday.month, yesterday.day, 12, 0),
+            datetime:
+                DateTime(yesterday.year, yesterday.month, yesterday.day, 12, 0),
             isAllDay: false,
           ),
           end: NotionDateTime(
@@ -222,13 +223,15 @@ void main() {
         expect(find.byType(Text), findsNWidgets(2));
       });
 
-      testWidgets('Todayページで昨日から今日の日付範囲表示（showToday=false）', (WidgetTester tester) async {
+      testWidgets('Todayページで昨日から今日の日付範囲表示（showToday=false）',
+          (WidgetTester tester) async {
         final yesterday = DateTime.now().subtract(const Duration(days: 1));
         final today = DateTime.now();
-        
+
         final date = TaskDate(
           start: NotionDateTime(
-            datetime: DateTime(yesterday.year, yesterday.month, yesterday.day, 12, 0),
+            datetime:
+                DateTime(yesterday.year, yesterday.month, yesterday.day, 12, 0),
             isAllDay: false,
           ),
           end: NotionDateTime(
@@ -248,9 +251,10 @@ void main() {
         expect(find.byType(Text), findsNWidgets(2));
       });
 
-      testWidgets('終日タスクで同じ日の場合でもshowTodayがtrueなら今日を表示', (WidgetTester tester) async {
+      testWidgets('終日タスクで同じ日の場合でもshowTodayがtrueなら今日を表示',
+          (WidgetTester tester) async {
         final today = DateTime.now();
-        
+
         final date = TaskDate(
           start: NotionDateTime(
             datetime: DateTime(today.year, today.month, today.day),
