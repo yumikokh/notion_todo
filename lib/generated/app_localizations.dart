@@ -926,6 +926,18 @@ abstract class AppLocalizations {
   /// **'Type: Select'**
   String get priority_property_description;
 
+  /// No description provided for @project_property.
+  ///
+  /// In en, this message translates to:
+  /// **'Project'**
+  String get project_property;
+
+  /// No description provided for @project_property_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Type: Select'**
+  String get project_property_description;
+
   /// No description provided for @title_property.
   ///
   /// In en, this message translates to:

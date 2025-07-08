@@ -480,6 +480,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get priority_property_description => 'Type: Select';
 
   @override
+  String get project_property => 'Project';
+
+  @override
+  String get project_property_description => 'Type: Select';
+
+  @override
   String get title_property => 'Title';
 
   @override

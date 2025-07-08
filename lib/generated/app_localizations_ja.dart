@@ -464,6 +464,12 @@ class AppLocalizationsJa extends AppLocalizations {
   String get priority_property_description => '種類: セレクト';
 
   @override
+  String get project_property => 'プロジェクト';
+
+  @override
+  String get project_property_description => '種類: セレクト';
+
+  @override
   String get title_property => 'タイトル';
 
   @override
