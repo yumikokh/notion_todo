@@ -121,6 +121,11 @@ class WidgetService {
           _handleWidgetLaunchAddTaskToToday(globalNavigatorKey, ref);
         });
       }
+    } else if (action == "add_task_with_title") {
+      // iOS Shortcuts and Siri support
+      return WidgetsBinding.instance.addPostFrameCallback((_) {
+        _handleAddTaskWithTitle(uri, globalNavigatorKey, ref);
+      });
     } else if (action == "open") {
       if (uri.pathSegments.first == "today") {
         return WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -147,6 +152,76 @@ class WidgetService {
         await _showTaskSheet(
           context,
           Task.temp(dueDate: TaskDate.todayAllDay()),
+          todayViewModel.addTask,
+        );
+      }
+    });
+  }
+
+  // iOS Shortcuts and Siri からのタスク追加処理
+  static Future<void> _handleAddTaskWithTitle(Uri uri,
+      GlobalKey<NavigatorState> globalNavigatorKey, WidgetRef ref) async {
+    final todayViewModel =
+        ref.read(taskViewModelProvider(filterType: FilterType.today).notifier);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final currentState = globalNavigatorKey.currentState;
+      if (currentState == null) return;
+
+      await _navigateToTodayPage(globalNavigatorKey);
+
+      final context = globalNavigatorKey.currentContext;
+      if (context == null || !context.mounted) return;
+
+      // URL パラメーターから情報を取得
+      final queryParams = uri.queryParameters;
+      final title = queryParams['title'] ?? '';
+      final dueDateStr = queryParams['dueDate'];
+      final isToday = queryParams['today'] == 'true';
+
+      if (title.isEmpty) {
+        // タイトルが空の場合は通常のタスク追加画面を表示
+        await _showTaskSheet(
+          context,
+          Task.temp(dueDate: TaskDate.todayAllDay()),
+          todayViewModel.addTask,
+        );
+        return;
+      }
+
+      // タスクの期日を設定
+      TaskDate? taskDate;
+      if (isToday) {
+        taskDate = TaskDate.todayAllDay();
+      } else if (dueDateStr != null && dueDateStr.isNotEmpty) {
+        try {
+          final dueDate = DateTime.parse(dueDateStr);
+          taskDate = TaskDate(
+            start: TaskDateTime(
+              date: dueDate,
+              hasTime: false,
+            ),
+          );
+        } catch (e) {
+          // 日付のパースに失敗した場合は今日にフォールバック
+          taskDate = TaskDate.todayAllDay();
+        }
+      }
+
+      // タスクを作成してすぐに追加
+      final task = Task.temp(
+        title: title,
+        dueDate: taskDate,
+      );
+
+      try {
+        await todayViewModel.addTask(task, needSnackbarFloating: true);
+        // 成功時は何もしない（スナックバーが表示される）
+      } catch (e) {
+        // エラーの場合はタスク編集画面を表示
+        await _showTaskSheet(
+          context,
+          task,
           todayViewModel.addTask,
         );
       }

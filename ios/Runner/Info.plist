@@ -84,8 +84,15 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>notionTodo</string>
+				<string>notiontodo</string>
 			</array>
 		</dict>
+	</array>
+	<key>NSUserActivityTypes</key>
+	<array>
+		<string>AddTaskIntent</string>
+		<string>QuickAddTaskIntent</string>
+		<string>ShowTodayTasksIntent</string>
 	</array>
 </dict>
 </plist>
