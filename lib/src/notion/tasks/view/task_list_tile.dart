@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:tanzaku_todo/generated/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../helpers/haptic_helper.dart';
@@ -27,6 +28,7 @@ class TaskListTile extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final checked = useState(task.isCompleted);
+    final l = Localizations.of<AppLocalizations>(context, AppLocalizations)!;
 
     final fillColor = switch (checked.value) {
       true =>
@@ -124,7 +126,8 @@ class TaskListTile extends HookConsumerWidget {
             decorationColor: Theme.of(context).colorScheme.outline,
             fontSize: 15,
           )),
-      subtitle: taskViewModel.showDueDate(task)
+      subtitle: (taskViewModel.showDueDate(task) ||
+              task.project != null && task.project!.isNotEmpty)
           ? SizedBox(
               width: double.infinity,
               child: SingleChildScrollView(
@@ -133,6 +136,7 @@ class TaskListTile extends HookConsumerWidget {
                 child: Row(
                   spacing: 6,
                   children: [
+                    // 日付
                     if (taskViewModel.showDueDate(task))
                       DateLabel(
                         date: task.dueDate,
@@ -140,6 +144,43 @@ class TaskListTile extends HookConsumerWidget {
                         context: context,
                         showColor: !task.isCompleted,
                         showIcon: true,
+                      ),
+                    // プロジェクト
+                    if (task.project != null && task.project!.isNotEmpty)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .surfaceContainerHighest,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.folder_outlined,
+                              size: 14,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              task.project!.first.title ??
+                                  l.no_property(l.project_property),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurfaceVariant,
+                                  ),
+                            ),
+                          ],
+                        ),
                       ),
                   ],
                 ),

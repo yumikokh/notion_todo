@@ -174,9 +174,15 @@ class NotionTaskApi {
         db.priority!.id: {
           "select": {"name": task.priority!.name}
         },
-      if (db.project != null && task.project != null && task.project!.isNotEmpty)
+      if (db.project != null &&
+          task.project != null &&
+          task.project!.isNotEmpty)
         db.project!.id: {
-          "relation": task.project!.map((p) => {"id": p.id}).toList()
+          "relation": task.project!
+              .map((p) => {
+                    "id": p.id,
+                  })
+              .toList()
         }
     };
 

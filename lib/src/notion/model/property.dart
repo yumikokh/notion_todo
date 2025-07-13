@@ -209,8 +209,7 @@ class CheckboxCompleteStatusProperty extends CheckboxProperty
     required super.id,
     required super.name,
     required super.checkbox,
-  }) : super(
-            type: PropertyType.checkbox);
+  }) : super(type: PropertyType.checkbox);
 
   factory CheckboxCompleteStatusProperty.fromJson(Map<String, dynamic> json) {
     if (json['checked'] != null) {
@@ -428,11 +427,11 @@ class RelationProperty extends Property {
   final Map<String, dynamic> relation;
 
   RelationProperty({
-    required String id,
-    required String name,
+    required super.id,
+    required super.name,
     required this.relation,
-  }) : super(id: id, name: name, type: PropertyType.relation);
-  
+  }) : super(type: PropertyType.relation);
+
   static Map<String, dynamic> _relationFromJson(dynamic json) {
     if (json is Map<String, dynamic>) {
       return json;

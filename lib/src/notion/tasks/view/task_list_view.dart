@@ -418,6 +418,7 @@ class TaskListView extends HookConsumerWidget {
     if (id == 'no_date') return l.no_property(l.date_property);
     if (id == 'no_status') return l.no_property(l.status_property);
     if (id == 'no_priority') return l.no_property(l.priority_property);
+    if (id == 'no_project') return l.no_property(l.project_property);
     if (id == 'not_completed') return l.no_property(l.completed_tasks);
     if (id == 'completed') return l.completed_tasks;
 
@@ -455,6 +456,21 @@ class TaskListView extends HookConsumerWidget {
             return d.formatDateTime(date, true, showToday: true) ?? id;
           } catch (e) {
             return id;
+          }
+        case GroupType.project:
+          // Relationプロパティの場合、グループIDからタスクを探して名前を取得
+          try {
+            final taskWithProject = list.firstWhere((task) =>
+                task.project != null &&
+                task.project!.isNotEmpty &&
+                task.project!.first.id == id);
+            final title = taskWithProject.project!.first.title;
+            // タイトルがnullまたは空の場合は「名称未設定」を表示
+            return (title == null || title.isEmpty)
+                ? l.no_property(l.project_property)
+                : title;
+          } catch (e) {
+            return l.no_property(l.project_property);
           }
         default:
           break;
