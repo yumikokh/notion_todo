@@ -341,10 +341,12 @@ class TaskGroup extends _$TaskGroup {
         // すべてのタスクをグループ化
         for (final task in tasks) {
           if (task.project != null && task.project!.isNotEmpty) {
-            // Relationは複数の値を持つ可能性があるため、最初の値でグループ化
-            final projectKey = task.project!.first.id;
-            unsortedGroups.putIfAbsent(projectKey, () => []);
-            unsortedGroups[projectKey]!.add(task);
+            // 複数のプロジェクトを持つ場合、それぞれのプロジェクトグループに追加
+            for (final project in task.project!) {
+              final projectKey = project.id;
+              unsortedGroups.putIfAbsent(projectKey, () => []);
+              unsortedGroups[projectKey]!.add(task);
+            }
           } else {
             // プロジェクトなしのタスク
             unsortedGroups.putIfAbsent('no_project', () => []);

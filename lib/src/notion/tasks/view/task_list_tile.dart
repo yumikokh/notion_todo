@@ -168,8 +168,11 @@ class TaskListTile extends HookConsumerWidget {
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              task.project!.first.title ??
-                                  l.no_property(l.project_property),
+                              task.project!
+                                  .map((p) =>
+                                      p.title ??
+                                      l.no_property(l.project_property))
+                                  .join(','),
                               style: Theme.of(context)
                                   .textTheme
                                   .bodySmall

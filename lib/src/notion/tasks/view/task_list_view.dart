@@ -460,11 +460,15 @@ class TaskListView extends HookConsumerWidget {
         case GroupType.project:
           // Relationプロパティの場合、グループIDからタスクを探して名前を取得
           try {
+            // 該当プロジェクトIDを持つタスクを探す
             final taskWithProject = list.firstWhere((task) =>
                 task.project != null &&
-                task.project!.isNotEmpty &&
-                task.project!.first.id == id);
-            final title = taskWithProject.project!.first.title;
+                task.project!.any((p) => p.id == id));
+            
+            // そのタスクから該当プロジェクトを取得
+            final project = taskWithProject.project!.firstWhere((p) => p.id == id);
+            final title = project.title;
+            
             // タイトルがnullまたは空の場合は「名称未設定」を表示
             return (title == null || title.isEmpty)
                 ? l.no_property(l.project_property)
