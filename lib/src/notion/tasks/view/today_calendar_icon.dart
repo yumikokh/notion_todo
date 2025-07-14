@@ -7,7 +7,7 @@ class TodayCalendarIcon extends StatelessWidget {
   const TodayCalendarIcon({
     super.key,
     required this.isSelected,
-    this.size = 24,
+    this.size = 20,
   });
 
   @override
@@ -26,25 +26,27 @@ class TodayCalendarIcon extends StatelessWidget {
             width: size,
             height: size,
             decoration: BoxDecoration(
-              color: isSelected
-                  ? colorScheme.primary.withOpacity(0.1)
-                  : colorScheme.surface,
               border: Border.all(
-                color: isSelected ? colorScheme.primary : colorScheme.outline,
-                width: 1,
+                width: 1.8,
               ),
-              borderRadius: BorderRadius.circular(4),
+              borderRadius: BorderRadius.circular(2),
             ),
           ),
           // カレンダーの上部（金具部分）
           Positioned(
-            top: 0,
-            left: size * 0.2,
-            right: size * 0.2,
+            top: size * 0,
+            left: size * 0,
+            right: size * 0,
             child: Container(
-              height: size * 0.15,
+              height: size * 0.28,
               decoration: BoxDecoration(
-                color: isSelected ? colorScheme.primary : colorScheme.outline,
+                color: isSelected
+                    ? colorScheme.onSecondaryContainer
+                    : Colors.transparent,
+                border: Border.all(
+                  color: colorScheme.onSecondaryContainer,
+                  width: 1.8,
+                ),
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(2),
                   topRight: Radius.circular(2),
@@ -54,18 +56,16 @@ class TodayCalendarIcon extends StatelessWidget {
           ),
           // 日付の数字
           Positioned(
-            bottom: size * 0.15,
+            bottom: size * 0.1,
             left: 0,
             right: 0,
             child: Center(
               child: Text(
                 day,
                 style: TextStyle(
-                  fontSize: size * 0.45,
-                  fontWeight: FontWeight.bold,
-                  color:
-                      isSelected ? colorScheme.primary : colorScheme.onSurface,
-                ),
+                    fontSize: size * 0.5,
+                    fontWeight: FontWeight.w800,
+                    color: colorScheme.onSecondaryContainer),
               ),
             ),
           ),
