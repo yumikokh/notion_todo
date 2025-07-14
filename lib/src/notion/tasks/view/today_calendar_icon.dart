@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../helpers/date.dart';
 
 class TodayCalendarIcon extends StatelessWidget {
   final bool isSelected;
@@ -16,7 +15,7 @@ class TodayCalendarIcon extends StatelessWidget {
     final now = DateTime.now();
     final day = now.day.toString();
     final colorScheme = Theme.of(context).colorScheme;
-    
+
     return SizedBox(
       width: size,
       height: size,
@@ -27,13 +26,11 @@ class TodayCalendarIcon extends StatelessWidget {
             width: size,
             height: size,
             decoration: BoxDecoration(
-              color: isSelected 
+              color: isSelected
                   ? colorScheme.primary.withOpacity(0.1)
                   : colorScheme.surface,
               border: Border.all(
-                color: isSelected 
-                    ? colorScheme.primary
-                    : colorScheme.outline,
+                color: isSelected ? colorScheme.primary : colorScheme.outline,
                 width: 1,
               ),
               borderRadius: BorderRadius.circular(4),
@@ -47,9 +44,7 @@ class TodayCalendarIcon extends StatelessWidget {
             child: Container(
               height: size * 0.15,
               decoration: BoxDecoration(
-                color: isSelected 
-                    ? colorScheme.primary
-                    : colorScheme.outline,
+                color: isSelected ? colorScheme.primary : colorScheme.outline,
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(2),
                   topRight: Radius.circular(2),
@@ -68,9 +63,8 @@ class TodayCalendarIcon extends StatelessWidget {
                 style: TextStyle(
                   fontSize: size * 0.45,
                   fontWeight: FontWeight.bold,
-                  color: isSelected 
-                      ? colorScheme.primary
-                      : colorScheme.onSurface,
+                  color:
+                      isSelected ? colorScheme.primary : colorScheme.onSurface,
                 ),
               ),
             ),
