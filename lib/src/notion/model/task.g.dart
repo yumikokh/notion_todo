@@ -81,6 +81,7 @@ _$TaskImpl _$$TaskImplFromJson(Map<String, dynamic> json) => _$TaskImpl(
       project: (json['project'] as List<dynamic>?)
           ?.map((e) => RelationOption.fromJson(e as Map<String, dynamic>))
           .toList(),
+      additionalFields: json['additionalFields'] as Map<String, dynamic>? ?? {},
     );
 
 Map<String, dynamic> _$$TaskImplToJson(_$TaskImpl instance) =>
@@ -92,4 +93,5 @@ Map<String, dynamic> _$$TaskImplToJson(_$TaskImpl instance) =>
       'url': instance.url,
       'priority': instance.priority,
       'project': instance.project,
+      'additionalFields': instance.additionalFields,
     };

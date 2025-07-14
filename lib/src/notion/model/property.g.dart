@@ -28,6 +28,10 @@ const _$PropertyTypeEnumMap = {
   PropertyType.status: 'status',
   PropertyType.select: 'select',
   PropertyType.relation: 'relation',
+  PropertyType.number: 'number',
+  PropertyType.url: 'url',
+  PropertyType.formula: 'formula',
+  PropertyType.multiSelect: 'multiSelect',
 };
 
 DateProperty _$DatePropertyFromJson(Map<String, dynamic> json) => DateProperty(

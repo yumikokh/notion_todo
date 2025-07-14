@@ -10,6 +10,10 @@ enum PropertyType {
   status,
   select,
   relation,
+  number,
+  url,
+  formula,
+  multiSelect,
 }
 
 /// プロパティの基底クラス
@@ -49,6 +53,15 @@ sealed class Property {
         return SelectProperty.fromJson(json);
       case PropertyType.relation:
         return RelationProperty.fromJson(json);
+      case PropertyType.number:
+        return json['number']; // TODO: 数値の場合は数値に変換する
+      case PropertyType.url:
+        return json['url']; // TODO: 数値の場合は数値に変換する
+      case PropertyType.formula:
+        return json['formula']?['string'] ??
+            json['formula']?['number']; // TODO: 数値の場合は数値に変換する
+      case PropertyType.multiSelect:
+        return json['multi_select']; // TODO: multi_selectの場合は適切に変換する
     }
   }
 }

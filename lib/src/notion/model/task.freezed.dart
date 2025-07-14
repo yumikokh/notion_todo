@@ -807,7 +807,12 @@ mixin _$Task {
   TaskDate? get dueDate => throw _privateConstructorUsedError;
   String? get url => throw _privateConstructorUsedError;
   SelectOption? get priority => throw _privateConstructorUsedError;
-  List<RelationOption>? get project => throw _privateConstructorUsedError;
+  List<RelationOption>? get project =>
+      throw _privateConstructorUsedError; // 動的なプロパティ値（固定フィールド以外の追加プロパティ）
+// key: プロパティID, value: プロパティ値（dynamic）
+  @JsonKey(defaultValue: {})
+  Map<String, dynamic>? get additionalFields =>
+      throw _privateConstructorUsedError;
 
   /// Serializes this Task to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -830,7 +835,8 @@ abstract class $TaskCopyWith<$Res> {
       TaskDate? dueDate,
       String? url,
       SelectOption? priority,
-      List<RelationOption>? project});
+      List<RelationOption>? project,
+      @JsonKey(defaultValue: {}) Map<String, dynamic>? additionalFields});
 
   $TaskStatusCopyWith<$Res> get status;
   $TaskDateCopyWith<$Res>? get dueDate;
@@ -858,6 +864,7 @@ class _$TaskCopyWithImpl<$Res, $Val extends Task>
     Object? url = freezed,
     Object? priority = freezed,
     Object? project = freezed,
+    Object? additionalFields = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -888,6 +895,10 @@ class _$TaskCopyWithImpl<$Res, $Val extends Task>
           ? _value.project
           : project // ignore: cast_nullable_to_non_nullable
               as List<RelationOption>?,
+      additionalFields: freezed == additionalFields
+          ? _value.additionalFields
+          : additionalFields // ignore: cast_nullable_to_non_nullable
+              as Map<String, dynamic>?,
     ) as $Val);
   }
 
@@ -930,7 +941,8 @@ abstract class _$$TaskImplCopyWith<$Res> implements $TaskCopyWith<$Res> {
       TaskDate? dueDate,
       String? url,
       SelectOption? priority,
-      List<RelationOption>? project});
+      List<RelationOption>? project,
+      @JsonKey(defaultValue: {}) Map<String, dynamic>? additionalFields});
 
   @override
   $TaskStatusCopyWith<$Res> get status;
@@ -957,6 +969,7 @@ class __$$TaskImplCopyWithImpl<$Res>
     Object? url = freezed,
     Object? priority = freezed,
     Object? project = freezed,
+    Object? additionalFields = freezed,
   }) {
     return _then(_$TaskImpl(
       id: null == id
@@ -987,6 +1000,10 @@ class __$$TaskImplCopyWithImpl<$Res>
           ? _value._project
           : project // ignore: cast_nullable_to_non_nullable
               as List<RelationOption>?,
+      additionalFields: freezed == additionalFields
+          ? _value._additionalFields
+          : additionalFields // ignore: cast_nullable_to_non_nullable
+              as Map<String, dynamic>?,
     ));
   }
 }
@@ -1001,8 +1018,10 @@ class _$TaskImpl extends _Task {
       required this.dueDate,
       required this.url,
       this.priority,
-      final List<RelationOption>? project})
+      final List<RelationOption>? project,
+      @JsonKey(defaultValue: {}) final Map<String, dynamic>? additionalFields})
       : _project = project,
+        _additionalFields = additionalFields,
         super._();
 
   factory _$TaskImpl.fromJson(Map<String, dynamic> json) =>
@@ -1030,9 +1049,24 @@ class _$TaskImpl extends _Task {
     return EqualUnmodifiableListView(value);
   }
 
+// 動的なプロパティ値（固定フィールド以外の追加プロパティ）
+// key: プロパティID, value: プロパティ値（dynamic）
+  final Map<String, dynamic>? _additionalFields;
+// 動的なプロパティ値（固定フィールド以外の追加プロパティ）
+// key: プロパティID, value: プロパティ値（dynamic）
+  @override
+  @JsonKey(defaultValue: {})
+  Map<String, dynamic>? get additionalFields {
+    final value = _additionalFields;
+    if (value == null) return null;
+    if (_additionalFields is EqualUnmodifiableMapView) return _additionalFields;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(value);
+  }
+
   @override
   String toString() {
-    return 'Task(id: $id, title: $title, status: $status, dueDate: $dueDate, url: $url, priority: $priority, project: $project)';
+    return 'Task(id: $id, title: $title, status: $status, dueDate: $dueDate, url: $url, priority: $priority, project: $project, additionalFields: $additionalFields)';
   }
 
   @override
@@ -1047,13 +1081,23 @@ class _$TaskImpl extends _Task {
             (identical(other.url, url) || other.url == url) &&
             (identical(other.priority, priority) ||
                 other.priority == priority) &&
-            const DeepCollectionEquality().equals(other._project, _project));
+            const DeepCollectionEquality().equals(other._project, _project) &&
+            const DeepCollectionEquality()
+                .equals(other._additionalFields, _additionalFields));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, title, status, dueDate, url,
-      priority, const DeepCollectionEquality().hash(_project));
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      title,
+      status,
+      dueDate,
+      url,
+      priority,
+      const DeepCollectionEquality().hash(_project),
+      const DeepCollectionEquality().hash(_additionalFields));
 
   /// Create a copy of Task
   /// with the given fields replaced by the non-null parameter values.
@@ -1079,7 +1123,9 @@ abstract class _Task extends Task {
       required final TaskDate? dueDate,
       required final String? url,
       final SelectOption? priority,
-      final List<RelationOption>? project}) = _$TaskImpl;
+      final List<RelationOption>? project,
+      @JsonKey(defaultValue: {})
+      final Map<String, dynamic>? additionalFields}) = _$TaskImpl;
   const _Task._() : super._();
 
   factory _Task.fromJson(Map<String, dynamic> json) = _$TaskImpl.fromJson;
@@ -1097,7 +1143,11 @@ abstract class _Task extends Task {
   @override
   SelectOption? get priority;
   @override
-  List<RelationOption>? get project;
+  List<RelationOption>? get project; // 動的なプロパティ値（固定フィールド以外の追加プロパティ）
+// key: プロパティID, value: プロパティ値（dynamic）
+  @override
+  @JsonKey(defaultValue: {})
+  Map<String, dynamic>? get additionalFields;
 
   /// Create a copy of Task
   /// with the given fields replaced by the non-null parameter values.
