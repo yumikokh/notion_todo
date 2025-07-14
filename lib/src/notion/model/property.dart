@@ -35,6 +35,10 @@ sealed class Property {
         StatusProperty status => status.toJson(),
         SelectProperty select => select.toJson(),
         RelationProperty relation => relation.toJson(),
+        NumberProperty number => number.toJson(),
+        UrlProperty url => url.toJson(),
+        FormulaProperty formula => formula.toJson(),
+        MultiSelectProperty multiSelect => multiSelect.toJson(),
       };
 
   factory Property.fromJson(Map<String, dynamic> json) {
@@ -54,14 +58,13 @@ sealed class Property {
       case PropertyType.relation:
         return RelationProperty.fromJson(json);
       case PropertyType.number:
-        return json['number']; // TODO: 数値の場合は数値に変換する
+        return NumberProperty.fromJson(json);
       case PropertyType.url:
-        return json['url']; // TODO: 数値の場合は数値に変換する
+        return UrlProperty.fromJson(json);
       case PropertyType.formula:
-        return json['formula']?['string'] ??
-            json['formula']?['number']; // TODO: 数値の場合は数値に変換する
+        return FormulaProperty.fromJson(json);
       case PropertyType.multiSelect:
-        return json['multi_select']; // TODO: multi_selectの場合は適切に変換する
+        return MultiSelectProperty.fromJson(json);
     }
   }
 }
@@ -457,4 +460,64 @@ class RelationProperty extends Property {
 
   @override
   Map<String, dynamic> toJson() => _$RelationPropertyToJson(this);
+}
+
+@JsonSerializable()
+class NumberProperty extends Property {
+  NumberProperty({
+    required super.id,
+    required super.name,
+  }) : super(type: PropertyType.number);
+
+  factory NumberProperty.fromJson(Map<String, dynamic> json) =>
+      _$NumberPropertyFromJson(json);
+
+  @override
+  Map<String, dynamic> toJson() => _$NumberPropertyToJson(this);
+}
+
+@JsonSerializable()
+class UrlProperty extends Property {
+  UrlProperty({
+    required super.id,
+    required super.name,
+  }) : super(type: PropertyType.url);
+
+  factory UrlProperty.fromJson(Map<String, dynamic> json) =>
+      _$UrlPropertyFromJson(json);
+
+  @override
+  Map<String, dynamic> toJson() => _$UrlPropertyToJson(this);
+}
+
+@JsonSerializable()
+class FormulaProperty extends Property {
+  FormulaProperty({
+    required super.id,
+    required super.name,
+  }) : super(type: PropertyType.formula);
+
+  factory FormulaProperty.fromJson(Map<String, dynamic> json) =>
+      _$FormulaPropertyFromJson(json);
+
+  @override
+  Map<String, dynamic> toJson() => _$FormulaPropertyToJson(this);
+}
+
+@JsonSerializable(explicitToJson: true)
+class MultiSelectProperty extends Property {
+  @JsonKey(name: 'multi_select')
+  final ({List<SelectOption> options}) multiSelect;
+
+  MultiSelectProperty({
+    required super.id,
+    required super.name,
+    required this.multiSelect,
+  }) : super(type: PropertyType.multiSelect);
+
+  factory MultiSelectProperty.fromJson(Map<String, dynamic> json) =>
+      _$MultiSelectPropertyFromJson(json);
+
+  @override
+  Map<String, dynamic> toJson() => _$MultiSelectPropertyToJson(this);
 }
