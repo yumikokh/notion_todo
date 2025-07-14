@@ -65,4 +65,28 @@ class NotionDatabaseApi {
     final data = jsonDecode(res.body);
     return data;
   }
+
+  Future fetchPageById(String pageId) async {
+    final res = await http.get(
+        Uri.parse('https://api.notion.com/v1/pages/$pageId'),
+        headers: headers);
+    final data = jsonDecode(res.body);
+    return data;
+  }
+
+  Future<List<Map<String, dynamic>>> fetchPagesByIds(List<String> pageIds) async {
+    final pages = <Map<String, dynamic>>[];
+    
+    // バッチ処理のために並列でリクエストを送信
+    final futures = pageIds.map((id) => fetchPageById(id));
+    final results = await Future.wait(futures);
+    
+    for (final result in results) {
+      if (result != null && result is Map<String, dynamic>) {
+        pages.add(result);
+      }
+    }
+    
+    return pages;
+  }
 }
