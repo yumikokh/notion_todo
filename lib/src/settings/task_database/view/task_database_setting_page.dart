@@ -303,8 +303,12 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
             children: [
               Text(l.loading_failed),
               const SizedBox(height: 8),
-              Text(error.toString(),
-                  style: Theme.of(context).textTheme.bodySmall),
+              SelectableText(
+                error.toString(),
+                style: Theme.of(context).textTheme.bodySmall,
+                contextMenuBuilder: (context, editableTextState) =>
+                    const SizedBox.shrink(),
+              ),
             ],
           ),
         ),
@@ -369,10 +373,12 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
         onTap: () {
           HapticHelper.light();
         },
-        onChanged: items.isEmpty ? null : (value) {
-          onChanged(value);
-          HapticHelper.selection();
-        },
+        onChanged: items.isEmpty
+            ? null
+            : (value) {
+                onChanged(value);
+                HapticHelper.selection();
+              },
         isExpanded: true,
         underline: const SizedBox.shrink(),
         dropdownColor: Theme.of(context).brightness == Brightness.dark
