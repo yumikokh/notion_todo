@@ -15,6 +15,7 @@ import '../task_sort_provider.dart';
 import 'group_options_bottom_sheet.dart';
 import 'sort_options_bottom_sheet.dart';
 import 'task_sheet/task_sheet.dart';
+import 'today_calendar_icon.dart';
 
 class TaskBaseScaffold extends HookConsumerWidget {
   final Widget body;
@@ -183,8 +184,8 @@ class TaskBaseScaffold extends HookConsumerWidget {
               : NavigationDestinationLabelBehavior.alwaysShow,
           destinations: [
             NavigationDestination(
-              icon: const Icon(Icons.today_outlined),
-              selectedIcon: const Icon(Icons.today_rounded),
+              icon: const TodayCalendarIcon(isSelected: false),
+              selectedIcon: const TodayCalendarIcon(isSelected: true),
               label: l.navigation_today,
             ),
             NavigationDestination(
