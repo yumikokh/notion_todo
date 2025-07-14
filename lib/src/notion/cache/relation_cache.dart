@@ -6,6 +6,9 @@ class RelationCache {
   static final RelationCache _instance = RelationCache._internal();
   factory RelationCache() => _instance;
   RelationCache._internal();
+  
+  // instanceゲッターを追加
+  static RelationCache get instance => _instance;
 
   // リレーションタイプごとにキャッシュを管理
   // key: リレーションタイプ（例: "project", "assignee" など）

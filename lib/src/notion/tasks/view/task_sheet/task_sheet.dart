@@ -9,8 +9,10 @@ import '../../../../helpers/haptic_helper.dart';
 import '../../../../settings/task_database/task_database_viewmodel.dart';
 import 'date_chip.dart';
 import 'priority_chip.dart';
+import 'project_chip.dart';
 import 'task_date_sheet.dart';
 import 'task_priority_sheet.dart';
+import 'task_project_sheet.dart';
 import '../../../../settings/settings_viewmodel.dart';
 
 class TaskSheet extends HookConsumerWidget {
@@ -31,6 +33,7 @@ class TaskSheet extends HookConsumerWidget {
     final focusNode = useFocusNode();
     final selectedDueDate = useState<TaskDate?>(initialTask.dueDate);
     final selectedPriority = useState<SelectOption?>(initialTask.priority);
+    final selectedProjects = useState<List<RelationOption>?>(initialTask.project);
     final isValidTitle = useState<bool>(initialTask.title.isNotEmpty);
     final l = AppLocalizations.of(context)!;
     final isNewTask = initialTask.isTemp;
@@ -60,6 +63,13 @@ class TaskSheet extends HookConsumerWidget {
       [selectedPriority],
     );
 
+    final changeSelectedProjects = useCallback(
+      (List<RelationOption>? newProjects) {
+        selectedProjects.value = newProjects;
+      },
+      [selectedProjects],
+    );
+
     final submitHandler = useCallback(() {
       final willClose = !isNewTask || !continuousTaskAddition;
       final titleValue = titleController.text;
@@ -70,6 +80,7 @@ class TaskSheet extends HookConsumerWidget {
           title: titleValue,
           dueDate: selectedDueDate.value,
           priority: selectedPriority.value,
+          project: selectedProjects.value,
         );
         onSubmitted(updatedTask, needSnackbarFloating: !willClose);
       }
@@ -198,6 +209,60 @@ class TaskSheet extends HookConsumerWidget {
                             },
                             onDeleted: () {
                               changeSelectedPriority(null);
+                            },
+                          ),
+                          const SizedBox(width: 8),
+                          ProjectChip(
+                            projects: selectedProjects.value,
+                            context: context,
+                            onSelected: (selected) async {
+                              final taskDatabase = await ref
+                                  .read(taskDatabaseViewModelProvider.future);
+                              if (taskDatabase?.project == null) {
+                                if (context.mounted) {
+                                  await showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      title: Text(l.not_found_property,
+                                          style: const TextStyle(fontSize: 18)),
+                                      content: Text(l.project_property_description),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: Text(l.cancel),
+                                        ),
+                                        FilledButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                            Navigator.pushNamed(context,
+                                                '/settings/task_database');
+                                          },
+                                          child: Text(l.go_to_settings),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                  return;
+                                }
+                              } else if (context.mounted) {
+                                showModalBottomSheet(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  context: context,
+                                  builder: (context) => TaskProjectSheet(
+                                    selectedProjects: selectedProjects.value,
+                                    onSelected: (List<RelationOption>? projects) {
+                                      changeSelectedProjects(projects);
+                                    },
+                                  ),
+                                );
+                              }
+                            },
+                            onDeleted: () {
+                              changeSelectedProjects(null);
                             },
                           ),
                         ],
