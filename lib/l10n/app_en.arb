@@ -363,5 +363,17 @@
   "account_settings_title": "Account",
   "free_plan": "Free Plan",
   "premium_plan": "Premium Plan Active",
-  "plan_title": "Plan"
+  "plan_title": "Plan",
+  "copy_notion_link": "Copy Notion Link",
+  "copy_title": "Copy Title",
+  "open_in_notion": "Open in Notion",
+  "duplicate": "Duplicate",
+  "copy": "Copy",
+  "notion_link_copied": "Notion link copied",
+  "title_copied": "Title copied",
+  "task_duplicated": "Task duplicated",
+  "error_no_notion_link": "Notion link not found",
+  "error_copy_failed": "Copy failed",
+  "error_cannot_open_notion": "Cannot open in Notion",
+  "error_duplicate_failed": "Failed to duplicate task"
 }
