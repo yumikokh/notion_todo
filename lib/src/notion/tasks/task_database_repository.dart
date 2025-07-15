@@ -42,7 +42,7 @@ class TaskDatabaseRepository {
 
   /// 指定されたIDのデータベースを取得する
   Future<Database> _fetchDatabase(String databaseId) async {
-    final data = await notionDatabaseApi?.fetchDatabase(databaseId);
+    final data = await notionDatabaseApi?.fetchDatabaseById(databaseId);
     if (data == null) {
       throw Exception('Database not found');
     }
@@ -114,7 +114,7 @@ class TaskDatabaseRepository {
     await pref.remove(_taskDatabaseKey);
   }
 
-  Future<List<Database>> fetchDatabases() async {
+  Future<List<Database>> fetchAccessibleDatabases() async {
     final data = await notionDatabaseApi?.fetchAccessibleDatabases();
     if (data == null) {
       return [];
@@ -122,6 +122,15 @@ class TaskDatabaseRepository {
     final databases = data.map<Database>((e) => _getDatabase(e)).toList();
 
     return databases;
+  }
+
+  Future<List<Map<String, dynamic>>> fetchDatabasePagesById(
+      String databaseId) async {
+    final data = await notionDatabaseApi?.fetchDatabasePagesById(databaseId);
+    if (data == null) {
+      return [];
+    }
+    return data;
   }
 
   Future<Property?> createProperty(

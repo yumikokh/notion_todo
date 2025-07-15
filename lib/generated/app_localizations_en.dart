@@ -626,13 +626,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get lifetime_unlock_description =>
-      'Unlock all features with a one-time purchase.';
+      'One-time purchase to unlock all features';
 
   @override
   String get lifetime_license_activated => 'Lifetime License Activated';
 
   @override
   String get currently_subscribed => 'Currently Subscribed';
+
+  @override
+  String get refresh => 'Refresh';
+
+  @override
+  String get no_projects_found => 'No projects found';
+
+  @override
+  String get error_loading_projects => 'Failed to load projects';
+
+  @override
+  String get retry => 'Retry';
 
   @override
   String get start_free_trial => 'Start Free Trial';

@@ -75,6 +75,21 @@ class RelationCache {
   void clearAll() {
     _caches.clear();
   }
+
+  /// キャッシュされた全てのRelationOptionを取得
+  List<RelationOption> getCachedRelationOptions(String relationType) {
+    final typeCache = _getTypeCache(relationType);
+    final now = DateTime.now();
+    final validCachedItems = <RelationOption>[];
+
+    typeCache._cache.forEach((id, info) {
+      if (now.isBefore(info.expiry)) {
+        validCachedItems.add(RelationOption(id: id, title: info.title));
+      }
+    });
+
+    return validCachedItems;
+  }
 }
 
 /// 特定のリレーションタイプのキャッシュを管理するクラス

@@ -20,7 +20,7 @@ Future<List<Database>> accessibleDatabases(Ref ref) async {
   if (taskDatabaseRepository == null) {
     return [];
   }
-  final dbs = await taskDatabaseRepository.fetchDatabases();
+  final dbs = await taskDatabaseRepository.fetchAccessibleDatabases();
   return dbs;
 }
 

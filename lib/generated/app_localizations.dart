@@ -1169,7 +1169,7 @@ abstract class AppLocalizations {
   /// No description provided for @lifetime_unlock_description.
   ///
   /// In en, this message translates to:
-  /// **'Unlock all features with a one-time purchase.'**
+  /// **'One-time purchase to unlock all features'**
   String get lifetime_unlock_description;
 
   /// No description provided for @lifetime_license_activated.
@@ -1183,6 +1183,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Currently Subscribed'**
   String get currently_subscribed;
+
+  /// No description provided for @refresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get refresh;
+
+  /// No description provided for @no_projects_found.
+  ///
+  /// In en, this message translates to:
+  /// **'No projects found'**
+  String get no_projects_found;
+
+  /// No description provided for @error_loading_projects.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load projects'**
+  String get error_loading_projects;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
 
   /// No description provided for @start_free_trial.
   ///

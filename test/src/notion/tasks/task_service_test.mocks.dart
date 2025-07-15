@@ -241,7 +241,8 @@ class MockNotionDatabaseApi extends _i1.Mock implements _i8.NotionDatabaseApi {
       ) as _i5.Future<dynamic>);
 
   @override
-  _i5.Future<dynamic> fetchDatabase(String? databaseId) => (super.noSuchMethod(
+  _i5.Future<dynamic> fetchDatabaseById(String? databaseId) =>
+      (super.noSuchMethod(
         Invocation.method(
           #fetchDatabase,
           [databaseId],
@@ -249,6 +250,20 @@ class MockNotionDatabaseApi extends _i1.Mock implements _i8.NotionDatabaseApi {
         returnValue: _i5.Future<dynamic>.value(),
         returnValueForMissingStub: _i5.Future<dynamic>.value(),
       ) as _i5.Future<dynamic>);
+
+  @override
+  _i5.Future<List<Map<String, dynamic>>> fetchDatabasePagesById(
+          String? databaseId) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #fetchDatabasePages,
+          [databaseId],
+        ),
+        returnValue: _i5.Future<List<Map<String, dynamic>>>.value(
+            <Map<String, dynamic>>[]),
+        returnValueForMissingStub: _i5.Future<List<Map<String, dynamic>>>.value(
+            <Map<String, dynamic>>[]),
+      ) as _i5.Future<List<Map<String, dynamic>>>);
 
   @override
   _i5.Future<dynamic> createProperty(

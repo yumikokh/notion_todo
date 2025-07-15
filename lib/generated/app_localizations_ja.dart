@@ -605,6 +605,18 @@ class AppLocalizationsJa extends AppLocalizations {
   String get currently_subscribed => '購読中';
 
   @override
+  String get refresh => '更新';
+
+  @override
+  String get no_projects_found => 'プロジェクトが見つかりません';
+
+  @override
+  String get error_loading_projects => 'プロジェクトの読み込みに失敗しました';
+
+  @override
+  String get retry => '再試行';
+
+  @override
   String get start_free_trial => '無料トライアルを開始';
 
   @override
