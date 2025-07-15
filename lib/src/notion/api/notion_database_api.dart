@@ -50,6 +50,12 @@ class NotionDatabaseApi {
           Uri.parse('https://api.notion.com/v1/databases/$databaseId/query');
       final body = <String, dynamic>{
         'page_size': 100,
+        'sorts': [
+          {
+            'timestamp': 'last_edited_time',
+            'direction': 'descending'
+          }
+        ],
       };
 
       if (startCursor != null) {
@@ -62,7 +68,7 @@ class NotionDatabaseApi {
         body: jsonEncode(body),
       );
 
-      final data = jsonDecode(res.body);
+      final data = jsonDecode(res.body) as Map<String, dynamic>;
       final results = data['results'] as List<dynamic>?;
 
       if (results != null) {

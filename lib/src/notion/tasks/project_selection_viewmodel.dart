@@ -1,9 +1,9 @@
+import 'dart:convert';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tanzaku_todo/src/notion/tasks/task_database_repository.dart';
 
 import '../model/property.dart';
-import '../cache/relation_cache.dart';
 import '../../settings/task_database/task_database_viewmodel.dart';
 
 part 'project_selection_viewmodel.g.dart';
@@ -11,51 +11,65 @@ part 'project_selection_viewmodel.g.dart';
 @riverpod
 class ProjectSelectionViewModel extends _$ProjectSelectionViewModel {
   static const String _recentProjectsKey = 'recent_projects';
+  static const String _cachedProjectsKey = 'cached_projects';
+  static const String _lastFetchTimeKey = 'last_fetch_time';
   static const int _maxRecentProjects = 50;
-
-  List<RelationOption>? _cachedProjects;
-  DateTime? _lastFetchTime;
   static const Duration _cacheExpiration = Duration(minutes: 10);
 
   @override
-  Future<List<RelationOption>> build() async {
-    // キャッシュが有効な場合は即座に返す
-    if (_cachedProjects != null &&
-        _lastFetchTime != null &&
-        DateTime.now().difference(_lastFetchTime!) < _cacheExpiration) {
-      return _cachedProjects!;
-    }
-
-    // RelationCacheから既存のプロジェクトを取得して初期表示用に使用
-    final relationCache = RelationCache.instance;
-    final cachedProjects = relationCache.getCachedRelationOptions('project');
-    if (cachedProjects.isNotEmpty) {
-      _cachedProjects = cachedProjects;
-      _lastFetchTime = DateTime.now();
-
-      // バックグラウンドで最新データを取得
-      _fetchProjects().then((projects) {
-        if (projects.isNotEmpty) {
-          _cachedProjects = projects;
-          _lastFetchTime = DateTime.now();
-          // 状態を更新
-          state = AsyncValue.data(projects);
-        }
-      });
-
-      return cachedProjects;
-    }
-
-    // 初期表示では空のリストを返し、バックグラウンドで取得
-    _fetchProjects().then((projects) {
-      _cachedProjects = projects;
-      _lastFetchTime = DateTime.now();
-      state = AsyncValue.data(projects);
-    }).catchError((e) {
-      state = AsyncValue.error(e, StackTrace.current);
-    });
-
+  List<RelationOption> build() {
+    // SharedPreferencesから同期的に読み込む
+    _loadInitialData();
     return <RelationOption>[];
+  }
+
+  void _loadInitialData() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final cachedJson = prefs.getString(_cachedProjectsKey);
+      final lastFetchTimeStr = prefs.getString(_lastFetchTimeKey);
+      
+      if (cachedJson != null && lastFetchTimeStr != null) {
+        final lastFetchTime = DateTime.parse(lastFetchTimeStr);
+        final isValid = DateTime.now().difference(lastFetchTime) < _cacheExpiration;
+        
+        if (isValid) {
+          final cachedData = (jsonDecode(cachedJson) as List)
+              .map((item) => RelationOption(
+                    id: item['id'] as String,
+                    title: item['title'] as String,
+                  ))
+              .toList();
+          
+          final recentProjectIds = await _getRecentProjectIds();
+          final sortedProjects = _sortByRecentUsage(cachedData, recentProjectIds);
+          state = sortedProjects;
+          return;
+        }
+      }
+    } catch (e) {
+      // キャッシュ読み込みエラー時は新しく取得
+    }
+    
+    // キャッシュが無効または読み込みエラーの場合は新しく取得
+    _fetchAndUpdateProjects();
+  }
+
+  Future<void> _fetchAndUpdateProjects() async {
+    try {
+      final projects = await _fetchProjects();
+      
+      // SharedPreferencesにキャッシュを保存
+      final prefs = await SharedPreferences.getInstance();
+      final projectsJson = jsonEncode(projects.map((p) => {'id': p.id, 'title': p.title}).toList());
+      await prefs.setString(_cachedProjectsKey, projectsJson);
+      await prefs.setString(_lastFetchTimeKey, DateTime.now().toIso8601String());
+      
+      state = projects;
+    } catch (e) {
+      // エラー時は空のリストを設定
+      state = <RelationOption>[];
+    }
   }
 
   Future<List<RelationOption>> _fetchProjects() async {
@@ -92,21 +106,14 @@ class ProjectSelectionViewModel extends _$ProjectSelectionViewModel {
       // 最近使用したプロジェクトの順序を取得
       final recentProjectIds = await _getRecentProjectIds();
 
-      // 最近使用した順に並び替え
+      // 最近使用 > レスポンス順で並び替え
       final sortedProjects = _sortByRecentUsage(projects, recentProjectIds);
 
-      // キャッシュを更新
-      _cachedProjects = sortedProjects;
-      _lastFetchTime = DateTime.now();
+      // キャッシュはbuild()メソッドで更新される
 
       return sortedProjects;
     } catch (e) {
-      // エラーの場合、キャッシュがあれば返す
-      if (_cachedProjects != null) {
-        return _cachedProjects!;
-      }
-
-      // キャッシュもない場合は空のリストを返す
+      // エラーの場合は空のリストを返す
       return <RelationOption>[];
     }
   }
@@ -163,17 +170,12 @@ class ProjectSelectionViewModel extends _$ProjectSelectionViewModel {
 
   Future<void> refresh() async {
     // キャッシュをクリア
-    _cachedProjects = null;
-    _lastFetchTime = null;
-
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_cachedProjectsKey);
+    await prefs.remove(_lastFetchTimeKey);
+    
     // 再取得
-    state = const AsyncValue.loading();
-    try {
-      final projects = await _fetchProjects();
-      state = AsyncValue.data(projects);
-    } catch (e, stack) {
-      state = AsyncValue.error(e, stack);
-    }
+    await _fetchAndUpdateProjects();
   }
 
   Future<List<String>> _getRecentProjectIds() async {
@@ -187,6 +189,7 @@ class ProjectSelectionViewModel extends _$ProjectSelectionViewModel {
       return [];
     }
   }
+
 
   Future<void> updateRecentProjects(
       List<RelationOption> selectedProjects) async {
@@ -229,4 +232,5 @@ class ProjectSelectionViewModel extends _$ProjectSelectionViewModel {
 
     return sortedProjects;
   }
+
 }

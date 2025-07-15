@@ -33,7 +33,8 @@ class TaskSheet extends HookConsumerWidget {
     final focusNode = useFocusNode();
     final selectedDueDate = useState<TaskDate?>(initialTask.dueDate);
     final selectedPriority = useState<SelectOption?>(initialTask.priority);
-    final selectedProjects = useState<List<RelationOption>?>(initialTask.project);
+    final selectedProjects =
+        useState<List<RelationOption>?>(initialTask.project);
     final isValidTitle = useState<bool>(initialTask.title.isNotEmpty);
     final l = AppLocalizations.of(context)!;
     final isNewTask = initialTask.isTemp;
@@ -225,7 +226,8 @@ class TaskSheet extends HookConsumerWidget {
                                     builder: (context) => AlertDialog(
                                       title: Text(l.not_found_property,
                                           style: const TextStyle(fontSize: 18)),
-                                      content: Text(l.project_property_description),
+                                      content:
+                                          Text(l.project_property_description),
                                       actions: [
                                         TextButton(
                                           onPressed: () {
@@ -248,15 +250,28 @@ class TaskSheet extends HookConsumerWidget {
                                 }
                               } else if (context.mounted) {
                                 showModalBottomSheet(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
+                                  isScrollControlled: true,
+                                  shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.vertical(
+                                      top: Radius.circular(12),
+                                    ),
                                   ),
                                   context: context,
-                                  builder: (context) => TaskProjectSheet(
-                                    selectedProjects: selectedProjects.value,
-                                    onSelected: (List<RelationOption>? projects) {
-                                      changeSelectedProjects(projects);
-                                    },
+                                  builder: (context) =>
+                                      DraggableScrollableSheet(
+                                    initialChildSize: 0.5,
+                                    minChildSize: 0.3,
+                                    maxChildSize: 0.9,
+                                    expand: false,
+                                    builder: (context, scrollController) =>
+                                        TaskProjectSheet(
+                                      selectedProjects: selectedProjects.value,
+                                      onSelected:
+                                          (List<RelationOption>? projects) {
+                                        changeSelectedProjects(projects);
+                                      },
+                                      scrollController: scrollController,
+                                    ),
                                   ),
                                 );
                               }

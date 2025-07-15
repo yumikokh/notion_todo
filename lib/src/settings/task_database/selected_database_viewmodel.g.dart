@@ -7,7 +7,7 @@ part of 'selected_database_viewmodel.dart';
 // **************************************************************************
 
 String _$accessibleDatabasesHash() =>
-    r'7084d26e5e1aa748b3577d8ad0664934d203d0bf';
+    r'd7b73696d1fd86e85aab0fad3ba9663c76271d61';
 
 /// See also [accessibleDatabases].
 @ProviderFor(accessibleDatabases)

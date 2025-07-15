@@ -244,7 +244,7 @@ class MockNotionDatabaseApi extends _i1.Mock implements _i8.NotionDatabaseApi {
   _i5.Future<dynamic> fetchDatabaseById(String? databaseId) =>
       (super.noSuchMethod(
         Invocation.method(
-          #fetchDatabase,
+          #fetchDatabaseById,
           [databaseId],
         ),
         returnValue: _i5.Future<dynamic>.value(),
@@ -256,7 +256,7 @@ class MockNotionDatabaseApi extends _i1.Mock implements _i8.NotionDatabaseApi {
           String? databaseId) =>
       (super.noSuchMethod(
         Invocation.method(
-          #fetchDatabasePages,
+          #fetchDatabasePagesById,
           [databaseId],
         ),
         returnValue: _i5.Future<List<Map<String, dynamic>>>.value(
