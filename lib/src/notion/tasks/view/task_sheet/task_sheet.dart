@@ -12,6 +12,7 @@ import 'priority_chip.dart';
 import 'task_date_sheet.dart';
 import 'task_priority_sheet.dart';
 import '../../../../settings/settings_viewmodel.dart';
+import '../../../../toggl/view/toggl_timer_button.dart';
 
 class TaskSheet extends HookConsumerWidget {
   final Task initialTask;
@@ -199,6 +200,14 @@ class TaskSheet extends HookConsumerWidget {
                             onDeleted: () {
                               changeSelectedPriority(null);
                             },
+                          ),
+                          const SizedBox(width: 8),
+                          TogglTimerButton(
+                            task: initialTask.copyWith(
+                              title: titleController.text.isNotEmpty 
+                                  ? titleController.text 
+                                  : initialTask.title,
+                            ),
                           ),
                         ],
                       ),

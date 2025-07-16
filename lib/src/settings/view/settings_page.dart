@@ -19,6 +19,7 @@ import '../../subscription/subscription_viewmodel.dart';
 import 'appearance_settings_page.dart';
 import 'behavior_settings_page.dart';
 import 'licenses_page.dart';
+import 'toggl_settings_page.dart';
 import 'widget/subscription_banner.dart';
 
 class SettingsPage extends ConsumerWidget {
@@ -111,6 +112,18 @@ class SettingsPage extends ConsumerWidget {
                     analytics.logScreenView(screenName: 'BehaviorSettings');
                     Navigator.of(context)
                         .pushNamed(BehaviorSettingsPage.routeName);
+                  },
+                ),
+                ListTile(
+                  title: const Text('Toggl Track 連携'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () {
+                    analytics.logScreenView(screenName: 'TogglSettings');
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const TogglSettingsPage(),
+                      ),
+                    );
                   },
                 ),
               ],
