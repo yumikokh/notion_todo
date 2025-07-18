@@ -17,6 +17,15 @@ _$TaskDatabaseImpl _$$TaskDatabaseImplFromJson(Map<String, dynamic> json) =>
       priority: json['priority'] == null
           ? null
           : SelectProperty.fromJson(json['priority'] as Map<String, dynamic>),
+      project: json['project'] == null
+          ? null
+          : RelationProperty.fromJson(json['project'] as Map<String, dynamic>),
+      additionalProperties:
+          (json['additionalProperties'] as Map<String, dynamic>?)?.map(
+                (k, e) =>
+                    MapEntry(k, Property.fromJson(e as Map<String, dynamic>)),
+              ) ??
+              {},
     );
 
 Map<String, dynamic> _$$TaskDatabaseImplToJson(_$TaskDatabaseImpl instance) =>
@@ -27,4 +36,7 @@ Map<String, dynamic> _$$TaskDatabaseImplToJson(_$TaskDatabaseImpl instance) =>
       'status': instance.status.toJson(),
       'date': instance.date.toJson(),
       'priority': instance.priority?.toJson(),
+      'project': instance.project?.toJson(),
+      'additionalProperties':
+          instance.additionalProperties?.map((k, e) => MapEntry(k, e.toJson())),
     };

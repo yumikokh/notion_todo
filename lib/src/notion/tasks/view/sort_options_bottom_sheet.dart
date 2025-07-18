@@ -26,6 +26,7 @@ class SortOptionsBottomSheet extends HookConsumerWidget {
         SortType.date,
         SortType.title,
         SortType.priority,
+        SortType.project,
       ],
       currentOption: currentSortType,
       getOptionLabel: (option) => option.getLocalizedName(l),

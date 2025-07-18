@@ -200,7 +200,8 @@ class TaskListView extends HookConsumerWidget {
                   themeMode: themeMode,
                   expandedGroups: expandedGroups,
                   expandedGroupsNotifier: expandedGroupsNotifier,
-                  ref: ref),
+                  ref: ref,
+                  groupType: groupType),
 
             // グループ化しない場合の表示
             if (groupType == GroupType.none) ...[
@@ -295,6 +296,7 @@ class TaskListView extends HookConsumerWidget {
     required Map<String, bool> expandedGroups,
     required ExpandedGroupsNotifier expandedGroupsNotifier,
     required WidgetRef ref,
+    required GroupType groupType,
   }) {
     final widgets = <Widget>[const SizedBox(height: 12)];
     // グループ処理に使う一時的なMapを作成（完了タスクの処理を確実にするため）
@@ -362,11 +364,11 @@ class TaskListView extends HookConsumerWidget {
                 child: Row(
                   children: [
                     Expanded(
-                      child: Text(
-                        _getOptionNameById(groupId, context, ref),
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                              color: Theme.of(context).colorScheme.secondary,
-                            ),
+                      child: _buildGroupHeader(
+                        groupId,
+                        context,
+                        ref,
+                        groupType,
                       ),
                     ),
                     // 矢印アイコン - 開閉状態に応じて回転
@@ -418,6 +420,7 @@ class TaskListView extends HookConsumerWidget {
     if (id == 'no_date') return l.no_property(l.date_property);
     if (id == 'no_status') return l.no_property(l.status_property);
     if (id == 'no_priority') return l.no_property(l.priority_property);
+    if (id == 'no_project') return l.no_property(l.project_property);
     if (id == 'not_completed') return l.no_property(l.completed_tasks);
     if (id == 'completed') return l.completed_tasks;
 
@@ -456,6 +459,25 @@ class TaskListView extends HookConsumerWidget {
           } catch (e) {
             return id;
           }
+        case GroupType.project:
+          // Relationプロパティの場合、グループIDからタスクを探して名前を取得
+          try {
+            // 該当プロジェクトIDを持つタスクを探す
+            final taskWithProject = list.firstWhere((task) =>
+                task.project != null && task.project!.any((p) => p.id == id));
+
+            // そのタスクから該当プロジェクトを取得
+            final project =
+                taskWithProject.project!.firstWhere((p) => p.id == id);
+            final title = project.title;
+
+            // タイトルがnullまたは空の場合は「名称未設定」を表示
+            return (title == null || title.isEmpty)
+                ? l.no_property(l.project_property)
+                : title;
+          } catch (e) {
+            return l.no_property(l.project_property);
+          }
         default:
           break;
       }
@@ -463,5 +485,48 @@ class TaskListView extends HookConsumerWidget {
     } catch (e) {
       return id;
     }
+  }
+
+  Widget _buildGroupHeader(
+    String groupId,
+    BuildContext context,
+    WidgetRef ref,
+    GroupType groupType,
+  ) {
+    final groupName = _getOptionNameById(groupId, context, ref);
+
+    // プロジェクトグループの場合は#記号を追加
+    if (groupType == GroupType.project) {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            '#',
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
+          ),
+          const SizedBox(width: 8),
+          Flexible(
+            child: Text(
+              groupName,
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
+          ),
+        ],
+      );
+    }
+
+    // その他のグループタイプの場合は通常の表示
+    return Text(
+      groupName,
+      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+            color: Theme.of(context).colorScheme.secondary,
+          ),
+    );
   }
 }

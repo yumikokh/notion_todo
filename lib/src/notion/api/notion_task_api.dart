@@ -173,6 +173,16 @@ class NotionTaskApi {
       if (db.priority != null && task.priority != null)
         db.priority!.id: {
           "select": {"name": task.priority!.name}
+        },
+      if (db.project != null &&
+          task.project != null &&
+          task.project!.isNotEmpty)
+        db.project!.id: {
+          "relation": task.project!
+              .map((p) => {
+                    "id": p.id,
+                  })
+              .toList()
         }
     };
 
@@ -220,6 +230,12 @@ class NotionTaskApi {
         db.priority!.id: {
           "select":
               task.priority?.name != null ? {"name": task.priority!.name} : null
+        },
+      if (db.project != null)
+        db.project!.id: {
+          "relation": task.project != null && task.project!.isNotEmpty
+              ? task.project!.map((p) => {"id": p.id}).toList()
+              : []
         }
     };
     final res = await http.patch(

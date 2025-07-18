@@ -260,6 +260,9 @@
   "sound_credit_description": "OtoLogic (CC BY 4.0)",
   "priority_property": "Priority",
   "priority_property_description": "Type: Select",
+  "project_property": "Project",
+  "project_property_description": "Type: Relation",
+  "project_property_empty_message": "If projects are not displayed, please re-authenticate with Notion including the target database",
   "title_property": "Title",
   "task_priority_dialog_title": "Priority Property Not Set",
   "task_priority_dialog_content": "Set up the Priority property in database settings to prioritize your tasks!",
@@ -333,9 +336,13 @@
   "access_all_future_features_description": "Get new features as soon as they are added.",
   "support_the_developer_title": "Support the Developer",
   "support_the_developer_description": "Help support continued development.",
-  "lifetime_unlock_description": "Unlock all features with a one-time purchase.",
+  "lifetime_unlock_description": "One-time purchase to unlock all features",
   "lifetime_license_activated": "Lifetime License Activated",
   "currently_subscribed": "Currently Subscribed",
+  "refresh": "Refresh",
+  "no_projects_found": "No projects found",
+  "error_loading_projects": "Failed to load projects",
+  "retry": "Retry",
   "start_free_trial": "Start Free Trial",
   "yearly_price_short": "year",
   "trial_ends_then_price_per_year": "After {trialDays}-day free trial, then {priceString} / {yearlyPriceShort}",
@@ -363,5 +370,7 @@
   "account_settings_title": "Account",
   "free_plan": "Free Plan",
   "premium_plan": "Premium Plan Active",
-  "plan_title": "Plan"
+  "plan_title": "Plan",
+  "no_project_selected": "No project selected",
+  "select_project": "Select a project"
 }

@@ -16,6 +16,7 @@ enum SortType {
   date, // 日付順
   title, // タイトル順
   priority, // 優先度順
+  project, // プロジェクト順
 }
 
 // ソートタイプの名前を取得する拡張メソッド
@@ -30,6 +31,8 @@ extension SortTypeExtension on SortType {
         return l.title_property;
       case SortType.priority:
         return l.priority_property;
+      case SortType.project:
+        return l.project_property;
     }
   }
 }
@@ -177,6 +180,31 @@ class TaskSort extends _$TaskSort {
             return -1; // 優先度があるタスクを前に
           } else if (aPriority == null && bPriority != null) {
             return 1; // 優先度がないタスクを後ろに
+          }
+          return compareByStatus(a, b);
+        });
+        break;
+
+      case SortType.project:
+        sortedTasks.sort((a, b) {
+          // プロジェクトがあれば比較、なければステータス比較
+          final aProject = a.project;
+          final bProject = b.project;
+
+          if (aProject != null && aProject.isNotEmpty && 
+              bProject != null && bProject.isNotEmpty) {
+            // プロジェクト名で比較（最初のプロジェクトのタイトルを使用）
+            final aTitle = aProject.first.title ?? '';
+            final bTitle = bProject.first.title ?? '';
+            final projectCompare = aTitle.compareTo(bTitle);
+            if (projectCompare != 0) return projectCompare;
+            return compareByStatus(a, b);
+          } else if ((aProject != null && aProject.isNotEmpty) && 
+                     (bProject == null || bProject.isEmpty)) {
+            return -1; // プロジェクトがあるタスクを前に
+          } else if ((aProject == null || aProject.isEmpty) && 
+                     (bProject != null && bProject.isNotEmpty)) {
+            return 1; // プロジェクトがないタスクを後ろに
           }
           return compareByStatus(a, b);
         });

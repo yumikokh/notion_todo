@@ -22,6 +22,7 @@ mixin _$SelectedDatabaseState {
   CompleteStatusProperty? get status => throw _privateConstructorUsedError;
   DateProperty? get date => throw _privateConstructorUsedError;
   SelectProperty? get priority => throw _privateConstructorUsedError;
+  RelationProperty? get project => throw _privateConstructorUsedError;
 
   /// Create a copy of SelectedDatabaseState
   /// with the given fields replaced by the non-null parameter values.
@@ -42,7 +43,8 @@ abstract class $SelectedDatabaseStateCopyWith<$Res> {
       TitleProperty title,
       CompleteStatusProperty? status,
       DateProperty? date,
-      SelectProperty? priority});
+      SelectProperty? priority,
+      RelationProperty? project});
 }
 
 /// @nodoc
@@ -67,6 +69,7 @@ class _$SelectedDatabaseStateCopyWithImpl<$Res,
     Object? status = freezed,
     Object? date = freezed,
     Object? priority = freezed,
+    Object? project = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -93,6 +96,10 @@ class _$SelectedDatabaseStateCopyWithImpl<$Res,
           ? _value.priority
           : priority // ignore: cast_nullable_to_non_nullable
               as SelectProperty?,
+      project: freezed == project
+          ? _value.project
+          : project // ignore: cast_nullable_to_non_nullable
+              as RelationProperty?,
     ) as $Val);
   }
 }
@@ -112,7 +119,8 @@ abstract class _$$SelectedDatabaseStateImplCopyWith<$Res>
       TitleProperty title,
       CompleteStatusProperty? status,
       DateProperty? date,
-      SelectProperty? priority});
+      SelectProperty? priority,
+      RelationProperty? project});
 }
 
 /// @nodoc
@@ -135,6 +143,7 @@ class __$$SelectedDatabaseStateImplCopyWithImpl<$Res>
     Object? status = freezed,
     Object? date = freezed,
     Object? priority = freezed,
+    Object? project = freezed,
   }) {
     return _then(_$SelectedDatabaseStateImpl(
       id: null == id
@@ -161,6 +170,10 @@ class __$$SelectedDatabaseStateImplCopyWithImpl<$Res>
           ? _value.priority
           : priority // ignore: cast_nullable_to_non_nullable
               as SelectProperty?,
+      project: freezed == project
+          ? _value.project
+          : project // ignore: cast_nullable_to_non_nullable
+              as RelationProperty?,
     ));
   }
 }
@@ -176,7 +189,8 @@ class _$SelectedDatabaseStateImpl
       required this.title,
       required this.status,
       required this.date,
-      this.priority});
+      this.priority,
+      this.project});
 
   @override
   final String id;
@@ -190,10 +204,12 @@ class _$SelectedDatabaseStateImpl
   final DateProperty? date;
   @override
   final SelectProperty? priority;
+  @override
+  final RelationProperty? project;
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'SelectedDatabaseState(id: $id, name: $name, title: $title, status: $status, date: $date, priority: $priority)';
+    return 'SelectedDatabaseState(id: $id, name: $name, title: $title, status: $status, date: $date, priority: $priority, project: $project)';
   }
 
   @override
@@ -206,7 +222,8 @@ class _$SelectedDatabaseStateImpl
       ..add(DiagnosticsProperty('title', title))
       ..add(DiagnosticsProperty('status', status))
       ..add(DiagnosticsProperty('date', date))
-      ..add(DiagnosticsProperty('priority', priority));
+      ..add(DiagnosticsProperty('priority', priority))
+      ..add(DiagnosticsProperty('project', project));
   }
 
   @override
@@ -220,12 +237,13 @@ class _$SelectedDatabaseStateImpl
             (identical(other.status, status) || other.status == status) &&
             (identical(other.date, date) || other.date == date) &&
             (identical(other.priority, priority) ||
-                other.priority == priority));
+                other.priority == priority) &&
+            (identical(other.project, project) || other.project == project));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, id, name, title, status, date, priority);
+  int get hashCode => Object.hash(
+      runtimeType, id, name, title, status, date, priority, project);
 
   /// Create a copy of SelectedDatabaseState
   /// with the given fields replaced by the non-null parameter values.
@@ -244,7 +262,8 @@ abstract class _SelectedDatabaseState implements SelectedDatabaseState {
       required final TitleProperty title,
       required final CompleteStatusProperty? status,
       required final DateProperty? date,
-      final SelectProperty? priority}) = _$SelectedDatabaseStateImpl;
+      final SelectProperty? priority,
+      final RelationProperty? project}) = _$SelectedDatabaseStateImpl;
 
   @override
   String get id;
@@ -258,6 +277,8 @@ abstract class _SelectedDatabaseState implements SelectedDatabaseState {
   DateProperty? get date;
   @override
   SelectProperty? get priority;
+  @override
+  RelationProperty? get project;
 
   /// Create a copy of SelectedDatabaseState
   /// with the given fields replaced by the non-null parameter values.

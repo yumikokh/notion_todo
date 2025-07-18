@@ -26,6 +26,12 @@ mixin _$TaskDatabase {
   CompleteStatusProperty get status => throw _privateConstructorUsedError;
   DateProperty get date => throw _privateConstructorUsedError;
   SelectProperty? get priority => throw _privateConstructorUsedError;
+  RelationProperty? get project =>
+      throw _privateConstructorUsedError; // その他のプロパティ（固定フィールド以外の追加プロパティ）
+// key: プロパティID, value: Property（任意のPropertyタイプ）
+  @JsonKey(defaultValue: {})
+  Map<String, Property>? get additionalProperties =>
+      throw _privateConstructorUsedError;
 
   /// Serializes this TaskDatabase to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -49,7 +55,9 @@ abstract class $TaskDatabaseCopyWith<$Res> {
       TitleProperty title,
       CompleteStatusProperty status,
       DateProperty date,
-      SelectProperty? priority});
+      SelectProperty? priority,
+      RelationProperty? project,
+      @JsonKey(defaultValue: {}) Map<String, Property>? additionalProperties});
 }
 
 /// @nodoc
@@ -73,6 +81,8 @@ class _$TaskDatabaseCopyWithImpl<$Res, $Val extends TaskDatabase>
     Object? status = null,
     Object? date = null,
     Object? priority = freezed,
+    Object? project = freezed,
+    Object? additionalProperties = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -99,6 +109,14 @@ class _$TaskDatabaseCopyWithImpl<$Res, $Val extends TaskDatabase>
           ? _value.priority
           : priority // ignore: cast_nullable_to_non_nullable
               as SelectProperty?,
+      project: freezed == project
+          ? _value.project
+          : project // ignore: cast_nullable_to_non_nullable
+              as RelationProperty?,
+      additionalProperties: freezed == additionalProperties
+          ? _value.additionalProperties
+          : additionalProperties // ignore: cast_nullable_to_non_nullable
+              as Map<String, Property>?,
     ) as $Val);
   }
 }
@@ -117,7 +135,9 @@ abstract class _$$TaskDatabaseImplCopyWith<$Res>
       TitleProperty title,
       CompleteStatusProperty status,
       DateProperty date,
-      SelectProperty? priority});
+      SelectProperty? priority,
+      RelationProperty? project,
+      @JsonKey(defaultValue: {}) Map<String, Property>? additionalProperties});
 }
 
 /// @nodoc
@@ -139,6 +159,8 @@ class __$$TaskDatabaseImplCopyWithImpl<$Res>
     Object? status = null,
     Object? date = null,
     Object? priority = freezed,
+    Object? project = freezed,
+    Object? additionalProperties = freezed,
   }) {
     return _then(_$TaskDatabaseImpl(
       id: null == id
@@ -165,6 +187,14 @@ class __$$TaskDatabaseImplCopyWithImpl<$Res>
           ? _value.priority
           : priority // ignore: cast_nullable_to_non_nullable
               as SelectProperty?,
+      project: freezed == project
+          ? _value.project
+          : project // ignore: cast_nullable_to_non_nullable
+              as RelationProperty?,
+      additionalProperties: freezed == additionalProperties
+          ? _value._additionalProperties
+          : additionalProperties // ignore: cast_nullable_to_non_nullable
+              as Map<String, Property>?,
     ));
   }
 }
@@ -179,7 +209,11 @@ class _$TaskDatabaseImpl implements _TaskDatabase {
       required this.title,
       required this.status,
       required this.date,
-      this.priority});
+      this.priority,
+      this.project,
+      @JsonKey(defaultValue: {})
+      final Map<String, Property>? additionalProperties})
+      : _additionalProperties = additionalProperties;
 
   factory _$TaskDatabaseImpl.fromJson(Map<String, dynamic> json) =>
       _$$TaskDatabaseImplFromJson(json);
@@ -196,10 +230,27 @@ class _$TaskDatabaseImpl implements _TaskDatabase {
   final DateProperty date;
   @override
   final SelectProperty? priority;
+  @override
+  final RelationProperty? project;
+// その他のプロパティ（固定フィールド以外の追加プロパティ）
+// key: プロパティID, value: Property（任意のPropertyタイプ）
+  final Map<String, Property>? _additionalProperties;
+// その他のプロパティ（固定フィールド以外の追加プロパティ）
+// key: プロパティID, value: Property（任意のPropertyタイプ）
+  @override
+  @JsonKey(defaultValue: {})
+  Map<String, Property>? get additionalProperties {
+    final value = _additionalProperties;
+    if (value == null) return null;
+    if (_additionalProperties is EqualUnmodifiableMapView)
+      return _additionalProperties;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(value);
+  }
 
   @override
   String toString() {
-    return 'TaskDatabase(id: $id, name: $name, title: $title, status: $status, date: $date, priority: $priority)';
+    return 'TaskDatabase(id: $id, name: $name, title: $title, status: $status, date: $date, priority: $priority, project: $project, additionalProperties: $additionalProperties)';
   }
 
   @override
@@ -213,13 +264,24 @@ class _$TaskDatabaseImpl implements _TaskDatabase {
             (identical(other.status, status) || other.status == status) &&
             (identical(other.date, date) || other.date == date) &&
             (identical(other.priority, priority) ||
-                other.priority == priority));
+                other.priority == priority) &&
+            (identical(other.project, project) || other.project == project) &&
+            const DeepCollectionEquality()
+                .equals(other._additionalProperties, _additionalProperties));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, id, name, title, status, date, priority);
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      name,
+      title,
+      status,
+      date,
+      priority,
+      project,
+      const DeepCollectionEquality().hash(_additionalProperties));
 
   /// Create a copy of TaskDatabase
   /// with the given fields replaced by the non-null parameter values.
@@ -244,7 +306,10 @@ abstract class _TaskDatabase implements TaskDatabase {
       required final TitleProperty title,
       required final CompleteStatusProperty status,
       required final DateProperty date,
-      final SelectProperty? priority}) = _$TaskDatabaseImpl;
+      final SelectProperty? priority,
+      final RelationProperty? project,
+      @JsonKey(defaultValue: {})
+      final Map<String, Property>? additionalProperties}) = _$TaskDatabaseImpl;
 
   factory _TaskDatabase.fromJson(Map<String, dynamic> json) =
       _$TaskDatabaseImpl.fromJson;
@@ -261,6 +326,12 @@ abstract class _TaskDatabase implements TaskDatabase {
   DateProperty get date;
   @override
   SelectProperty? get priority;
+  @override
+  RelationProperty? get project; // その他のプロパティ（固定フィールド以外の追加プロパティ）
+// key: プロパティID, value: Property（任意のPropertyタイプ）
+  @override
+  @JsonKey(defaultValue: {})
+  Map<String, Property>? get additionalProperties;
 
   /// Create a copy of TaskDatabase
   /// with the given fields replaced by the non-null parameter values.

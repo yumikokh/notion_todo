@@ -26,6 +26,7 @@ class GroupOptionsBottomSheet extends HookConsumerWidget {
         GroupType.date,
         GroupType.status,
         GroupType.priority,
+        GroupType.project,
       ],
       currentOption: currentGroupType,
       getOptionLabel: (option) => option.getLocalizedName(l),

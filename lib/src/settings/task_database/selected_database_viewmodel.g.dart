@@ -7,7 +7,7 @@ part of 'selected_database_viewmodel.dart';
 // **************************************************************************
 
 String _$accessibleDatabasesHash() =>
-    r'7084d26e5e1aa748b3577d8ad0664934d203d0bf';
+    r'd7b73696d1fd86e85aab0fad3ba9663c76271d61';
 
 /// See also [accessibleDatabases].
 @ProviderFor(accessibleDatabases)
@@ -25,7 +25,7 @@ final accessibleDatabasesProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef AccessibleDatabasesRef = AutoDisposeFutureProviderRef<List<Database>>;
-String _$propertiesHash() => r'b795e19d13df0e07d7eef412a7487d1b60339f21';
+String _$propertiesHash() => r'1ab362671e568958d33660daa76f44f82a7974f9';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -178,7 +178,7 @@ class _PropertiesProviderElement
 }
 
 String _$selectedDatabaseViewModelHash() =>
-    r'bad44be1a4f39827ba73c2d4138aaab3dce614ae';
+    r'71bbd258e6a765f82502790b07e1688771bb9cee';
 
 /// See also [SelectedDatabaseViewModel].
 @ProviderFor(SelectedDatabaseViewModel)
