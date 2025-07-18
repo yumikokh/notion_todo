@@ -507,12 +507,15 @@ class TaskListView extends HookConsumerWidget {
                 ),
           ),
           const SizedBox(width: 8),
-          Text(
-            groupName,
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  color: Theme.of(context).colorScheme.secondary,
-                  // fontSize: 14,
-                ),
+          Flexible(
+            child: Text(
+              groupName,
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
           ),
         ],
       );
