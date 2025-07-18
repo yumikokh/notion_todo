@@ -20,6 +20,7 @@ enum GroupType {
   date, // 日付ごと
   status, // ステータスごと
   priority, // 優先度ごと
+  project, // プロジェクトごと
 }
 
 // グループタイプの名前を取得する拡張メソッド
@@ -34,6 +35,8 @@ extension GroupTypeExtension on GroupType {
         return l.status_property;
       case GroupType.priority:
         return l.priority_property;
+      case GroupType.project:
+        return l.project_property;
     }
   }
 }
@@ -308,6 +311,73 @@ class TaskGroup extends _$TaskGroup {
               // 優先度名で比較
               final nameA = priorityNameMap[a.key] ?? '';
               final nameB = priorityNameMap[b.key] ?? '';
+              return nameA.toLowerCase().compareTo(nameB.toLowerCase());
+            });
+
+            // ソートされた順序で追加
+            for (final entry in entries) {
+              groupedTasks[entry.key] =
+                  _sortTasksInGroup(entry.value, filterType, showCompleted);
+            }
+
+            return groupedTasks;
+          } catch (e) {
+            // エラー時は通常の処理を続行
+          }
+        }
+
+        // 各グループ内のタスクをソート（通常処理）
+        for (final entry in unsortedGroups.entries) {
+          groupedTasks[entry.key] =
+              _sortTasksInGroup(entry.value, filterType, showCompleted);
+        }
+
+        return groupedTasks;
+
+      case GroupType.project:
+        // プロジェクトごとにグループ化
+        final unsortedGroups = <String, List<Task>>{};
+
+        // すべてのタスクをグループ化
+        for (final task in tasks) {
+          if (task.project != null && task.project!.isNotEmpty) {
+            // 複数のプロジェクトを持つ場合、それぞれのプロジェクトグループに追加
+            for (final project in task.project!) {
+              final projectKey = project.id;
+              unsortedGroups.putIfAbsent(projectKey, () => []);
+              unsortedGroups[projectKey]!.add(task);
+            }
+          } else {
+            // プロジェクトなしのタスク
+            unsortedGroups.putIfAbsent('no_project', () => []);
+            unsortedGroups['no_project']!.add(task);
+          }
+        }
+
+        // プロジェクト名でソート
+        if (taskDatabaseViewModel?.project != null) {
+          try {
+            // Relationプロパティは動的に取得されるため、タスクから名前を抽出
+            final projectNameMap = <String, String>{};
+            for (final task in tasks) {
+              if (task.project != null && task.project!.isNotEmpty) {
+                final project = task.project!.first;
+                if (project.title != null) {
+                  projectNameMap[project.id] = project.title!;
+                }
+              }
+            }
+
+            // グループエントリをソート
+            final entries = unsortedGroups.entries.toList();
+            entries.sort((a, b) {
+              // no_projectは最後に
+              if (a.key == 'no_project') return 1;
+              if (b.key == 'no_project') return -1;
+
+              // プロジェクト名で比較
+              final nameA = projectNameMap[a.key] ?? '';
+              final nameB = projectNameMap[b.key] ?? '';
               return nameA.toLowerCase().compareTo(nameB.toLowerCase());
             });
 

@@ -16,6 +16,10 @@ class TaskDatabase with _$TaskDatabase {
     required CompleteStatusProperty status,
     required DateProperty date,
     SelectProperty? priority,
+    RelationProperty? project,
+    // その他のプロパティ（固定フィールド以外の追加プロパティ）
+    // key: プロパティID, value: Property（任意のPropertyタイプ）
+    @JsonKey(defaultValue: {}) Map<String, Property>? additionalProperties,
   }) = _TaskDatabase;
 
   factory TaskDatabase.fromJson(Map<String, dynamic> json) =>
