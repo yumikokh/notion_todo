@@ -129,7 +129,8 @@ class TaskListTile extends HookConsumerWidget {
             decorationColor: Theme.of(context).colorScheme.outline,
             fontSize: 15,
           )),
-      subtitle: (taskViewModel.showDueDate(task) || task.project != null)
+      subtitle: (taskViewModel.showDueDate(task) ||
+              (task.project != null && groupType != GroupType.project))
           ? SizedBox(
               width: double.infinity,
               child: SingleChildScrollView(
