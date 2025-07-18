@@ -259,21 +259,12 @@ class TaskSheet extends HookConsumerWidget {
                                     ),
                                   ),
                                   context: context,
-                                  builder: (context) =>
-                                      DraggableScrollableSheet(
-                                    initialChildSize: 0.5,
-                                    minChildSize: 0.3,
-                                    maxChildSize: 0.9,
-                                    expand: false,
-                                    builder: (context, scrollController) =>
-                                        TaskProjectSheet(
-                                      selectedProjects: selectedProjects.value,
-                                      onSelected:
-                                          (List<RelationOption>? projects) {
-                                        changeSelectedProjects(projects);
-                                      },
-                                      scrollController: scrollController,
-                                    ),
+                                  builder: (context) => TaskProjectSheet(
+                                    selectedProjects: selectedProjects.value,
+                                    onSelected:
+                                        (List<RelationOption>? projects) {
+                                      changeSelectedProjects(projects);
+                                    },
                                   ),
                                 );
                               }

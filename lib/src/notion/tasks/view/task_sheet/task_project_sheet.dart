@@ -98,8 +98,12 @@ class _TaskProjectSheetState extends ConsumerState<TaskProjectSheet> {
     availableProjects = projects;
 
     return Container(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.7,
+      ),
       padding: const EdgeInsets.only(top: 8),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           // ドラッグハンドル
           Container(
@@ -171,7 +175,6 @@ class _TaskProjectSheetState extends ConsumerState<TaskProjectSheet> {
                         ),
                       )
                     : ListView.builder(
-                        controller: widget.scrollController,
                         itemCount: projects.length,
                         itemBuilder: (context, index) {
                           final project = projects[index];
