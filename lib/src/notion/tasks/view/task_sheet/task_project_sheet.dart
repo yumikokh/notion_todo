@@ -111,7 +111,7 @@ class _TaskProjectSheetState extends ConsumerState<TaskProjectSheet> {
               color: Theme.of(context)
                   .colorScheme
                   .onSurfaceVariant
-                  .withOpacity(0.4),
+                  .withValues(alpha: 0.4),
             ),
           ),
           // ヘッダー
@@ -178,14 +178,24 @@ class _TaskProjectSheetState extends ConsumerState<TaskProjectSheet> {
                           final isSelected =
                               temporarySelectedIds.contains(project.id);
                           return ListTile(
-                            leading: Icon(
-                              Icons.folder_outlined,
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onSurfaceVariant,
+                            leading: Text(
+                              '#',
+                              style: TextStyle(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurfaceVariant,
+                                fontSize: 18,
+                              ),
                             ),
-                            title: Text(project.title ??
-                                l.no_property(l.project_property)),
+                            title: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Expanded(
+                                  child: Text(project.title ??
+                                      l.no_property(l.project_property)),
+                                ),
+                              ],
+                            ),
                             selected: isSelected,
                             trailing:
                                 isSelected ? const Icon(Icons.check) : null,

@@ -156,6 +156,7 @@ class TaskSheet extends HookConsumerWidget {
                             },
                           ),
                           const SizedBox(width: 8),
+                          // 優先度
                           PriorityChip(
                             priority: selectedPriority.value,
                             context: context,
@@ -213,6 +214,7 @@ class TaskSheet extends HookConsumerWidget {
                             },
                           ),
                           const SizedBox(width: 8),
+                          // プロジェクト
                           ProjectChip(
                             projects: selectedProjects.value,
                             context: context,
