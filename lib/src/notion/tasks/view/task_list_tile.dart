@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:tanzaku_todo/generated/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../helpers/haptic_helper.dart';
@@ -10,8 +9,10 @@ import '../../../settings/task_database/task_database_viewmodel.dart';
 import '../../common/filter_type.dart';
 import '../../model/property.dart';
 import '../../model/task.dart';
+import '../task_group_provider.dart';
 import '../task_viewmodel.dart';
 import 'date_label.dart';
+import 'project_label.dart';
 import 'task_sheet/task_sheet.dart';
 import 'task_star_button.dart';
 
@@ -28,7 +29,9 @@ class TaskListTile extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final checked = useState(task.isCompleted);
-    final l = Localizations.of<AppLocalizations>(context, AppLocalizations)!;
+    final groupType =
+        ref.watch(taskGroupProvider).valueOrNull?[taskViewModel.filterType] ??
+            GroupType.none;
 
     final fillColor = switch (checked.value) {
       true =>
@@ -126,8 +129,7 @@ class TaskListTile extends HookConsumerWidget {
             decorationColor: Theme.of(context).colorScheme.outline,
             fontSize: 15,
           )),
-      subtitle: (taskViewModel.showDueDate(task) ||
-              task.project != null && task.project!.isNotEmpty)
+      subtitle: (taskViewModel.showDueDate(task) || task.project != null)
           ? SizedBox(
               width: double.infinity,
               child: SingleChildScrollView(
@@ -145,46 +147,9 @@ class TaskListTile extends HookConsumerWidget {
                         showColor: !task.isCompleted,
                         showIcon: true,
                       ),
-                    // プロジェクト
-                    if (task.project != null && task.project!.isNotEmpty)
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .surfaceContainerHighest,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.folder_outlined,
-                              size: 14,
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onSurfaceVariant,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              task.project!
-                                  .map((p) =>
-                                      p.title ??
-                                      l.no_property(l.project_property))
-                                  .join(','),
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall
-                                  ?.copyWith(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurfaceVariant,
-                                  ),
-                            ),
-                          ],
-                        ),
-                      ),
+                    // プロジェクト（Projectグルーピング時は非表示）
+                    if (groupType != GroupType.project)
+                      ProjectLabel(project: task.project),
                   ],
                 ),
               ),
