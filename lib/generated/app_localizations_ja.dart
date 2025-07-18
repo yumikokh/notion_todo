@@ -467,7 +467,11 @@ class AppLocalizationsJa extends AppLocalizations {
   String get project_property => 'プロジェクト';
 
   @override
-  String get project_property_description => '種類: セレクト';
+  String get project_property_description => '種類: リレーション';
+
+  @override
+  String get project_property_empty_message =>
+      'プロジェクトが表示されない場合は、Notion認証で対象のデータベースも含めて再認証してください';
 
   @override
   String get title_property => 'タイトル';
@@ -670,4 +674,10 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get plan_title => 'プラン';
+
+  @override
+  String get no_project_selected => 'プロジェクトが選択されていません';
+
+  @override
+  String get select_project => 'プロジェクトを選択';
 }

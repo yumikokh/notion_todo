@@ -935,8 +935,14 @@ abstract class AppLocalizations {
   /// No description provided for @project_property_description.
   ///
   /// In en, this message translates to:
-  /// **'Type: Select'**
+  /// **'Type: Relation'**
   String get project_property_description;
+
+  /// No description provided for @project_property_empty_message.
+  ///
+  /// In en, this message translates to:
+  /// **'If projects are not displayed, please re-authenticate with Notion including the target database'**
+  String get project_property_empty_message;
 
   /// No description provided for @title_property.
   ///
@@ -1304,6 +1310,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Plan'**
   String get plan_title;
+
+  /// No description provided for @no_project_selected.
+  ///
+  /// In en, this message translates to:
+  /// **'No project selected'**
+  String get no_project_selected;
+
+  /// No description provided for @select_project.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a project'**
+  String get select_project;
 }
 
 class _AppLocalizationsDelegate

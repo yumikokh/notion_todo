@@ -234,16 +234,32 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                             .watch(
                                 propertiesProvider(SettingPropertyType.project))
                             .when(
-                              data: (properties) => _buildDropdown(
-                                value: selectedDatabase.project?.id,
-                                items: properties
-                                    .map((prop) => DropdownMenuItem(
-                                        value: prop.id, child: Text(prop.name)))
-                                    .toList(),
-                                onChanged: (value) =>
-                                    selectedDatabaseViewModel.selectProperty(
-                                        value, SettingPropertyType.project),
-                                context: context,
+                              data: (properties) => Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  _buildDropdown(
+                                    value: selectedDatabase.project?.id,
+                                    items: properties
+                                        .map((prop) => DropdownMenuItem(
+                                            value: prop.id,
+                                            child: Text(prop.name)))
+                                        .toList(),
+                                    onChanged: (value) =>
+                                        selectedDatabaseViewModel
+                                            .selectProperty(value,
+                                                SettingPropertyType.project),
+                                    context: context,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    l.project_property_empty_message,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color:
+                                          Theme.of(context).colorScheme.outline,
+                                    ),
+                                  ),
+                                ],
                               ),
                               loading: () => const CircularProgressIndicator(),
                               error: (error, stack) =>

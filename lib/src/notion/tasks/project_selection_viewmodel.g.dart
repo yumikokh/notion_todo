@@ -7,7 +7,7 @@ part of 'project_selection_viewmodel.dart';
 // **************************************************************************
 
 String _$projectSelectionViewModelHash() =>
-    r'b9e8ebd2371d596469844c856b61574fdc4d2408';
+    r'1881682ef86bcb5020b0d65d83b5dcc382107130';
 
 /// See also [ProjectSelectionViewModel].
 @ProviderFor(ProjectSelectionViewModel)

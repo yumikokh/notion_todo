@@ -483,7 +483,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get project_property => 'Project';
 
   @override
-  String get project_property_description => 'Type: Select';
+  String get project_property_description => 'Type: Relation';
+
+  @override
+  String get project_property_empty_message =>
+      'If projects are not displayed, please re-authenticate with Notion including the target database';
 
   @override
   String get title_property => 'Title';
@@ -702,4 +706,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get plan_title => 'Plan';
+
+  @override
+  String get no_project_selected => 'No project selected';
+
+  @override
+  String get select_project => 'Select a project';
 }
