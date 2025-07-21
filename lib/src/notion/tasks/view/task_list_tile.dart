@@ -34,8 +34,11 @@ class TaskListTile extends HookConsumerWidget {
       false => task.priority?.mColor.withAlpha(60)
     };
 
+    // 日付表示がない場合は、よりコンパクトな表示にする
+    final hasSubtitle = taskViewModel.showDueDate(task);
+    
     return ListTile(
-      visualDensity: VisualDensity.comfortable,
+      visualDensity: hasSubtitle ? VisualDensity.comfortable : VisualDensity.compact,
       enabled: !task.isTemp,
       onLongPress: () async {
         // TODO: メニューを表示
