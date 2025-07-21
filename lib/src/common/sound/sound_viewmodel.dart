@@ -28,8 +28,7 @@ class SoundViewModel {
 
   Future<void> playSound() async {
     if (!_soundEnabled) return;
-    await _soundService.stopSound();
-    await _soundService.playSound(soundPath);
+    await _soundService.playCompletionSound(soundPath);
   }
 
   void dispose() {
