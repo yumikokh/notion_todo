@@ -176,6 +176,9 @@
   "sound_credit_description": "OtoLogic (CC BY 4.0)",
   "priority_property": "優先度",
   "priority_property_description": "種類: セレクト",
+  "project_property": "プロジェクト",
+  "project_property_description": "種類: リレーション",
+  "project_property_empty_message": "プロジェクトが表示されない場合は、Notion認証で対象のデータベースも含めて再認証してください",
   "title_property": "タイトル",
   "task_priority_dialog_title": "優先度プロパティが未設定です",
   "task_priority_dialog_content": "タスクの優先度を設定するには、データベース設定で優先度プロパティを設定してください。",
@@ -245,6 +248,10 @@
   "lifetime_unlock_description": "1回の購入で全ての機能をアンロック",
   "lifetime_license_activated": "永久ライセンス取得済み",
   "currently_subscribed": "購読中",
+  "refresh": "更新",
+  "no_projects_found": "プロジェクトが見つかりません",
+  "error_loading_projects": "プロジェクトの読み込みに失敗しました",
+  "retry": "再試行",
   "start_free_trial": "無料トライアルを開始",
   "yearly_price_short": "年",
   "trial_ends_then_price_per_year": "{trialDays}日間の無料体験の終了後は {priceString} / {yearlyPriceShort}",
@@ -272,5 +279,7 @@
   "account_settings_title": "アカウント",
   "free_plan": "無料プラン",
   "premium_plan": "プレミアムプラン加入済",
-  "plan_title": "プラン"
+  "plan_title": "プラン",
+  "no_project_selected": "プロジェクトが選択されていません",
+  "select_project": "プロジェクトを選択"
 }

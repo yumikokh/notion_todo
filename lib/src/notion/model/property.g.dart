@@ -27,6 +27,11 @@ const _$PropertyTypeEnumMap = {
   PropertyType.checkbox: 'checkbox',
   PropertyType.status: 'status',
   PropertyType.select: 'select',
+  PropertyType.relation: 'relation',
+  PropertyType.number: 'number',
+  PropertyType.url: 'url',
+  PropertyType.formula: 'formula',
+  PropertyType.multiSelect: 'multiSelect',
 };
 
 DateProperty _$DatePropertyFromJson(Map<String, dynamic> json) => DateProperty(
@@ -230,4 +235,94 @@ Map<String, dynamic> _$StatusGroupToJson(StatusGroup instance) =>
       'name': instance.name,
       'color': _$NotionColorEnumMap[instance.color],
       'option_ids': instance.optionIds,
+    };
+
+RelationOption _$RelationOptionFromJson(Map<String, dynamic> json) =>
+    RelationOption(
+      id: json['id'] as String,
+      title: json['title'] as String?,
+    );
+
+Map<String, dynamic> _$RelationOptionToJson(RelationOption instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'title': instance.title,
+    };
+
+RelationProperty _$RelationPropertyFromJson(Map<String, dynamic> json) =>
+    RelationProperty(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      relation: RelationProperty._relationFromJson(json['relation']),
+    )..type = $enumDecode(_$PropertyTypeEnumMap, json['type']);
+
+Map<String, dynamic> _$RelationPropertyToJson(RelationProperty instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+      'type': _$PropertyTypeEnumMap[instance.type]!,
+      'relation': instance.relation,
+    };
+
+NumberProperty _$NumberPropertyFromJson(Map<String, dynamic> json) =>
+    NumberProperty(
+      id: json['id'] as String,
+      name: json['name'] as String,
+    )..type = $enumDecode(_$PropertyTypeEnumMap, json['type']);
+
+Map<String, dynamic> _$NumberPropertyToJson(NumberProperty instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+      'type': _$PropertyTypeEnumMap[instance.type]!,
+    };
+
+UrlProperty _$UrlPropertyFromJson(Map<String, dynamic> json) => UrlProperty(
+      id: json['id'] as String,
+      name: json['name'] as String,
+    )..type = $enumDecode(_$PropertyTypeEnumMap, json['type']);
+
+Map<String, dynamic> _$UrlPropertyToJson(UrlProperty instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+      'type': _$PropertyTypeEnumMap[instance.type]!,
+    };
+
+FormulaProperty _$FormulaPropertyFromJson(Map<String, dynamic> json) =>
+    FormulaProperty(
+      id: json['id'] as String,
+      name: json['name'] as String,
+    )..type = $enumDecode(_$PropertyTypeEnumMap, json['type']);
+
+Map<String, dynamic> _$FormulaPropertyToJson(FormulaProperty instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+      'type': _$PropertyTypeEnumMap[instance.type]!,
+    };
+
+MultiSelectProperty _$MultiSelectPropertyFromJson(Map<String, dynamic> json) =>
+    MultiSelectProperty(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      multiSelect: _$recordConvert(
+        json['multi_select'],
+        ($jsonValue) => (
+          options: ($jsonValue['options'] as List<dynamic>)
+              .map((e) => SelectOption.fromJson(e as Map<String, dynamic>))
+              .toList(),
+        ),
+      ),
+    )..type = $enumDecode(_$PropertyTypeEnumMap, json['type']);
+
+Map<String, dynamic> _$MultiSelectPropertyToJson(
+        MultiSelectProperty instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+      'type': _$PropertyTypeEnumMap[instance.type]!,
+      'multi_select': <String, dynamic>{
+        'options': instance.multiSelect.options.map((e) => e.toJson()).toList(),
+      },
     };
