@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../../helpers/haptic_helper.dart';
 import '../../../common/sound/sound_viewmodel.dart';
@@ -15,6 +14,7 @@ import 'date_label.dart';
 import 'project_label.dart';
 import 'task_sheet/task_sheet.dart';
 import 'task_star_button.dart';
+import 'use_task_actions_menu.dart';
 
 class TaskListTile extends HookConsumerWidget {
   const TaskListTile({
@@ -39,21 +39,17 @@ class TaskListTile extends HookConsumerWidget {
       false => task.priority?.mColor.withAlpha(60)
     };
 
+    // 長押しメニューの設定
+    final popupMenu = useTaskActionsMenu(
+      task: task,
+      taskViewModel: taskViewModel,
+      context: context,
+    );
+
     return ListTile(
+      key: popupMenu.buttonKey,
       visualDensity: VisualDensity.comfortable,
       enabled: !task.isTemp,
-      onLongPress: () async {
-        // TODO: メニューを表示
-        final taskUrl = task.url;
-        if (taskUrl == null) return;
-        final url = Uri.parse(taskUrl);
-        if (await canLaunchUrl(url)) {
-          await HapticHelper.medium();
-          await Future.delayed(
-              const Duration(milliseconds: 100)); // 確実にvibrateするために少し待つ
-          await launchUrl(url, mode: LaunchMode.externalApplication);
-        }
-      },
       onTap: () {
         showModalBottomSheet(
           shape: RoundedRectangleBorder(
@@ -74,6 +70,12 @@ class TaskListTile extends HookConsumerWidget {
           },
         );
       },
+      onLongPress: !task.isTemp
+          ? () {
+              HapticHelper.medium();
+              popupMenu.show();
+            }
+          : null,
       leading: Checkbox(
         value: checked.value,
         fillColor: WidgetStateProperty.all(fillColor),

@@ -1,6 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-import 'app_localizations.dart';
+import 'package:tanzaku_todo/generated/app_localizations.dart';
 
 // ignore_for_file: type=lint
 
@@ -464,16 +464,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get priority_property_description => '種類: セレクト';
 
   @override
-  String get project_property => 'プロジェクト';
-
-  @override
-  String get project_property_description => '種類: リレーション';
-
-  @override
-  String get project_property_empty_message =>
-      'プロジェクトが表示されない場合は、Notion認証で対象のデータベースも含めて再認証してください';
-
-  @override
   String get title_property => 'タイトル';
 
   @override
@@ -609,18 +599,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get currently_subscribed => '購読中';
 
   @override
-  String get refresh => '更新';
-
-  @override
-  String get no_projects_found => 'プロジェクトが見つかりません';
-
-  @override
-  String get error_loading_projects => 'プロジェクトの読み込みに失敗しました';
-
-  @override
-  String get retry => '再試行';
-
-  @override
   String get start_free_trial => '無料トライアルを開始';
 
   @override
@@ -706,13 +684,34 @@ class AppLocalizationsJa extends AppLocalizations {
   String get error_copy_failed => 'コピーに失敗しました';
 
   @override
-  String get error_cannot_open_notion => 'Notionで開けませんでした';
+  String get error_cannot_open_notion => 'Notionで開けません';
 
   @override
   String get error_duplicate_failed => 'タスクの複製に失敗しました';
 
   @override
+  String get error_loading_projects => 'プロジェクトの読み込みに失敗しました';
+
+  @override
   String get no_project_selected => 'プロジェクトが選択されていません';
+
+  @override
+  String get no_projects_found => 'プロジェクトが見つかりません';
+
+  @override
+  String get project_property => 'プロジェクト';
+
+  @override
+  String get project_property_description => 'タイプ: リレーション';
+
+  @override
+  String get project_property_empty_message => 'プロジェクトが表示されない場合は、対象のデータベースを含めてNotionで再認証してください';
+
+  @override
+  String get retry => '再試行';
+
+  @override
+  String get refresh => '更新';
 
   @override
   String get select_project => 'プロジェクトを選択';

@@ -1311,6 +1311,78 @@ abstract class AppLocalizations {
   /// **'Plan'**
   String get plan_title;
 
+  /// No description provided for @copy_notion_link.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy Notion Link'**
+  String get copy_notion_link;
+
+  /// No description provided for @copy_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy Title'**
+  String get copy_title;
+
+  /// No description provided for @open_in_notion.
+  ///
+  /// In en, this message translates to:
+  /// **'Open in Notion'**
+  String get open_in_notion;
+
+  /// No description provided for @duplicate.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate'**
+  String get duplicate;
+
+  /// No description provided for @copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get copy;
+
+  /// No description provided for @notion_link_copied.
+  ///
+  /// In en, this message translates to:
+  /// **'Notion link copied'**
+  String get notion_link_copied;
+
+  /// No description provided for @title_copied.
+  ///
+  /// In en, this message translates to:
+  /// **'Title copied'**
+  String get title_copied;
+
+  /// No description provided for @task_duplicated.
+  ///
+  /// In en, this message translates to:
+  /// **'Task duplicated'**
+  String get task_duplicated;
+
+  /// No description provided for @error_no_notion_link.
+  ///
+  /// In en, this message translates to:
+  /// **'Notion link not found'**
+  String get error_no_notion_link;
+
+  /// No description provided for @error_copy_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy failed'**
+  String get error_copy_failed;
+
+  /// No description provided for @error_cannot_open_notion.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot open in Notion'**
+  String get error_cannot_open_notion;
+
+  /// No description provided for @error_duplicate_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to duplicate task'**
+  String get error_duplicate_failed;
+
   /// No description provided for @no_project_selected.
   ///
   /// In en, this message translates to:
