@@ -684,4 +684,40 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get plan_title => 'Plan';
+
+  @override
+  String get copy_notion_link => 'Copy Notion Link';
+
+  @override
+  String get copy_title => 'Copy Title';
+
+  @override
+  String get open_in_notion => 'Open in Notion';
+
+  @override
+  String get duplicate => 'Duplicate';
+
+  @override
+  String get copy => 'Copy';
+
+  @override
+  String get notion_link_copied => 'Notion link copied';
+
+  @override
+  String get title_copied => 'Title copied';
+
+  @override
+  String get task_duplicated => 'Task duplicated';
+
+  @override
+  String get error_no_notion_link => 'Notion link not found';
+
+  @override
+  String get error_copy_failed => 'Copy failed';
+
+  @override
+  String get error_cannot_open_notion => 'Cannot open in Notion';
+
+  @override
+  String get error_duplicate_failed => 'Failed to duplicate task';
 }

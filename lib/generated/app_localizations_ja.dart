@@ -652,4 +652,40 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get plan_title => 'プラン';
+
+  @override
+  String get copy_notion_link => 'Notionリンクをコピー';
+
+  @override
+  String get copy_title => 'タイトルをコピー';
+
+  @override
+  String get open_in_notion => 'Notionで開く';
+
+  @override
+  String get duplicate => '複製';
+
+  @override
+  String get copy => 'コピー';
+
+  @override
+  String get notion_link_copied => 'Notionリンクをコピーしました';
+
+  @override
+  String get title_copied => 'タイトルをコピーしました';
+
+  @override
+  String get task_duplicated => 'タスクを複製しました';
+
+  @override
+  String get error_no_notion_link => 'Notionリンクが見つかりません';
+
+  @override
+  String get error_copy_failed => 'コピーに失敗しました';
+
+  @override
+  String get error_cannot_open_notion => 'Notionで開けませんでした';
+
+  @override
+  String get error_duplicate_failed => 'タスクの複製に失敗しました';
 }

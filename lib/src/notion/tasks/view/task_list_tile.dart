@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../../helpers/haptic_helper.dart';
 import '../../../common/sound/sound_viewmodel.dart';
@@ -13,7 +12,7 @@ import '../task_viewmodel.dart';
 import 'date_label.dart';
 import 'task_sheet/task_sheet.dart';
 import 'task_star_button.dart';
-import 'task_actions_menu.dart';
+import 'use_task_actions_menu.dart';
 
 class TaskListTile extends HookConsumerWidget {
   const TaskListTile({
@@ -35,118 +34,120 @@ class TaskListTile extends HookConsumerWidget {
       false => task.priority?.mColor.withAlpha(60)
     };
 
-    return Stack(
-      children: [
-        ListTile(
-          visualDensity: VisualDensity.comfortable,
-          enabled: !task.isTemp,
-          onTap: () {
-            showModalBottomSheet(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              context: context,
-              isScrollControlled: true,
-              builder: (context) {
-                return TaskSheet(
-                  initialTask: task,
-                  onSubmitted: (task, {bool? needSnackbarFloating}) {
-                    taskViewModel.updateTask(task);
-                  },
-                  onDeleted: () {
-                    taskViewModel.deleteTask(task);
-                  },
-                );
+    // 長押しメニューの設定
+    final popupMenu = useTaskActionsMenu(
+      task: task,
+      taskViewModel: taskViewModel,
+      context: context,
+    );
+
+    return ListTile(
+      key: popupMenu.buttonKey,
+      visualDensity: VisualDensity.comfortable,
+      enabled: !task.isTemp,
+      onTap: () {
+        showModalBottomSheet(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          context: context,
+          isScrollControlled: true,
+          builder: (context) {
+            return TaskSheet(
+              initialTask: task,
+              onSubmitted: (task, {bool? needSnackbarFloating}) {
+                taskViewModel.updateTask(task);
+              },
+              onDeleted: () {
+                taskViewModel.deleteTask(task);
               },
             );
           },
-          leading: Checkbox(
-            value: checked.value,
-            fillColor: WidgetStateProperty.all(fillColor),
-            activeColor: task.priority?.mColor,
-            side: BorderSide(
-                width: 1.2,
-                color:
-                    task.priority?.mColor ?? Theme.of(context).colorScheme.outline),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(0),
-            ),
-            onChanged: (bool? willComplete) async {
-              if (task.isTemp) return;
-              if (willComplete == null) return;
-              if (willComplete) {
-                HapticHelper.success();
-                // タスク完了時に音を鳴らす
-                final soundSettings = ref.read(soundViewModelProvider);
-                await soundSettings.playSound();
-              }
-              try {
-                checked.value = willComplete;
-                await taskViewModel.updateCompleteStatus(task, willComplete);
-              } catch (e) {
-                checked.value = !willComplete;
-              }
-            },
-          ),
-          trailing: taskViewModel.showStarButton(task)
-              ? TaskStarButton(
-                  task: task,
-                  onInProgressChanged: (task) async {
-                    final statusProperty =
-                        ref.read(taskDatabaseViewModelProvider).valueOrNull?.status;
-                    if (statusProperty is! StatusCompleteStatusProperty) {
-                      return;
-                    }
-                    final inProgressOption = statusProperty.inProgressOption;
-                    if (inProgressOption == null) {
-                      return;
-                    }
-                    taskViewModel.updateInProgressStatus(
-                        task, !task.isInProgress(inProgressOption));
-                  },
-                )
-              : null,
-          title: Text(task.title,
-              style: TextStyle(
-                color: task.isCompleted || task.isTemp
-                    ? Theme.of(context).colorScheme.outline
-                    : Theme.of(context).colorScheme.onSurface,
-                decoration: task.isCompleted ? TextDecoration.lineThrough : null,
-                decorationColor: Theme.of(context).colorScheme.outline,
-                fontSize: 15,
-              )),
-          subtitle: taskViewModel.showDueDate(task)
-              ? SizedBox(
-                  width: double.infinity,
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.only(top: 4),
-                    child: Row(
-                      spacing: 6,
-                      children: [
-                        if (taskViewModel.showDueDate(task))
-                          DateLabel(
-                            date: task.dueDate,
-                            showToday: taskViewModel.filterType != FilterType.today,
-                            context: context,
-                            showColor: !task.isCompleted,
-                            showIcon: true,
-                          ),
-                      ],
-                    ),
-                  ),
-                )
-              : null,
+        );
+      },
+      onLongPress: !task.isTemp
+          ? () {
+              HapticHelper.medium();
+              popupMenu.show();
+            }
+          : null,
+      leading: Checkbox(
+        value: checked.value,
+        fillColor: WidgetStateProperty.all(fillColor),
+        activeColor: task.priority?.mColor,
+        side: BorderSide(
+            width: 1.2,
+            color:
+                task.priority?.mColor ?? Theme.of(context).colorScheme.outline),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(0),
         ),
-        // 長押しメニュー
-        if (!task.isTemp)
-          Positioned.fill(
-            child: TaskActionsMenu(
+        onChanged: (bool? willComplete) async {
+          if (task.isTemp) return;
+          if (willComplete == null) return;
+          if (willComplete) {
+            HapticHelper.success();
+            // タスク完了時に音を鳴らす
+            final soundSettings = ref.read(soundViewModelProvider);
+            await soundSettings.playSound();
+          }
+          try {
+            checked.value = willComplete;
+            await taskViewModel.updateCompleteStatus(task, willComplete);
+          } catch (e) {
+            checked.value = !willComplete;
+          }
+        },
+      ),
+      trailing: taskViewModel.showStarButton(task)
+          ? TaskStarButton(
               task: task,
-              taskViewModel: taskViewModel,
-            ),
-          ),
-      ],
+              onInProgressChanged: (task) async {
+                final statusProperty =
+                    ref.read(taskDatabaseViewModelProvider).valueOrNull?.status;
+                if (statusProperty is! StatusCompleteStatusProperty) {
+                  return;
+                }
+                final inProgressOption = statusProperty.inProgressOption;
+                if (inProgressOption == null) {
+                  return;
+                }
+                taskViewModel.updateInProgressStatus(
+                    task, !task.isInProgress(inProgressOption));
+              },
+            )
+          : null,
+      title: Text(task.title,
+          style: TextStyle(
+            color: task.isCompleted || task.isTemp
+                ? Theme.of(context).colorScheme.outline
+                : Theme.of(context).colorScheme.onSurface,
+            decoration: task.isCompleted ? TextDecoration.lineThrough : null,
+            decorationColor: Theme.of(context).colorScheme.outline,
+            fontSize: 15,
+          )),
+      subtitle: taskViewModel.showDueDate(task)
+          ? SizedBox(
+              width: double.infinity,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.only(top: 4),
+                child: Row(
+                  spacing: 6,
+                  children: [
+                    if (taskViewModel.showDueDate(task))
+                      DateLabel(
+                        date: task.dueDate,
+                        showToday: taskViewModel.filterType != FilterType.today,
+                        context: context,
+                        showColor: !task.isCompleted,
+                        showIcon: true,
+                      ),
+                  ],
+                ),
+              ),
+            )
+          : null,
     );
   }
 }
