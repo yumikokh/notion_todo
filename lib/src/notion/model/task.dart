@@ -104,6 +104,10 @@ class Task with _$Task {
     required TaskDate? dueDate,
     required String? url,
     SelectOption? priority,
+    List<RelationOption>? project,
+    // 動的なプロパティ値（固定フィールド以外の追加プロパティ）
+    // key: プロパティID, value: プロパティ値（dynamic）
+    @JsonKey(defaultValue: {}) Map<String, dynamic>? additionalFields,
     // required String createdTime,
     // required String updatedTime,
   }) = _Task;
@@ -114,6 +118,8 @@ class Task with _$Task {
     String? title,
     TaskDate? dueDate,
     SelectOption? priority,
+    List<RelationOption>? project,
+    Map<String, dynamic>? additionalFields,
   }) =>
       Task(
         id: 'temp_${DateTime.now().millisecondsSinceEpoch}',
@@ -122,6 +128,8 @@ class Task with _$Task {
         dueDate: dueDate,
         url: null,
         priority: priority,
+        project: project,
+        additionalFields: additionalFields,
       );
 
   static final DateHelper d = DateHelper();

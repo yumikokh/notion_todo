@@ -42,7 +42,7 @@ class TaskDatabaseRepository {
 
   /// 指定されたIDのデータベースを取得する
   Future<Database> _fetchDatabase(String databaseId) async {
-    final data = await notionDatabaseApi?.fetchDatabase(databaseId);
+    final data = await notionDatabaseApi?.fetchDatabaseById(databaseId);
     if (data == null) {
       throw Exception('Database not found');
     }
@@ -66,14 +66,18 @@ class TaskDatabaseRepository {
     final priorityProperty = savedDatabase.priority != null
         ? findProperty(savedDatabase.priority!.id, latestDatabase.properties)
         : null;
+    final projectProperty = savedDatabase.project != null
+        ? findProperty(savedDatabase.project!.id, latestDatabase.properties)
+        : null;
 
     if (titleProperty is! TitleProperty ||
         dateProperty is! DateProperty ||
         (statusProperty is! CheckboxProperty &&
             statusProperty is! StatusProperty) ||
-        (priorityProperty is! SelectProperty?)) {
+        (priorityProperty is! SelectProperty?) ||
+        (projectProperty is! RelationProperty?)) {
       throw Exception(
-          'Property types do not match ${titleProperty.type.name} ${dateProperty.type.name} ${statusProperty.type.name} ${priorityProperty?.type.name}');
+          'Property types do not match ${titleProperty.type.name} ${dateProperty.type.name} ${statusProperty.type.name} ${priorityProperty?.type.name} ${projectProperty?.type.name}');
     }
 
     final updatedStatusProperty =
@@ -95,6 +99,7 @@ class TaskDatabaseRepository {
       status: updatedStatusProperty as CompleteStatusProperty,
       date: dateProperty,
       priority: priorityProperty,
+      project: projectProperty,
     );
   }
 
@@ -109,7 +114,7 @@ class TaskDatabaseRepository {
     await pref.remove(_taskDatabaseKey);
   }
 
-  Future<List<Database>> fetchDatabases() async {
+  Future<List<Database>> fetchAccessibleDatabases() async {
     final data = await notionDatabaseApi?.fetchAccessibleDatabases();
     if (data == null) {
       return [];
@@ -117,6 +122,15 @@ class TaskDatabaseRepository {
     final databases = data.map<Database>((e) => _getDatabase(e)).toList();
 
     return databases;
+  }
+
+  Future<List<Map<String, dynamic>>> fetchDatabasePagesById(
+      String databaseId) async {
+    final data = await notionDatabaseApi?.fetchDatabasePagesById(databaseId);
+    if (data == null) {
+      return [];
+    }
+    return data;
   }
 
   Future<Property?> createProperty(
@@ -144,7 +158,7 @@ class TaskDatabaseRepository {
 
   List<Property> _getPropertiesFromJson(Map<String, dynamic> properties) {
     final list = properties.entries
-        // typeがtitle, date, checkbox, status, selectのものだけを取得
+        // typeがtitle, date, checkbox, status, select, relationのものだけを取得
         .where((entry) => PropertyType.values
             .any((propertyType) => propertyType.name == entry.value['type']));
     return list

@@ -174,7 +174,7 @@ class _CurrentSortTypeProviderElement
   FilterType get filterType => (origin as CurrentSortTypeProvider).filterType;
 }
 
-String _$taskSortHash() => r'6d91fed6eb0c82f9f88cdc39b690c8f5274d5213';
+String _$taskSortHash() => r'679d5caee4a157a4d3436b08fa06478a7bdddbc9';
 
 /// See also [TaskSort].
 @ProviderFor(TaskSort)
