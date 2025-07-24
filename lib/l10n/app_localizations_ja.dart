@@ -688,4 +688,31 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get error_duplicate_failed => 'タスクの複製に失敗しました';
+
+  @override
+  String get error_loading_projects => 'プロジェクトの読み込みに失敗しました';
+
+  @override
+  String get no_project_selected => 'プロジェクトが選択されていません';
+
+  @override
+  String get no_projects_found => 'プロジェクトが見つかりません';
+
+  @override
+  String get project_property => 'プロジェクト';
+
+  @override
+  String get project_property_description => 'タイプ: リレーション';
+
+  @override
+  String get project_property_empty_message => 'プロジェクトが表示されない場合は、対象のデータベースを含めてNotionで再認証してください';
+
+  @override
+  String get retry => '再試行';
+
+  @override
+  String get refresh => '更新';
+
+  @override
+  String get select_project => 'プロジェクトを選択';
 }

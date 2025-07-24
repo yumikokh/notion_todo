@@ -8,8 +8,10 @@ import '../../../settings/task_database/task_database_viewmodel.dart';
 import '../../common/filter_type.dart';
 import '../../model/property.dart';
 import '../../model/task.dart';
+import '../task_group_provider.dart';
 import '../task_viewmodel.dart';
 import 'date_label.dart';
+import 'project_label.dart';
 import 'task_sheet/task_sheet.dart';
 import 'task_star_button.dart';
 import 'use_task_actions_menu.dart';
@@ -27,6 +29,9 @@ class TaskListTile extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final checked = useState(task.isCompleted);
+    final groupType =
+        ref.watch(taskGroupProvider).valueOrNull?[taskViewModel.filterType] ??
+            GroupType.none;
 
     final fillColor = switch (checked.value) {
       true =>
@@ -126,7 +131,8 @@ class TaskListTile extends HookConsumerWidget {
             decorationColor: Theme.of(context).colorScheme.outline,
             fontSize: 15,
           )),
-      subtitle: taskViewModel.showDueDate(task)
+      subtitle: (taskViewModel.showDueDate(task) ||
+              (task.project != null && groupType != GroupType.project))
           ? SizedBox(
               width: double.infinity,
               child: SingleChildScrollView(
@@ -135,6 +141,7 @@ class TaskListTile extends HookConsumerWidget {
                 child: Row(
                   spacing: 6,
                   children: [
+                    // 日付
                     if (taskViewModel.showDueDate(task))
                       DateLabel(
                         date: task.dueDate,
@@ -143,6 +150,9 @@ class TaskListTile extends HookConsumerWidget {
                         showColor: !task.isCompleted,
                         showIcon: true,
                       ),
+                    // プロジェクト（Projectグルーピング時は非表示）
+                    if (groupType != GroupType.project)
+                      ProjectLabel(project: task.project),
                   ],
                 ),
               ),

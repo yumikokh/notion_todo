@@ -720,4 +720,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get error_duplicate_failed => 'Failed to duplicate task';
+
+  @override
+  String get error_loading_projects => 'Failed to load projects';
+
+  @override
+  String get no_project_selected => 'No project selected';
+
+  @override
+  String get no_projects_found => 'No projects found';
+
+  @override
+  String get project_property => 'Project';
+
+  @override
+  String get project_property_description => 'Type: Relation';
+
+  @override
+  String get project_property_empty_message => 'If projects are not displayed, please re-authenticate with Notion including the target database';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String get refresh => 'Refresh';
+
+  @override
+  String get select_project => 'Select a project';
 }

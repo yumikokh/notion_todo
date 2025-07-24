@@ -926,6 +926,24 @@ abstract class AppLocalizations {
   /// **'Type: Select'**
   String get priority_property_description;
 
+  /// No description provided for @project_property.
+  ///
+  /// In en, this message translates to:
+  /// **'Project'**
+  String get project_property;
+
+  /// No description provided for @project_property_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Type: Relation'**
+  String get project_property_description;
+
+  /// No description provided for @project_property_empty_message.
+  ///
+  /// In en, this message translates to:
+  /// **'If projects are not displayed, please re-authenticate with Notion including the target database'**
+  String get project_property_empty_message;
+
   /// No description provided for @title_property.
   ///
   /// In en, this message translates to:
@@ -1157,7 +1175,7 @@ abstract class AppLocalizations {
   /// No description provided for @lifetime_unlock_description.
   ///
   /// In en, this message translates to:
-  /// **'Unlock all features with a one-time purchase.'**
+  /// **'One-time purchase to unlock all features'**
   String get lifetime_unlock_description;
 
   /// No description provided for @lifetime_license_activated.
@@ -1171,6 +1189,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Currently Subscribed'**
   String get currently_subscribed;
+
+  /// No description provided for @refresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get refresh;
+
+  /// No description provided for @no_projects_found.
+  ///
+  /// In en, this message translates to:
+  /// **'No projects found'**
+  String get no_projects_found;
+
+  /// No description provided for @error_loading_projects.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load projects'**
+  String get error_loading_projects;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
 
   /// No description provided for @start_free_trial.
   ///
@@ -1340,6 +1382,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to duplicate task'**
   String get error_duplicate_failed;
+
+  /// No description provided for @no_project_selected.
+  ///
+  /// In en, this message translates to:
+  /// **'No project selected'**
+  String get no_project_selected;
+
+  /// No description provided for @select_project.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a project'**
+  String get select_project;
 }
 
 class _AppLocalizationsDelegate

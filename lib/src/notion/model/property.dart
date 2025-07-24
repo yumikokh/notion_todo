@@ -9,6 +9,11 @@ enum PropertyType {
   checkbox,
   status,
   select,
+  relation,
+  number,
+  url,
+  formula,
+  multiSelect,
 }
 
 /// プロパティの基底クラス
@@ -29,6 +34,11 @@ sealed class Property {
         CheckboxProperty checkbox => checkbox.toJson(),
         StatusProperty status => status.toJson(),
         SelectProperty select => select.toJson(),
+        RelationProperty relation => relation.toJson(),
+        NumberProperty number => number.toJson(),
+        UrlProperty url => url.toJson(),
+        FormulaProperty formula => formula.toJson(),
+        MultiSelectProperty multiSelect => multiSelect.toJson(),
       };
 
   factory Property.fromJson(Map<String, dynamic> json) {
@@ -45,6 +55,16 @@ sealed class Property {
         return StatusProperty.fromJson(json);
       case PropertyType.select:
         return SelectProperty.fromJson(json);
+      case PropertyType.relation:
+        return RelationProperty.fromJson(json);
+      case PropertyType.number:
+        return NumberProperty.fromJson(json);
+      case PropertyType.url:
+        return UrlProperty.fromJson(json);
+      case PropertyType.formula:
+        return FormulaProperty.fromJson(json);
+      case PropertyType.multiSelect:
+        return MultiSelectProperty.fromJson(json);
     }
   }
 }
@@ -205,8 +225,7 @@ class CheckboxCompleteStatusProperty extends CheckboxProperty
     required super.id,
     required super.name,
     required super.checkbox,
-  }) : super(
-            type: PropertyType.checkbox);
+  }) : super(type: PropertyType.checkbox);
 
   factory CheckboxCompleteStatusProperty.fromJson(Map<String, dynamic> json) {
     if (json['checked'] != null) {
@@ -399,4 +418,106 @@ enum NotionColor {
       orElse: () => NotionColor.defaultColor,
     );
   }
+}
+
+/// RelationプロパティのオプションクラスNotionのRelation
+@JsonSerializable()
+class RelationOption {
+  final String id;
+  final String? title;
+
+  RelationOption({
+    required this.id,
+    this.title,
+  });
+
+  factory RelationOption.fromJson(Map<String, dynamic> json) =>
+      _$RelationOptionFromJson(json);
+
+  Map<String, dynamic> toJson() => _$RelationOptionToJson(this);
+}
+
+@JsonSerializable(explicitToJson: true)
+class RelationProperty extends Property {
+  @JsonKey(fromJson: _relationFromJson)
+  final Map<String, dynamic> relation;
+
+  RelationProperty({
+    required super.id,
+    required super.name,
+    required this.relation,
+  }) : super(type: PropertyType.relation);
+
+  static Map<String, dynamic> _relationFromJson(dynamic json) {
+    if (json is Map<String, dynamic>) {
+      return json;
+    }
+    return {};
+  }
+
+  factory RelationProperty.fromJson(Map<String, dynamic> json) =>
+      _$RelationPropertyFromJson(json);
+
+  @override
+  Map<String, dynamic> toJson() => _$RelationPropertyToJson(this);
+}
+
+@JsonSerializable()
+class NumberProperty extends Property {
+  NumberProperty({
+    required super.id,
+    required super.name,
+  }) : super(type: PropertyType.number);
+
+  factory NumberProperty.fromJson(Map<String, dynamic> json) =>
+      _$NumberPropertyFromJson(json);
+
+  @override
+  Map<String, dynamic> toJson() => _$NumberPropertyToJson(this);
+}
+
+@JsonSerializable()
+class UrlProperty extends Property {
+  UrlProperty({
+    required super.id,
+    required super.name,
+  }) : super(type: PropertyType.url);
+
+  factory UrlProperty.fromJson(Map<String, dynamic> json) =>
+      _$UrlPropertyFromJson(json);
+
+  @override
+  Map<String, dynamic> toJson() => _$UrlPropertyToJson(this);
+}
+
+@JsonSerializable()
+class FormulaProperty extends Property {
+  FormulaProperty({
+    required super.id,
+    required super.name,
+  }) : super(type: PropertyType.formula);
+
+  factory FormulaProperty.fromJson(Map<String, dynamic> json) =>
+      _$FormulaPropertyFromJson(json);
+
+  @override
+  Map<String, dynamic> toJson() => _$FormulaPropertyToJson(this);
+}
+
+@JsonSerializable(explicitToJson: true)
+class MultiSelectProperty extends Property {
+  @JsonKey(name: 'multi_select')
+  final ({List<SelectOption> options}) multiSelect;
+
+  MultiSelectProperty({
+    required super.id,
+    required super.name,
+    required this.multiSelect,
+  }) : super(type: PropertyType.multiSelect);
+
+  factory MultiSelectProperty.fromJson(Map<String, dynamic> json) =>
+      _$MultiSelectPropertyFromJson(json);
+
+  @override
+  Map<String, dynamic> toJson() => _$MultiSelectPropertyToJson(this);
 }

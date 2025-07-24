@@ -480,6 +480,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get priority_property_description => 'Type: Select';
 
   @override
+  String get project_property => 'Project';
+
+  @override
+  String get project_property_description => 'Type: Relation';
+
+  @override
+  String get project_property_empty_message =>
+      'If projects are not displayed, please re-authenticate with Notion including the target database';
+
+  @override
   String get title_property => 'Title';
 
   @override
@@ -620,13 +630,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get lifetime_unlock_description =>
-      'Unlock all features with a one-time purchase.';
+      'One-time purchase to unlock all features';
 
   @override
   String get lifetime_license_activated => 'Lifetime License Activated';
 
   @override
   String get currently_subscribed => 'Currently Subscribed';
+
+  @override
+  String get refresh => 'Refresh';
+
+  @override
+  String get no_projects_found => 'No projects found';
+
+  @override
+  String get error_loading_projects => 'Failed to load projects';
+
+  @override
+  String get retry => 'Retry';
 
   @override
   String get start_free_trial => 'Start Free Trial';
@@ -720,4 +742,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get error_duplicate_failed => 'Failed to duplicate task';
+
+  @override
+  String get no_project_selected => 'No project selected';
+
+  @override
+  String get select_project => 'Select a project';
 }

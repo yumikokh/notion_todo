@@ -55,7 +55,8 @@ class TaskDatabaseViewModel extends _$TaskDatabaseViewModel
         status: status,
         date: date,
         title: selectedTaskDatabase.title,
-        priority: selectedTaskDatabase.priority);
+        priority: selectedTaskDatabase.priority,
+        project: selectedTaskDatabase.project);
     // 状態の初期化
     state = const AsyncValue.loading();
     try {
