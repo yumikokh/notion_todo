@@ -280,6 +280,18 @@
   "free_plan": "無料プラン",
   "premium_plan": "プレミアムプラン加入済",
   "plan_title": "プラン",
+  "copy_notion_link": "Notionリンクをコピー",
+  "copy_title": "タイトルをコピー",
+  "open_in_notion": "Notionで開く",
+  "duplicate": "複製",
+  "copy": "コピー",
+  "notion_link_copied": "Notionリンクをコピーしました",
+  "title_copied": "タイトルをコピーしました",
+  "task_duplicated": "タスクを複製しました",
+  "error_no_notion_link": "Notionリンクが見つかりません",
+  "error_copy_failed": "コピーに失敗しました",
+  "error_cannot_open_notion": "Notionで開けませんでした",
+  "error_duplicate_failed": "タスクの複製に失敗しました",
   "no_project_selected": "プロジェクトが選択されていません",
   "select_project": "プロジェクトを選択"
 }
