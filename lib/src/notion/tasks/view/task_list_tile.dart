@@ -39,11 +39,8 @@ class TaskListTile extends HookConsumerWidget {
       false => task.priority?.mColor.withAlpha(60)
     };
 
-    // 日付表示がない場合は、よりコンパクトな表示にする
-    final hasSubtitle = taskViewModel.showDueDate(task);
-    
     return ListTile(
-      visualDensity: hasSubtitle ? VisualDensity.comfortable : VisualDensity.compact,
+      visualDensity: VisualDensity.comfortable,
       enabled: !task.isTemp,
       onLongPress: () async {
         // TODO: メニューを表示
@@ -132,9 +129,12 @@ class TaskListTile extends HookConsumerWidget {
             decorationColor: Theme.of(context).colorScheme.outline,
             fontSize: 15,
           )),
-      subtitle: (taskViewModel.showDueDate(task) ||
-              (task.project != null && groupType != GroupType.project))
-          ? SizedBox(
+      subtitle: (!taskViewModel.showDueDate(task) &&
+              (task.project == null ||
+                  (task.project != null && task.project!.isEmpty) ||
+                  groupType == GroupType.project))
+          ? null
+          : SizedBox(
               width: double.infinity,
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
@@ -157,8 +157,7 @@ class TaskListTile extends HookConsumerWidget {
                   ],
                 ),
               ),
-            )
-          : null,
+            ),
     );
   }
 }
