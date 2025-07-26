@@ -131,9 +131,12 @@ class TaskListTile extends HookConsumerWidget {
             decorationColor: Theme.of(context).colorScheme.outline,
             fontSize: 15,
           )),
-      subtitle: (taskViewModel.showDueDate(task) ||
-              (task.project != null && groupType != GroupType.project))
-          ? SizedBox(
+      subtitle: (!taskViewModel.showDueDate(task) &&
+              (task.project == null ||
+                  (task.project != null && task.project!.isEmpty) ||
+                  groupType == GroupType.project))
+          ? null
+          : SizedBox(
               width: double.infinity,
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
@@ -156,8 +159,7 @@ class TaskListTile extends HookConsumerWidget {
                   ],
                 ),
               ),
-            )
-          : null,
+            ),
     );
   }
 }
