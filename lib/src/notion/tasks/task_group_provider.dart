@@ -10,6 +10,7 @@ import '../../settings/task_database/task_database_viewmodel.dart';
 import '../common/filter_type.dart';
 import '../model/property.dart';
 import '../model/task.dart';
+import './project_selection_viewmodel.dart';
 import 'task_sort_provider.dart';
 
 part 'task_group_provider.g.dart';
@@ -357,14 +358,15 @@ class TaskGroup extends _$TaskGroup {
         // プロジェクト名でソート
         if (taskDatabaseViewModel?.project != null) {
           try {
-            // Relationプロパティは動的に取得されるため、タスクから名前を抽出
+            // プロジェクト情報を取得
+            final projectsAsync = ref.read(projectSelectionViewModelProvider);
+            final projects = projectsAsync.valueOrNull ?? [];
+
+            // プロジェクトIDから名前へのマップを作成
             final projectNameMap = <String, String>{};
-            for (final task in tasks) {
-              if (task.projects != null && task.projects!.isNotEmpty) {
-                final project = task.projects!.first;
-                if (project.title != null) {
-                  projectNameMap[project.id] = project.title!;
-                }
+            for (final project in projects) {
+              if (project.title != null) {
+                projectNameMap[project.id] = project.title!;
               }
             }
 
