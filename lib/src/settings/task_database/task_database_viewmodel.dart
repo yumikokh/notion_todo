@@ -58,14 +58,12 @@ class TaskDatabaseViewModel extends _$TaskDatabaseViewModel
         title: selectedTaskDatabase.title,
         priority: selectedTaskDatabase.priority,
         project: selectedTaskDatabase.project);
+
     // 状態の初期化
     state = const AsyncValue.loading();
     try {
       await repository.save(taskDatabase);
       state = AsyncValue.data(taskDatabase);
-
-      // プロジェクト選択のキャッシュをクリア
-      ref.read(projectSelectionViewModelProvider.notifier).refresh();
 
       try {
         final analytics = ref.read(analyticsServiceProvider);

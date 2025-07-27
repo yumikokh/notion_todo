@@ -145,8 +145,6 @@ class TaskMainPage extends HookConsumerWidget {
                       ref.invalidate(taskDatabaseViewModelProvider);
                       // 今日のタスクを更新
                       ref.invalidate(todayProvider);
-                      // プロジェクト選択のキャッシュをクリアして最新の情報を取得
-                      ref.invalidate(projectSelectionViewModelProvider);
                     },
                     child: todayTasks.when(
                       data: (tasks) => TaskListView(
@@ -169,7 +167,6 @@ class TaskMainPage extends HookConsumerWidget {
                     onRefresh: () async {
                       ref.invalidate(taskDatabaseViewModelProvider);
                       ref.invalidate(allProvider);
-                      ref.invalidate(projectSelectionViewModelProvider);
                     },
                     child: allTasks.when(
                       data: (tasks) => TaskListView(

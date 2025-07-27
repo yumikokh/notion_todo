@@ -1,5 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tanzaku_todo/src/notion/model/task_database.dart';
 import 'package:tanzaku_todo/src/notion/tasks/task_database_repository.dart';
 
 import '../model/property.dart';
@@ -14,13 +15,14 @@ class ProjectSelectionViewModel extends _$ProjectSelectionViewModel {
 
   @override
   Future<List<RelationOption>> build() async {
-    return await _fetchAllProjects();
+    final taskDatabase = await ref.watch(taskDatabaseViewModelProvider.future);
+    return await _fetchAllProjects(taskDatabase);
   }
 
   /// 全プロジェクトを取得
-  Future<List<RelationOption>> _fetchAllProjects() async {
+  Future<List<RelationOption>> _fetchAllProjects(
+      TaskDatabase? taskDatabase) async {
     try {
-      final taskDatabase = await ref.read(taskDatabaseViewModelProvider.future);
       final projectProperty = taskDatabase?.project;
 
       if (projectProperty == null) return <RelationOption>[];
@@ -54,12 +56,6 @@ class ProjectSelectionViewModel extends _$ProjectSelectionViewModel {
       // エラー時は空のリストを返す
       return <RelationOption>[];
     }
-  }
-
-  /// プロジェクトリストを更新
-  Future<void> refresh() async {
-    state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() => _fetchAllProjects());
   }
 
   /// ページからタイトルを抽出
