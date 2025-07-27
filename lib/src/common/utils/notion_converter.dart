@@ -151,7 +151,7 @@ class NotionConverter {
           return relationData.map((item) {
             return RelationOption(
               id: item['id'],
-              title: item['title']?[0]?['plain_text'],
+              title: null, // Notion APIではrelationのタイトルは含まれない
             );
           }).toList();
         }
@@ -223,7 +223,7 @@ class NotionConverter {
       dueDate: NotionConverter.extractDate(data, taskDatabase),
       url: data['url'],
       priority: NotionConverter.extractPriority(data, taskDatabase),
-      project: NotionConverter.extractProject(data, taskDatabase),
+      projects: NotionConverter.extractProject(data, taskDatabase),
       additionalFields:
           NotionConverter.extractAdditionalFields(data, taskDatabase),
     );

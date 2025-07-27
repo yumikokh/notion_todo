@@ -188,22 +188,24 @@ class TaskSort extends _$TaskSort {
       case SortType.project:
         sortedTasks.sort((a, b) {
           // プロジェクトがあれば比較、なければステータス比較
-          final aProject = a.project;
-          final bProject = b.project;
+          final aProjects = a.projects;
+          final bProjects = b.projects;
 
-          if (aProject != null && aProject.isNotEmpty && 
-              bProject != null && bProject.isNotEmpty) {
+          if (aProjects != null &&
+              aProjects.isNotEmpty &&
+              bProjects != null &&
+              bProjects.isNotEmpty) {
             // プロジェクト名で比較（最初のプロジェクトのタイトルを使用）
-            final aTitle = aProject.first.title ?? '';
-            final bTitle = bProject.first.title ?? '';
+            final aTitle = aProjects.first.title ?? '';
+            final bTitle = bProjects.first.title ?? '';
             final projectCompare = aTitle.compareTo(bTitle);
             if (projectCompare != 0) return projectCompare;
             return compareByStatus(a, b);
-          } else if ((aProject != null && aProject.isNotEmpty) && 
-                     (bProject == null || bProject.isEmpty)) {
+          } else if ((aProjects != null && aProjects.isNotEmpty) &&
+              (bProjects == null || bProjects.isEmpty)) {
             return -1; // プロジェクトがあるタスクを前に
-          } else if ((aProject == null || aProject.isEmpty) && 
-                     (bProject != null && bProject.isNotEmpty)) {
+          } else if ((aProjects == null || aProjects.isEmpty) &&
+              (bProjects != null && bProjects.isNotEmpty)) {
             return 1; // プロジェクトがないタスクを後ろに
           }
           return compareByStatus(a, b);

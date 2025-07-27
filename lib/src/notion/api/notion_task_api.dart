@@ -175,10 +175,10 @@ class NotionTaskApi {
           "select": {"name": task.priority!.name}
         },
       if (db.project != null &&
-          task.project != null &&
-          task.project!.isNotEmpty)
+          task.projects != null &&
+          task.projects!.isNotEmpty)
         db.project!.id: {
-          "relation": task.project!
+          "relation": task.projects!
               .map((p) => {
                     "id": p.id,
                   })
@@ -233,8 +233,8 @@ class NotionTaskApi {
         },
       if (db.project != null)
         db.project!.id: {
-          "relation": task.project != null && task.project!.isNotEmpty
-              ? task.project!.map((p) => {"id": p.id}).toList()
+          "relation": task.projects != null && task.projects!.isNotEmpty
+              ? task.projects!.map((p) => {"id": p.id}).toList()
               : []
         }
     };
