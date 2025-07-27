@@ -31,6 +31,7 @@ class NotionDatabaseApi {
     return data['results'];
   }
 
+  // データベースの詳細情報の取得
   Future fetchDatabaseById(String databaseId) async {
     final res = await http.get(
         Uri.parse('https://api.notion.com/v1/databases/$databaseId'),
@@ -51,10 +52,7 @@ class NotionDatabaseApi {
       final body = <String, dynamic>{
         'page_size': 100,
         'sorts': [
-          {
-            'timestamp': 'last_edited_time',
-            'direction': 'descending'
-          }
+          {'timestamp': 'last_edited_time', 'direction': 'descending'}
         ],
       };
 
@@ -114,22 +112,5 @@ class NotionDatabaseApi {
         headers: headers);
     final data = jsonDecode(res.body);
     return data;
-  }
-
-  Future<List<Map<String, dynamic>>> fetchPagesByIds(
-      List<String> pageIds) async {
-    final pages = <Map<String, dynamic>>[];
-
-    // バッチ処理のために並列でリクエストを送信
-    final futures = pageIds.map((id) => fetchPageById(id));
-    final results = await Future.wait(futures);
-
-    for (final result in results) {
-      if (result != null && result is Map<String, dynamic>) {
-        pages.add(result);
-      }
-    }
-
-    return pages;
   }
 }

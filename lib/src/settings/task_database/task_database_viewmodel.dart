@@ -65,10 +65,7 @@ class TaskDatabaseViewModel extends _$TaskDatabaseViewModel
       state = AsyncValue.data(taskDatabase);
 
       // プロジェクト選択のキャッシュをクリア
-      // まずprojectSelectionViewModelのrefreshメソッドを呼び出してキャッシュをクリア
-      final projectSelectionVM =
-          ref.read(projectSelectionViewModelProvider.notifier);
-      await projectSelectionVM.refresh();
+      ref.read(projectSelectionViewModelProvider.notifier).refresh();
 
       try {
         final analytics = ref.read(analyticsServiceProvider);
@@ -97,9 +94,7 @@ class TaskDatabaseViewModel extends _$TaskDatabaseViewModel
       state = const AsyncValue.data(null);
 
       // プロジェクト選択のキャッシュをクリア
-      final projectSelectionVM =
-          ref.read(projectSelectionViewModelProvider.notifier);
-      await projectSelectionVM.refresh();
+      ref.invalidate(projectSelectionViewModelProvider);
 
       try {
         final analytics = ref.read(analyticsServiceProvider);

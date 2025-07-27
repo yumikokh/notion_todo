@@ -244,7 +244,22 @@ class TaskRepository {
   Future<void> _fetchAndCacheRelations(
       RelationType relationType, List<String> relationIds) async {
     try {
-      final pages = await notionDatabaseApi.fetchPagesByIds(relationIds);
+      // リレーションタイプに応じてデータベースIDを取得
+      final databaseId = await _getRelationDatabaseId(relationType);
+      if (databaseId == null) {
+        return;
+      }
+
+      // データベース全体を取得
+      final allPages = await notionDatabaseApi.fetchDatabasePagesById(databaseId);
+      
+      // 必要なIDのページのみをフィルタリング
+      final relationIdSet = relationIds.toSet();
+      final pages = allPages.where((page) {
+        final id = page['id'] as String?;
+        return id != null && relationIdSet.contains(id);
+      }).toList();
+      
       final relationInfo = <String, String>{};
 
       for (final page in pages) {
@@ -263,9 +278,29 @@ class TaskRepository {
       // キャッシュに保存
       _relationCache.setMultiple(relationType.value, relationInfo);
     } catch (e) {
-      print('Error fetching ${relationType.value} info: $e');
       // エラーが発生しても処理を続行
     }
+  }
+
+  /// リレーションタイプに対応するデータベースIDを取得
+  Future<String?> _getRelationDatabaseId(RelationType relationType) async {
+    if (relationType == RelationType.project) {
+      // プロジェクトの場合
+      final projectProperty = taskDatabase.project;
+      if (projectProperty is RelationProperty) {
+        return projectProperty.relation['database_id'] as String?;
+      }
+    } else {
+      // その他のリレーションプロパティの場合
+      final additionalProperties = taskDatabase.additionalProperties;
+      if (additionalProperties == null) return null;
+      
+      final property = additionalProperties[relationType.value];
+      if (property is RelationProperty) {
+        return property.relation['database_id'] as String?;
+      }
+    }
+    return null;
   }
 
   /// プロパティからタイトルを抽出するヘルパーメソッド

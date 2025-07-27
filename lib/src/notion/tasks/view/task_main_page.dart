@@ -146,9 +146,7 @@ class TaskMainPage extends HookConsumerWidget {
                       // 今日のタスクを更新
                       ref.invalidate(todayProvider);
                       // プロジェクト選択のキャッシュをクリアして最新の情報を取得
-                      final projectSelectionVM =
-                          ref.read(projectSelectionViewModelProvider.notifier);
-                      await projectSelectionVM.refresh();
+                      ref.invalidate(projectSelectionViewModelProvider);
                     },
                     child: todayTasks.when(
                       data: (tasks) => TaskListView(
@@ -171,9 +169,7 @@ class TaskMainPage extends HookConsumerWidget {
                     onRefresh: () async {
                       ref.invalidate(taskDatabaseViewModelProvider);
                       ref.invalidate(allProvider);
-                      final projectSelectionVM =
-                          ref.read(projectSelectionViewModelProvider.notifier);
-                      await projectSelectionVM.refresh();
+                      ref.invalidate(projectSelectionViewModelProvider);
                     },
                     child: allTasks.when(
                       data: (tasks) => TaskListView(

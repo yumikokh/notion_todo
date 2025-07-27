@@ -94,8 +94,25 @@ class _TaskProjectSheetState extends ConsumerState<TaskProjectSheet> {
     }
 
     // 関連データベースから直接プロジェクトを取得
-    final projects = ref.watch(projectSelectionViewModelProvider);
-    availableProjects = projects;
+    final projectsAsync = ref.watch(projectSelectionViewModelProvider);
+    
+    return projectsAsync.when(
+      loading: () => Container(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.7,
+        ),
+        child: const Center(
+          child: CircularProgressIndicator(),
+        ),
+      ),
+      error: (error, stack) => Container(
+        padding: const EdgeInsets.all(24),
+        child: Center(
+          child: Text(l.no_projects_found),
+        ),
+      ),
+      data: (projects) {
+        availableProjects = projects;
 
     return Container(
       constraints: BoxConstraints(
@@ -139,10 +156,7 @@ class _TaskProjectSheetState extends ConsumerState<TaskProjectSheet> {
                               setState(() {
                                 isLoading = true;
                               });
-                              await ref
-                                  .read(projectSelectionViewModelProvider
-                                      .notifier)
-                                  .refresh();
+                              await ref.read(projectSelectionViewModelProvider.notifier).refresh();
                               if (mounted) {
                                 setState(() {
                                   isLoading = false;
@@ -220,6 +234,8 @@ class _TaskProjectSheetState extends ConsumerState<TaskProjectSheet> {
           ),
         ],
       ),
+    );
+      },
     );
   }
 }
