@@ -807,7 +807,7 @@ mixin _$Task {
   TaskDate? get dueDate => throw _privateConstructorUsedError;
   String? get url => throw _privateConstructorUsedError;
   SelectOption? get priority => throw _privateConstructorUsedError;
-  List<RelationOption>? get project =>
+  List<RelationOption>? get projects =>
       throw _privateConstructorUsedError; // 動的なプロパティ値（固定フィールド以外の追加プロパティ）
 // key: プロパティID, value: プロパティ値（dynamic）
   @JsonKey(defaultValue: {})
@@ -835,7 +835,7 @@ abstract class $TaskCopyWith<$Res> {
       TaskDate? dueDate,
       String? url,
       SelectOption? priority,
-      List<RelationOption>? project,
+      List<RelationOption>? projects,
       @JsonKey(defaultValue: {}) Map<String, dynamic>? additionalFields});
 
   $TaskStatusCopyWith<$Res> get status;
@@ -863,7 +863,7 @@ class _$TaskCopyWithImpl<$Res, $Val extends Task>
     Object? dueDate = freezed,
     Object? url = freezed,
     Object? priority = freezed,
-    Object? project = freezed,
+    Object? projects = freezed,
     Object? additionalFields = freezed,
   }) {
     return _then(_value.copyWith(
@@ -891,9 +891,9 @@ class _$TaskCopyWithImpl<$Res, $Val extends Task>
           ? _value.priority
           : priority // ignore: cast_nullable_to_non_nullable
               as SelectOption?,
-      project: freezed == project
-          ? _value.project
-          : project // ignore: cast_nullable_to_non_nullable
+      projects: freezed == projects
+          ? _value.projects
+          : projects // ignore: cast_nullable_to_non_nullable
               as List<RelationOption>?,
       additionalFields: freezed == additionalFields
           ? _value.additionalFields
@@ -941,7 +941,7 @@ abstract class _$$TaskImplCopyWith<$Res> implements $TaskCopyWith<$Res> {
       TaskDate? dueDate,
       String? url,
       SelectOption? priority,
-      List<RelationOption>? project,
+      List<RelationOption>? projects,
       @JsonKey(defaultValue: {}) Map<String, dynamic>? additionalFields});
 
   @override
@@ -968,7 +968,7 @@ class __$$TaskImplCopyWithImpl<$Res>
     Object? dueDate = freezed,
     Object? url = freezed,
     Object? priority = freezed,
-    Object? project = freezed,
+    Object? projects = freezed,
     Object? additionalFields = freezed,
   }) {
     return _then(_$TaskImpl(
@@ -996,9 +996,9 @@ class __$$TaskImplCopyWithImpl<$Res>
           ? _value.priority
           : priority // ignore: cast_nullable_to_non_nullable
               as SelectOption?,
-      project: freezed == project
-          ? _value._project
-          : project // ignore: cast_nullable_to_non_nullable
+      projects: freezed == projects
+          ? _value._projects
+          : projects // ignore: cast_nullable_to_non_nullable
               as List<RelationOption>?,
       additionalFields: freezed == additionalFields
           ? _value._additionalFields
@@ -1018,9 +1018,9 @@ class _$TaskImpl extends _Task {
       required this.dueDate,
       required this.url,
       this.priority,
-      final List<RelationOption>? project,
+      final List<RelationOption>? projects,
       @JsonKey(defaultValue: {}) final Map<String, dynamic>? additionalFields})
-      : _project = project,
+      : _projects = projects,
         _additionalFields = additionalFields,
         super._();
 
@@ -1039,12 +1039,12 @@ class _$TaskImpl extends _Task {
   final String? url;
   @override
   final SelectOption? priority;
-  final List<RelationOption>? _project;
+  final List<RelationOption>? _projects;
   @override
-  List<RelationOption>? get project {
-    final value = _project;
+  List<RelationOption>? get projects {
+    final value = _projects;
     if (value == null) return null;
-    if (_project is EqualUnmodifiableListView) return _project;
+    if (_projects is EqualUnmodifiableListView) return _projects;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(value);
   }
@@ -1066,7 +1066,7 @@ class _$TaskImpl extends _Task {
 
   @override
   String toString() {
-    return 'Task(id: $id, title: $title, status: $status, dueDate: $dueDate, url: $url, priority: $priority, project: $project, additionalFields: $additionalFields)';
+    return 'Task(id: $id, title: $title, status: $status, dueDate: $dueDate, url: $url, priority: $priority, projects: $projects, additionalFields: $additionalFields)';
   }
 
   @override
@@ -1081,7 +1081,7 @@ class _$TaskImpl extends _Task {
             (identical(other.url, url) || other.url == url) &&
             (identical(other.priority, priority) ||
                 other.priority == priority) &&
-            const DeepCollectionEquality().equals(other._project, _project) &&
+            const DeepCollectionEquality().equals(other._projects, _projects) &&
             const DeepCollectionEquality()
                 .equals(other._additionalFields, _additionalFields));
   }
@@ -1096,7 +1096,7 @@ class _$TaskImpl extends _Task {
       dueDate,
       url,
       priority,
-      const DeepCollectionEquality().hash(_project),
+      const DeepCollectionEquality().hash(_projects),
       const DeepCollectionEquality().hash(_additionalFields));
 
   /// Create a copy of Task
@@ -1123,7 +1123,7 @@ abstract class _Task extends Task {
       required final TaskDate? dueDate,
       required final String? url,
       final SelectOption? priority,
-      final List<RelationOption>? project,
+      final List<RelationOption>? projects,
       @JsonKey(defaultValue: {})
       final Map<String, dynamic>? additionalFields}) = _$TaskImpl;
   const _Task._() : super._();
@@ -1143,7 +1143,7 @@ abstract class _Task extends Task {
   @override
   SelectOption? get priority;
   @override
-  List<RelationOption>? get project; // 動的なプロパティ値（固定フィールド以外の追加プロパティ）
+  List<RelationOption>? get projects; // 動的なプロパティ値（固定フィールド以外の追加プロパティ）
 // key: プロパティID, value: プロパティ値（dynamic）
   @override
   @JsonKey(defaultValue: {})

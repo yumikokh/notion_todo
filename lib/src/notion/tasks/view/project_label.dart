@@ -6,15 +6,15 @@ import '../../model/property.dart';
 class ProjectLabel extends StatelessWidget {
   const ProjectLabel({
     super.key,
-    required this.project,
+    required this.projects,
   });
 
-  final List<RelationOption>? project;
+  final List<RelationOption>? projects;
 
   @override
   Widget build(BuildContext context) {
     // プロジェクトが存在しない場合は何も表示しない
-    if (project == null || project!.isEmpty) {
+    if (projects == null || projects!.isEmpty) {
       return const SizedBox.shrink();
     }
 
@@ -34,7 +34,7 @@ class ProjectLabel extends StatelessWidget {
         ),
         const SizedBox(width: 3),
         Text(
-          project!
+          projects!
               .map((p) => p.title ?? l.no_property(l.project_property))
               .join(','),
           style: Theme.of(context).textTheme.bodySmall?.copyWith(

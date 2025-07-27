@@ -340,9 +340,9 @@ class TaskGroup extends _$TaskGroup {
 
         // すべてのタスクをグループ化
         for (final task in tasks) {
-          if (task.project != null && task.project!.isNotEmpty) {
+          if (task.projects != null && task.projects!.isNotEmpty) {
             // 複数のプロジェクトを持つ場合、それぞれのプロジェクトグループに追加
-            for (final project in task.project!) {
+            for (final project in task.projects!) {
               final projectKey = project.id;
               unsortedGroups.putIfAbsent(projectKey, () => []);
               unsortedGroups[projectKey]!.add(task);
@@ -360,8 +360,8 @@ class TaskGroup extends _$TaskGroup {
             // Relationプロパティは動的に取得されるため、タスクから名前を抽出
             final projectNameMap = <String, String>{};
             for (final task in tasks) {
-              if (task.project != null && task.project!.isNotEmpty) {
-                final project = task.project!.first;
+              if (task.projects != null && task.projects!.isNotEmpty) {
+                final project = task.projects!.first;
                 if (project.title != null) {
                   projectNameMap[project.id] = project.title!;
                 }

@@ -223,7 +223,7 @@ class NotionConverter {
       dueDate: NotionConverter.extractDate(data, taskDatabase),
       url: data['url'],
       priority: NotionConverter.extractPriority(data, taskDatabase),
-      project: NotionConverter.extractProject(data, taskDatabase),
+      projects: NotionConverter.extractProject(data, taskDatabase),
       additionalFields:
           NotionConverter.extractAdditionalFields(data, taskDatabase),
     );

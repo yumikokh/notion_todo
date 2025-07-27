@@ -464,11 +464,11 @@ class TaskListView extends HookConsumerWidget {
           try {
             // 該当プロジェクトIDを持つタスクを探す
             final taskWithProject = list.firstWhere((task) =>
-                task.project != null && task.project!.any((p) => p.id == id));
+                task.projects != null && task.projects!.any((p) => p.id == id));
 
             // そのタスクから該当プロジェクトを取得
             final project =
-                taskWithProject.project!.firstWhere((p) => p.id == id);
+                taskWithProject.projects!.firstWhere((p) => p.id == id);
             final title = project.title;
 
             // タイトルがnullまたは空の場合は「名称未設定」を表示

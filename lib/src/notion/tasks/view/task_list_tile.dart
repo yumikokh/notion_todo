@@ -132,8 +132,8 @@ class TaskListTile extends HookConsumerWidget {
             fontSize: 15,
           )),
       subtitle: (!taskViewModel.showDueDate(task) &&
-              (task.project == null ||
-                  (task.project != null && task.project!.isEmpty) ||
+              (task.projects == null ||
+                  (task.projects != null && task.projects!.isEmpty) ||
                   groupType == GroupType.project))
           ? null
           : SizedBox(
@@ -155,7 +155,7 @@ class TaskListTile extends HookConsumerWidget {
                       ),
                     // プロジェクト（Projectグルーピング時は非表示）
                     if (groupType != GroupType.project)
-                      ProjectLabel(project: task.project),
+                      ProjectLabel(projects: task.projects),
                   ],
                 ),
               ),

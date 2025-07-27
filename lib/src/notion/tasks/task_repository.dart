@@ -156,9 +156,9 @@ class TaskRepository {
     await _enrichRelationType(
       tasks: tasks,
       relationType: RelationType.project,
-      getRelations: (task) => task.project,
+      getRelations: (task) => task.projects,
       updateTask: (task, enrichedRelations) =>
-          task.copyWith(project: enrichedRelations),
+          task.copyWith(projects: enrichedRelations),
     );
   }
 
@@ -166,7 +166,7 @@ class TaskRepository {
   Future<void> _enrichOtherRelations(List<Task> tasks) async {
     final taskDatabase = this.taskDatabase;
     final additionalProperties = taskDatabase.additionalProperties;
-    
+
     if (additionalProperties == null || additionalProperties.isEmpty) {
       return;
     }
@@ -175,7 +175,7 @@ class TaskRepository {
     for (final entry in additionalProperties.entries) {
       final propertyId = entry.key;
       final property = entry.value;
-      
+
       // リレーションプロパティの場合のみ処理
       if (property.type == PropertyType.relation) {
         await _enrichRelationType(
@@ -220,8 +220,8 @@ class TaskRepository {
     }
 
     // キャッシュされていないIDを取得
-    final uncachedIds = _relationCache.getUncachedIds(
-        relationType.value, relationIds.toList());
+    final uncachedIds =
+        _relationCache.getUncachedIds(relationType.value, relationIds.toList());
 
     // キャッシュされていない情報を取得
     if (uncachedIds.isNotEmpty) {
@@ -233,8 +233,8 @@ class TaskRepository {
       final task = tasks[i];
       final relations = getRelations(task);
       if (relations != null && relations.isNotEmpty) {
-        final enrichedRelations = _relationCache.enrichRelationOptions(
-            relationType.value, relations);
+        final enrichedRelations =
+            _relationCache.enrichRelationOptions(relationType.value, relations);
         tasks[i] = updateTask(task, enrichedRelations);
       }
     }
