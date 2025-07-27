@@ -151,7 +151,7 @@ class NotionConverter {
           return relationData.map((item) {
             return RelationOption(
               id: item['id'],
-              title: item['title']?[0]?['plain_text'],
+              title: null, // Notion APIではrelationのタイトルは含まれない
             );
           }).toList();
         }
