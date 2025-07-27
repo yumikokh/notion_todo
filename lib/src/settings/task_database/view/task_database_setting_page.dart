@@ -406,11 +406,22 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
 
   List<DropdownMenuItem<String>> _buildStatusOptions(
       List<StatusOption> options) {
-    return options
+    final l = AppLocalizations.of(context)!;
+    final items = <DropdownMenuItem<String>>[
+      // 未設定オプションを追加
+      DropdownMenuItem<String>(
+        value: null,
+        child: Text(l.no_time),
+      ),
+    ];
+    
+    items.addAll(options
         .map((option) => DropdownMenuItem<String>(
               value: option.id,
               child: Text(option.name),
             ))
-        .toList();
+        .toList());
+    
+    return items;
   }
 }
