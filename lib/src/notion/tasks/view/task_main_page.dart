@@ -15,6 +15,7 @@ import '../../common/filter_type.dart';
 import '../../../settings/task_database/task_database_viewmodel.dart';
 import '../task_sort_provider.dart';
 import '../task_viewmodel.dart';
+import '../project_selection_viewmodel.dart';
 import 'task_list_view.dart';
 import 'task_base_scaffold.dart';
 import '../../../settings/font/font_settings_viewmodel.dart';
@@ -140,8 +141,14 @@ class TaskMainPage extends HookConsumerWidget {
                   // Today Tasks
                   TaskRefreshIndicator(
                     onRefresh: () async {
+                      // データベースの最新情報を取得（options含む)
                       ref.invalidate(taskDatabaseViewModelProvider);
+                      // 今日のタスクを更新
                       ref.invalidate(todayProvider);
+                      // プロジェクト選択のキャッシュをクリアして最新の情報を取得
+                      final projectSelectionVM =
+                          ref.read(projectSelectionViewModelProvider.notifier);
+                      await projectSelectionVM.refresh();
                     },
                     child: todayTasks.when(
                       data: (tasks) => TaskListView(
@@ -164,6 +171,9 @@ class TaskMainPage extends HookConsumerWidget {
                     onRefresh: () async {
                       ref.invalidate(taskDatabaseViewModelProvider);
                       ref.invalidate(allProvider);
+                      final projectSelectionVM =
+                          ref.read(projectSelectionViewModelProvider.notifier);
+                      await projectSelectionVM.refresh();
                     },
                     child: allTasks.when(
                       data: (tasks) => TaskListView(

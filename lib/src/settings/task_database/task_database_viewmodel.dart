@@ -4,6 +4,7 @@ import '../../common/analytics/analytics_service.dart';
 import '../../notion/model/task_database.dart';
 import '../../notion/model/index.dart';
 import '../../notion/tasks/task_database_repository.dart';
+import '../../notion/tasks/project_selection_viewmodel.dart';
 import 'selected_database_viewmodel.dart';
 import '../../common/debounced_state_mixin.dart';
 
@@ -63,6 +64,12 @@ class TaskDatabaseViewModel extends _$TaskDatabaseViewModel
       await repository.save(taskDatabase);
       state = AsyncValue.data(taskDatabase);
 
+      // プロジェクト選択のキャッシュをクリア
+      // まずprojectSelectionViewModelのrefreshメソッドを呼び出してキャッシュをクリア
+      final projectSelectionVM =
+          ref.read(projectSelectionViewModelProvider.notifier);
+      await projectSelectionVM.refresh();
+
       try {
         final analytics = ref.read(analyticsServiceProvider);
         await analytics.logDatabaseOperation(
@@ -88,6 +95,11 @@ class TaskDatabaseViewModel extends _$TaskDatabaseViewModel
     try {
       await repository.clear();
       state = const AsyncValue.data(null);
+
+      // プロジェクト選択のキャッシュをクリア
+      final projectSelectionVM =
+          ref.read(projectSelectionViewModelProvider.notifier);
+      await projectSelectionVM.refresh();
 
       try {
         final analytics = ref.read(analyticsServiceProvider);
