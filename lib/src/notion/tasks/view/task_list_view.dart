@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tanzaku_todo/generated/app_localizations.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import '../project_selection_viewmodel.dart';
 
 import '../../../helpers/date.dart';
 import '../../../helpers/haptic_helper.dart';
@@ -416,6 +417,10 @@ class TaskListView extends HookConsumerWidget {
   // ステータスやグループの表示名を取得するメソッド
   String _getOptionNameById(String id, BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
+    
+    // ProjectSelectionViewModelからプロジェクト情報を取得
+    final projectsAsync = ref.read(projectSelectionViewModelProvider);
+    final projects = projectsAsync.valueOrNull ?? [];
 
     if (id == 'no_date') return l.no_property(l.date_property);
     if (id == 'no_status') return l.no_property(l.status_property);
@@ -460,17 +465,11 @@ class TaskListView extends HookConsumerWidget {
             return id;
           }
         case GroupType.project:
-          // Relationプロパティの場合、グループIDからタスクを探して名前を取得
+          // ProjectSelectionViewModelからプロジェクト名を取得
           try {
-            // 該当プロジェクトIDを持つタスクを探す
-            final taskWithProject = list.firstWhere((task) =>
-                task.project != null && task.project!.any((p) => p.id == id));
-
-            // そのタスクから該当プロジェクトを取得
-            final project =
-                taskWithProject.project!.firstWhere((p) => p.id == id);
+            final project = projects.firstWhere((p) => p.id == id);
             final title = project.title;
-
+            
             // タイトルがnullまたは空の場合は「名称未設定」を表示
             return (title == null || title.isEmpty)
                 ? l.no_property(l.project_property)

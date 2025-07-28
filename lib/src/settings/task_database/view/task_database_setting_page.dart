@@ -274,13 +274,16 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                         child: FilledButton(
                           onPressed: selectedDatabaseViewModel.submitDisabled
                               ? null
-                              : () {
-                                  taskDatabaseViewModel.save(selectedDatabase!);
-                                  Navigator.pushNamedAndRemoveUntil(
-                                    context,
-                                    TaskMainPage.routeName,
-                                    (route) => false,
-                                  );
+                              : () async {
+                                  await taskDatabaseViewModel
+                                      .save(selectedDatabase!);
+                                  if (context.mounted) {
+                                    Navigator.pushNamedAndRemoveUntil(
+                                      context,
+                                      TaskMainPage.routeName,
+                                      (route) => false,
+                                    );
+                                  }
                                   HapticHelper.selection();
                                 },
                           child: Padding(
