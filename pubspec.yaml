@@ -68,6 +68,8 @@ flutter:
   generate: true
   assets:
     - assets/images/
+    - assets/images/app_icon/
+    - assets/images/splash/
     - assets/google_fonts/
     - assets/sounds/
 
