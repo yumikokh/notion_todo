@@ -100,56 +100,67 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
 
                         // StatusTaskStatusPropertyの場合のみ表示
                         if (selectedStatus is StatusCompleteStatusProperty) ...[
-                          _buildSectionTitle(
-                              context, l.status_property_todo_option,
-                              tooltip: l.todo_option_description),
-                          const SizedBox(height: 8),
-                          _buildDropdown(
-                            value: selectedStatus.todoOption?.id,
-                            items: _buildStatusOptions(
-                                selectedDatabaseViewModel
-                                    .getStatusOptionsByGroup(
-                                        StatusGroupType.todo),
-                                isRequired: true),
-                            onChanged: (value) =>
-                                selectedDatabaseViewModel.selectStatusOption(
-                                    value, StatusGroupType.todo),
-                            context: context,
-                          ),
-                          const SizedBox(height: 24),
-                          _buildSectionTitle(
-                              context, l.status_property_in_progress_option,
-                              tooltip: l.in_progress_option_description,
-                              isRequired: false),
-                          const SizedBox(height: 8),
-                          _buildDropdown(
-                            value: selectedStatus.inProgressOption?.id,
-                            items: _buildStatusOptions(
-                                selectedDatabaseViewModel
-                                    .getStatusOptionsByGroup(
-                                        StatusGroupType.inProgress),
-                                isRequired: false),
-                            onChanged: (value) =>
-                                selectedDatabaseViewModel.selectStatusOption(
-                                    value, StatusGroupType.inProgress),
-                            context: context,
-                          ),
-                          const SizedBox(height: 24),
-                          _buildSectionTitle(
-                              context, l.status_property_complete_option,
-                              tooltip: l.complete_option_description),
-                          const SizedBox(height: 8),
-                          _buildDropdown(
-                            value: selectedStatus.completeOption?.id,
-                            items: _buildStatusOptions(
-                                selectedDatabaseViewModel
-                                    .getStatusOptionsByGroup(
-                                        StatusGroupType.complete),
-                                isRequired: true),
-                            onChanged: (value) =>
-                                selectedDatabaseViewModel.selectStatusOption(
-                                    value, StatusGroupType.complete),
-                            context: context,
+                          Padding(
+                            padding: const EdgeInsets.only(left: 32),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _buildSectionTitle(
+                                    context, l.status_property_todo_option,
+                                    tooltip: l.todo_option_description),
+                                const SizedBox(height: 8),
+                                _buildDropdown(
+                                  value: selectedStatus.todoOption?.id,
+                                  items: _buildStatusOptions(
+                                      selectedDatabaseViewModel
+                                          .getStatusOptionsByGroup(
+                                              StatusGroupType.todo),
+                                      isRequired: true),
+                                  onChanged: (value) =>
+                                      selectedDatabaseViewModel
+                                          .selectStatusOption(
+                                              value, StatusGroupType.todo),
+                                  context: context,
+                                ),
+                                const SizedBox(height: 24),
+                                _buildSectionTitle(context,
+                                    l.status_property_in_progress_option,
+                                    tooltip: l.in_progress_option_description,
+                                    isRequired: false),
+                                const SizedBox(height: 8),
+                                _buildDropdown(
+                                  value: selectedStatus.inProgressOption?.id,
+                                  items: _buildStatusOptions(
+                                      selectedDatabaseViewModel
+                                          .getStatusOptionsByGroup(
+                                              StatusGroupType.inProgress),
+                                      isRequired: false),
+                                  onChanged: (value) =>
+                                      selectedDatabaseViewModel
+                                          .selectStatusOption(value,
+                                              StatusGroupType.inProgress),
+                                  context: context,
+                                ),
+                                const SizedBox(height: 24),
+                                _buildSectionTitle(
+                                    context, l.status_property_complete_option,
+                                    tooltip: l.complete_option_description),
+                                const SizedBox(height: 8),
+                                _buildDropdown(
+                                  value: selectedStatus.completeOption?.id,
+                                  items: _buildStatusOptions(
+                                      selectedDatabaseViewModel
+                                          .getStatusOptionsByGroup(
+                                              StatusGroupType.complete),
+                                      isRequired: true),
+                                  onChanged: (value) =>
+                                      selectedDatabaseViewModel
+                                          .selectStatusOption(
+                                              value, StatusGroupType.complete),
+                                  context: context,
+                                ),
+                              ],
+                            ),
                           ),
                           const SizedBox(height: 24),
                         ],
