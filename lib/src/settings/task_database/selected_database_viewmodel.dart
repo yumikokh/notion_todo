@@ -373,7 +373,7 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
         status: switch (optionType) {
           StatusGroupType.todo => p.copyWith(todoOption: option),
           StatusGroupType.complete => p.copyWith(completeOption: option),
-          StatusGroupType.inProgress => p.copyWith(inProgressOption: option),
+          StatusGroupType.inProgress => p.copyWith(inProgressOption: () => option),
         },
       );
     });
