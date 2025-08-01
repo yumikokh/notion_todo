@@ -94,132 +94,150 @@ class _TaskProjectSheetState extends ConsumerState<TaskProjectSheet> {
     }
 
     // 関連データベースから直接プロジェクトを取得
-    final projects = ref.watch(projectSelectionViewModelProvider);
-    availableProjects = projects;
+    final projectsAsync = ref.watch(projectSelectionViewModelProvider);
 
-    return Container(
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height * 0.7,
+    return projectsAsync.when(
+      loading: () => Container(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.7,
+        ),
+        child: const Center(
+          child: CircularProgressIndicator(),
+        ),
       ),
-      padding: const EdgeInsets.only(top: 8),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // ドラッグハンドル
-          Container(
-            width: 32,
-            height: 4,
-            margin: const EdgeInsets.only(bottom: 8),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(2),
-              color: Theme.of(context)
-                  .colorScheme
-                  .onSurfaceVariant
-                  .withValues(alpha: 0.4),
-            ),
+      error: (error, stack) => Container(
+        padding: const EdgeInsets.all(24),
+        child: Center(
+          child: Text(l.no_projects_found),
+        ),
+      ),
+      data: (projects) {
+        availableProjects = projects;
+
+        return Container(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.7,
           ),
-          // ヘッダー
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: Text(l.cancel),
+          padding: const EdgeInsets.only(top: 8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // ドラッグハンドル
+              Container(
+                width: 32,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 8),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(2),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onSurfaceVariant
+                      .withValues(alpha: 0.4),
                 ),
-                Row(
+              ),
+              // ヘッダー
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    IconButton(
-                      onPressed: isLoading
-                          ? null
-                          : () async {
-                              setState(() {
-                                isLoading = true;
-                              });
-                              await ref
-                                  .read(projectSelectionViewModelProvider
-                                      .notifier)
-                                  .refresh();
-                              if (mounted) {
-                                setState(() {
-                                  isLoading = false;
-                                });
-                              }
-                            },
-                      icon: const Icon(Icons.refresh),
-                      tooltip: l.refresh,
-                    ),
                     TextButton(
-                      onPressed: _saveSelection,
-                      child: Text(l.save,
-                          style: const TextStyle(fontWeight: FontWeight.bold)),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text(l.cancel),
+                    ),
+                    Row(
+                      children: [
+                        IconButton(
+                          onPressed: isLoading
+                              ? null
+                              : () async {
+                                  setState(() {
+                                    isLoading = true;
+                                  });
+                                  ref.invalidate(
+                                      projectSelectionViewModelProvider);
+                                  if (mounted) {
+                                    setState(() {
+                                      isLoading = false;
+                                    });
+                                  }
+                                },
+                          icon: const Icon(Icons.refresh),
+                          tooltip: l.refresh,
+                        ),
+                        TextButton(
+                          onPressed: _saveSelection,
+                          child: Text(l.save,
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold)),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 8),
-          // プロジェクト一覧
-          Expanded(
-            child: isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : projects.isEmpty
-                    ? Padding(
-                        padding: const EdgeInsets.all(24),
-                        child: Center(
-                          child: Text(l.no_projects_found),
-                        ),
-                      )
-                    : ListView.builder(
-                        itemCount: projects.length,
-                        itemBuilder: (context, index) {
-                          final project = projects[index];
-                          final isSelected =
-                              temporarySelectedIds.contains(project.id);
-                          return ListTile(
-                            leading: Text(
-                              '#',
-                              style: TextStyle(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onSurfaceVariant,
-                                fontSize: 18,
-                              ),
+              ),
+              const SizedBox(height: 8),
+              // プロジェクト一覧
+              Expanded(
+                child: isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : projects.isEmpty
+                        ? Padding(
+                            padding: const EdgeInsets.all(24),
+                            child: Center(
+                              child: Text(l.no_projects_found),
                             ),
-                            title: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Expanded(
-                                  child: Text(project.title ??
-                                      l.no_property(l.project_property)),
+                          )
+                        : ListView.builder(
+                            itemCount: projects.length,
+                            itemBuilder: (context, index) {
+                              final project = projects[index];
+                              final isSelected =
+                                  temporarySelectedIds.contains(project.id);
+                              return ListTile(
+                                leading: Text(
+                                  '#',
+                                  style: TextStyle(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurfaceVariant,
+                                    fontSize: 18,
+                                  ),
                                 ),
-                              ],
-                            ),
-                            selected: isSelected,
-                            trailing:
-                                isSelected ? const Icon(Icons.check) : null,
-                            onTap: () {
-                              HapticHelper.light();
+                                title: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Expanded(
+                                      child: Text(project.title ??
+                                          l.no_property(l.project_property)),
+                                    ),
+                                  ],
+                                ),
+                                selected: isSelected,
+                                trailing:
+                                    isSelected ? const Icon(Icons.check) : null,
+                                onTap: () {
+                                  HapticHelper.light();
 
-                              setState(() {
-                                if (isSelected) {
-                                  temporarySelectedIds.remove(project.id);
-                                } else {
-                                  temporarySelectedIds.add(project.id);
-                                }
-                                hasChanges = true;
-                              });
+                                  setState(() {
+                                    if (isSelected) {
+                                      temporarySelectedIds.remove(project.id);
+                                    } else {
+                                      temporarySelectedIds.add(project.id);
+                                    }
+                                    hasChanges = true;
+                                  });
+                                },
+                              );
                             },
-                          );
-                        },
-                      ),
+                          ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

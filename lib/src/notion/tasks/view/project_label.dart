@@ -1,24 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:tanzaku_todo/generated/app_localizations.dart';
 
 import '../../model/property.dart';
+import '../project_selection_viewmodel.dart';
 
-class ProjectLabel extends StatelessWidget {
+class ProjectLabel extends ConsumerWidget {
   const ProjectLabel({
     super.key,
-    required this.project,
+    required this.projects,
   });
 
-  final List<RelationOption>? project;
+  final List<RelationOption>? projects;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     // プロジェクトが存在しない場合は何も表示しない
-    if (project == null || project!.isEmpty) {
+    if (projects == null || projects!.isEmpty) {
       return const SizedBox.shrink();
     }
 
     final l = AppLocalizations.of(context)!;
+    
+    // ProjectSelectionViewModelからプロジェクト情報を取得
+    final projectsAsync = ref.watch(projectSelectionViewModelProvider);
+    final availableProjects = projectsAsync.valueOrNull ?? [];
 
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -34,8 +40,15 @@ class ProjectLabel extends StatelessWidget {
         ),
         const SizedBox(width: 3),
         Text(
-          project!
-              .map((p) => p.title ?? l.no_property(l.project_property))
+          projects!
+              .map((p) {
+                // ProjectSelectionViewModelからプロジェクト名を取得
+                final project = availableProjects.firstWhere(
+                  (proj) => proj.id == p.id,
+                  orElse: () => RelationOption(id: p.id, title: null),
+                );
+                return project.title ?? l.no_property(l.project_property);
+              })
               .join(','),
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: Theme.of(context)

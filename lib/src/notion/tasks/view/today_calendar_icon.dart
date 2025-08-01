@@ -27,7 +27,7 @@ class TodayCalendarIcon extends StatelessWidget {
             height: size,
             decoration: BoxDecoration(
               border: Border.all(
-                width: 1.8,
+                width: 1.7,
               ),
               borderRadius: BorderRadius.circular(2),
             ),
@@ -45,7 +45,7 @@ class TodayCalendarIcon extends StatelessWidget {
                     : Colors.transparent,
                 border: Border.all(
                   color: colorScheme.onSecondaryContainer,
-                  width: 1.8,
+                  width: 1.7,
                 ),
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(2),
@@ -65,6 +65,7 @@ class TodayCalendarIcon extends StatelessWidget {
                 style: TextStyle(
                     fontSize: size * 0.5,
                     fontWeight: FontWeight.w800,
+                    letterSpacing: -0.5,
                     color: colorScheme.onSecondaryContainer),
               ),
             ),

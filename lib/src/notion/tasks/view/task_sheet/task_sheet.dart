@@ -34,7 +34,7 @@ class TaskSheet extends HookConsumerWidget {
     final selectedDueDate = useState<TaskDate?>(initialTask.dueDate);
     final selectedPriority = useState<SelectOption?>(initialTask.priority);
     final selectedProjects =
-        useState<List<RelationOption>?>(initialTask.project);
+        useState<List<RelationOption>?>(initialTask.projects);
     final isValidTitle = useState<bool>(initialTask.title.isNotEmpty);
     final l = AppLocalizations.of(context)!;
     final isNewTask = initialTask.isTemp;
@@ -81,7 +81,7 @@ class TaskSheet extends HookConsumerWidget {
           title: titleValue,
           dueDate: selectedDueDate.value,
           priority: selectedPriority.value,
-          project: selectedProjects.value,
+          projects: selectedProjects.value,
         );
         onSubmitted(updatedTask, needSnackbarFloating: !willClose);
       }
