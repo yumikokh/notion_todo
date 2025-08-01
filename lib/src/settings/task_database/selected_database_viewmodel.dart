@@ -112,16 +112,109 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
         return value;
       }
 
+      // 各プロパティを自動検出して初期値を設定
+      final statusWithDefaults = _detectStatusProperty(selected.properties);
+      final dateProperty = _detectDateProperty(selected.properties);
+      final priorityProperty =
+          _detectSelectProperty(selected.properties, ['優先度', 'priority']);
+      final projectProperty =
+          _detectRelationProperty(selected.properties, ['プロジェクト', 'project']);
+
       return SelectedDatabaseState(
         id: selected.id,
         name: selected.name,
         title: title,
-        status: null,
-        date: null,
-        priority: null,
-        project: null,
+        status: statusWithDefaults,
+        date: dateProperty,
+        priority: priorityProperty,
+        project: projectProperty,
       );
     });
+  }
+
+  /// Statusプロパティを検出して初期値を設定
+  CompleteStatusProperty? _detectStatusProperty(List<Property> properties) {
+    final statusProperty = properties.whereType<StatusProperty>().firstOrNull;
+    if (statusProperty != null) {
+      return _createStatusWithDefaults(statusProperty);
+    }
+
+    final checkboxProperty =
+        properties.whereType<CheckboxProperty>().firstOrNull;
+    if (checkboxProperty != null) {
+      return CheckboxCompleteStatusProperty(
+        id: checkboxProperty.id,
+        name: checkboxProperty.name,
+        checkbox: checkboxProperty.checkbox,
+      );
+    }
+
+    return null;
+  }
+
+  /// StatusPropertyから初期値付きのStatusCompleteStatusPropertyを作成
+  StatusCompleteStatusProperty _createStatusWithDefaults(
+      StatusProperty statusProperty) {
+    final todoOptions =
+        _getStatusOptionsByGroup(statusProperty, StatusGroupType.todo);
+    final inProgressOptions =
+        _getStatusOptionsByGroup(statusProperty, StatusGroupType.inProgress);
+    final completeOptions =
+        _getStatusOptionsByGroup(statusProperty, StatusGroupType.complete);
+
+    return StatusCompleteStatusProperty(
+      id: statusProperty.id,
+      name: statusProperty.name,
+      status: statusProperty.status,
+      todoOption: todoOptions.isNotEmpty ? todoOptions.first : null,
+      inProgressOption:
+          inProgressOptions.isNotEmpty ? inProgressOptions.first : null,
+      completeOption: completeOptions.isNotEmpty ? completeOptions.first : null,
+    );
+  }
+
+  /// 特定のグループのStatusオプションを取得
+  List<StatusOption> _getStatusOptionsByGroup(
+      StatusProperty statusProperty, StatusGroupType groupType) {
+    return statusProperty.status.groups
+            .where((group) => group.name == groupType.value)
+            .firstOrNull
+            ?.optionIds
+            .map((id) => statusProperty.status.options
+                .where((option) => option.id == id)
+                .firstOrNull)
+            .whereType<StatusOption>()
+            .toList() ??
+        [];
+  }
+
+  /// Dateプロパティを検出
+  DateProperty? _detectDateProperty(List<Property> properties) {
+    return properties.whereType<DateProperty>().firstOrNull;
+  }
+
+  /// Selectプロパティを検出（名前に基づいて推測）
+  SelectProperty? _detectSelectProperty(
+      List<Property> properties, List<String>? names) {
+    final selectProperties = properties.whereType<SelectProperty>();
+    return selectProperties
+            .where((p) =>
+                names?.any((name) => p.name.toLowerCase().contains(name)) ??
+                false)
+            .firstOrNull ??
+        selectProperties.firstOrNull;
+  }
+
+  /// Relationプロパティを検出（名前に基づいて推測）
+  RelationProperty? _detectRelationProperty(
+      List<Property> properties, List<String>? names) {
+    final relationProperties = properties.whereType<RelationProperty>();
+    return relationProperties
+            .where((p) =>
+                names?.any((name) => p.name.toLowerCase().contains(name)) ??
+                false)
+            .firstOrNull ??
+        relationProperties.firstOrNull;
   }
 
   Future<SelectedDatabaseState?> _removeNoExistsProperties(
@@ -196,46 +289,8 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
       }
       switch ((type, property)) {
         case (SettingPropertyType.status, StatusProperty p):
-          // 各グループの最初のオプションを初期値として設定
-          final todoOptions = p.status.groups
-              .where((group) => group.name == StatusGroupType.todo.value)
-              .firstOrNull
-              ?.optionIds
-              .map((id) => p.status.options
-                  .where((option) => option.id == id)
-                  .firstOrNull)
-              .whereType<StatusOption>()
-              .toList() ?? [];
-          
-          final inProgressOptions = p.status.groups
-              .where((group) => group.name == StatusGroupType.inProgress.value)
-              .firstOrNull
-              ?.optionIds
-              .map((id) => p.status.options
-                  .where((option) => option.id == id)
-                  .firstOrNull)
-              .whereType<StatusOption>()
-              .toList() ?? [];
-          
-          final completeOptions = p.status.groups
-              .where((group) => group.name == StatusGroupType.complete.value)
-              .firstOrNull
-              ?.optionIds
-              .map((id) => p.status.options
-                  .where((option) => option.id == id)
-                  .firstOrNull)
-              .whereType<StatusOption>()
-              .toList() ?? [];
-
           return value.copyWith(
-            status: StatusCompleteStatusProperty(
-              id: p.id,
-              name: p.name,
-              status: p.status,
-              todoOption: todoOptions.isNotEmpty ? todoOptions.first : null,
-              inProgressOption: inProgressOptions.isNotEmpty ? inProgressOptions.first : null,
-              completeOption: completeOptions.isNotEmpty ? completeOptions.first : null,
-            ),
+            status: _createStatusWithDefaults(p),
           );
         case (SettingPropertyType.status, CheckboxProperty p):
           return value.copyWith(
@@ -296,9 +351,11 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
       if (value == null || p is! StatusCompleteStatusProperty) return value;
 
       // optionIdがnullの場合は、未設定を選択したとして処理
-      final option = optionId == null 
-          ? null 
-          : p.status.options.where((option) => option.id == optionId).firstOrNull;
+      final option = optionId == null
+          ? null
+          : p.status.options
+              .where((option) => option.id == optionId)
+              .firstOrNull;
 
       return value.copyWith(
         status: switch (optionType) {
