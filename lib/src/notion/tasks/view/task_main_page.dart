@@ -143,6 +143,8 @@ class TaskMainPage extends HookConsumerWidget {
                     onRefresh: () async {
                       // データベースの最新情報を取得（options含む)
                       ref.invalidate(taskDatabaseViewModelProvider);
+                      // プロジェクト一覧も更新
+                      ref.invalidate(projectSelectionViewModelProvider);
                       // 今日のタスクを更新
                       ref.invalidate(todayProvider);
                     },
@@ -166,6 +168,7 @@ class TaskMainPage extends HookConsumerWidget {
                   TaskRefreshIndicator(
                     onRefresh: () async {
                       ref.invalidate(taskDatabaseViewModelProvider);
+                      ref.invalidate(projectSelectionViewModelProvider);
                       ref.invalidate(allProvider);
                     },
                     child: allTasks.when(

@@ -65,6 +65,9 @@ class TaskDatabaseViewModel extends _$TaskDatabaseViewModel
       await repository.save(taskDatabase);
       state = AsyncValue.data(taskDatabase);
 
+      // プロジェクト一覧を更新
+      ref.invalidate(projectSelectionViewModelProvider);
+
       try {
         final analytics = ref.read(analyticsServiceProvider);
         await analytics.logDatabaseOperation(
