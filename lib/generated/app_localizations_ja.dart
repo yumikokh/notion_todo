@@ -144,6 +144,11 @@ class AppLocalizationsJa extends AppLocalizations {
   String get property_name_error => 'すでに同じ名前のプロパティが存在します';
 
   @override
+  String property_added_success(String propertyName, String name) {
+    return '$propertyNameプロパティ「$name」を追加しました';
+  }
+
+  @override
   String get error => 'エラー';
 
   @override
@@ -462,6 +467,9 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get priority_property_description => '種類: セレクト';
+
+  @override
+  String get checkbox_property => 'チェックボックス';
 
   @override
   String get project_property => 'プロジェクト';
