@@ -178,7 +178,7 @@ class _PropertiesProviderElement
 }
 
 String _$selectedDatabaseViewModelHash() =>
-    r'3f91231967ed39494240843690ad2a7a56d2e4ad';
+    r'b19346a64ddc64a94cc021ee662d5ecf472f2526';
 
 /// See also [SelectedDatabaseViewModel].
 @ProviderFor(SelectedDatabaseViewModel)

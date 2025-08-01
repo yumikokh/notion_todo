@@ -2,12 +2,14 @@ import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:tanzaku_todo/generated/app_localizations.dart';
 
 import '../../common/snackbar/model/snackbar_state.dart';
 import '../../common/snackbar/snackbar.dart';
 import '../../notion/model/index.dart';
 import '../../notion/api/notion_database_api.dart';
 import '../../notion/tasks/task_database_repository.dart';
+import '../../settings/settings_viewmodel.dart';
 import 'task_database_viewmodel.dart';
 
 part 'selected_database_viewmodel.freezed.dart';
@@ -277,7 +279,7 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
     if (propertyId == null) {
       state = state.whenData((value) {
         if (value == null) return null;
-        
+
         return switch (type) {
           SettingPropertyType.status => value.copyWith(status: null),
           SettingPropertyType.date => value.copyWith(date: null),
@@ -287,7 +289,7 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
       });
       return;
     }
-    
+
     final properties = await ref.read(propertiesProvider(type).future);
     final property =
         properties.where((property) => property.id == propertyId).firstOrNull;
@@ -373,7 +375,8 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
         status: switch (optionType) {
           StatusGroupType.todo => p.copyWith(todoOption: option),
           StatusGroupType.complete => p.copyWith(completeOption: option),
-          StatusGroupType.inProgress => p.copyWith(inProgressOption: () => option),
+          StatusGroupType.inProgress =>
+            p.copyWith(inProgressOption: () => option),
         },
       );
     });
@@ -391,12 +394,14 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
     }
 
     final snackbar = ref.read(snackbarProvider.notifier);
+    final locale = ref.read(settingsViewModelProvider).locale;
+    final l = await AppLocalizations.delegate.load(locale);
     final propertyName = switch (type) {
-      CreatePropertyType.date => '日付', // TODO: ローカライズ
-      CreatePropertyType.checkbox => 'チェックボックス',
-      CreatePropertyType.select => '優先度',
+      CreatePropertyType.date => l.date_property,
+      CreatePropertyType.checkbox => l.checkbox_property,
+      CreatePropertyType.select => l.priority_property,
     };
-    snackbar.show('$propertyNameプロパティ「$name」を追加しました',
+    snackbar.show(l.property_added_success(propertyName, name),
         type: SnackbarType.success);
 
     // データベースの再取得
