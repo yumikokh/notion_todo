@@ -106,8 +106,11 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                           const SizedBox(height: 8),
                           _buildDropdown(
                             value: selectedStatus.todoOption?.id,
-                            items: _buildStatusOptions(selectedDatabaseViewModel
-                                .getStatusOptionsByGroup(StatusGroupType.todo)),
+                            items: _buildStatusOptions(
+                                context,
+                                selectedDatabaseViewModel
+                                    .getStatusOptionsByGroup(
+                                        StatusGroupType.todo)),
                             onChanged: (value) =>
                                 selectedDatabaseViewModel.selectStatusOption(
                                     value, StatusGroupType.todo),
@@ -121,9 +124,11 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                           const SizedBox(height: 8),
                           _buildDropdown(
                             value: selectedStatus.inProgressOption?.id,
-                            items: _buildStatusOptions(selectedDatabaseViewModel
-                                .getStatusOptionsByGroup(
-                                    StatusGroupType.inProgress)),
+                            items: _buildStatusOptions(
+                                context,
+                                selectedDatabaseViewModel
+                                    .getStatusOptionsByGroup(
+                                        StatusGroupType.inProgress)),
                             onChanged: (value) =>
                                 selectedDatabaseViewModel.selectStatusOption(
                                     value, StatusGroupType.inProgress),
@@ -136,9 +141,11 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                           const SizedBox(height: 8),
                           _buildDropdown(
                             value: selectedStatus.completeOption?.id,
-                            items: _buildStatusOptions(selectedDatabaseViewModel
-                                .getStatusOptionsByGroup(
-                                    StatusGroupType.complete)),
+                            items: _buildStatusOptions(
+                                context,
+                                selectedDatabaseViewModel
+                                    .getStatusOptionsByGroup(
+                                        StatusGroupType.complete)),
                             onChanged: (value) =>
                                 selectedDatabaseViewModel.selectStatusOption(
                                     value, StatusGroupType.complete),
@@ -408,7 +415,7 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
   }
 
   List<DropdownMenuItem<String>> _buildStatusOptions(
-      List<StatusOption> options) {
+      BuildContext context, List<StatusOption> options) {
     final l = AppLocalizations.of(context)!;
     final items = <DropdownMenuItem<String>>[
       // 未設定オプションを追加
@@ -417,14 +424,14 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
         child: Text(l.no_time),
       ),
     ];
-    
+
     items.addAll(options
         .map((option) => DropdownMenuItem<String>(
               value: option.id,
               child: Text(option.name),
             ))
         .toList());
-    
+
     return items;
   }
 }
