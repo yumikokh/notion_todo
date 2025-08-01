@@ -273,9 +273,21 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
   }
 
   void selectProperty(String? propertyId, SettingPropertyType type) async {
+    // propertyIdがnullの場合は、未選択状態を設定
     if (propertyId == null) {
+      state = state.whenData((value) {
+        if (value == null) return null;
+        
+        return switch (type) {
+          SettingPropertyType.status => value.copyWith(status: null),
+          SettingPropertyType.date => value.copyWith(date: null),
+          SettingPropertyType.priority => value.copyWith(priority: null),
+          SettingPropertyType.project => value.copyWith(project: null),
+        };
+      });
       return;
     }
+    
     final properties = await ref.read(propertiesProvider(type).future);
     final property =
         properties.where((property) => property.id == propertyId).firstOrNull;
