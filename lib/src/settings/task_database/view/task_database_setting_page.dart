@@ -429,8 +429,8 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
       {bool isRequired = true}) {
     final items = <DropdownMenuItem<String>>[];
 
-    // 必須でない場合のみ未設定オプションを追加
-    if (!isRequired) {
+    // 必須でない場合かつオプションが存在する場合のみ未設定オプションを追加
+    if (!isRequired && options.isNotEmpty) {
       items.add(
         DropdownMenuItem<String>(
           value: null,
@@ -454,8 +454,8 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
       {bool isRequired = true}) {
     final items = <DropdownMenuItem<String>>[];
 
-    // 必須でない場合のみ未設定オプションを追加
-    if (!isRequired) {
+    // 必須でない場合かつプロパティが存在する場合のみ未設定オプションを追加
+    if (!isRequired && properties.isNotEmpty) {
       items.add(
         DropdownMenuItem<String>(
           value: null,
