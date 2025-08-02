@@ -44,6 +44,17 @@
   "property_name": "プロパティ名",
   "property_name_input": "プロパティ名を入力してください",
   "property_name_error": "すでに同じ名前のプロパティが存在します",
+  "property_added_success": "{propertyName}プロパティ「{name}」を追加しました",
+  "@property_added_success": {
+    "placeholders": {
+      "propertyName": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "error": "エラー",
   "ok": "OK",
   "cancel": "キャンセル",
@@ -176,6 +187,7 @@
   "sound_credit_description": "OtoLogic (CC BY 4.0)",
   "priority_property": "優先度",
   "priority_property_description": "種類: セレクト",
+  "checkbox_property": "チェックボックス",
   "project_property": "プロジェクト",
   "project_property_description": "種類: リレーション",
   "project_property_empty_message": "プロジェクトが表示されない場合は、Notion認証で対象のデータベースも含めて再認証してください",

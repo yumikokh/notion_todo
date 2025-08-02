@@ -362,6 +362,12 @@ abstract class AppLocalizations {
   /// **'A property with the same name already exists'**
   String get property_name_error;
 
+  /// No description provided for @property_added_success.
+  ///
+  /// In en, this message translates to:
+  /// **'{propertyName} property \"{name}\" has been added'**
+  String property_added_success(String propertyName, String name);
+
   /// No description provided for @error.
   ///
   /// In en, this message translates to:
@@ -925,6 +931,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Type: Select'**
   String get priority_property_description;
+
+  /// No description provided for @checkbox_property.
+  ///
+  /// In en, this message translates to:
+  /// **'Checkbox'**
+  String get checkbox_property;
 
   /// No description provided for @project_property.
   ///
