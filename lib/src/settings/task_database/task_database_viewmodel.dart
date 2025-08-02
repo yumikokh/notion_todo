@@ -65,8 +65,10 @@ class TaskDatabaseViewModel extends _$TaskDatabaseViewModel
       await repository.save(taskDatabase);
       state = AsyncValue.data(taskDatabase);
 
-      // プロジェクト一覧を更新
-      ref.invalidate(projectSelectionViewModelProvider);
+      // プロジェクト一覧を更新して読み込み完了を待つ
+      await ref
+          .read(projectSelectionViewModelProvider.notifier)
+          .fetchAndUpdateProjects();
 
       try {
         final analytics = ref.read(analyticsServiceProvider);

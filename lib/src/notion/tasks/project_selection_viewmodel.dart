@@ -22,17 +22,18 @@ class ProjectSelectionViewModel extends _$ProjectSelectionViewModel {
     final cachedProjects = await _loadCachedProjects();
     if (cachedProjects.isNotEmpty) {
       // キャッシュがある場合は即座に返し、バックグラウンドで更新
-      _fetchAndUpdateProjects();
+      // ビルド中にstateを変更しないよう、Future.microtaskで遅延実行
+      Future.microtask(() => fetchAndUpdateProjects());
       return cachedProjects;
     }
-    
+
     // キャッシュがない場合は通常通り取得
     final taskDatabase = await ref.watch(taskDatabaseViewModelProvider.future);
     return await _fetchAllProjects(taskDatabase);
   }
-  
+
   /// バックグラウンドでプロジェクトを取得して更新
-  Future<void> _fetchAndUpdateProjects() async {
+  Future<void> fetchAndUpdateProjects() async {
     try {
       final taskDatabase = await ref.read(taskDatabaseViewModelProvider.future);
       final projects = await _fetchAllProjects(taskDatabase);
@@ -73,10 +74,10 @@ class ProjectSelectionViewModel extends _$ProjectSelectionViewModel {
       // 最近使用したプロジェクトの順序で並び替え
       final recentProjectIds = await _getRecentProjectIds();
       final sortedProjects = _sortByRecentUsage(projects, recentProjectIds);
-      
+
       // キャッシュに保存
       await _saveCachedProjects(sortedProjects);
-      
+
       return sortedProjects;
     } catch (e) {
       // エラー時は空のリストを返す
@@ -187,14 +188,14 @@ class ProjectSelectionViewModel extends _$ProjectSelectionViewModel {
 
     return sortedProjects;
   }
-  
+
   /// キャッシュからプロジェクトを読み込む
   Future<List<RelationOption>> _loadCachedProjects() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final jsonString = prefs.getString(_cachedProjectsKey);
       if (jsonString == null) return [];
-      
+
       final jsonList = jsonDecode(jsonString) as List<dynamic>;
       return jsonList.map((json) {
         final jsonMap = json as Map<String, dynamic>;
@@ -208,15 +209,17 @@ class ProjectSelectionViewModel extends _$ProjectSelectionViewModel {
       return [];
     }
   }
-  
+
   /// プロジェクトをキャッシュに保存
   Future<void> _saveCachedProjects(List<RelationOption> projects) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final jsonList = projects.map((project) => {
-        'id': project.id,
-        'title': project.title,
-      }).toList();
+      final jsonList = projects
+          .map((project) => {
+                'id': project.id,
+                'title': project.title,
+              })
+          .toList();
       final jsonString = jsonEncode(jsonList);
       await prefs.setString(_cachedProjectsKey, jsonString);
     } catch (e) {

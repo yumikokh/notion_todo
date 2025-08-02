@@ -289,16 +289,46 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                           onPressed: selectedDatabaseViewModel.submitDisabled
                               ? null
                               : () async {
-                                  await taskDatabaseViewModel
-                                      .save(selectedDatabase!);
-                                  if (context.mounted) {
-                                    Navigator.pushNamedAndRemoveUntil(
-                                      context,
-                                      TaskMainPage.routeName,
-                                      (route) => false,
-                                    );
+                                  // ローディング表示
+                                  showDialog(
+                                    context: context,
+                                    barrierDismissible: false,
+                                    builder: (context) => const Center(
+                                      child: CircularProgressIndicator(),
+                                    ),
+                                  );
+
+                                  try {
+                                    // データベースを保存
+                                    await taskDatabaseViewModel
+                                        .save(selectedDatabase!);
+
+                                    if (context.mounted) {
+                                      // ローディングダイアログを閉じる
+                                      Navigator.pop(context);
+
+                                      // メイン画面に遷移
+                                      await Navigator.pushNamedAndRemoveUntil(
+                                        context,
+                                        TaskMainPage.routeName,
+                                        (route) => false,
+                                      );
+                                    }
+                                    HapticHelper.selection();
+                                  } catch (e) {
+                                    if (context.mounted) {
+                                      // ローディングダイアログを閉じる
+                                      Navigator.pop(context);
+
+                                      // エラーメッセージを表示
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          content: Text(l.error),
+                                        ),
+                                      );
+                                    }
                                   }
-                                  HapticHelper.selection();
                                 },
                           child: Padding(
                             padding: const EdgeInsets.symmetric(vertical: 16),
