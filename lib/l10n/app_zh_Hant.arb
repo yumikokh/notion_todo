@@ -1,0 +1,381 @@
+{
+  "@@locale": "zh_Hant",
+  "appTitle": "notion_todo",
+  "settings_view_title": "設定",
+  "settings_view_app_settings_title": "應用程式設定",
+  "settings_view_notion_settings_title": "Notion 設定",
+  "settings_view_notion_settings_description": "需要資料庫設定",
+  "settings_view_theme_settings_title": "主題",
+  "settings_view_support_title": "支援",
+  "settings_view_support_faq_title": "常見問題",
+  "settings_view_support_feedback_title": "錯誤回報・需求・聯絡",
+  "settings_view_support_privacy_policy_title": "隱私權政策",
+  "settings_view_support_review_title": "留下評論支持我們",
+  "settings_view_version_title": "版本",
+  "settings_view_version_copy": "版本資訊已複製",
+  "notion_settings_view_title": "Notion 設定",
+  "notion_settings_view_auth_status": "驗證狀態",
+  "notion_settings_view_auth_status_connected": "已連接至 Notion",
+  "notion_settings_view_auth_status_disconnected": "未連接至 Notion",
+  "notion_settings_view_auth_status_disconnect": "中斷 Notion 連接",
+  "notion_settings_view_auth_status_connect": "連接至 Notion",
+  "notion_settings_view_database_settings_title": "資料庫設定",
+  "notion_settings_view_database_settings_description": "如果相關屬性的名稱或類型已更改，需要重新設定",
+  "notion_settings_view_database_settings_database_name": "資料庫名稱",
+  "notion_settings_view_database_settings_change_database_settings": "變更資料庫設定",
+  "task_database_settings_title": "任務資料庫設定",
+  "database": "資料庫",
+  "status_property": "狀態",
+  "status_property_todo_option": "待辦選項",
+  "status_property_in_progress_option": "進行中選項",
+  "status_property_complete_option": "完成選項",
+  "date_property": "日期",
+  "todo_option_description": "指定為未完成的狀態",
+  "in_progress_option_description": "指定為進行中的狀態",
+  "complete_option_description": "指定為完成的狀態",
+  "status_property_description": "類型：狀態、核取方塊",
+  "date_property_description": "類型：日期",
+  "save": "儲存",
+  "not_found_database": "找不到可存取的資料庫。",
+  "not_found_database_description": "請重新設定。",
+  "notion_reconnect": "重新連接至 Notion",
+  "select": "請選擇",
+  "create_property": "請建立屬性",
+  "property_name": "屬性名稱",
+  "property_name_input": "請輸入屬性名稱",
+  "property_name_error": "已存在相同名稱的屬性",
+  "error": "錯誤",
+  "ok": "確定",
+  "cancel": "取消",
+  "confirm": "確認",
+  "new_create": "新建",
+  "language_settings_title": "語言設定",
+  "language_settings_description": "設定應用程式的語言",
+  "language_settings_language": "語言",
+  "language_settings_language_ja": "日文",
+  "language_settings_language_en": "英文",
+  "navigation_index": "索引",
+  "navigation_today": "今天",
+  "task_sheet_title_hint": "輸入任務名稱",
+  "today": "今天",
+  "yesterday": "昨天",
+  "tomorrow": "明天",
+  "undetermined": "未定",
+  "select_date": "選擇日期",
+  "no_task": "沒有任務",
+  "no_task_description": "辛苦了！\n祝您有美好的一天！",
+  "add_task_success": "已新增「{title}」",
+  "@add_task_success": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "task_add_failed": "新增「{title}」失敗",
+  "@task_add_failed": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "task_update_success": "已變更「{title}」",
+  "@task_update_success": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "task_update_failed": "變更「{title}」失敗",
+  "@task_update_failed": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "task_update_status_success": "「{title}」已完成 🎉",
+  "@task_update_status_success": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "task_update_status_undo": "「{title}」已恢復為未完成",
+  "@task_update_status_undo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "task_update_status_failed": "狀態更新失敗",
+  "task_update_status_in_progress": "「{title}」已設為進行中",
+  "@task_update_status_in_progress": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "task_update_status_todo": "「{title}」已恢復為待辦",
+  "@task_update_status_todo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "task_delete_success": "已刪除「{title}」",
+  "@task_delete_success": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "task_delete_undo": "已復原「{title}」",
+  "@task_delete_undo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "task_delete_failed": "刪除「{title}」失敗",
+  "@task_delete_failed": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "task_delete_failed_undo": "復原失敗",
+  "loading_failed": "載入失敗",
+  "re_set_database": "需要重新設定。",
+  "not_found_property": "找不到適當的屬性。",
+  "task_fetch_failed": "取得任務失敗",
+  "load_more": "載入更多",
+  "wakelock_title": "應用程式執行時防止休眠",
+  "wakelock_description": "可能會影響電池續航力。",
+  "notion_settings_view_not_found_database_description": "還沒有資料庫嗎？",
+  "notion_settings_view_not_found_database_template_description": "驗證時選擇「使用提供的範本」（上方按鈕），即可新增可立即使用的任務管理資料庫！",
+  "notion_settings_view_not_found_database_select_description": "如果您已經有在使用的資料庫，請從「選擇要分享的頁面」（下方按鈕）中選擇。",
+  "go_to_settings": "前往設定頁面",
+  "notion_database_settings_required": "需要 Notion 資料庫設定。",
+  "updateMessage": "已更新至 v{version} ✨",
+  "@updateMessage": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "releaseNote": "詳細資訊",
+  "settings_view_support_release_notes_title": "版本說明",
+  "continuous_task_addition_title": "連續新增任務",
+  "continuous_task_addition_description": "允許連續新增任務",
+  "behavior_settings_title": "行為",
+  "task_completion_sound_title": "任務完成時的聲音",
+  "task_completion_sound_description": "任務完成時播放聲音",
+  "sound_settings_title": "任務完成時的聲音",
+  "sound_enabled": "啟用聲音",
+  "sound_enabled_description": "任務完成時播放聲音",
+  "font_settings": "標題字型樣式",
+  "font_language": "字型語言",
+  "font_family": "字型",
+  "italic": "斜體",
+  "font_size": "大小",
+  "letter_spacing": "字元間距",
+  "preview": "預覽",
+  "reset": "重設",
+  "reset_to_default": "恢復為預設值",
+  "bold": "粗體",
+  "appearance_settings_title": "外觀",
+  "hide_navigation_label_title": "隱藏導覽標籤",
+  "font_settings_description": "自訂今日任務清單的日期標題",
+  "hide_navigation_label_description": "隱藏底部導覽列的標籤",
+  "current_setting": "目前設定：{setting}",
+  "@current_setting": {
+    "placeholders": {
+      "setting": {
+        "type": "String"
+      }
+    }
+  },
+  "task_star_button_dialog_title": "未設定進行中選項",
+  "task_star_button_dialog_content": "在資料庫設定中設定，確認現在應該專注的任務！",
+  "task_star_button_dialog_cancel": "取消",
+  "task_star_button_dialog_settings": "設定",
+  "notifications": "通知",
+  "showNotificationBadge": "顯示通知徽章",
+  "select_time": "選擇時間",
+  "no_time": "未指定",
+  "start_time": "開始時間",
+  "duration": "所需時間",
+  "duration_format_minutes": "{minutes}分鐘",
+  "@duration_format_minutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "duration_format_hours": "{hours}小時",
+  "@duration_format_hours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "duration_format_hours_minutes": "{hours}小時{minutes}分鐘",
+  "@duration_format_hours_minutes": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "reschedule": "重新排程",
+  "morning_message": "新的一天開始了。\n您想從什麼開始？",
+  "afternoon_message": "午安！\n您想從什麼開始？",
+  "evening_message": "晚安。\n今天還有什麼想要完成的事嗎？",
+  "licenses_page_title": "授權",
+  "licenses_page_no_licenses": "沒有授權資訊。",
+  "sound_credit_title": "聲音提供",
+  "sound_credit_description": "OtoLogic (CC BY 4.0)",
+  "priority_property": "優先順序",
+  "priority_property_description": "類型：選擇",
+  "project_property": "專案",
+  "project_property_description": "類型：關聯",
+  "project_property_empty_message": "如果專案未顯示，請在 Notion 驗證中包含目標資料庫重新驗證",
+  "title_property": "標題",
+  "task_priority_dialog_title": "未設定優先順序屬性",
+  "task_priority_dialog_content": "若要設定任務的優先順序，請在資料庫設定中設定優先順序屬性。",
+  "task_priority_dialog_cancel": "取消",
+  "task_priority_dialog_settings": "設定",
+  "show_completed_tasks": "顯示已完成的任務",
+  "completed_tasks": "已完成",
+  "sort_by": "排序",
+  "sort_by_default": "預設",
+  "group_by": "分組",
+  "group_by_none": "無",
+  "no_property": "無{property}",
+  "@no_property": {
+    "placeholders": {
+      "property": {
+        "type": "String"
+      }
+    }
+  },
+  "subscription_fetch_failed": "無法取得訂閱資訊",
+  "subscription_purchase_success": "已購買{plan}方案",
+  "@subscription_purchase_success": {
+    "placeholders": {
+      "plan": {
+        "type": "String"
+      }
+    }
+  },
+  "subscription_purchase_failed": "購買失敗",
+  "subscription_purchase_error_general": "購買處理過程中發生錯誤。",
+  "subscription_restore_success": "購買資訊已復原",
+  "subscription_restore_failed": "購買資訊復原失敗",
+  "subscription_restore_none": "沒有可復原的購買",
+  "subscription_restore_error_general": "復原購買資訊時發生錯誤。",
+  "premium_features_title": "高級版",
+  "monthly_subscription": "月費",
+  "yearly_subscription": "年費",
+  "lifetime_subscription": "買斷",
+  "lifetime_purchase": "永久授權",
+  "trial_subscription_expires_in": "免費試用剩餘{days}天",
+  "@trial_subscription_expires_in": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "restore_purchases": "復原購買",
+  "current_plan": "{planName}",
+  "@current_plan": {
+    "placeholders": {
+      "planName": {
+        "type": "String"
+      }
+    }
+  },
+  "free_trial_days": "先享{days}天免費試用",
+  "@free_trial_days": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "monthly_price": "月",
+  "yearly_price": "年",
+  "upgrade_to_premium_description": "升級至高級版方案，解鎖所有功能！",
+  "unlock_all_widgets_title": "解鎖所有小工具",
+  "unlock_all_widgets_description": "可從多種小工具樣式中選擇",
+  "access_all_future_features_title": "存取所有未來功能",
+  "access_all_future_features_description": "新功能推出後立即可用",
+  "support_the_developer_title": "支持開發者",
+  "support_the_developer_description": "支持持續開發",
+  "lifetime_unlock_description": "一次購買解鎖所有功能",
+  "lifetime_license_activated": "已取得永久授權",
+  "currently_subscribed": "訂閱中",
+  "refresh": "重新整理",
+  "no_projects_found": "找不到專案",
+  "error_loading_projects": "載入專案失敗",
+  "retry": "重試",
+  "start_free_trial": "開始免費試用",
+  "yearly_price_short": "年",
+  "trial_ends_then_price_per_year": "{trialDays}天免費試用結束後 {priceString} / {yearlyPriceShort}",
+  "@trial_ends_then_price_per_year": {
+    "placeholders": {
+      "trialDays": {},
+      "priceString": {},
+      "yearlyPriceShort": {}
+    }
+  },
+  "continue_purchase": "繼續購買",
+  "change_plan": "變更方案",
+  "current_plan_display": "目前方案：{currentPlanName}",
+  "@current_plan_display": {
+    "placeholders": {
+      "currentPlanName": {}
+    }
+  },
+  "terms_of_service": "使用條款",
+  "privacy_policy": "隱私權政策",
+  "purchase_terms_and_conditions_part3": "訂閱可隨時取消。\n免費試用僅適用於首次購買。\n變更訂閱方案時，將在目前方案結束後自動切換。",
+  "switchToLifetimeNotificationBody": "如果您已購買訂閱方案，請至 App Store / Google Play 帳戶設定中停止自動續訂。",
+  "subscription_purchase_success_title": "已取得永久授權！",
+  "subscription_purchase_success_body": "您已經購買了買斷方案",
+  "account_settings_title": "帳戶",
+  "free_plan": "免費方案",
+  "premium_plan": "已加入高級版方案",
+  "plan_title": "方案",
+  "copy_notion_link": "複製 Notion 連結",
+  "copy_title": "複製標題",
+  "open_in_notion": "在 Notion 中開啟",
+  "duplicate": "複製",
+  "copy": "複製",
+  "notion_link_copied": "已複製 Notion 連結",
+  "title_copied": "已複製標題",
+  "task_duplicated": "已複製任務",
+  "error_no_notion_link": "找不到 Notion 連結",
+  "error_copy_failed": "複製失敗",
+  "error_cannot_open_notion": "無法在 Notion 中開啟",
+  "error_duplicate_failed": "任務複製失敗",
+  "no_project_selected": "未選擇專案",
+  "select_project": "選擇專案"
+}
