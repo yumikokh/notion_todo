@@ -92,7 +92,20 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                                         value, SettingPropertyType.status),
                                 context: context,
                               ),
-                              loading: () => const CircularProgressIndicator(),
+                              loading: () => _buildDropdown(
+                                value: selectedDatabase.status?.id,
+                                items: selectedDatabase.status != null
+                                    ? [
+                                        DropdownMenuItem(
+                                            value: selectedDatabase.status!.id,
+                                            child: Text(
+                                                selectedDatabase.status!.name))
+                                      ]
+                                    : [],
+                                onChanged: (_) {},
+                                context: context,
+                                isLoading: true,
+                              ),
                               error: (error, stack) =>
                                   Center(child: Text(l.loading_failed)),
                             ),
@@ -183,24 +196,15 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                           ],
                         ),
                         const SizedBox(height: 8),
-                        ref
-                            .watch(propertiesProvider(SettingPropertyType.date))
-                            .when(
-                              data: (properties) => _buildDropdown(
-                                value: selectedDatabase.date?.id,
-                                items: properties
-                                    .map((prop) => DropdownMenuItem(
-                                        value: prop.id, child: Text(prop.name)))
-                                    .toList(),
-                                onChanged: (value) =>
-                                    selectedDatabaseViewModel.selectProperty(
-                                        value, SettingPropertyType.date),
-                                context: context,
-                              ),
-                              loading: () => const CircularProgressIndicator(),
-                              error: (error, stack) =>
-                                  Center(child: Text(l.loading_failed)),
-                            ),
+                        _buildPropertyDropdown(
+                          propertiesAsync: ref.watch(
+                              propertiesProvider(SettingPropertyType.date)),
+                          selectedPropertyId: selectedDatabase.date?.id,
+                          selectedPropertyName: selectedDatabase.date?.name,
+                          propertyType: SettingPropertyType.date,
+                          selectedDatabaseViewModel: selectedDatabaseViewModel,
+                          context: context,
+                        ),
                         const SizedBox(height: 32),
 
                         Row(
@@ -222,23 +226,16 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                           ],
                         ),
                         const SizedBox(height: 8),
-                        ref
-                            .watch(propertiesProvider(
-                                SettingPropertyType.priority))
-                            .when(
-                              data: (properties) => _buildDropdown(
-                                value: selectedDatabase.priority?.id,
-                                items: _buildPropertyDropdownItems(properties,
-                                    isRequired: false),
-                                onChanged: (value) =>
-                                    selectedDatabaseViewModel.selectProperty(
-                                        value, SettingPropertyType.priority),
-                                context: context,
-                              ),
-                              loading: () => const CircularProgressIndicator(),
-                              error: (error, stack) =>
-                                  Center(child: Text(l.loading_failed)),
-                            ),
+                        _buildPropertyDropdown(
+                          propertiesAsync: ref.watch(
+                              propertiesProvider(SettingPropertyType.priority)),
+                          selectedPropertyId: selectedDatabase.priority?.id,
+                          selectedPropertyName: selectedDatabase.priority?.name,
+                          propertyType: SettingPropertyType.priority,
+                          selectedDatabaseViewModel: selectedDatabaseViewModel,
+                          context: context,
+                          isRequired: false,
+                        ),
                         const SizedBox(height: 32),
 
                         // プロジェクトプロパティセクション
@@ -246,39 +243,17 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                             tooltip: l.project_property_description,
                             isRequired: false),
                         const SizedBox(height: 8),
-                        ref
-                            .watch(
-                                propertiesProvider(SettingPropertyType.project))
-                            .when(
-                              data: (properties) => Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  _buildDropdown(
-                                    value: selectedDatabase.project?.id,
-                                    items: _buildPropertyDropdownItems(
-                                        properties,
-                                        isRequired: false),
-                                    onChanged: (value) =>
-                                        selectedDatabaseViewModel
-                                            .selectProperty(value,
-                                                SettingPropertyType.project),
-                                    context: context,
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    l.project_property_empty_message,
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color:
-                                          Theme.of(context).colorScheme.outline,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              loading: () => const CircularProgressIndicator(),
-                              error: (error, stack) =>
-                                  Center(child: Text('Project Error: $error')),
-                            ),
+                        _buildPropertyDropdown(
+                          propertiesAsync: ref.watch(
+                              propertiesProvider(SettingPropertyType.project)),
+                          selectedPropertyId: selectedDatabase.project?.id,
+                          selectedPropertyName: selectedDatabase.project?.name,
+                          propertyType: SettingPropertyType.project,
+                          selectedDatabaseViewModel: selectedDatabaseViewModel,
+                          context: context,
+                          isRequired: false,
+                          bottomText: l.project_property_empty_message,
+                        ),
                         const SizedBox(height: 32),
                       ],
 
@@ -420,8 +395,20 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
     required List<DropdownMenuItem<String>> items,
     required ValueChanged<String?> onChanged,
     required BuildContext context,
+    bool isLoading = false,
   }) {
     final l = AppLocalizations.of(context)!;
+    
+    // ローディング中は現在の値に基づいてdisabledHintを設定
+    // 値がnullの場合は「-」を表示（未設定状態を維持）
+    Widget? getDisabledHint() {
+      if (isLoading) {
+        return value == null ? const Text('-') : null;
+      } else {
+        return items.isEmpty ? Text(l.create_property) : Text(l.select);
+      }
+    }
+    
     return Container(
       decoration: BoxDecoration(
         border: Border.all(color: Theme.of(context).colorScheme.outline),
@@ -430,7 +417,7 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: DropdownButton<String>(
         hint: Text(l.select),
-        disabledHint: items.isEmpty ? Text(l.create_property) : Text(l.select),
+        disabledHint: getDisabledHint(),
         value: value,
         items: items,
         onTap: () {
@@ -455,8 +442,8 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
       {bool isRequired = true}) {
     final items = <DropdownMenuItem<String>>[];
 
-    // 必須でない場合のみ未設定オプションを追加
-    if (!isRequired) {
+    // 必須でない場合かつオプションが存在する場合のみ未設定オプションを追加
+    if (!isRequired && options.isNotEmpty) {
       items.add(
         DropdownMenuItem<String>(
           value: null,
@@ -480,8 +467,8 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
       {bool isRequired = true}) {
     final items = <DropdownMenuItem<String>>[];
 
-    // 必須でない場合のみ未設定オプションを追加
-    if (!isRequired) {
+    // 必須でない場合かつプロパティが存在する場合のみ未設定オプションを追加
+    if (!isRequired && properties.isNotEmpty) {
       items.add(
         DropdownMenuItem<String>(
           value: null,
@@ -498,5 +485,65 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
         .toList());
 
     return items;
+  }
+
+  Widget _buildPropertyDropdown({
+    required AsyncValue<List<Property>> propertiesAsync,
+    required String? selectedPropertyId,
+    required String? selectedPropertyName,
+    required SettingPropertyType propertyType,
+    required SelectedDatabaseViewModel selectedDatabaseViewModel,
+    required BuildContext context,
+    bool isRequired = true,
+    String? bottomText,
+  }) {
+    final l = AppLocalizations.of(context)!;
+    final dropdown = propertiesAsync.when(
+      data: (properties) => _buildDropdown(
+        value: selectedPropertyId,
+        items: propertyType == SettingPropertyType.priority ||
+                propertyType == SettingPropertyType.project
+            ? _buildPropertyDropdownItems(properties, isRequired: isRequired)
+            : properties
+                .map((prop) =>
+                    DropdownMenuItem(value: prop.id, child: Text(prop.name)))
+                .toList(),
+        onChanged: (value) =>
+            selectedDatabaseViewModel.selectProperty(value, propertyType),
+        context: context,
+      ),
+      loading: () => _buildDropdown(
+        value: selectedPropertyId,
+        items: selectedPropertyId != null && selectedPropertyName != null
+            ? [
+                DropdownMenuItem(
+                    value: selectedPropertyId,
+                    child: Text(selectedPropertyName))
+              ]
+            : [],
+        onChanged: (_) {},
+        context: context,
+        isLoading: true,
+      ),
+      error: (error, stack) => Center(child: Text(l.loading_failed)),
+    );
+
+    if (bottomText != null) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          dropdown,
+          const SizedBox(height: 8),
+          Text(
+            bottomText,
+            style: TextStyle(
+              fontSize: 12,
+              color: Theme.of(context).colorScheme.outline,
+            ),
+          ),
+        ],
+      );
+    }
+    return dropdown;
   }
 }
