@@ -13,7 +13,7 @@
 
 ## プロジェクト構造
 
-```
+```text
 lib/src/
 ├── app.dart (メインアプリ設定)
 ├── common/ (共通コンポーネント - Analytics, UI, Sound)

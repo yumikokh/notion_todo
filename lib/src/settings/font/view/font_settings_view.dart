@@ -65,9 +65,7 @@ class FontSettingsView extends HookConsumerWidget {
                 ListTile(
                   title: _buildSettingTitle(l.font_language),
                   trailing: Text(
-                    settings.languageCode == 'en'
-                        ? l.language_settings_language_en
-                        : l.language_settings_language_ja,
+                    settings.languageCode == 'ja' ? '日本語' : 'English',
                     style: const TextStyle(fontSize: 14),
                   ),
                   onTap: () async {
@@ -78,14 +76,14 @@ class FontSettingsView extends HookConsumerWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             ListTile(
-                              title: Text(l.language_settings_language_en),
+                              title: const Text('English'),
                               onTap: () {
                                 Navigator.pop(context, 'en');
                                 HapticHelper.light();
                               },
                             ),
                             ListTile(
-                              title: Text(l.language_settings_language_ja),
+                              title: const Text('日本語'),
                               onTap: () {
                                 Navigator.pop(context, 'ja');
                                 HapticHelper.light();
