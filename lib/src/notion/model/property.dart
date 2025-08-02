@@ -287,7 +287,7 @@ class StatusCompleteStatusProperty extends StatusProperty
     String? name,
     ({List<StatusOption> options, List<StatusGroup> groups})? status,
     StatusOption? todoOption,
-    StatusOption? inProgressOption,
+    StatusOption? Function()? inProgressOption,
     StatusOption? completeOption,
   }) {
     return StatusCompleteStatusProperty(
@@ -295,7 +295,7 @@ class StatusCompleteStatusProperty extends StatusProperty
       name: name ?? this.name,
       status: status ?? this.status,
       todoOption: todoOption ?? this.todoOption,
-      inProgressOption: inProgressOption ?? this.inProgressOption,
+      inProgressOption: inProgressOption != null ? inProgressOption() : this.inProgressOption,
       completeOption: completeOption ?? this.completeOption,
     );
   }

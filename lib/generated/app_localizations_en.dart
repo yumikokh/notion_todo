@@ -151,6 +151,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'A property with the same name already exists';
 
   @override
+  String property_added_success(String propertyName, String name) {
+    return '$propertyName property \"$name\" has been added';
+  }
+
+  @override
   String get error => 'Error';
 
   @override
@@ -478,6 +483,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get priority_property_description => 'Type: Select';
+
+  @override
+  String get checkbox_property => 'Checkbox';
 
   @override
   String get project_property => 'Project';

@@ -15,7 +15,6 @@ import '../../common/filter_type.dart';
 import '../../../settings/task_database/task_database_viewmodel.dart';
 import '../task_sort_provider.dart';
 import '../task_viewmodel.dart';
-import '../project_selection_viewmodel.dart';
 import 'task_list_view.dart';
 import 'task_base_scaffold.dart';
 import '../../../settings/font/font_settings_viewmodel.dart';
