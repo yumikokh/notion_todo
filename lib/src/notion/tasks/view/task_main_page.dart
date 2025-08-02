@@ -13,9 +13,9 @@ import '../../../settings/settings_viewmodel.dart';
 import '../../../settings/view/notion_settings_page.dart';
 import '../../common/filter_type.dart';
 import '../../../settings/task_database/task_database_viewmodel.dart';
+import '../project_selection_viewmodel.dart';
 import '../task_sort_provider.dart';
 import '../task_viewmodel.dart';
-import '../project_selection_viewmodel.dart';
 import 'task_list_view.dart';
 import 'task_base_scaffold.dart';
 import '../../../settings/font/font_settings_viewmodel.dart';
@@ -143,6 +143,8 @@ class TaskMainPage extends HookConsumerWidget {
                     onRefresh: () async {
                       // データベースの最新情報を取得（options含む)
                       ref.invalidate(taskDatabaseViewModelProvider);
+                      // プロジェクト一覧も更新
+                      ref.invalidate(projectSelectionViewModelProvider);
                       // 今日のタスクを更新
                       ref.invalidate(todayProvider);
                     },
@@ -166,6 +168,7 @@ class TaskMainPage extends HookConsumerWidget {
                   TaskRefreshIndicator(
                     onRefresh: () async {
                       ref.invalidate(taskDatabaseViewModelProvider);
+                      ref.invalidate(projectSelectionViewModelProvider);
                       ref.invalidate(allProvider);
                     },
                     child: allTasks.when(

@@ -1,0 +1,65 @@
+#!/bin/bash
+
+# Git post-checkout hook for auto-setup of Flutter worktrees
+# This hook is triggered after git checkout and git worktree add
+# Parameters: $1 = previous HEAD, $2 = new HEAD, $3 = flag (1 for branch checkout, 0 for file checkout)
+
+# Check if this is a new worktree creation (previous HEAD is all zeros)
+if [[ "$1" == "0000000000000000000000000000000000000000" ]] && [[ "$3" == "1" ]]; then
+    # This is a new worktree being created
+    
+    # Find the setup_worktree.sh script
+    # Get the main worktree directory
+    GIT_DIR=$(git rev-parse --git-dir)
+    if [[ "$GIT_DIR" == *"/.git/worktrees/"* ]]; then
+        # We're in a worktree, find the main repository
+        MAIN_REPO=$(echo "$GIT_DIR" | sed 's|/\.git/worktrees/.*|/|')
+    else
+        # We're in the main repository
+        MAIN_REPO=$(git rev-parse --show-toplevel)
+    fi
+    
+    # Check if setup script exists in the main repository
+    if [ -f "$MAIN_REPO/scripts/worktree/setup_worktree.sh" ]; then
+        SETUP_SCRIPT="$MAIN_REPO/scripts/worktree/setup_worktree.sh"
+    elif [ -f "$MAIN_REPO/setup_worktree.sh" ]; then
+        SETUP_SCRIPT="$MAIN_REPO/setup_worktree.sh"
+    elif [ -f "./setup_worktree.sh" ]; then
+        SETUP_SCRIPT="./setup_worktree.sh"
+    else
+        echo "⚠️  setup_worktree.sh not found. Skipping automatic setup."
+        echo "   You can manually run the setup script later."
+        exit 0
+    fi
+    
+    # Check if this is a Flutter project
+    if [ -f "pubspec.yaml" ]; then
+        echo "🚀 Detected new Flutter worktree creation..."
+        echo "   Running automatic setup..."
+        
+        # Try to detect the main worktree path for copying env files
+        # Use the same MAIN_REPO we found earlier
+        MAIN_WORKTREE="$MAIN_REPO"
+        
+        # Set environment variable to indicate hook execution
+        export GIT_HOOK_EXECUTION=1
+        
+        # Run the setup script
+        if [ -n "$MAIN_WORKTREE" ] && [ "$MAIN_WORKTREE" != "$(pwd)" ]; then
+            # Pass the main worktree as source for env files
+            bash "$SETUP_SCRIPT" setup "$MAIN_WORKTREE"
+        else
+            # No source worktree or we're in the main worktree
+            bash "$SETUP_SCRIPT" setup
+        fi
+        
+        if [ $? -eq 0 ]; then
+            echo "✅ Worktree setup completed successfully!"
+        else
+            echo "⚠️  Worktree setup encountered issues. Please check the output above."
+        fi
+    fi
+fi
+
+# Continue with normal checkout behavior
+exit 0
