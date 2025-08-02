@@ -1,0 +1,391 @@
+{
+  "@@locale": "ko",
+  "appTitle": "notion_todo",
+  "settings_view_title": "설정",
+  "settings_view_app_settings_title": "앱 설정",
+  "settings_view_notion_settings_title": "Notion 설정",
+  "settings_view_notion_settings_description": "데이터베이스 설정이 필요합니다",
+  "settings_view_theme_settings_title": "테마",
+  "settings_view_support_title": "지원",
+  "settings_view_support_faq_title": "자주 묻는 질문",
+  "settings_view_support_feedback_title": "버그 신고・요청・문의",
+  "settings_view_support_privacy_policy_title": "개인정보 보호정책",
+  "settings_view_support_review_title": "리뷰로 응원하기",
+  "settings_view_version_title": "버전",
+  "settings_view_version_copy": "버전 정보가 복사되었습니다",
+  "notion_settings_view_title": "Notion 설정",
+  "notion_settings_view_auth_status": "인증 상태",
+  "notion_settings_view_auth_status_connected": "Notion에 연결됨",
+  "notion_settings_view_auth_status_disconnected": "Notion에 연결되지 않음",
+  "notion_settings_view_auth_status_disconnect": "Notion 연결 해제",
+  "notion_settings_view_auth_status_connect": "Notion에 연결",
+  "notion_settings_view_database_settings_title": "데이터베이스 설정",
+  "notion_settings_view_database_settings_description": "해당 속성의 이름이나 유형이 변경된 경우 재설정이 필요합니다",
+  "notion_settings_view_database_settings_database_name": "데이터베이스 이름",
+  "notion_settings_view_database_settings_change_database_settings": "데이터베이스 설정 변경",
+  "task_database_settings_title": "작업 데이터베이스 설정",
+  "database": "데이터베이스",
+  "status_property": "상태",
+  "status_property_todo_option": "할 일 옵션",
+  "status_property_in_progress_option": "진행 중 옵션",
+  "status_property_complete_option": "완료 옵션",
+  "date_property": "날짜",
+  "todo_option_description": "미완료로 지정할 상태",
+  "in_progress_option_description": "진행 중으로 지정할 상태",
+  "complete_option_description": "완료로 지정할 상태",
+  "status_property_description": "유형: 상태, 체크박스",
+  "date_property_description": "유형: 날짜",
+  "save": "저장",
+  "not_found_database": "접근 가능한 데이터베이스를 찾을 수 없습니다.",
+  "not_found_database_description": "설정을 다시 진행해 주세요.",
+  "notion_reconnect": "Notion에 다시 연결",
+  "select": "선택하세요",
+  "create_property": "속성을 생성하세요",
+  "property_name": "속성 이름",
+  "property_name_input": "속성 이름을 입력하세요",
+  "property_name_error": "같은 이름의 속성이 이미 존재합니다",
+  "property_added_success": "{propertyName} 속성 \"{name}\"이(가) 추가되었습니다",
+  "@property_added_success": {
+    "placeholders": {
+      "propertyName": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "error": "오류",
+  "ok": "확인",
+  "cancel": "취소",
+  "confirm": "확인",
+  "new_create": "새로 만들기",
+  "language_settings_title": "언어 설정",
+  "language_settings_description": "앱의 언어를 설정하세요",
+  "language_settings_language": "언어",
+  "navigation_index": "인덱스",
+  "navigation_today": "오늘",
+  "task_sheet_title_hint": "작업 이름 입력",
+  "today": "오늘",
+  "yesterday": "어제",
+  "tomorrow": "내일",
+  "undetermined": "미정",
+  "select_date": "날짜 선택",
+  "no_task": "작업이 없습니다",
+  "no_task_description": "수고하셨습니다.\n좋은 하루 보내세요!",
+  "add_task_success": "\"{title}\"이(가) 추가되었습니다",
+  "@add_task_success": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "task_add_failed": "\"{title}\" 추가 실패",
+  "@task_add_failed": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "task_update_success": "\"{title}\"이(가) 변경되었습니다",
+  "@task_update_success": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "task_update_failed": "\"{title}\" 변경 실패",
+  "@task_update_failed": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "task_update_status_success": "\"{title}\"이(가) 완료되었습니다 🎉",
+  "@task_update_status_success": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "task_update_status_undo": "\"{title}\"을(를) 미완료로 되돌렸습니다",
+  "@task_update_status_undo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "task_update_status_failed": "상태 업데이트 실패",
+  "task_update_status_in_progress": "\"{title}\"을(를) 진행 중으로 변경했습니다",
+  "@task_update_status_in_progress": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "task_update_status_todo": "\"{title}\"을(를) 미완료로 되돌렸습니다",
+  "@task_update_status_todo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "task_delete_success": "\"{title}\"이(가) 삭제되었습니다",
+  "@task_delete_success": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "task_delete_undo": "\"{title}\"이(가) 복원되었습니다",
+  "@task_delete_undo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "task_delete_failed": "\"{title}\" 삭제 실패",
+  "@task_delete_failed": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "task_delete_failed_undo": "복원 실패",
+  "loading_failed": "불러오기 실패",
+  "re_set_database": "재설정이 필요합니다.",
+  "not_found_property": "적절한 속성을 찾을 수 없습니다.",
+  "task_fetch_failed": "작업 가져오기 실패",
+  "load_more": "더 보기",
+  "wakelock_title": "앱 실행 중 절전 모드 방지",
+  "wakelock_description": "배터리에 영향을 줄 수 있습니다.",
+  "notion_settings_view_not_found_database_description": "아직 데이터베이스가 없으신가요?",
+  "notion_settings_view_not_found_database_template_description": "인증 시 \"제공된 템플릿 사용\"(위 버튼)을 선택하면 바로 사용 가능한 작업 관리 데이터베이스가 추가됩니다!",
+  "notion_settings_view_not_found_database_select_description": "이미 사용 중인 데이터베이스가 있다면 \"공유할 페이지 선택\"(아래 버튼)에서 선택하세요.",
+  "go_to_settings": "설정 페이지로 이동",
+  "notion_database_settings_required": "Notion 데이터베이스 설정이 필요합니다.",
+  "updateMessage": "v{version}으로 업데이트되었습니다 ✨",
+  "@updateMessage": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "releaseNote": "자세히 보기",
+  "settings_view_support_release_notes_title": "릴리스 노트",
+  "continuous_task_addition_title": "연속 작업 추가",
+  "continuous_task_addition_description": "연속으로 새 작업을 추가할 수 있습니다",
+  "behavior_settings_title": "동작",
+  "task_completion_sound_title": "작업 완료 시 소리",
+  "task_completion_sound_description": "작업 완료 시 소리를 재생합니다",
+  "sound_settings_title": "작업 완료 시 소리",
+  "sound_enabled": "소리 활성화",
+  "sound_enabled_description": "작업 완료 시 소리를 재생합니다",
+  "font_settings": "제목 글꼴 스타일",
+  "font_language": "글꼴 언어",
+  "font_family": "글꼴",
+  "italic": "기울임꼴",
+  "font_size": "크기",
+  "letter_spacing": "자간",
+  "preview": "미리보기",
+  "reset": "재설정",
+  "reset_to_default": "기본값으로 재설정",
+  "bold": "굵게",
+  "appearance_settings_title": "외관",
+  "hide_navigation_label_title": "내비게이션 라벨 숨기기",
+  "font_settings_description": "오늘 작업 목록의 날짜 제목을 사용자 정의합니다",
+  "hide_navigation_label_description": "하단 내비게이션 바의 라벨을 숨깁니다",
+  "current_setting": "현재 설정: {setting}",
+  "@current_setting": {
+    "placeholders": {
+      "setting": {
+        "type": "String"
+      }
+    }
+  },
+  "task_star_button_dialog_title": "진행 중 옵션이 설정되지 않음",
+  "task_star_button_dialog_content": "데이터베이스 설정에서 설정하고 지금 집중해야 할 작업을 확인해보세요!",
+  "task_star_button_dialog_cancel": "취소",
+  "task_star_button_dialog_settings": "설정",
+  "notifications": "알림",
+  "showNotificationBadge": "알림 배지 표시",
+  "select_time": "시간 선택",
+  "no_time": "지정 안 함",
+  "start_time": "시작 시간",
+  "duration": "소요 시간",
+  "duration_format_minutes": "{minutes}분",
+  "@duration_format_minutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "duration_format_hours": "{hours}시간",
+  "@duration_format_hours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "duration_format_hours_minutes": "{hours}시간 {minutes}분",
+  "@duration_format_hours_minutes": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "reschedule": "일정 변경",
+  "morning_message": "새로운 하루가 시작되었습니다.\n무엇부터 시작하시겠습니까?",
+  "afternoon_message": "안녕하세요!\n무엇부터 시작하시겠습니까?",
+  "evening_message": "안녕하세요.\n오늘 중에 처리하고 싶은 일이 있나요?",
+  "licenses_page_title": "라이선스",
+  "licenses_page_no_licenses": "라이선스 정보가 없습니다.",
+  "sound_credit_title": "사운드 제공",
+  "sound_credit_description": "OtoLogic (CC BY 4.0)",
+  "priority_property": "우선순위",
+  "priority_property_description": "유형: 선택",
+  "checkbox_property": "체크박스",
+  "project_property": "프로젝트",
+  "project_property_description": "유형: 관계",
+  "project_property_empty_message": "프로젝트가 표시되지 않는 경우 Notion 인증에서 대상 데이터베이스도 포함하여 재인증해 주세요",
+  "title_property": "제목",
+  "task_priority_dialog_title": "우선순위 속성이 설정되지 않음",
+  "task_priority_dialog_content": "작업의 우선순위를 설정하려면 데이터베이스 설정에서 우선순위 속성을 설정하세요.",
+  "task_priority_dialog_cancel": "취소",
+  "task_priority_dialog_settings": "설정",
+  "show_completed_tasks": "완료된 작업 표시",
+  "completed_tasks": "완료됨",
+  "sort_by": "정렬",
+  "sort_by_default": "기본값",
+  "group_by": "그룹",
+  "group_by_none": "없음",
+  "no_property": "{property} 없음",
+  "@no_property": {
+    "placeholders": {
+      "property": {
+        "type": "String"
+      }
+    }
+  },
+  "subscription_fetch_failed": "구독 정보를 가져오지 못했습니다",
+  "subscription_purchase_success": "{plan} 플랜을 구매했습니다",
+  "@subscription_purchase_success": {
+    "placeholders": {
+      "plan": {
+        "type": "String"
+      }
+    }
+  },
+  "subscription_purchase_failed": "구매 실패",
+  "subscription_purchase_error_general": "구매 처리 중 오류가 발생했습니다.",
+  "subscription_restore_success": "구매 정보가 복원되었습니다",
+  "subscription_restore_failed": "구매 정보 복원 실패",
+  "subscription_restore_none": "복원 가능한 구매가 없습니다",
+  "subscription_restore_error_general": "구매 정보 복원 중 오류가 발생했습니다.",
+  "premium_features_title": "프리미엄",
+  "monthly_subscription": "월간",
+  "yearly_subscription": "연간",
+  "lifetime_subscription": "평생",
+  "lifetime_purchase": "평생 라이선스",
+  "trial_subscription_expires_in": "무료 체험 {days}일 남음",
+  "@trial_subscription_expires_in": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "restore_purchases": "구매 복원",
+  "current_plan": "{planName}",
+  "@current_plan": {
+    "placeholders": {
+      "planName": {
+        "type": "String"
+      }
+    }
+  },
+  "free_trial_days": "먼저 {days}일 무료 체험",
+  "@free_trial_days": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "monthly_price": "월",
+  "yearly_price": "년",
+  "upgrade_to_premium_description": "프리미엄 플랜으로 업그레이드하고 모든 기능을 잠금 해제하세요!",
+  "unlock_all_widgets_title": "모든 위젯 잠금 해제",
+  "unlock_all_widgets_description": "다양한 위젯 스타일 중에서 선택할 수 있습니다",
+  "access_all_future_features_title": "향후 추가되는 모든 기능 이용",
+  "access_all_future_features_description": "새로운 기능이 추가되면 바로 사용할 수 있습니다",
+  "support_the_developer_title": "개발자 응원",
+  "support_the_developer_description": "지속적인 개발을 지원할 수 있습니다",
+  "lifetime_unlock_description": "1회 구매로 모든 기능 잠금 해제",
+  "lifetime_license_activated": "평생 라이선스 획득됨",
+  "currently_subscribed": "구독 중",
+  "refresh": "새로고침",
+  "no_projects_found": "프로젝트를 찾을 수 없습니다",
+  "error_loading_projects": "프로젝트 불러오기 실패",
+  "retry": "재시도",
+  "start_free_trial": "무료 체험 시작",
+  "yearly_price_short": "년",
+  "trial_ends_then_price_per_year": "{trialDays}일 무료 체험 종료 후 {priceString} / {yearlyPriceShort}",
+  "@trial_ends_then_price_per_year": {
+    "placeholders": {
+      "trialDays": {},
+      "priceString": {},
+      "yearlyPriceShort": {}
+    }
+  },
+  "continue_purchase": "구매 계속하기",
+  "change_plan": "플랜 변경",
+  "current_plan_display": "현재 플랜: {currentPlanName}",
+  "@current_plan_display": {
+    "placeholders": {
+      "currentPlanName": {}
+    }
+  },
+  "terms_of_service": "이용약관",
+  "privacy_policy": "개인정보 처리방침",
+  "purchase_terms_and_conditions_part3": "구독은 언제든지 취소할 수 있습니다.\n무료 체험은 첫 구매 시에만 적용됩니다.\n구독 플랜 변경 시 현재 플랜 종료 후 자동으로 전환됩니다.",
+  "switchToLifetimeNotificationBody": "구독 플랜을 이미 구매하신 경우 App Store / Google Play 계정 설정에서 자동 갱신을 중지해 주세요.",
+  "subscription_purchase_success_title": "평생 라이선스를 획득했습니다!",
+  "subscription_purchase_success_body": "이미 평생 플랜을 구매하셨습니다",
+  "account_settings_title": "계정",
+  "free_plan": "무료 플랜",
+  "premium_plan": "프리미엄 플랜 가입됨",
+  "plan_title": "플랜",
+  "copy_notion_link": "Notion 링크 복사",
+  "copy_title": "제목 복사",
+  "open_in_notion": "Notion에서 열기",
+  "duplicate": "복제",
+  "copy": "복사",
+  "notion_link_copied": "Notion 링크가 복사되었습니다",
+  "title_copied": "제목이 복사되었습니다",
+  "task_duplicated": "작업이 복제되었습니다",
+  "error_no_notion_link": "Notion 링크를 찾을 수 없습니다",
+  "error_copy_failed": "복사 실패",
+  "error_cannot_open_notion": "Notion에서 열 수 없습니다",
+  "error_duplicate_failed": "작업 복제 실패",
+  "no_project_selected": "선택된 프로젝트가 없습니다",
+  "select_project": "프로젝트 선택"
+}
