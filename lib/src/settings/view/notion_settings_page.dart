@@ -153,15 +153,15 @@ class NotionSettingsPage extends ConsumerWidget {
                         if (statusProperty is StatusCompleteStatusProperty) ...[
                           _buildInfoTile(
                             l.status_property_todo_option,
-                            statusProperty.todoOption?.name ?? 'None',
+                            statusProperty.todoOption?.name ?? '-',
                           ),
                           _buildInfoTile(
                             l.status_property_in_progress_option,
-                            statusProperty.inProgressOption?.name ?? 'None',
+                            statusProperty.inProgressOption?.name ?? '-',
                           ),
                           _buildInfoTile(
                             l.status_property_complete_option,
-                            statusProperty.completeOption?.name ?? 'None',
+                            statusProperty.completeOption?.name ?? '-',
                           ),
                         ],
                         _buildInfoTile(l.date_property, taskDatabase.date.name),
