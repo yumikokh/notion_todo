@@ -173,12 +173,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get language_settings_language => '言語';
 
   @override
-  String get language_settings_language_ja => '日本語';
-
-  @override
-  String get language_settings_language_en => '英語';
-
-  @override
   String get navigation_index => 'インデックス';
 
   @override

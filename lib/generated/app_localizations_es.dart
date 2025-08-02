@@ -154,7 +154,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String property_added_success(String propertyName, String name) {
-    return '$propertyName property \"$name\" has been added';
+    return 'Propiedad $propertyName \"$name\" ha sido añadida';
   }
 
   @override
@@ -181,12 +181,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get language_settings_language => 'Idioma';
-
-  @override
-  String get language_settings_language_ja => 'Japonés';
-
-  @override
-  String get language_settings_language_en => 'Inglés';
 
   @override
   String get navigation_index => 'Índice';
@@ -492,7 +486,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get priority_property_description => 'Tipo: Selección';
 
   @override
-  String get checkbox_property => 'Checkbox';
+  String get checkbox_property => 'Casilla';
 
   @override
   String get project_property => 'Proyecto';

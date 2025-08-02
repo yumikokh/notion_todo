@@ -423,18 +423,6 @@ abstract class AppLocalizations {
   /// **'Language'**
   String get language_settings_language;
 
-  /// No description provided for @language_settings_language_ja.
-  ///
-  /// In en, this message translates to:
-  /// **'Japanese'**
-  String get language_settings_language_ja;
-
-  /// No description provided for @language_settings_language_en.
-  ///
-  /// In en, this message translates to:
-  /// **'English'**
-  String get language_settings_language_en;
-
   /// No description provided for @navigation_index.
   ///
   /// In en, this message translates to:

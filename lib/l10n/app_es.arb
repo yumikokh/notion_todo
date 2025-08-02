@@ -44,6 +44,17 @@
   "property_name": "Nombre de Propiedad",
   "property_name_input": "Ingrese el nombre de la propiedad",
   "property_name_error": "Ya existe una propiedad con el mismo nombre",
+  "property_added_success": "Propiedad {propertyName} \"{name}\" ha sido añadida",
+  "@property_added_success": {
+    "placeholders": {
+      "propertyName": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "error": "Error",
   "ok": "OK",
   "cancel": "Cancelar",
@@ -52,8 +63,6 @@
   "language_settings_title": "Configuración de Idioma",
   "language_settings_description": "Establecer el idioma de la aplicación",
   "language_settings_language": "Idioma",
-  "language_settings_language_ja": "Japonés",
-  "language_settings_language_en": "Inglés",
   "navigation_index": "Índice",
   "navigation_today": "Hoy",
   "task_sheet_title_hint": "Ingrese el nombre de la tarea",
@@ -253,6 +262,7 @@
   "sound_credit_description": "OtoLogic (CC BY 4.0)",
   "priority_property": "Prioridad",
   "priority_property_description": "Tipo: Selección",
+  "checkbox_property": "Casilla",
   "project_property": "Proyecto",
   "project_property_description": "Tipo: Relación",
   "project_property_empty_message": "Si los proyectos no se muestran, vuelva a autenticarse con Notion incluyendo la base de datos de destino",

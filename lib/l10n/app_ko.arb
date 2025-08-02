@@ -44,6 +44,17 @@
   "property_name": "속성 이름",
   "property_name_input": "속성 이름을 입력하세요",
   "property_name_error": "같은 이름의 속성이 이미 존재합니다",
+  "property_added_success": "{propertyName} 속성 \"{name}\"이(가) 추가되었습니다",
+  "@property_added_success": {
+    "placeholders": {
+      "propertyName": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "error": "오류",
   "ok": "확인",
   "cancel": "취소",
@@ -52,8 +63,6 @@
   "language_settings_title": "언어 설정",
   "language_settings_description": "앱의 언어를 설정하세요",
   "language_settings_language": "언어",
-  "language_settings_language_ja": "일본어",
-  "language_settings_language_en": "영어",
   "navigation_index": "인덱스",
   "navigation_today": "오늘",
   "task_sheet_title_hint": "작업 이름 입력",
@@ -253,6 +262,7 @@
   "sound_credit_description": "OtoLogic (CC BY 4.0)",
   "priority_property": "우선순위",
   "priority_property_description": "유형: 선택",
+  "checkbox_property": "체크박스",
   "project_property": "프로젝트",
   "project_property_description": "유형: 관계",
   "project_property_empty_message": "프로젝트가 표시되지 않는 경우 Notion 인증에서 대상 데이터베이스도 포함하여 재인증해 주세요",

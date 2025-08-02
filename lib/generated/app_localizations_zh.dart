@@ -144,7 +144,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String property_added_success(String propertyName, String name) {
-    return '$propertyName property \"$name\" has been added';
+    return '$propertyName屬性「$name」已新增';
   }
 
   @override
@@ -170,12 +170,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get language_settings_language => '語言';
-
-  @override
-  String get language_settings_language_ja => '日文';
-
-  @override
-  String get language_settings_language_en => '英文';
 
   @override
   String get navigation_index => '索引';
@@ -466,7 +460,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get priority_property_description => '類型：選擇';
 
   @override
-  String get checkbox_property => 'Checkbox';
+  String get checkbox_property => '核取方塊';
 
   @override
   String get project_property => '專案';
@@ -860,6 +854,11 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get property_name_error => '已存在相同名稱的屬性';
 
   @override
+  String property_added_success(String propertyName, String name) {
+    return '$propertyName屬性「$name」已新增';
+  }
+
+  @override
   String get error => '錯誤';
 
   @override
@@ -882,12 +881,6 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get language_settings_language => '語言';
-
-  @override
-  String get language_settings_language_ja => '日文';
-
-  @override
-  String get language_settings_language_en => '英文';
 
   @override
   String get navigation_index => '索引';
@@ -1176,6 +1169,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get priority_property_description => '類型：選擇';
+
+  @override
+  String get checkbox_property => '核取方塊';
 
   @override
   String get project_property => '專案';

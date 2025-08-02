@@ -44,6 +44,17 @@
   "property_name": "屬性名稱",
   "property_name_input": "請輸入屬性名稱",
   "property_name_error": "已存在相同名稱的屬性",
+  "property_added_success": "{propertyName}屬性「{name}」已新增",
+  "@property_added_success": {
+    "placeholders": {
+      "propertyName": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "error": "錯誤",
   "ok": "確定",
   "cancel": "取消",
@@ -52,8 +63,6 @@
   "language_settings_title": "語言設定",
   "language_settings_description": "設定應用程式的語言",
   "language_settings_language": "語言",
-  "language_settings_language_ja": "日文",
-  "language_settings_language_en": "英文",
   "navigation_index": "索引",
   "navigation_today": "今天",
   "task_sheet_title_hint": "輸入任務名稱",
@@ -253,6 +262,7 @@
   "sound_credit_description": "OtoLogic (CC BY 4.0)",
   "priority_property": "優先順序",
   "priority_property_description": "類型：選擇",
+  "checkbox_property": "核取方塊",
   "project_property": "專案",
   "project_property_description": "類型：關聯",
   "project_property_empty_message": "如果專案未顯示，請在 Notion 驗證中包含目標資料庫重新驗證",
