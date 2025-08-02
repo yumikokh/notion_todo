@@ -104,6 +104,7 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
                                     : [],
                                 onChanged: (_) {},
                                 context: context,
+                                isLoading: true,
                               ),
                               error: (error, stack) =>
                                   Center(child: Text(l.loading_failed)),
@@ -394,8 +395,20 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
     required List<DropdownMenuItem<String>> items,
     required ValueChanged<String?> onChanged,
     required BuildContext context,
+    bool isLoading = false,
   }) {
     final l = AppLocalizations.of(context)!;
+    
+    // ローディング中は現在の値に基づいてdisabledHintを設定
+    // 値がnullの場合は「-」を表示（未設定状態を維持）
+    Widget? getDisabledHint() {
+      if (isLoading) {
+        return value == null ? const Text('-') : null;
+      } else {
+        return items.isEmpty ? Text(l.create_property) : Text(l.select);
+      }
+    }
+    
     return Container(
       decoration: BoxDecoration(
         border: Border.all(color: Theme.of(context).colorScheme.outline),
@@ -404,7 +417,7 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: DropdownButton<String>(
         hint: Text(l.select),
-        disabledHint: items.isEmpty ? Text(l.create_property) : Text(l.select),
+        disabledHint: getDisabledHint(),
         value: value,
         items: items,
         onTap: () {
@@ -510,6 +523,7 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
             : [],
         onChanged: (_) {},
         context: context,
+        isLoading: true,
       ),
       error: (error, stack) => Center(child: Text(l.loading_failed)),
     );
