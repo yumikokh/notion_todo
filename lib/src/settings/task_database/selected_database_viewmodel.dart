@@ -179,7 +179,7 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
   List<StatusOption> _getStatusOptionsByGroup(
       StatusProperty statusProperty, StatusGroupType groupType) {
     return statusProperty.status.groups
-            .where((group) => group.name == groupType.value)
+            .where((group) => group.name.toLowerCase() == groupType.value.toLowerCase())
             .firstOrNull
             ?.optionIds
             .map((id) => statusProperty.status.options

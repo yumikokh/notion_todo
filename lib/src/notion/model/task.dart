@@ -137,7 +137,7 @@ class Task with _$Task {
   bool get isCompleted => switch (status) {
         TaskStatusCheckbox(checkbox: var checkbox) => checkbox,
         TaskStatusStatus(group: var group) =>
-          group?.name == StatusGroupType.complete.value,
+          group?.name.toLowerCase() == StatusGroupType.complete.value.toLowerCase(),
       };
 
   bool isInProgress(StatusOption inProgressOption) => switch (status) {
