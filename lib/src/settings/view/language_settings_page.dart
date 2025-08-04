@@ -17,6 +17,9 @@ class LanguageSettingsPage extends ConsumerWidget {
     final languages = [
       (name: 'English', locale: const Locale('en')),
       (name: '日本語', locale: const Locale('ja')),
+      (name: '한국어', locale: const Locale('ko')),
+      (name: '繁體中文', locale: const Locale('zh', 'Hant')),
+      (name: 'Español', locale: const Locale('es')),
     ];
 
     return Scaffold(

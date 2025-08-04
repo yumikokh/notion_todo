@@ -39,7 +39,7 @@ class SettingsViewModel with ChangeNotifier, SettingsUpdateMixin {
 
   Future<void> updateThemeMode(ThemeMode? newThemeMode) async {
     if (newThemeMode == null) return;
-    
+
     await updateEnumSetting(
       newValue: newThemeMode,
       currentValue: _themeMode,
@@ -57,8 +57,11 @@ class SettingsViewModel with ChangeNotifier, SettingsUpdateMixin {
   late Locale _locale;
   Locale get locale => _locale;
   String languageName(AppLocalizations l) => switch (_locale) {
-        Locale(languageCode: 'en') => l.language_settings_language_en,
-        Locale(languageCode: 'ja') => l.language_settings_language_ja,
+        Locale(languageCode: 'en') => 'English',
+        Locale(languageCode: 'ja') => '日本語',
+        Locale(languageCode: 'ko') => '한국어',
+        Locale(languageCode: 'zh') => '繁體中文',
+        Locale(languageCode: 'es') => 'Español',
         _ => 'Unknown',
       };
 
