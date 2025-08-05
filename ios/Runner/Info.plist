@@ -26,6 +26,8 @@
 		<string>zh</string>
 		<string>zh-Hant</string>
 		<string>es</string>
+		<string>fr</string>
+		<string>de</string>
 	</array>
 	<key>CFBundleName</key>
 	<string>notion_todo</string>
