@@ -1,5 +1,7 @@
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../common/locale.dart';
+import '../../generated/app_localizations.dart';
 
 class DateHelper {
   static final DateHelper _instance = DateHelper._();
@@ -63,21 +65,20 @@ class DateHelper {
     return dateTime.contains('T');
   }
 
-  // MEMO: 英語以外対応するときに修正が必要
-  String get todayString {
-    return locale == AppLocale.ja ? '今日' : 'Today';
+  String todayString(BuildContext context) {
+    return AppLocalizations.of(context)!.today;
   }
 
-  String get yesterdayString {
-    return locale == AppLocale.ja ? '昨日' : 'Yesterday';
+  String yesterdayString(BuildContext context) {
+    return AppLocalizations.of(context)!.yesterday;
   }
 
-  String get tomorrowString {
-    return locale == AppLocale.ja ? '明日' : 'Tomorrow';
+  String tomorrowString(BuildContext context) {
+    return AppLocalizations.of(context)!.tomorrow;
   }
 
   /// @param dateTime NotionDateTime(UTC)
-  String? formatDateTime(DateTime dateTime, bool isAllDay,
+  String? formatDateTime(DateTime dateTime, bool isAllDay, BuildContext context,
       {bool showToday = false, bool showOnlyTime = false}) {
     final parsed = dateTime.toLocal(); // ローカルタイムに変換
     final date = DateTime(parsed.year, parsed.month, parsed.day);
@@ -94,13 +95,13 @@ class DateHelper {
         if (!showToday) {
           return isAllDay ? null : "H:mm";
         }
-        return isAllDay ? "'$todayString'" : "'$todayString' H:mm";
+        return isAllDay ? "'${todayString(context)}'" : "'${todayString(context)}' H:mm";
       }
       if (date == yesterday) {
-        return isAllDay ? "'$yesterdayString'" : "'$yesterdayString' H:mm";
+        return isAllDay ? "'${yesterdayString(context)}'" : "'${yesterdayString(context)}' H:mm";
       }
       if (date == tomorrow) {
-        return isAllDay ? "'$tomorrowString'" : "'$tomorrowString' H:mm";
+        return isAllDay ? "'${tomorrowString(context)}'" : "'${tomorrowString(context)}' H:mm";
       }
       if (date.year == today.year) {
         if (date.month == today.month) {

@@ -460,7 +460,7 @@ class TaskListView extends HookConsumerWidget {
           // 日付グループの場合、ISO形式（2025-07-08）を解析してフォーマット
           try {
             final date = DateTime.parse(id);
-            return d.formatDateTime(date, true, showToday: true) ?? id;
+            return d.formatDateTime(date, true, context, showToday: true) ?? id;
           } catch (e) {
             return id;
           }
