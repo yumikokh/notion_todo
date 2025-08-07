@@ -82,6 +82,14 @@
 		A875120D2D6EF5940075DFF8 /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
 		A8E24C8C2D3FC9CA0084EEEE /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Main.strings; sourceTree = "<group>"; };
 		A8E24C8D2D3FC9CA0084EEEE /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		A8E24C8E2D3FC9CA0084EEEE /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/Main.strings; sourceTree = "<group>"; };
+		A8E24C8F2D3FC9CA0084EEEE /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		A8E24C902D3FC9CA0084EEEE /* zh */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh; path = zh.lproj/Main.strings; sourceTree = "<group>"; };
+		A8E24C912D3FC9CA0084EEEE /* zh */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh; path = zh.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		A8E24C922D3FC9CA0084EEEE /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Main.strings"; sourceTree = "<group>"; };
+		A8E24C932D3FC9CA0084EEEE /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
+		A8E24C942D3FC9CA0084EEEE /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Main.strings; sourceTree = "<group>"; };
+		A8E24C952D3FC9CA0084EEEE /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		A8E9AE4B2D8D0C8900B93CA7 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		AB137D175C325B5F273A3941 /* GoogleService-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "Runner/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		DA1DF7821499FE6D2D53508E /* Pods_TodayTasksWidgetExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TodayTasksWidgetExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -290,11 +298,15 @@
 			buildConfigurationList = 97C146E91CF9000F007C117D /* Build configuration list for PBXProject "Runner" */;
 			developmentRegion = ja;
 			hasScannedForEncodings = 0;
-			knownRegions = (
-				en,
-				Base,
-				ja,
-			);
+					knownRegions = (
+			en,
+			Base,
+			ja,
+			ko,
+			zh,
+			"zh-Hant",
+			es,
+		);
 			mainGroup = 97C146E51CF9000F007C117D;
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 97C146EF1CF9000F007C117D /* Products */;
@@ -458,6 +470,10 @@
 			children = (
 				97C146FB1CF9000F007C117D /* Base */,
 				A8E24C8C2D3FC9CA0084EEEE /* ja */,
+				A8E24C8E2D3FC9CA0084EEEE /* ko */,
+				A8E24C902D3FC9CA0084EEEE /* zh */,
+				A8E24C922D3FC9CA0084EEEE /* zh-Hant */,
+				A8E24C942D3FC9CA0084EEEE /* es */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -467,6 +483,10 @@
 			children = (
 				97C147001CF9000F007C117D /* Base */,
 				A8E24C8D2D3FC9CA0084EEEE /* ja */,
+				A8E24C8F2D3FC9CA0084EEEE /* ko */,
+				A8E24C912D3FC9CA0084EEEE /* zh */,
+				A8E24C932D3FC9CA0084EEEE /* zh-Hant */,
+				A8E24C952D3FC9CA0084EEEE /* es */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
