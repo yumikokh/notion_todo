@@ -22,6 +22,10 @@
 	<array>
 		<string>en</string>
 		<string>ja</string>
+		<string>ko</string>
+		<string>zh</string>
+		<string>zh-Hant</string>
+		<string>es</string>
 	</array>
 	<key>CFBundleName</key>
 	<string>notion_todo</string>

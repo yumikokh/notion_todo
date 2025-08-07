@@ -350,7 +350,7 @@ List<dynamic> _getCompleteStatusFilter(CompleteStatusProperty property,
       // 完了グループ, or条件
       final optionIds = status.groups
               .where(
-                  (e) => e.name.toLowerCase() == StatusGroupType.complete.name)
+                  (e) => e.name.toLowerCase() == StatusGroupType.complete.value.toLowerCase())
               .firstOrNull
               ?.optionIds ??
           [];
@@ -392,7 +392,7 @@ List<dynamic> _getNotCompleteStatusFilter(CompleteStatusProperty property,
       // 完了グループ以外, and条件
       final optionIds = status.groups
               .where(
-                  (e) => e.name.toLowerCase() == StatusGroupType.complete.name)
+                  (e) => e.name.toLowerCase() == StatusGroupType.complete.value.toLowerCase())
               .firstOrNull
               ?.optionIds ??
           [];

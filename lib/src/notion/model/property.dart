@@ -295,7 +295,8 @@ class StatusCompleteStatusProperty extends StatusProperty
       name: name ?? this.name,
       status: status ?? this.status,
       todoOption: todoOption ?? this.todoOption,
-      inProgressOption: inProgressOption != null ? inProgressOption() : this.inProgressOption,
+      inProgressOption:
+          inProgressOption != null ? inProgressOption() : this.inProgressOption,
       completeOption: completeOption ?? this.completeOption,
     );
   }
@@ -351,7 +352,7 @@ class StatusOption extends OptionBase {
 
 enum StatusGroupType {
   todo('To-do'),
-  inProgress('In progress'),
+  inProgress('In Progress'),
   complete('Complete');
 
   final String value;
