@@ -8,9 +8,9 @@
 		<string>com.apple.widgetkit-extension</string>
 		<key>NSWidgetAllowsEditing</key>
 		<true/>
-		<key>NSWidgetWantsLocation</key>
-		<true/>
 		<key>NSWidgetInteractive</key>
+		<true/>
+		<key>NSWidgetWantsLocation</key>
 		<true/>
 	</dict>
 </dict>
