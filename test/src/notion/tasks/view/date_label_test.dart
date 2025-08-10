@@ -59,8 +59,8 @@ void main() {
         showToday: true,
       ));
 
-      // 日付が表示されていることを確認（月日の形式）
-      expect(find.textContaining('3'), findsOneWidget);
+      // 日付が表示されていることを確認（英語ロケールでは "Mar 15" の形式）
+      expect(find.textContaining('Mar 15'), findsOneWidget);
     });
 
     testWidgets('日付範囲（異なる日）を表示', (WidgetTester tester) async {
