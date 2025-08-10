@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+final List<String> alphabetFonts = [
+  'Bodoni Moda',
+  'M PLUS 1p',
+  'Roboto',
+  'Amatic SC',
+];
+
 class FontConstants {
   static final Map<String, List<String>> fontsByLanguage = {
     'en': [
-      'Bodoni Moda',
-      'M PLUS 1p',
-      'Amatic SC',
+      ...alphabetFonts,
     ],
     'ja': [
       'Noto Sans JP',
@@ -15,26 +20,19 @@ class FontConstants {
     'ko': [
       'Nanum Gothic',
       'Nanum Myeongjo',
-      'Nanum Pen Script',
     ],
     'zh_Hant': [
       'Noto Sans TC',
       'Noto Serif TC',
     ],
     'es': [
-      'Bodoni Moda',
-      'M PLUS 1p',
-      'Amatic SC',
+      ...alphabetFonts,
     ],
     'fr': [
-      'Bodoni Moda',
-      'M PLUS 1p',
-      'Amatic SC',
+      ...alphabetFonts,
     ],
     'de': [
-      'Bodoni Moda',
-      'M PLUS 1p',
-      'Amatic SC',
+      ...alphabetFonts,
     ],
   };
 
