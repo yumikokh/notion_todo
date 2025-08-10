@@ -12,6 +12,30 @@ class FontConstants {
       'Noto Sans JP',
       'Zen Old Mincho',
     ],
+    'ko': [
+      'Nanum Gothic',
+      'Nanum Myeongjo',
+      'Nanum Pen Script',
+    ],
+    'zh_Hant': [
+      'Noto Sans TC',
+      'Noto Serif TC',
+    ],
+    'es': [
+      'Bodoni Moda',
+      'M PLUS 1p',
+      'Amatic SC',
+    ],
+    'fr': [
+      'Bodoni Moda',
+      'M PLUS 1p',
+      'Amatic SC',
+    ],
+    'de': [
+      'Bodoni Moda',
+      'M PLUS 1p',
+      'Amatic SC',
+    ],
   };
 
   static List<String> getFontsForLocale(String languageCode) {
