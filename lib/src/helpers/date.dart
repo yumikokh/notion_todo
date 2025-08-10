@@ -120,14 +120,12 @@ class DateHelper {
         // 同じ年の異なる月
         if (currentLocale.startsWith('ko')) {
           return isAllDay ? "M월d일" : "M월d일 H:mm";
-        } else if (currentLocale.startsWith('zh')) {
+        } else if (currentLocale.startsWith('zh') || currentLocale == 'ja') {
           return isAllDay ? "M月d日" : "M月d日 H:mm";
         } else if (currentLocale == 'es' || currentLocale == 'fr') {
           return isAllDay ? "d MMM" : "d MMM H:mm";
         } else if (currentLocale == 'de') {
           return isAllDay ? "d. MMM" : "d. MMM H:mm";
-        } else if (currentLocale == 'ja') {
-          return isAllDay ? "M月d日" : "M月d日 H:mm";
         } else {
           return isAllDay ? "MMM d" : "MMM d H:mm";
         }
@@ -137,9 +135,7 @@ class DateHelper {
         return isAllDay ? "yyyy년M월d일" : "yyyy년M월d일 H:mm";
       } else if (currentLocale.startsWith('zh') || currentLocale == 'ja') {
         return isAllDay ? "yyyy年M月d日" : "yyyy年M月d日 H:mm";
-      } else if (currentLocale == 'es') {
-        return isAllDay ? "d MMM yyyy" : "d MMM yyyy H:mm";
-      } else if (currentLocale == 'fr') {
+      } else if (currentLocale == 'es' || currentLocale == 'fr') {
         return isAllDay ? "d MMM yyyy" : "d MMM yyyy H:mm";
       } else if (currentLocale == 'de') {
         return isAllDay ? "d. MMM yyyy" : "d. MMM yyyy H:mm";
@@ -164,28 +160,23 @@ class DateHelper {
     final day = DateFormat.E(localeStr).format(date);
 
     if (localeStr == 'ja') {
-      final dateStr = DateFormat.MMMd(localeStr).format(date);
+      final dateStr = DateFormat('M月d日', localeStr).format(date);
       return '$dateStr ($day)';
     } else if (localeStr.startsWith('ko')) {
-      final dateStr = DateFormat('M월 d일', localeStr).format(date);
-      final fullDay = DateFormat.EEEE(localeStr).format(date);
-      return '$dateStr ($fullDay)';
+      final dateStr = DateFormat('M월d일', localeStr).format(date);
+      return '$dateStr ($day)';
     } else if (localeStr.startsWith('zh')) {
       final dateStr = DateFormat('M月d日', localeStr).format(date);
-      final fullDay = DateFormat.EEEE(localeStr).format(date);
-      return '$dateStr $fullDay';
+      return '$dateStr $day';
     } else if (localeStr == 'es') {
-      final dateStr = DateFormat('d \'de\' MMMM', localeStr).format(date);
-      final fullDay = DateFormat.EEEE(localeStr).format(date);
-      return '${fullDay.substring(0, 1).toUpperCase()}${fullDay.substring(1)}, $dateStr';
+      final dateStr = DateFormat('d MMM', localeStr).format(date);
+      return '$day. $dateStr.';
     } else if (localeStr == 'fr') {
       final dateStr = DateFormat('d MMMM', localeStr).format(date);
-      final fullDay = DateFormat.EEEE(localeStr).format(date);
-      return '${fullDay.substring(0, 1).toUpperCase()}${fullDay.substring(1)} $dateStr';
+      return '$day $dateStr';
     } else if (localeStr == 'de') {
       final dateStr = DateFormat('d. MMMM', localeStr).format(date);
-      final fullDay = DateFormat.EEEE(localeStr).format(date);
-      return '${fullDay.substring(0, 1).toUpperCase()}${fullDay.substring(1)}, $dateStr';
+      return '$day., $dateStr';
     } else {
       final dateStr = DateFormat.MMMd(localeStr).format(date);
       return '$day, $dateStr';
