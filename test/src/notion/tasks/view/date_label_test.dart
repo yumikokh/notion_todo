@@ -4,6 +4,7 @@ import 'package:tanzaku_todo/src/notion/tasks/view/date_label.dart';
 import 'package:tanzaku_todo/src/notion/model/task.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:tanzaku_todo/generated/app_localizations.dart';
 
 void main() {
   setUpAll(() async {
@@ -20,6 +21,7 @@ void main() {
     }) {
       return MaterialApp(
         localizationsDelegates: const [
+          AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
