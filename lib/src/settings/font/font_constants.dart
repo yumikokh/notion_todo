@@ -3,8 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 
 final List<String> alphabetFonts = [
   'Bodoni Moda',
-  'M PLUS 1p',
   'Roboto',
+  'M PLUS 1p',
   'Amatic SC',
 ];
 
