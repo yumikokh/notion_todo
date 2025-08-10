@@ -119,7 +119,7 @@ class DateHelper {
       if (date.year == today.year) {
         // 同じ年の異なる月
         if (currentLocale.startsWith('ko')) {
-          return isAllDay ? "M월 d일" : "M월 d일 H:mm";
+          return isAllDay ? "M월d일" : "M월d일 H:mm";
         } else if (currentLocale.startsWith('zh')) {
           return isAllDay ? "M月d日" : "M月d日 H:mm";
         } else if (currentLocale == 'es' || currentLocale == 'fr') {

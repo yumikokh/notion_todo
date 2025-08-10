@@ -165,10 +165,9 @@ void main() {
           final tenDaysLater = now.add(const Duration(days: 10));
           final futureDay = DateTime(
               tenDaysLater.year, tenDaysLater.month, tenDaysLater.day, 10, 30);
-          final result = dateHelper.formatDateTime(futureDay, true, context);
-          // 月日形式で表示されることを確認
-          expect(result, contains('月'));
-          expect(result, contains('日'));
+          expect(dateHelper.formatDateTime(futureDay, false, context),
+              '3月25日 10:30');
+          expect(dateHelper.formatDateTime(futureDay, true, context), '3月25日');
         });
       });
 
@@ -273,8 +272,9 @@ void main() {
           final tenDaysLater = now.add(const Duration(days: 10));
           final futureDay = DateTime(
               tenDaysLater.year, tenDaysLater.month, tenDaysLater.day, 10, 30);
-          final result = dateHelper.formatDateTime(futureDay, true, context);
-          expect(result, matches(RegExp(r'[A-Za-z]+ \d+')));
+          expect(dateHelper.formatDateTime(futureDay, false, context),
+              'Mar 25 10:30');
+          expect(dateHelper.formatDateTime(futureDay, true, context), 'Mar 25');
         });
       });
       testWidgets('今日の日付 - 韓国語', (WidgetTester tester) async {
@@ -296,20 +296,18 @@ void main() {
       testWidgets('昨日の日付 - 韓国語', (WidgetTester tester) async {
         await testFormatDateTime(tester, 'ko', (context) {
           dateHelper.setup('ko');
-          expect(dateHelper.formatDateTime(yesterday, false, context),
-              '어제 9:09');
           expect(
-              dateHelper.formatDateTime(yesterday, true, context), '어제');
+              dateHelper.formatDateTime(yesterday, false, context), '어제 9:09');
+          expect(dateHelper.formatDateTime(yesterday, true, context), '어제');
         });
       });
 
       testWidgets('明日の日付 - 韓国語', (WidgetTester tester) async {
         await testFormatDateTime(tester, 'ko', (context) {
           dateHelper.setup('ko');
-          expect(dateHelper.formatDateTime(tomorrow, false, context),
-              '내일 9:09');
           expect(
-              dateHelper.formatDateTime(tomorrow, true, context), '내일');
+              dateHelper.formatDateTime(tomorrow, false, context), '내일 9:09');
+          expect(dateHelper.formatDateTime(tomorrow, true, context), '내일');
         });
       });
 
@@ -332,8 +330,8 @@ void main() {
           final otherDay = DateTime(
               threeDaysAgo.year, threeDaysAgo.month, threeDaysAgo.day, 10, 30);
           expect(dateHelper.formatDateTime(otherDay, false, context),
-              '3월 12일 10:30');
-          expect(dateHelper.formatDateTime(otherDay, true, context), '3월 12일');
+              '3월12일 10:30');
+          expect(dateHelper.formatDateTime(otherDay, true, context), '3월12일');
         });
       });
 
@@ -356,20 +354,18 @@ void main() {
       testWidgets('昨日の日付 - 中国語', (WidgetTester tester) async {
         await testFormatDateTime(tester, 'zh', (context) {
           dateHelper.setup('zh');
-          expect(dateHelper.formatDateTime(yesterday, false, context),
-              '昨天 9:09');
           expect(
-              dateHelper.formatDateTime(yesterday, true, context), '昨天');
+              dateHelper.formatDateTime(yesterday, false, context), '昨天 9:09');
+          expect(dateHelper.formatDateTime(yesterday, true, context), '昨天');
         });
       });
 
       testWidgets('明日の日付 - 中国語', (WidgetTester tester) async {
         await testFormatDateTime(tester, 'zh', (context) {
           dateHelper.setup('zh');
-          expect(dateHelper.formatDateTime(tomorrow, false, context),
-              '明天 9:09');
           expect(
-              dateHelper.formatDateTime(tomorrow, true, context), '明天');
+              dateHelper.formatDateTime(tomorrow, false, context), '明天 9:09');
+          expect(dateHelper.formatDateTime(tomorrow, true, context), '明天');
         });
       });
 
@@ -418,8 +414,7 @@ void main() {
           dateHelper.setup('es');
           expect(dateHelper.formatDateTime(yesterday, false, context),
               'Ayer 9:09');
-          expect(
-              dateHelper.formatDateTime(yesterday, true, context), 'Ayer');
+          expect(dateHelper.formatDateTime(yesterday, true, context), 'Ayer');
         });
       });
 
@@ -428,8 +423,7 @@ void main() {
           dateHelper.setup('es');
           expect(dateHelper.formatDateTime(tomorrow, false, context),
               'Mañana 9:09');
-          expect(
-              dateHelper.formatDateTime(tomorrow, true, context), 'Mañana');
+          expect(dateHelper.formatDateTime(tomorrow, true, context), 'Mañana');
         });
       });
 
@@ -478,8 +472,7 @@ void main() {
           dateHelper.setup('fr');
           expect(dateHelper.formatDateTime(yesterday, false, context),
               'Hier 9:09');
-          expect(
-              dateHelper.formatDateTime(yesterday, true, context), 'Hier');
+          expect(dateHelper.formatDateTime(yesterday, true, context), 'Hier');
         });
       });
 
@@ -488,8 +481,7 @@ void main() {
           dateHelper.setup('fr');
           expect(dateHelper.formatDateTime(tomorrow, false, context),
               'Demain 9:09');
-          expect(
-              dateHelper.formatDateTime(tomorrow, true, context), 'Demain');
+          expect(dateHelper.formatDateTime(tomorrow, true, context), 'Demain');
         });
       });
 
@@ -499,8 +491,8 @@ void main() {
           final threeDaysLater = now.add(const Duration(days: 3));
           final otherDay = DateTime(threeDaysLater.year, threeDaysLater.month,
               threeDaysLater.day, 10, 30);
-          expect(
-              dateHelper.formatDateTime(otherDay, false, context), 'lun. 10:30');
+          expect(dateHelper.formatDateTime(otherDay, false, context),
+              'lun. 10:30');
           expect(dateHelper.formatDateTime(otherDay, true, context), 'lun.');
         });
       });
@@ -548,8 +540,7 @@ void main() {
           dateHelper.setup('de');
           expect(dateHelper.formatDateTime(tomorrow, false, context),
               'Morgen 9:09');
-          expect(
-              dateHelper.formatDateTime(tomorrow, true, context), 'Morgen');
+          expect(dateHelper.formatDateTime(tomorrow, true, context), 'Morgen');
         });
       });
 
@@ -573,7 +564,8 @@ void main() {
               threeDaysAgo.year, threeDaysAgo.month, threeDaysAgo.day, 10, 30);
           expect(dateHelper.formatDateTime(otherDay, false, context),
               '12. März 10:30');
-          expect(dateHelper.formatDateTime(otherDay, true, context), '12. März');
+          expect(
+              dateHelper.formatDateTime(otherDay, true, context), '12. März');
         });
       });
     });
@@ -594,37 +586,31 @@ void main() {
       test('韓国語フォーマット', () {
         dateHelper.setup('ko');
         final result = dateHelper.formatDateForTitle(DateTime(2024, 3, 15));
-        expect(result, contains('3월 15일'));
-        expect(result, contains('('));
-        expect(result, contains('금요일'));
+        expect(result, '3월 15일 (금요일)');
       });
 
       test('中国語フォーマット', () {
         dateHelper.setup('zh');
         final result = dateHelper.formatDateForTitle(DateTime(2024, 3, 15));
-        expect(result, contains('3月15日'));
-        expect(result, contains('星期五'));
+        expect(result, '3月15日 星期五');
       });
 
       test('スペイン語フォーマット', () {
         dateHelper.setup('es');
         final result = dateHelper.formatDateForTitle(DateTime(2024, 3, 15));
-        expect(result,
-            matches(RegExp(r'Viernes, 15 de marzo', caseSensitive: false)));
+        expect(result, 'Viernes, 15 de marzo');
       });
 
       test('フランス語フォーマット', () {
         dateHelper.setup('fr');
         final result = dateHelper.formatDateForTitle(DateTime(2024, 3, 15));
-        expect(
-            result, matches(RegExp(r'Vendredi 15 mars', caseSensitive: false)));
+        expect(result, 'Vendredi 15 mars');
       });
 
       test('ドイツ語フォーマット', () {
         dateHelper.setup('de');
         final result = dateHelper.formatDateForTitle(DateTime(2024, 3, 15));
-        expect(result,
-            matches(RegExp(r'Freitag, 15. März', caseSensitive: false)));
+        expect(result, 'Freitag, 15. März');
       });
     });
 
