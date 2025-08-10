@@ -28,6 +28,7 @@
 - 繁體中文: 新功能 / 改善 / 錯誤修正
 - Español: Nuevo / Mejoras / Corrección de errores
 
+
 ### 例文
 
 **日本語:**
@@ -100,10 +101,26 @@ Task completion sounds no longer interrupt your background music.
    - Apple Store用: 全5言語分のリリースノートを生成
    - Notion用: 日本語と英語のリリースノートを生成
 
-6. **Notion連携（オプション）**:
-   - 最終確認が取れたら：
-     - Notion APIが利用可能な場合は、MCP経由で[Notionのリリースノート](https://www.notion.so/yumikokh/Release-Notes-18154c37a54c807b8ac6ef6612524378?source=copy_link)に反映
-     - Notion APIが利用できない場合は、手動コピー用のマークダウンを提供
+6. **自動コピー&ペーストフロー（承認後）**:
+   - ユーザーが最終承認したら自動的に以下を実行：
+   - **Apple Store用リリースノート処理**:
+     - 各言語のリリースノートを順番にクリップボードにコピー
+     - 各言語でコピー完了後、「[言語名]のリリースノートをクリップボードにコピーしました。Apple Storeに貼り付けたら『次へ』と入力してください」と表示
+     - ユーザーの「次へ」を待ってから次の言語へ進む
+     - 5言語すべて完了するまで繰り返す
+   - **Notion連携**:
+     - 全言語の処理が完了したら自動的にNotion APIを使用してリリースノートを反映
+     - 成功した場合は「✅ Notionのリリースノートページを更新しました」と表示
+     - 失敗した場合は手動コピー用のマークダウンを提供
+
+7. **Notion連携（詳細）**:
+   - Notion APIが利用可能な場合:
+     - MCP経由で[Notionのリリースノート](https://www.notion.so/yumikokh/Release-Notes-18154c37a54c807b8ac6ef6612524378?source=copy_link)ページを取得
+     - 新しいバージョンのセクションを追加（折りたたみ形式）
+     - 日付は実行日を自動設定
+   - Notion APIが利用できない場合:
+     - 手動コピー用の完全なマークダウンを提供
+     - Notionページへの貼り付け手順を案内
 
 ## 注意事項
 
@@ -113,6 +130,8 @@ Task completion sounds no longer interrupt your background music.
 - Notion用は詳細に、Apple Store用は簡潔に
 - 技術的な内部実装の変更（リファクタリング、lintルール更新、ライブラリ更新、テストの追加など）は含めない
 - ユーザーに見える変更のみを記載する
+- クリップボードへのコピーは`pbcopy`コマンドを使用（macOS）
+- 各ステップで明確なフィードバックを提供
 
 ## コミットプレフィックスの解釈
 
