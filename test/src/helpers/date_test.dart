@@ -277,6 +277,25 @@ void main() {
           expect(dateHelper.formatDateTime(futureDay, true, context), 'Mar 25');
         });
       });
+
+      testWidgets('来月の日付 - 英語', (WidgetTester tester) async {
+        await testFormatDateTime(tester, 'en', (context) {
+          dateHelper.setup('en');
+          expect(dateHelper.formatDateTime(nextMonth, false, context),
+              'Apr 1 9:09');
+          expect(dateHelper.formatDateTime(nextMonth, true, context), 'Apr 1');
+        });
+      });
+
+      testWidgets('来年の日付 - 英語', (WidgetTester tester) async {
+        await testFormatDateTime(tester, 'en', (context) {
+          dateHelper.setup('en');
+          expect(dateHelper.formatDateTime(nextYear, false, context),
+              'Jan 1, 2025 9:09');
+          expect(dateHelper.formatDateTime(nextYear, true, context), 'Jan 1, 2025');
+        });
+      });
+
       testWidgets('今日の日付 - 韓国語', (WidgetTester tester) async {
         await testFormatDateTime(tester, 'ko', (context) {
           dateHelper.setup('ko');
@@ -332,6 +351,36 @@ void main() {
           expect(dateHelper.formatDateTime(otherDay, false, context),
               '3월12일 10:30');
           expect(dateHelper.formatDateTime(otherDay, true, context), '3월12일');
+        });
+      });
+
+      testWidgets('1週間を超える日付 - 韓国語', (WidgetTester tester) async {
+        await testFormatDateTime(tester, 'ko', (context) {
+          dateHelper.setup('ko');
+          final tenDaysLater = now.add(const Duration(days: 10));
+          final futureDay = DateTime(
+              tenDaysLater.year, tenDaysLater.month, tenDaysLater.day, 10, 30);
+          expect(dateHelper.formatDateTime(futureDay, false, context),
+              '3월25일 10:30');
+          expect(dateHelper.formatDateTime(futureDay, true, context), '3월25일');
+        });
+      });
+
+      testWidgets('来月の日付 - 韓国語', (WidgetTester tester) async {
+        await testFormatDateTime(tester, 'ko', (context) {
+          dateHelper.setup('ko');
+          expect(dateHelper.formatDateTime(nextMonth, false, context),
+              '4월1일 9:09');
+          expect(dateHelper.formatDateTime(nextMonth, true, context), '4월1일');
+        });
+      });
+
+      testWidgets('来年の日付 - 韓国語', (WidgetTester tester) async {
+        await testFormatDateTime(tester, 'ko', (context) {
+          dateHelper.setup('ko');
+          expect(dateHelper.formatDateTime(nextYear, false, context),
+              '2025년1월1일 9:09');
+          expect(dateHelper.formatDateTime(nextYear, true, context), '2025년1월1일');
         });
       });
 
@@ -393,6 +442,36 @@ void main() {
         });
       });
 
+      testWidgets('1週間を超える日付 - 中国語', (WidgetTester tester) async {
+        await testFormatDateTime(tester, 'zh', (context) {
+          dateHelper.setup('zh');
+          final tenDaysLater = now.add(const Duration(days: 10));
+          final futureDay = DateTime(
+              tenDaysLater.year, tenDaysLater.month, tenDaysLater.day, 10, 30);
+          expect(dateHelper.formatDateTime(futureDay, false, context),
+              '3月25日 10:30');
+          expect(dateHelper.formatDateTime(futureDay, true, context), '3月25日');
+        });
+      });
+
+      testWidgets('来月の日付 - 中国語', (WidgetTester tester) async {
+        await testFormatDateTime(tester, 'zh', (context) {
+          dateHelper.setup('zh');
+          expect(dateHelper.formatDateTime(nextMonth, false, context),
+              '4月1日 9:09');
+          expect(dateHelper.formatDateTime(nextMonth, true, context), '4月1日');
+        });
+      });
+
+      testWidgets('来年の日付 - 中国語', (WidgetTester tester) async {
+        await testFormatDateTime(tester, 'zh', (context) {
+          dateHelper.setup('zh');
+          expect(dateHelper.formatDateTime(nextYear, false, context),
+              '2025年1月1日 9:09');
+          expect(dateHelper.formatDateTime(nextYear, true, context), '2025年1月1日');
+        });
+      });
+
       testWidgets('今日の日付 - スペイン語', (WidgetTester tester) async {
         await testFormatDateTime(tester, 'es', (context) {
           dateHelper.setup('es');
@@ -448,6 +527,36 @@ void main() {
           expect(dateHelper.formatDateTime(otherDay, false, context),
               '12 mar 10:30');
           expect(dateHelper.formatDateTime(otherDay, true, context), '12 mar');
+        });
+      });
+
+      testWidgets('1週間を超える日付 - スペイン語', (WidgetTester tester) async {
+        await testFormatDateTime(tester, 'es', (context) {
+          dateHelper.setup('es');
+          final tenDaysLater = now.add(const Duration(days: 10));
+          final futureDay = DateTime(
+              tenDaysLater.year, tenDaysLater.month, tenDaysLater.day, 10, 30);
+          expect(dateHelper.formatDateTime(futureDay, false, context),
+              '25 mar 10:30');
+          expect(dateHelper.formatDateTime(futureDay, true, context), '25 mar');
+        });
+      });
+
+      testWidgets('来月の日付 - スペイン語', (WidgetTester tester) async {
+        await testFormatDateTime(tester, 'es', (context) {
+          dateHelper.setup('es');
+          expect(dateHelper.formatDateTime(nextMonth, false, context),
+              '1 abr 9:09');
+          expect(dateHelper.formatDateTime(nextMonth, true, context), '1 abr');
+        });
+      });
+
+      testWidgets('来年の日付 - スペイン語', (WidgetTester tester) async {
+        await testFormatDateTime(tester, 'es', (context) {
+          dateHelper.setup('es');
+          expect(dateHelper.formatDateTime(nextYear, false, context),
+              '1 ene 2025 9:09');
+          expect(dateHelper.formatDateTime(nextYear, true, context), '1 ene 2025');
         });
       });
 
@@ -509,6 +618,36 @@ void main() {
         });
       });
 
+      testWidgets('1週間を超える日付 - フランス語', (WidgetTester tester) async {
+        await testFormatDateTime(tester, 'fr', (context) {
+          dateHelper.setup('fr');
+          final tenDaysLater = now.add(const Duration(days: 10));
+          final futureDay = DateTime(
+              tenDaysLater.year, tenDaysLater.month, tenDaysLater.day, 10, 30);
+          expect(dateHelper.formatDateTime(futureDay, false, context),
+              '25 mars 10:30');
+          expect(dateHelper.formatDateTime(futureDay, true, context), '25 mars');
+        });
+      });
+
+      testWidgets('来月の日付 - フランス語', (WidgetTester tester) async {
+        await testFormatDateTime(tester, 'fr', (context) {
+          dateHelper.setup('fr');
+          expect(dateHelper.formatDateTime(nextMonth, false, context),
+              '1 avr. 9:09');
+          expect(dateHelper.formatDateTime(nextMonth, true, context), '1 avr.');
+        });
+      });
+
+      testWidgets('来年の日付 - フランス語', (WidgetTester tester) async {
+        await testFormatDateTime(tester, 'fr', (context) {
+          dateHelper.setup('fr');
+          expect(dateHelper.formatDateTime(nextYear, false, context),
+              '1 janv. 2025 9:09');
+          expect(dateHelper.formatDateTime(nextYear, true, context), '1 janv. 2025');
+        });
+      });
+
       testWidgets('今日の日付 - ドイツ語', (WidgetTester tester) async {
         await testFormatDateTime(tester, 'de', (context) {
           dateHelper.setup('de');
@@ -566,6 +705,36 @@ void main() {
               '12. März 10:30');
           expect(
               dateHelper.formatDateTime(otherDay, true, context), '12. März');
+        });
+      });
+
+      testWidgets('1週間を超える日付 - ドイツ語', (WidgetTester tester) async {
+        await testFormatDateTime(tester, 'de', (context) {
+          dateHelper.setup('de');
+          final tenDaysLater = now.add(const Duration(days: 10));
+          final futureDay = DateTime(
+              tenDaysLater.year, tenDaysLater.month, tenDaysLater.day, 10, 30);
+          expect(dateHelper.formatDateTime(futureDay, false, context),
+              '25. März 10:30');
+          expect(dateHelper.formatDateTime(futureDay, true, context), '25. März');
+        });
+      });
+
+      testWidgets('来月の日付 - ドイツ語', (WidgetTester tester) async {
+        await testFormatDateTime(tester, 'de', (context) {
+          dateHelper.setup('de');
+          expect(dateHelper.formatDateTime(nextMonth, false, context),
+              '1. Apr. 9:09');
+          expect(dateHelper.formatDateTime(nextMonth, true, context), '1. Apr.');
+        });
+      });
+
+      testWidgets('来年の日付 - ドイツ語', (WidgetTester tester) async {
+        await testFormatDateTime(tester, 'de', (context) {
+          dateHelper.setup('de');
+          expect(dateHelper.formatDateTime(nextYear, false, context),
+              '1. Jan. 2025 9:09');
+          expect(dateHelper.formatDateTime(nextYear, true, context), '1. Jan. 2025');
         });
       });
     });

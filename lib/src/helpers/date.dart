@@ -134,15 +134,17 @@ class DateHelper {
       }
       // 異なる年
       if (currentLocale.startsWith('ko')) {
-        return isAllDay ? "yyyy. M. d." : "yyyy. M. d. H:mm";
+        return isAllDay ? "yyyy년M월d일" : "yyyy년M월d일 H:mm";
       } else if (currentLocale.startsWith('zh') || currentLocale == 'ja') {
         return isAllDay ? "yyyy年M月d日" : "yyyy年M月d日 H:mm";
-      } else if (currentLocale == 'es' || currentLocale == 'fr') {
-        return isAllDay ? "d/M/yyyy" : "d/M/yyyy H:mm";
+      } else if (currentLocale == 'es') {
+        return isAllDay ? "d MMM yyyy" : "d MMM yyyy H:mm";
+      } else if (currentLocale == 'fr') {
+        return isAllDay ? "d MMM yyyy" : "d MMM yyyy H:mm";
       } else if (currentLocale == 'de') {
-        return isAllDay ? "d.M.yyyy" : "d.M.yyyy H:mm";
+        return isAllDay ? "d. MMM yyyy" : "d. MMM yyyy H:mm";
       } else {
-        return isAllDay ? "M/d/yyyy" : "M/d/yyyy H:mm";
+        return isAllDay ? "MMM d, yyyy" : "MMM d, yyyy H:mm";
       }
     }
 
