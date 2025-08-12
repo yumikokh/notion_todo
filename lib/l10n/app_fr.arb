@@ -1,0 +1,398 @@
+{
+  "@@locale": "fr",
+  "appTitle": "notion_todo",
+  "settings_view_title": "Paramètres",
+  "settings_view_app_settings_title": "Paramètres de l'application",
+  "settings_view_notion_settings_title": "Paramètres Notion",
+  "settings_view_notion_settings_description": "Les paramètres de base de données sont requis",
+  "settings_view_theme_settings_title": "Thème",
+  "settings_view_support_title": "Support",
+  "settings_view_support_faq_title": "FAQ",
+  "settings_view_support_feedback_title": "Signaler un bug・Demande・Contact",
+  "settings_view_support_privacy_policy_title": "Politique de confidentialité",
+  "settings_view_support_review_title": "Soutenir avec un avis",
+  "settings_view_version_title": "Version",
+  "settings_view_version_copy": "Informations de version copiées",
+  "notion_settings_view_title": "Paramètres Notion",
+  "notion_settings_view_auth_status": "État de l'authentification",
+  "notion_settings_view_auth_status_connected": "Connecté à Notion",
+  "notion_settings_view_auth_status_disconnected": "Déconnecté de Notion",
+  "notion_settings_view_auth_status_disconnect": "Se déconnecter de Notion",
+  "notion_settings_view_auth_status_connect": "Se connecter à Notion",
+  "notion_settings_view_database_settings_title": "Paramètres de base de données",
+  "notion_settings_view_database_settings_description": "Si le nom ou le type de la propriété correspondante change, une reconfiguration est nécessaire",
+  "notion_settings_view_database_settings_database_name": "Nom de la base de données",
+  "notion_settings_view_database_settings_change_database_settings": "Modifier les paramètres de base de données",
+  "task_database_settings_title": "Paramètres de base de données des tâches",
+  "database": "Base de données",
+  "status_property": "Statut",
+  "status_property_todo_option": "Option À faire",
+  "status_property_in_progress_option": "Option En cours",
+  "status_property_complete_option": "Option Terminé",
+  "date_property": "Date",
+  "todo_option_description": "Statut pour non terminé",
+  "in_progress_option_description": "Statut pour en cours",
+  "complete_option_description": "Statut pour terminé",
+  "status_property_description": "Type : Statut, Case à cocher",
+  "date_property_description": "Type : Date",
+  "save": "Enregistrer",
+  "not_found_database": "Aucune base de données accessible trouvée.",
+  "not_found_database_description": "Veuillez réinitialiser les paramètres.",
+  "notion_reconnect": "Se reconnecter à Notion",
+  "select": "Sélectionner",
+  "create_property": "Créer une propriété",
+  "property_name": "Nom de la propriété",
+  "property_name_input": "Entrez le nom de la propriété",
+  "property_name_error": "Une propriété avec le même nom existe déjà",
+  "property_added_success": "La propriété {propertyName} \"{name}\" a été ajoutée",
+  "@property_added_success": {
+    "placeholders": {
+      "propertyName": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "error": "Erreur",
+  "ok": "OK",
+  "cancel": "Annuler",
+  "confirm": "Confirmer",
+  "new_create": "Créer",
+  "language_settings_title": "Paramètres de langue",
+  "language_settings_description": "Définir la langue de l'application",
+  "language_settings_language": "Langue",
+  "navigation_index": "Index",
+  "navigation_today": "Aujourd'hui",
+  "task_sheet_title_hint": "Entrez le nom de la tâche",
+  "today": "Aujourd'hui",
+  "yesterday": "Hier",
+  "tomorrow": "Demain",
+  "undetermined": "Non défini",
+  "select_date": "Sélectionner une date",
+  "no_task": "Aucune tâche trouvée",
+  "no_task_description": "Excellent travail !\nPassez une bonne journée.",
+  "add_task_success": "\"{title}\" ajouté.",
+  "@add_task_success": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "task_add_failed": "Échec de l'ajout de \"{title}\"",
+  "@task_add_failed": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "task_update_success": "\"{title}\" mis à jour.",
+  "@task_update_success": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "task_update_failed": "Échec de la mise à jour de \"{title}\"",
+  "@task_update_failed": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "task_update_status_success": "\"{title}\" terminé 🎉",
+  "@task_update_status_success": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "task_update_status_undo": "\"{title}\" marqué comme non terminé",
+  "@task_update_status_undo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "task_update_status_failed": "Échec de la mise à jour du statut",
+  "task_delete_success": "\"{title}\" supprimé",
+  "@task_delete_success": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "task_delete_undo": "\"{title}\" restauré.",
+  "@task_delete_undo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "task_delete_failed": "Échec de la suppression de \"{title}\"",
+  "@task_delete_failed": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "task_delete_failed_undo": "Échec de la restauration de \"{title}\"",
+  "loading_failed": "Échec du chargement",
+  "@task_delete_failed_undo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "re_set_database": "Une reconfiguration est nécessaire.",
+  "not_found_property": "Aucune propriété appropriée trouvée.",
+  "task_fetch_failed": "Échec de la récupération des tâches",
+  "load_more": "Charger plus",
+  "wakelock_title": "Empêcher la mise en veille pendant l'exécution de l'application",
+  "wakelock_description": "La consommation de batterie peut être affectée.",
+  "notion_settings_view_not_found_database_description": "Vous n'avez pas encore de base de données ?",
+  "notion_settings_view_not_found_database_template_description": "Sélectionnez \"Utiliser un modèle fourni\" (bouton ci-dessus) lors de l'authentification pour obtenir une base de données de gestion des tâches prête à l'emploi !",
+  "notion_settings_view_not_found_database_select_description": "Si vous avez déjà votre propre base de données, choisissez \"Sélectionner les pages à partager\" (bouton ci-dessous) pour l'utiliser.",
+  "go_to_settings": "Aller aux paramètres",
+  "notion_database_settings_required": "Les paramètres de base de données Notion sont requis.",
+  "updateMessage": "Mis à jour vers v{version} ✨",
+  "@updateMessage": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "releaseNote": "Détails",
+  "settings_view_support_release_notes_title": "Notes de version",
+  "font_settings": "Style de police du titre",
+  "font_language": "Langue de la police",
+  "font_family": "Famille de police",
+  "italic": "Italique",
+  "font_size": "Taille de police",
+  "letter_spacing": "Espacement des lettres",
+  "preview": "Aperçu",
+  "reset": "Réinitialiser",
+  "reset_to_default": "Réinitialiser par défaut",
+  "bold": "Gras",
+  "appearance_settings_title": "Apparence",
+  "hide_navigation_label_title": "Masquer les étiquettes de navigation",
+  "hide_navigation_label_description": "Masquer les étiquettes dans la barre de navigation inférieure",
+  "font_settings_description": "Personnaliser le titre de date de la liste des tâches du jour",
+  "current_setting": "Actuel : {setting}",
+  "@current_setting": {
+    "placeholders": {
+      "setting": {
+        "type": "String"
+      }
+    }
+  },
+  "task_update_status_in_progress": "\"{title}\" marqué comme en cours",
+  "@task_update_status_in_progress": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "task_update_status_todo": "\"{title}\" marqué comme à faire",
+  "@task_update_status_todo": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "task_star_button_dialog_title": "Option En cours non définie",
+  "task_star_button_dialog_content": "Configurez l'option En cours dans les paramètres de base de données pour suivre ce sur quoi vous devez vous concentrer !",
+  "task_star_button_dialog_cancel": "Annuler",
+  "task_star_button_dialog_settings": "Paramètres",
+  "notifications": "Notifications",
+  "showNotificationBadge": "Afficher le badge de notification",
+  "select_time": "Sélectionner l'heure",
+  "no_time": "Pas d'heure",
+  "start_time": "Heure de début",
+  "duration": "Durée",
+  "duration_format_minutes": "{minutes}min",
+  "@duration_format_minutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "duration_format_hours": "{hours}h",
+  "@duration_format_hours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "duration_format_hours_minutes": "{hours}h {minutes}min",
+  "@duration_format_hours_minutes": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "reschedule": "Reprogrammer",
+  "continuous_task_addition_title": "Ajout continu de tâches",
+  "continuous_task_addition_description": "Permettre l'ajout continu de tâches",
+  "behavior_settings_title": "Comportement",
+  "task_completion_sound_title": "Son de complétion de tâche",
+  "task_completion_sound_description": "Jouer un son lorsqu'une tâche est terminée",
+  "sound_settings_title": "Son de complétion de tâche",
+  "sound_enabled": "Activer le son",
+  "sound_enabled_description": "Jouer un son lorsqu'une tâche est terminée",
+  "morning_message": "Une nouvelle journée commence.\nPar quoi souhaitez-vous commencer ?",
+  "afternoon_message": "Bon après-midi !\nPar quoi souhaitez-vous commencer ?",
+  "evening_message": "Bonsoir.\nQu'aimeriez-vous accomplir aujourd'hui ?",
+  "licenses_page_title": "Licences",
+  "licenses_page_no_licenses": "Aucune information de licence disponible.",
+  "sound_credit_title": "Crédit sonore",
+  "sound_credit_description": "OtoLogic (CC BY 4.0)",
+  "priority_property": "Priorité",
+  "priority_property_description": "Type : Sélection",
+  "checkbox_property": "Case à cocher",
+  "project_property": "Projet",
+  "project_property_description": "Type : Relation",
+  "project_property_empty_message": "Si les projets ne s'affichent pas, veuillez vous ré-authentifier avec Notion en incluant la base de données cible",
+  "title_property": "Titre",
+  "task_priority_dialog_title": "Propriété de priorité non définie",
+  "task_priority_dialog_content": "Configurez la propriété de priorité dans les paramètres de base de données pour prioriser vos tâches !",
+  "task_priority_dialog_cancel": "Annuler",
+  "task_priority_dialog_settings": "Paramètres",
+  "show_completed_tasks": "Afficher les tâches terminées",
+  "completed_tasks": "Terminées",
+  "sort_by": "Trier par",
+  "sort_by_default": "Par défaut",
+  "group_by": "Grouper par",
+  "group_by_none": "Aucun",
+  "no_property": "Aucun(e) {property}",
+  "@no_property": {
+    "placeholders": {
+      "property": {
+        "type": "String"
+      }
+    }
+  },
+  "subscription_fetch_failed": "Échec de la récupération des informations d'abonnement",
+  "subscription_purchase_success": "Plan {plan} acheté avec succès",
+  "@subscription_purchase_success": {
+    "placeholders": {
+      "plan": {
+        "type": "String"
+      }
+    }
+  },
+  "subscription_purchase_failed": "L'achat a échoué",
+  "subscription_purchase_error_general": "Une erreur s'est produite lors de l'achat.",
+  "subscription_restore_success": "Achats restaurés avec succès",
+  "subscription_restore_failed": "Échec de la restauration des achats",
+  "subscription_restore_none": "Aucun achat à restaurer",
+  "subscription_restore_error_general": "Une erreur s'est produite lors de la restauration des achats.",
+  "premium_features_title": "Premium",
+  "monthly_subscription": "Mensuel",
+  "yearly_subscription": "Annuel",
+  "lifetime_subscription": "À vie",
+  "lifetime_purchase": "Licence permanente",
+  "trial_subscription_expires_in": "{days, plural, =1{L'essai expire dans 1 jour} other{L'essai expire dans {days} jours}}",
+  "@trial_subscription_expires_in": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "restore_purchases": "Restaurer les achats",
+  "current_plan": "{planName}",
+  "@current_plan": {
+    "placeholders": {
+      "planName": {
+        "type": "String"
+      }
+    }
+  },
+  "free_trial_days": "Essai gratuit de {days} jours",
+  "@free_trial_days": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "monthly_price": "mois",
+  "yearly_price": "an",
+  "upgrade_to_premium_description": "Passez à Premium et débloquez toutes les fonctionnalités !",
+  "unlock_all_widgets_title": "Débloquer tous les widgets",
+  "unlock_all_widgets_description": "Choisissez parmi plusieurs styles de widgets.",
+  "access_all_future_features_title": "Accès à toutes les futures fonctionnalités",
+  "access_all_future_features_description": "Obtenez les nouvelles fonctionnalités dès qu'elles sont ajoutées.",
+  "support_the_developer_title": "Soutenir le développeur",
+  "support_the_developer_description": "Aidez à soutenir le développement continu.",
+  "lifetime_unlock_description": "Achat unique pour débloquer toutes les fonctionnalités",
+  "lifetime_license_activated": "Licence à vie activée",
+  "currently_subscribed": "Actuellement abonné",
+  "refresh": "Actualiser",
+  "no_projects_found": "Aucun projet trouvé",
+  "error_loading_projects": "Échec du chargement des projets",
+  "retry": "Réessayer",
+  "start_free_trial": "Commencer l'essai gratuit",
+  "yearly_price_short": "an",
+  "trial_ends_then_price_per_year": "Après {trialDays} jours d'essai gratuit, puis {priceString} / {yearlyPriceShort}",
+  "@trial_ends_then_price_per_year": {
+    "placeholders": {
+      "trialDays": {},
+      "priceString": {},
+      "yearlyPriceShort": {}
+    }
+  },
+  "continue_purchase": "Continuer l'achat",
+  "change_plan": "Changer de plan",
+  "current_plan_display": "Plan actuel : {currentPlanName}",
+  "@current_plan_display": {
+    "placeholders": {
+      "currentPlanName": {}
+    }
+  },
+  "terms_of_service": "Conditions d'utilisation",
+  "privacy_policy": "Politique de confidentialité",
+  "purchase_terms_and_conditions_part3": ".\nLes abonnements peuvent être annulés à tout moment.\nL'essai gratuit n'est applicable que pour le premier achat.\nLors du changement de plan, le changement s'effectuera automatiquement après la fin du plan actuel.",
+  "switchToLifetimeNotificationBody": "Si vous êtes abonné à un plan mensuel ou annuel, n'oubliez pas d'annuler son renouvellement automatique depuis les paramètres de votre compte App Store / Google Play.",
+  "subscription_purchase_success_title": "Vous avez obtenu le plan À vie !",
+  "subscription_purchase_success_body": "Vous avez déjà un plan à vie !",
+  "account_settings_title": "Compte",
+  "free_plan": "Plan gratuit",
+  "premium_plan": "Plan Premium actif",
+  "plan_title": "Plan",
+  "copy_notion_link": "Copier le lien Notion",
+  "copy_title": "Copier le titre",
+  "open_in_notion": "Ouvrir dans Notion",
+  "duplicate": "Dupliquer",
+  "copy": "Copier",
+  "notion_link_copied": "Lien Notion copié",
+  "title_copied": "Titre copié",
+  "task_duplicated": "Tâche dupliquée",
+  "error_no_notion_link": "Lien Notion introuvable",
+  "error_copy_failed": "La copie a échoué",
+  "error_cannot_open_notion": "Impossible d'ouvrir dans Notion",
+  "error_duplicate_failed": "Échec de la duplication de la tâche",
+  "no_project_selected": "Aucun projet sélectionné",
+  "select_project": "Sélectionner un projet"
+}

@@ -1,5 +1,7 @@
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../common/locale.dart';
+import '../../generated/app_localizations.dart';
 
 class DateHelper {
   static final DateHelper _instance = DateHelper._();
@@ -63,21 +65,20 @@ class DateHelper {
     return dateTime.contains('T');
   }
 
-  // MEMO: 英語以外対応するときに修正が必要
-  String get todayString {
-    return locale == AppLocale.ja ? '今日' : 'Today';
+  String todayString(BuildContext context) {
+    return AppLocalizations.of(context)!.today;
   }
 
-  String get yesterdayString {
-    return locale == AppLocale.ja ? '昨日' : 'Yesterday';
+  String yesterdayString(BuildContext context) {
+    return AppLocalizations.of(context)!.yesterday;
   }
 
-  String get tomorrowString {
-    return locale == AppLocale.ja ? '明日' : 'Tomorrow';
+  String tomorrowString(BuildContext context) {
+    return AppLocalizations.of(context)!.tomorrow;
   }
 
   /// @param dateTime NotionDateTime(UTC)
-  String? formatDateTime(DateTime dateTime, bool isAllDay,
+  String? formatDateTime(DateTime dateTime, bool isAllDay, BuildContext context,
       {bool showToday = false, bool showOnlyTime = false}) {
     final parsed = dateTime.toLocal(); // ローカルタイムに変換
     final date = DateTime(parsed.year, parsed.month, parsed.day);
@@ -85,6 +86,7 @@ class DateHelper {
     final today = DateTime(now.year, now.month, now.day);
     final yesterday = DateTime(now.year, now.month, now.day - 1);
     final tomorrow = DateTime(now.year, now.month, now.day + 1);
+    final currentLocale = locale.name;
 
     String? formatText() {
       if (showOnlyTime && !isAllDay) {
@@ -94,21 +96,52 @@ class DateHelper {
         if (!showToday) {
           return isAllDay ? null : "H:mm";
         }
-        return isAllDay ? "'$todayString'" : "'$todayString' H:mm";
+        return isAllDay
+            ? "'${todayString(context)}'"
+            : "'${todayString(context)}' H:mm";
       }
       if (date == yesterday) {
-        return isAllDay ? "'$yesterdayString'" : "'$yesterdayString' H:mm";
+        return isAllDay
+            ? "'${yesterdayString(context)}'"
+            : "'${yesterdayString(context)}' H:mm";
       }
       if (date == tomorrow) {
-        return isAllDay ? "'$tomorrowString'" : "'$tomorrowString' H:mm";
+        return isAllDay
+            ? "'${tomorrowString(context)}'"
+            : "'${tomorrowString(context)}' H:mm";
+      }
+      // これから1週間以内の日付（曜日のみ）
+      final daysDifference = date.difference(today).inDays;
+      if (daysDifference >= 0 && daysDifference <= 6) {
+        // ドイツ語の場合、"E H:mm"フォーマットで自動的にピリオドが付くのでそのまま使用
+        return isAllDay ? "E" : "E H:mm";
       }
       if (date.year == today.year) {
-        if (date.month == today.month) {
-          return isAllDay ? "d E" : "d E H:mm";
+        // 同じ年の異なる月
+        if (currentLocale.startsWith('ko')) {
+          return isAllDay ? "M월d일" : "M월d일 H:mm";
+        } else if (currentLocale.startsWith('zh') || currentLocale == 'ja') {
+          return isAllDay ? "M月d日" : "M月d日 H:mm";
+        } else if (currentLocale == 'es' || currentLocale == 'fr') {
+          return isAllDay ? "d MMM" : "d MMM H:mm";
+        } else if (currentLocale == 'de') {
+          return isAllDay ? "d. MMM" : "d. MMM H:mm";
+        } else {
+          return isAllDay ? "MMM d" : "MMM d H:mm";
         }
-        return isAllDay ? "M/d" : "M/d H:mm";
       }
-      return isAllDay ? 'yyyy/M/d' : 'yyyy/M/d H:mm';
+      // 異なる年
+      if (currentLocale.startsWith('ko')) {
+        return isAllDay ? "yyyy년M월d일" : "yyyy년M월d일 H:mm";
+      } else if (currentLocale.startsWith('zh') || currentLocale == 'ja') {
+        return isAllDay ? "yyyy年M月d日" : "yyyy年M月d日 H:mm";
+      } else if (currentLocale == 'es' || currentLocale == 'fr') {
+        return isAllDay ? "d MMM yyyy" : "d MMM yyyy H:mm";
+      } else if (currentLocale == 'de') {
+        return isAllDay ? "d. MMM yyyy" : "d. MMM yyyy H:mm";
+      } else {
+        return isAllDay ? "MMM d, yyyy" : "MMM d, yyyy H:mm";
+      }
     }
 
     final format = formatText();
@@ -123,11 +156,30 @@ class DateHelper {
   }
 
   String formatDateForTitle(DateTime date, {String? locale}) {
-    final day = DateFormat.E(locale).format(date);
-    final dateStr = DateFormat.MMMd(locale).format(date);
-    if (locale == 'ja') {
+    final localeStr = locale ?? this.locale.name;
+    final day = DateFormat.E(localeStr).format(date);
+
+    if (localeStr == 'ja') {
+      final dateStr = DateFormat('M月d日', localeStr).format(date);
       return '$dateStr ($day)';
+    } else if (localeStr.startsWith('ko')) {
+      final dateStr = DateFormat('M월d일', localeStr).format(date);
+      return '$dateStr ($day)';
+    } else if (localeStr.startsWith('zh')) {
+      final dateStr = DateFormat('M月d日', localeStr).format(date);
+      return '$dateStr $day';
+    } else if (localeStr == 'es') {
+      final dateStr = DateFormat('d MMM', localeStr).format(date);
+      return '$day. $dateStr.';
+    } else if (localeStr == 'fr') {
+      final dateStr = DateFormat('d MMMM', localeStr).format(date);
+      return '$day $dateStr';
+    } else if (localeStr == 'de') {
+      final dateStr = DateFormat('d. MMMM', localeStr).format(date);
+      return '$day., $dateStr';
+    } else {
+      final dateStr = DateFormat.MMMd(localeStr).format(date);
+      return '$day, $dateStr';
     }
-    return '$day, $dateStr';
   }
 }

@@ -4,6 +4,7 @@ import 'package:tanzaku_todo/src/notion/tasks/view/date_label.dart';
 import 'package:tanzaku_todo/src/notion/model/task.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:tanzaku_todo/generated/app_localizations.dart';
 
 void main() {
   setUpAll(() async {
@@ -20,6 +21,7 @@ void main() {
     }) {
       return MaterialApp(
         localizationsDelegates: const [
+          AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
@@ -57,8 +59,8 @@ void main() {
         showToday: true,
       ));
 
-      // 日付が表示されていることを確認（月日の形式）
-      expect(find.textContaining('3'), findsOneWidget);
+      // 日付が表示されていることを確認（英語ロケールでは "Mar 15" の形式）
+      expect(find.textContaining('Mar 15'), findsOneWidget);
     });
 
     testWidgets('日付範囲（異なる日）を表示', (WidgetTester tester) async {

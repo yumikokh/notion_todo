@@ -17,6 +17,38 @@ class FontSettingsView extends HookConsumerWidget {
     return Text(text, style: const TextStyle(fontSize: 14));
   }
 
+  String _getLanguageDisplayName(String languageCode) {
+    switch (languageCode) {
+      case 'en':
+        return 'English';
+      case 'ja':
+        return '日本語';
+      case 'es':
+        return 'Español';
+      case 'ko':
+        return '한국어';
+      case 'zh_Hant':
+        return '繁體中文';
+      case 'fr':
+        return 'Français';
+      case 'de':
+        return 'Deutsch';
+      default:
+        return 'English';
+    }
+  }
+
+  Widget _buildLanguageTile(
+      BuildContext context, String languageCode, String displayName) {
+    return ListTile(
+      title: Text(displayName),
+      onTap: () {
+        Navigator.pop(context, languageCode);
+        HapticHelper.light();
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final fontSettings = ref.watch(fontSettingsViewModelProvider);
@@ -65,31 +97,27 @@ class FontSettingsView extends HookConsumerWidget {
                 ListTile(
                   title: _buildSettingTitle(l.font_language),
                   trailing: Text(
-                    settings.languageCode == 'ja' ? '日本語' : 'English',
+                    _getLanguageDisplayName(settings.languageCode),
                     style: const TextStyle(fontSize: 14),
                   ),
                   onTap: () async {
                     final selectedLanguage = await showDialog<String>(
                       context: context,
                       builder: (context) => AlertDialog(
-                        content: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            ListTile(
-                              title: const Text('English'),
-                              onTap: () {
-                                Navigator.pop(context, 'en');
-                                HapticHelper.light();
-                              },
-                            ),
-                            ListTile(
-                              title: const Text('日本語'),
-                              onTap: () {
-                                Navigator.pop(context, 'ja');
-                                HapticHelper.light();
-                              },
-                            ),
-                          ],
+                        content: SizedBox(
+                          width: double.maxFinite,
+                          child: ListView(
+                            shrinkWrap: true,
+                            children: [
+                              _buildLanguageTile(context, 'en', 'English'),
+                              _buildLanguageTile(context, 'ja', '日本語'),
+                              _buildLanguageTile(context, 'ko', '한국어'),
+                              _buildLanguageTile(context, 'zh_Hant', '繁體中文'),
+                              _buildLanguageTile(context, 'es', 'Español'),
+                              _buildLanguageTile(context, 'fr', 'Français'),
+                              _buildLanguageTile(context, 'de', 'Deutsch'),
+                            ],
+                          ),
                         ),
                       ),
                     );

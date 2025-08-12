@@ -62,6 +62,8 @@ class SettingsViewModel with ChangeNotifier, SettingsUpdateMixin {
         Locale(languageCode: 'ko') => '한국어',
         Locale(languageCode: 'zh') => '繁體中文',
         Locale(languageCode: 'es') => 'Español',
+        Locale(languageCode: 'fr') => 'Français',
+        Locale(languageCode: 'de') => 'Deutsch',
         _ => 'Unknown',
       };
 
