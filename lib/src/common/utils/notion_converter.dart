@@ -110,6 +110,7 @@ class NotionConverter {
       return RelationOption(
         id: item['id'],
         title: item['title']?[0]?['plain_text'],
+        icon: null,
       );
     }).toList();
   }
@@ -152,6 +153,7 @@ class NotionConverter {
             return RelationOption(
               id: item['id'],
               title: null, // Notion APIではrelationのタイトルは含まれない
+              icon: null,
             );
           }).toList();
         }
@@ -222,6 +224,7 @@ class NotionConverter {
       status: NotionConverter.extractStatus(data, taskDatabase),
       dueDate: NotionConverter.extractDate(data, taskDatabase),
       url: data['url'],
+      icon: data['icon']?['emoji'] ?? data['icon']?['external']?['url'],
       priority: NotionConverter.extractPriority(data, taskDatabase),
       projects: NotionConverter.extractProject(data, taskDatabase),
       additionalFields:

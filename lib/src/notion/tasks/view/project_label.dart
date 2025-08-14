@@ -27,36 +27,45 @@ class ProjectLabel extends ConsumerWidget {
     final projectsAsync = ref.watch(projectSelectionViewModelProvider);
     final availableProjects = projectsAsync.valueOrNull ?? [];
 
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          '#',
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context)
-                    .colorScheme
-                    .onSurfaceVariant
-                    .withAlpha(180),
+    return Wrap(
+      crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: 8,
+      children: _projects.map((p) {
+        // ProjectSelectionViewModelからプロジェクト情報を取得
+        final project = availableProjects.firstWhere(
+          (proj) => proj.id == p.id,
+          orElse: () => RelationOption(id: p.id, title: null, icon: p.icon),
+        );
+        
+        final textStyle = Theme.of(context).textTheme.bodySmall?.copyWith(
+          color: Theme.of(context)
+              .colorScheme
+              .onSurfaceVariant
+              .withAlpha(180),
+        );
+        
+        // アイコンがある場合はアイコンを表示、ない場合は#を表示
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (project.icon != null)
+              Text(
+                project.icon!,
+                style: textStyle,
+              )
+            else
+              Text(
+                '#',
+                style: textStyle,
               ),
-        ),
-        const SizedBox(width: 3),
-        Text(
-          _projects.map((p) {
-            // ProjectSelectionViewModelからプロジェクト名を取得
-            final project = availableProjects.firstWhere(
-              (proj) => proj.id == p.id,
-              orElse: () => RelationOption(id: p.id, title: null),
-            );
-            return project.title ?? l.no_property(l.project_property);
-          }).join(','),
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context)
-                    .colorScheme
-                    .onSurfaceVariant
-                    .withAlpha(180),
-              ),
-        ),
-      ],
+            const SizedBox(width: 3),
+            Text(
+              project.title ?? l.no_property(l.project_property),
+              style: textStyle,
+            ),
+          ],
+        );
+      }).toList(),
     );
   }
 }

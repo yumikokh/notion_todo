@@ -68,7 +68,8 @@ class ProjectSelectionViewModel extends _$ProjectSelectionViewModel {
       final projects = allPages.map((page) {
         final id = page['id'] as String;
         final title = _extractTitle(page) ?? id;
-        return RelationOption(id: id, title: title);
+        final icon = page['icon']?['emoji'] ?? page['icon']?['external']?['url'];
+        return RelationOption(id: id, title: title, icon: icon);
       }).toList();
 
       // 最近使用したプロジェクトの順序で並び替え
@@ -202,6 +203,7 @@ class ProjectSelectionViewModel extends _$ProjectSelectionViewModel {
         return RelationOption(
           id: jsonMap['id'] as String,
           title: jsonMap['title'] as String,
+          icon: jsonMap['icon'] as String?,
         );
       }).toList();
     } catch (e) {
@@ -218,6 +220,7 @@ class ProjectSelectionViewModel extends _$ProjectSelectionViewModel {
           .map((project) => {
                 'id': project.id,
                 'title': project.title,
+                'icon': project.icon,
               })
           .toList();
       final jsonString = jsonEncode(jsonList);
