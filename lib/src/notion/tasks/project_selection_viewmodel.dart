@@ -206,7 +206,7 @@ class ProjectSelectionViewModel extends _$ProjectSelectionViewModel {
         final jsonMap = json as Map<String, dynamic>;
         return RelationOption(
           id: jsonMap['id'] as String,
-          title: jsonMap['title'] as String,
+          title: jsonMap['title'] as String?,
           icon: jsonMap['icon'] as String?,
         );
       }).toList();
