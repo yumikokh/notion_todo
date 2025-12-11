@@ -68,7 +68,11 @@ class ProjectSelectionViewModel extends _$ProjectSelectionViewModel {
       final projects = allPages.map((page) {
         final id = page['id'] as String;
         final title = _extractTitle(page) ?? id;
-        final icon = page['icon']?['emoji'] ?? page['icon']?['external']?['url'];
+        // Notion page icon: emoji | file | external
+        // 優先順位: emoji -> file.url -> external.url
+        final icon = page['icon']?['emoji'] ??
+            page['icon']?['file']?['url'] ??
+            page['icon']?['external']?['url'];
         return RelationOption(id: id, title: title, icon: icon);
       }).toList();
 
