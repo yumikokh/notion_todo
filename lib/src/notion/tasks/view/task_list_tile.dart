@@ -126,21 +126,23 @@ class TaskListTile extends HookConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         spacing: 4,
         children: [
-          if (task.icon != null)
-            Text(
-              task.icon!,
-              style: const TextStyle(fontSize: 16),
-            ),
+          if (task.icon != null) _TaskIcon(icon: task.icon!),
           Expanded(
-            child: Text(task.title,
-                style: TextStyle(
-                  color: task.isCompleted || task.isTemp
-                      ? Theme.of(context).colorScheme.outline
-                      : Theme.of(context).colorScheme.onSurface,
-                  decoration: task.isCompleted ? TextDecoration.lineThrough : null,
-                  decorationColor: Theme.of(context).colorScheme.outline,
-                  fontSize: 15,
-                )),
+            child: Text(
+              task.title,
+              maxLines: 1,
+              softWrap: false,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: task.isCompleted || task.isTemp
+                    ? Theme.of(context).colorScheme.outline
+                    : Theme.of(context).colorScheme.onSurface,
+                decoration:
+                    task.isCompleted ? TextDecoration.lineThrough : null,
+                decorationColor: Theme.of(context).colorScheme.outline,
+                fontSize: 15,
+              ),
+            ),
           ),
         ],
       ),
@@ -173,6 +175,36 @@ class TaskListTile extends HookConsumerWidget {
                 ),
               ),
             ),
+    );
+  }
+}
+
+class _TaskIcon extends StatelessWidget {
+  const _TaskIcon({required this.icon});
+
+  final String icon;
+
+  bool _looksLikeUrl(String value) {
+    return value.startsWith('http://') || value.startsWith('https://');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_looksLikeUrl(icon)) {
+      // Notion の external icon URL を画像で表示
+      return Image.network(
+        icon,
+        width: 16,
+        height: 16,
+        errorBuilder: (context, _, __) => const SizedBox(width: 16, height: 16),
+      );
+    }
+    // 1文字絵文字などはテキストで表示
+    return Text(
+      icon,
+      maxLines: 1,
+      overflow: TextOverflow.clip,
+      style: const TextStyle(fontSize: 16),
     );
   }
 }

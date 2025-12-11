@@ -75,6 +75,7 @@ _$TaskImpl _$$TaskImplFromJson(Map<String, dynamic> json) => _$TaskImpl(
           ? null
           : TaskDate.fromJson(json['dueDate'] as Map<String, dynamic>),
       url: json['url'] as String?,
+      icon: json['icon'] as String?,
       priority: json['priority'] == null
           ? null
           : SelectOption.fromJson(json['priority'] as Map<String, dynamic>),
@@ -91,6 +92,7 @@ Map<String, dynamic> _$$TaskImplToJson(_$TaskImpl instance) =>
       'status': instance.status,
       'dueDate': instance.dueDate,
       'url': instance.url,
+      'icon': instance.icon,
       'priority': instance.priority,
       'projects': instance.projects,
       'additionalFields': instance.additionalFields,
