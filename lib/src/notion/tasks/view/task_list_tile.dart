@@ -122,15 +122,29 @@ class TaskListTile extends HookConsumerWidget {
               },
             )
           : null,
-      title: Text(task.title,
-          style: TextStyle(
-            color: task.isCompleted || task.isTemp
-                ? Theme.of(context).colorScheme.outline
-                : Theme.of(context).colorScheme.onSurface,
-            decoration: task.isCompleted ? TextDecoration.lineThrough : null,
-            decorationColor: Theme.of(context).colorScheme.outline,
-            fontSize: 15,
-          )),
+      title: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        spacing: 4,
+        children: [
+          Expanded(
+            child: Text(
+              task.title,
+              maxLines: 1,
+              softWrap: false,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: task.isCompleted || task.isTemp
+                    ? Theme.of(context).colorScheme.outline
+                    : Theme.of(context).colorScheme.onSurface,
+                decoration:
+                    task.isCompleted ? TextDecoration.lineThrough : null,
+                decorationColor: Theme.of(context).colorScheme.outline,
+                fontSize: 15,
+              ),
+            ),
+          ),
+        ],
+      ),
       subtitle: (!taskViewModel.showDueDate(task) &&
               (task.projects == null ||
                   (task.projects != null && task.projects!.isEmpty) ||

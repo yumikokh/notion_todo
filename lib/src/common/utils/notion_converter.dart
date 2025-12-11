@@ -110,6 +110,7 @@ class NotionConverter {
       return RelationOption(
         id: item['id'],
         title: item['title']?[0]?['plain_text'],
+        icon: null,
       );
     }).toList();
   }
@@ -152,6 +153,7 @@ class NotionConverter {
             return RelationOption(
               id: item['id'],
               title: null, // Notion APIではrelationのタイトルは含まれない
+              icon: null,
             );
           }).toList();
         }
@@ -222,6 +224,11 @@ class NotionConverter {
       status: NotionConverter.extractStatus(data, taskDatabase),
       dueDate: NotionConverter.extractDate(data, taskDatabase),
       url: data['url'],
+      // Notion page icon now supports emoji | file | external
+      // 優先順位: emoji -> file.url -> external.url
+      icon: data['icon']?['emoji'] ??
+          data['icon']?['file']?['url'] ??
+          data['icon']?['external']?['url'],
       priority: NotionConverter.extractPriority(data, taskDatabase),
       projects: NotionConverter.extractProject(data, taskDatabase),
       additionalFields:
