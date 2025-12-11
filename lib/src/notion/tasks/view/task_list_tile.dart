@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../helpers/haptic_helper.dart';
@@ -127,7 +126,6 @@ class TaskListTile extends HookConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         spacing: 4,
         children: [
-          if (task.icon != null) _TaskIcon(icon: task.icon!),
           Expanded(
             child: Text(
               task.title,
@@ -176,53 +174,6 @@ class TaskListTile extends HookConsumerWidget {
                 ),
               ),
             ),
-    );
-  }
-}
-
-class _TaskIcon extends StatelessWidget {
-  const _TaskIcon({required this.icon});
-
-  final String icon;
-
-  bool _looksLikeUrl(String value) {
-    return value.startsWith('http://') || value.startsWith('https://');
-  }
-
-  bool _isSvgUrl(String url) {
-    final uri = Uri.tryParse(url);
-    if (uri == null) return false;
-    return uri.path.toLowerCase().endsWith('.svg');
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (_looksLikeUrl(icon)) {
-      // SVG URL の場合は flutter_svg を使用
-      if (_isSvgUrl(icon)) {
-        return SvgPicture.network(
-          icon,
-          width: 16,
-          height: 16,
-          placeholderBuilder: (context) =>
-              const SizedBox(width: 16, height: 16),
-        );
-      }
-
-      // Notion の external icon URL を画像で表示（PNG, JPG等）
-      return Image.network(
-        icon,
-        width: 16,
-        height: 16,
-        errorBuilder: (context, _, __) => const SizedBox(width: 16, height: 16),
-      );
-    }
-    // 1文字絵文字などはテキストで表示
-    return Text(
-      icon,
-      maxLines: 1,
-      overflow: TextOverflow.clip,
-      style: const TextStyle(fontSize: 16),
     );
   }
 }
