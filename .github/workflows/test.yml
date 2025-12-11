@@ -30,6 +30,7 @@ jobs:
         run: flutter --version
 
       - name: Cache Pub packages
+        id: cache-pub
         uses: actions/cache@v3
         with:
           path: |
@@ -53,10 +54,11 @@ jobs:
       - name: Notify Slack on failure
         if: failure()
         uses: 8398a7/action-slack@v3
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         with:
           status: failure
-          channel: '#ci-notifications'
-          webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+          channel: "#ci-notifications"
           fields: repo,message,commit,author,action,eventName,ref,workflow
           text: |
             :x: CI テストが失敗しました
