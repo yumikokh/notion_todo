@@ -19,13 +19,6 @@ class TaskIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // #region agent log
-    final iconType =
-        _looksLikeUrl(icon) ? (_isSvgUrl(icon) ? 'svg' : 'image') : 'emoji';
-    print(
-        'DEBUG_LOG: TaskIcon type=$iconType, icon=${icon.substring(0, icon.length > 50 ? 50 : icon.length)}...');
-    // #endregion
-
     if (_looksLikeUrl(icon)) {
       // SVG URL の場合は flutter_svg を使用
       if (_isSvgUrl(icon)) {
