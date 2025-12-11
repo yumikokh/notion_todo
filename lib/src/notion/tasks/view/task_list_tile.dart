@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../helpers/haptic_helper.dart';
@@ -188,10 +189,27 @@ class _TaskIcon extends StatelessWidget {
     return value.startsWith('http://') || value.startsWith('https://');
   }
 
+  bool _isSvgUrl(String url) {
+    final uri = Uri.tryParse(url);
+    if (uri == null) return false;
+    return uri.path.toLowerCase().endsWith('.svg');
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_looksLikeUrl(icon)) {
-      // Notion の external icon URL を画像で表示
+      // SVG URL の場合は flutter_svg を使用
+      if (_isSvgUrl(icon)) {
+        return SvgPicture.network(
+          icon,
+          width: 16,
+          height: 16,
+          placeholderBuilder: (context) =>
+              const SizedBox(width: 16, height: 16),
+        );
+      }
+
+      // Notion の external icon URL を画像で表示（PNG, JPG等）
       return Image.network(
         icon,
         width: 16,
