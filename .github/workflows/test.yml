@@ -23,13 +23,14 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version-file: .flutter-version
+          flutter-version: '3.32.5'
+          channel: 'stable'
 
       - name: Flutter version
         run: flutter --version
 
       - name: Install dependencies
-        run: flutter pub get --verbose
+        run: flutter pub get
 
       - name: Generate files
         run: dart run build_runner build --delete-conflicting-outputs
