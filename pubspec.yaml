@@ -4,11 +4,11 @@ description: Simple Task manager made for Notion
 # Prevent accidental publishing to pub.dev.
 publish_to: "none"
 
-version: 2.2.4+2
+version: 2.3.0+1
 
 environment:
   sdk: ">=3.4.0 <4.0.0"
-  flutter: ">=3.32.0"
+  flutter: 3.32.5
 
 dependencies:
   envied: ^0.5.4+1
