@@ -42,7 +42,6 @@ jobs:
             pub-cache-
 
       - name: Install dependencies
-        if: steps.cache-pub.outputs.cache-hit != 'true'
         run: flutter pub get
 
       - name: Generate files
