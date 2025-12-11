@@ -4,6 +4,7 @@ import 'package:tanzaku_todo/generated/app_localizations.dart';
 
 import '../../model/property.dart';
 import '../project_selection_viewmodel.dart';
+import 'task_icon.dart';
 
 class ProjectLabel extends ConsumerWidget {
   const ProjectLabel({
@@ -36,27 +37,24 @@ class ProjectLabel extends ConsumerWidget {
           (proj) => proj.id == p.id,
           orElse: () => RelationOption(id: p.id, title: null, icon: p.icon),
         );
-        
+
         final textStyle = Theme.of(context).textTheme.bodySmall?.copyWith(
-          color: Theme.of(context)
-              .colorScheme
-              .onSurfaceVariant
-              .withAlpha(180),
-        );
-        
+              color:
+                  Theme.of(context).colorScheme.onSurfaceVariant.withAlpha(180),
+            );
+
         // アイコンがある場合はアイコンを表示、ない場合は#を表示
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             if (project.icon != null)
-              Text(
-                project.icon!,
-                style: textStyle,
-              )
+              TaskIcon(icon: project.icon!, size: 14)
             else
-              Text(
-                '#',
-                style: textStyle,
+              SizedBox(
+                width: 14,
+                child: Center(
+                  child: Text('#', style: textStyle),
+                ),
               ),
             const SizedBox(width: 3),
             Text(
