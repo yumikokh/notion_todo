@@ -116,8 +116,9 @@ class SubscriptionRepository {
         orElse: () => throw Exception('Package not found: ${plan.id}'),
       );
 
-      final result = await Purchases.purchasePackage(package);
-      _cachedStatus = _parseSubscriptionStatus(result);
+      final purchaseResult =
+          await Purchases.purchase(PurchaseParams.package(package));
+      _cachedStatus = _parseSubscriptionStatus(purchaseResult.customerInfo);
       return _cachedStatus!;
     } catch (e, stackTrace) {
       if (e is PlatformException &&
