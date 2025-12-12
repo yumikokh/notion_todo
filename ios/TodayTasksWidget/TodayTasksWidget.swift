@@ -2,7 +2,10 @@ import AppIntents
 import Foundation
 import SwiftUI
 import WidgetKit
-import home_widget
+
+#if canImport(HomeWidget)
+import HomeWidget
+#endif
 
 // MARK: - WidgetTask
 // ウィジェットで表示するタスクデータ構造
@@ -431,9 +434,11 @@ public struct BackgroundIntent: AppIntent {
   }
 
   public func perform() async throws -> some IntentResult {
+    #if canImport(HomeWidget)
     await HomeWidgetBackgroundWorker.run(
       url: url,
       appGroup: "group.com.ymkokh.notionTodo")
+    #endif
 
     return .result()
   }

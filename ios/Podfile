@@ -35,9 +35,12 @@ target 'Runner' do
   # target 'RunnerTests' do
   #   inherit! :search_paths
   # end
-  target 'TodayTasksWidgetExtension' do
-    inherit! :search_paths
-  end
+end
+
+# Widget ExtensionはSwift Package Manager経由でHomeWidgetを使用するため、
+# CocoaPodsの依存関係からは除外
+target 'TodayTasksWidgetExtension' do
+  use_frameworks!
 end
 
 post_install do |installer|
