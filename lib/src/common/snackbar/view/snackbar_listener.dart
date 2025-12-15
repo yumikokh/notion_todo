@@ -56,7 +56,10 @@ class SnackbarListener extends HookConsumerWidget {
           });
         } else {
           scaffoldMessengerKey.currentState?.showSnackBar(snackBar);
-          ref.read(snackbarProvider.notifier).clear();
+          // Snackbarが自動消失した後に状態をクリアする
+          Timer(const Duration(milliseconds: 2000), () {
+            ref.read(snackbarProvider.notifier).clear();
+          });
         }
       },
     );
