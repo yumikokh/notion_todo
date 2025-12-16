@@ -103,6 +103,7 @@ class Task with _$Task {
     required TaskStatus status,
     required TaskDate? dueDate,
     required String? url,
+    String? icon,
     SelectOption? priority,
     List<RelationOption>? projects,
     // 動的なプロパティ値（固定フィールド以外の追加プロパティ）
@@ -127,6 +128,7 @@ class Task with _$Task {
         status: const TaskStatus.checkbox(checkbox: false),
         dueDate: dueDate,
         url: null,
+        icon: null,
         priority: priority,
         projects: projects,
         additionalFields: additionalFields,

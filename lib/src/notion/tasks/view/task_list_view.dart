@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../project_selection_viewmodel.dart';
 
 import '../../../helpers/date.dart';
+import 'task_icon.dart';
 import '../../../helpers/haptic_helper.dart';
 import '../../../settings/font/font_constants.dart';
 import '../../../settings/font/font_settings_viewmodel.dart';
@@ -417,7 +418,7 @@ class TaskListView extends HookConsumerWidget {
   // ステータスやグループの表示名を取得するメソッド
   String _getOptionNameById(String id, BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
-    
+
     // ProjectSelectionViewModelからプロジェクト情報を取得
     final projectsAsync = ref.read(projectSelectionViewModelProvider);
     final projects = projectsAsync.valueOrNull ?? [];
@@ -469,7 +470,7 @@ class TaskListView extends HookConsumerWidget {
           try {
             final project = projects.firstWhere((p) => p.id == id);
             final title = project.title;
-            
+
             // タイトルがnullまたは空の場合は「名称未設定」を表示
             return (title == null || title.isEmpty)
                 ? l.no_property(l.project_property)
@@ -494,24 +495,34 @@ class TaskListView extends HookConsumerWidget {
   ) {
     final groupName = _getOptionNameById(groupId, context, ref);
 
-    // プロジェクトグループの場合は#記号を追加
+    // プロジェクトグループの場合はアイコンまたは#記号を追加
     if (groupType == GroupType.project) {
+      final projectsAsync = ref.watch(projectSelectionViewModelProvider);
+      final availableProjects = projectsAsync.valueOrNull ?? [];
+      final project =
+          availableProjects.where((proj) => proj.id == groupId).firstOrNull;
+
+      final textStyle = Theme.of(context).textTheme.titleSmall?.copyWith(
+            color: Theme.of(context).colorScheme.secondary,
+          );
+
       return Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            '#',
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  color: Theme.of(context).colorScheme.secondary,
-                ),
-          ),
-          const SizedBox(width: 8),
+          if (project?.icon != null)
+            TaskIcon(icon: project!.icon!, size: 16)
+          else
+            SizedBox(
+              width: 16,
+              child: Center(
+                child: Text('#', style: textStyle),
+              ),
+            ),
+          const SizedBox(width: 6),
           Flexible(
             child: Text(
               groupName,
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    color: Theme.of(context).colorScheme.secondary,
-                  ),
+              style: textStyle,
               overflow: TextOverflow.ellipsis,
               maxLines: 1,
             ),

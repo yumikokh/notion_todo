@@ -806,6 +806,7 @@ mixin _$Task {
   TaskStatus get status => throw _privateConstructorUsedError;
   TaskDate? get dueDate => throw _privateConstructorUsedError;
   String? get url => throw _privateConstructorUsedError;
+  String? get icon => throw _privateConstructorUsedError;
   SelectOption? get priority => throw _privateConstructorUsedError;
   List<RelationOption>? get projects =>
       throw _privateConstructorUsedError; // 動的なプロパティ値（固定フィールド以外の追加プロパティ）
@@ -834,6 +835,7 @@ abstract class $TaskCopyWith<$Res> {
       TaskStatus status,
       TaskDate? dueDate,
       String? url,
+      String? icon,
       SelectOption? priority,
       List<RelationOption>? projects,
       @JsonKey(defaultValue: {}) Map<String, dynamic>? additionalFields});
@@ -862,6 +864,7 @@ class _$TaskCopyWithImpl<$Res, $Val extends Task>
     Object? status = null,
     Object? dueDate = freezed,
     Object? url = freezed,
+    Object? icon = freezed,
     Object? priority = freezed,
     Object? projects = freezed,
     Object? additionalFields = freezed,
@@ -886,6 +889,10 @@ class _$TaskCopyWithImpl<$Res, $Val extends Task>
       url: freezed == url
           ? _value.url
           : url // ignore: cast_nullable_to_non_nullable
+              as String?,
+      icon: freezed == icon
+          ? _value.icon
+          : icon // ignore: cast_nullable_to_non_nullable
               as String?,
       priority: freezed == priority
           ? _value.priority
@@ -940,6 +947,7 @@ abstract class _$$TaskImplCopyWith<$Res> implements $TaskCopyWith<$Res> {
       TaskStatus status,
       TaskDate? dueDate,
       String? url,
+      String? icon,
       SelectOption? priority,
       List<RelationOption>? projects,
       @JsonKey(defaultValue: {}) Map<String, dynamic>? additionalFields});
@@ -967,6 +975,7 @@ class __$$TaskImplCopyWithImpl<$Res>
     Object? status = null,
     Object? dueDate = freezed,
     Object? url = freezed,
+    Object? icon = freezed,
     Object? priority = freezed,
     Object? projects = freezed,
     Object? additionalFields = freezed,
@@ -991,6 +1000,10 @@ class __$$TaskImplCopyWithImpl<$Res>
       url: freezed == url
           ? _value.url
           : url // ignore: cast_nullable_to_non_nullable
+              as String?,
+      icon: freezed == icon
+          ? _value.icon
+          : icon // ignore: cast_nullable_to_non_nullable
               as String?,
       priority: freezed == priority
           ? _value.priority
@@ -1017,6 +1030,7 @@ class _$TaskImpl extends _Task {
       required this.status,
       required this.dueDate,
       required this.url,
+      this.icon,
       this.priority,
       final List<RelationOption>? projects,
       @JsonKey(defaultValue: {}) final Map<String, dynamic>? additionalFields})
@@ -1037,6 +1051,8 @@ class _$TaskImpl extends _Task {
   final TaskDate? dueDate;
   @override
   final String? url;
+  @override
+  final String? icon;
   @override
   final SelectOption? priority;
   final List<RelationOption>? _projects;
@@ -1066,7 +1082,7 @@ class _$TaskImpl extends _Task {
 
   @override
   String toString() {
-    return 'Task(id: $id, title: $title, status: $status, dueDate: $dueDate, url: $url, priority: $priority, projects: $projects, additionalFields: $additionalFields)';
+    return 'Task(id: $id, title: $title, status: $status, dueDate: $dueDate, url: $url, icon: $icon, priority: $priority, projects: $projects, additionalFields: $additionalFields)';
   }
 
   @override
@@ -1079,6 +1095,7 @@ class _$TaskImpl extends _Task {
             (identical(other.status, status) || other.status == status) &&
             (identical(other.dueDate, dueDate) || other.dueDate == dueDate) &&
             (identical(other.url, url) || other.url == url) &&
+            (identical(other.icon, icon) || other.icon == icon) &&
             (identical(other.priority, priority) ||
                 other.priority == priority) &&
             const DeepCollectionEquality().equals(other._projects, _projects) &&
@@ -1095,6 +1112,7 @@ class _$TaskImpl extends _Task {
       status,
       dueDate,
       url,
+      icon,
       priority,
       const DeepCollectionEquality().hash(_projects),
       const DeepCollectionEquality().hash(_additionalFields));
@@ -1122,6 +1140,7 @@ abstract class _Task extends Task {
       required final TaskStatus status,
       required final TaskDate? dueDate,
       required final String? url,
+      final String? icon,
       final SelectOption? priority,
       final List<RelationOption>? projects,
       @JsonKey(defaultValue: {})
@@ -1140,6 +1159,8 @@ abstract class _Task extends Task {
   TaskDate? get dueDate;
   @override
   String? get url;
+  @override
+  String? get icon;
   @override
   SelectOption? get priority;
   @override

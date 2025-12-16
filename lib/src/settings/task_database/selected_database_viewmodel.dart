@@ -179,7 +179,8 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
   List<StatusOption> _getStatusOptionsByGroup(
       StatusProperty statusProperty, StatusGroupType groupType) {
     return statusProperty.status.groups
-            .where((group) => group.name.toLowerCase() == groupType.value.toLowerCase())
+            .where((group) =>
+                group.name.toLowerCase() == groupType.value.toLowerCase())
             .firstOrNull
             ?.optionIds
             .map((id) => statusProperty.status.options
@@ -303,9 +304,7 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
       }
       switch ((type, property)) {
         case (SettingPropertyType.status, StatusProperty p):
-          return value.copyWith(
-            status: _createStatusWithDefaults(p),
-          );
+          return value.copyWith(status: _createStatusWithDefaults(p));
         case (SettingPropertyType.status, CheckboxProperty p):
           return value.copyWith(
             status: CheckboxCompleteStatusProperty(
@@ -349,12 +348,14 @@ class SelectedDatabaseViewModel extends _$SelectedDatabaseViewModel {
       return [];
     }
     return property.status.groups
-            .where((group) => group.name == groupType.value)
+            .where((group) =>
+                group.name.toLowerCase() == groupType.value.toLowerCase())
             .firstOrNull
             ?.optionIds
             .map((id) => property.status.options
                 .where((option) => option.id == id)
-                .first)
+                .firstOrNull)
+            .whereType<StatusOption>()
             .toList() ??
         [];
   }

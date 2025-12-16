@@ -14,6 +14,7 @@ import 'task_date_sheet.dart';
 import 'task_priority_sheet.dart';
 import 'task_project_sheet.dart';
 import '../../../../settings/settings_viewmodel.dart';
+import '../task_icon.dart';
 
 class TaskSheet extends HookConsumerWidget {
   final Task initialTask;
@@ -111,19 +112,30 @@ class TaskSheet extends HookConsumerWidget {
           padding: const EdgeInsets.fromLTRB(24, 14, 24, 30),
           child: Column(
             children: [
-              TextField(
-                controller: titleController,
-                focusNode: focusNode,
-                autofocus: isNewTask,
-                textInputAction: TextInputAction.done,
-                decoration: InputDecoration(
-                  hintText: l.task_sheet_title_hint,
-                  border: InputBorder.none,
-                ),
-                style: const TextStyle(
-                  fontSize: 20,
-                ),
-                onEditingComplete: submitHandler,
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  if (initialTask.icon != null) ...[
+                    TaskIcon(icon: initialTask.icon!, size: 24),
+                    const SizedBox(width: 8),
+                  ],
+                  Expanded(
+                    child: TextField(
+                      controller: titleController,
+                      focusNode: focusNode,
+                      autofocus: isNewTask,
+                      textInputAction: TextInputAction.done,
+                      decoration: InputDecoration(
+                        hintText: l.task_sheet_title_hint,
+                        border: InputBorder.none,
+                      ),
+                      style: const TextStyle(
+                        fontSize: 20,
+                      ),
+                      onEditingComplete: submitHandler,
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 8),
               Row(

@@ -426,10 +426,12 @@ enum NotionColor {
 class RelationOption {
   final String id;
   final String? title;
+  final String? icon;
 
   RelationOption({
     required this.id,
     this.title,
+    this.icon,
   });
 
   factory RelationOption.fromJson(Map<String, dynamic> json) =>
