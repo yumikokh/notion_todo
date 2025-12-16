@@ -241,12 +241,14 @@ RelationOption _$RelationOptionFromJson(Map<String, dynamic> json) =>
     RelationOption(
       id: json['id'] as String,
       title: json['title'] as String?,
+      icon: json['icon'] as String?,
     );
 
 Map<String, dynamic> _$RelationOptionToJson(RelationOption instance) =>
     <String, dynamic>{
       'id': instance.id,
       'title': instance.title,
+      'icon': instance.icon,
     };
 
 RelationProperty _$RelationPropertyFromJson(Map<String, dynamic> json) =>
