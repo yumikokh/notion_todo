@@ -18,6 +18,7 @@ class SnackbarListener extends HookConsumerWidget {
 
   // タイマーを管理するための静的変数
   static Timer? _bannerTimer;
+  static Timer? _snackbarTimer;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -44,6 +45,7 @@ class SnackbarListener extends HookConsumerWidget {
 
         // 前のタイマーがあればキャンセル
         _bannerTimer?.cancel();
+        _snackbarTimer?.cancel();
 
         if (current.isFloating) {
           // snackbarが隠れる場合は上部バナーで表示
@@ -56,7 +58,11 @@ class SnackbarListener extends HookConsumerWidget {
           });
         } else {
           scaffoldMessengerKey.currentState?.showSnackBar(snackBar);
-          ref.read(snackbarProvider.notifier).clear();
+          // Snackbarを手動で消す
+          _snackbarTimer = Timer(const Duration(milliseconds: 2000), () {
+            scaffoldMessengerKey.currentState?.clearSnackBars();
+            ref.read(snackbarProvider.notifier).clear();
+          });
         }
       },
     );
