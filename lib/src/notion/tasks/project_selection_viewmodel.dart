@@ -50,12 +50,18 @@ class ProjectSelectionViewModel extends _$ProjectSelectionViewModel {
     try {
       final projectProperty = taskDatabase?.project;
 
-      if (projectProperty == null) return <RelationOption>[];
+      if (projectProperty == null) {
+        // データベースがない場合はキャッシュを返す
+        return await _loadCachedProjects();
+      }
 
       // 関連データベースのIDを取得
       final relationDatabaseId =
           projectProperty.relation['database_id'] as String?;
-      if (relationDatabaseId == null) return <RelationOption>[];
+      if (relationDatabaseId == null) {
+        // 関連データベースがない場合はキャッシュを返す
+        return await _loadCachedProjects();
+      }
 
       // データベースの全プロジェクトを一括取得
       final taskDatabaseRepository =
@@ -85,8 +91,8 @@ class ProjectSelectionViewModel extends _$ProjectSelectionViewModel {
 
       return sortedProjects;
     } catch (e) {
-      // エラー時は空のリストを返す
-      return <RelationOption>[];
+      // エラー時はキャッシュを返す
+      return await _loadCachedProjects();
     }
   }
 

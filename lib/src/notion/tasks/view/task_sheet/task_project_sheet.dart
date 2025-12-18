@@ -6,6 +6,7 @@ import '../../../model/property.dart';
 import '../../../../helpers/haptic_helper.dart';
 import '../../../../settings/task_database/task_database_viewmodel.dart';
 import '../../project_selection_viewmodel.dart';
+import '../task_icon.dart';
 
 class TaskProjectSheet extends ConsumerStatefulWidget {
   const TaskProjectSheet({
@@ -197,15 +198,23 @@ class _TaskProjectSheetState extends ConsumerState<TaskProjectSheet> {
                               final isSelected =
                                   temporarySelectedIds.contains(project.id);
                               return ListTile(
-                                leading: Text(
-                                  '#',
-                                  style: TextStyle(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurfaceVariant,
-                                    fontSize: 18,
-                                  ),
-                                ),
+                                leading: project.icon != null
+                                    ? TaskIcon(icon: project.icon!, size: 24)
+                                    : SizedBox(
+                                        width: 24,
+                                        height: 24,
+                                        child: Center(
+                                          child: Text(
+                                            '#',
+                                            style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onSurfaceVariant,
+                                              fontSize: 18,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
                                 title: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
