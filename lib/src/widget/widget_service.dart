@@ -207,9 +207,13 @@ class WidgetService {
                 WidgetTask.fromJson(task as Map<String, dynamic>))
             .toList() ??
         [];
-    TaskDatabase? taskDatabase = rowTaskDatabase != null
-        ? TaskDatabase.fromJson(jsonDecode(rowTaskDatabase))
-        : null;
+    TaskDatabase? taskDatabase;
+    if (rowTaskDatabase != null) {
+      final decoded = jsonDecode(rowTaskDatabase);
+      if (decoded is Map<String, dynamic>) {
+        taskDatabase = TaskDatabase.fromJson(decoded);
+      }
+    }
 
     return WidgetValue(
         tasks: tasks,
