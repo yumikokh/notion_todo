@@ -106,3 +106,23 @@ class TimeoutException implements Exception {
   @override
   String toString() => message;
 }
+
+/// バックグラウンドでの接続エラー（iOSがHTTP接続を閉じた場合など）
+/// このエラーは一時的なものでユーザーに表示する必要がない
+class BackgroundConnectionException implements Exception {
+  final String message;
+
+  const BackgroundConnectionException({
+    this.message = 'バックグラウンドで接続が切断されました',
+  });
+
+  /// ClientExceptionが「Bad file descriptor」エラーかどうかを判定
+  static bool isBadFileDescriptor(Object error) {
+    final errorString = error.toString().toLowerCase();
+    return errorString.contains('bad file descriptor') ||
+        errorString.contains('clientexception');
+  }
+
+  @override
+  String toString() => message;
+}

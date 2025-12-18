@@ -10,6 +10,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 
 import 'src/common/background/background_fetch_service.dart';
+import 'src/common/error.dart';
 import 'src/app.dart';
 import 'src/env/env.dart';
 import 'src/widget/widget_service.dart';
@@ -99,6 +100,11 @@ class SentryProviderObserver extends ProviderObserver {
 
     // BackgroundFetchのPlatformExceptionを無視
     if (error is PlatformException && error.code == '1') {
+      return true;
+    }
+
+    // バックグラウンドでのHTTP接続エラーを無視（iOSが接続を閉じた場合）
+    if (BackgroundConnectionException.isBadFileDescriptor(error)) {
       return true;
     }
 

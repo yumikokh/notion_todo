@@ -149,6 +149,11 @@ class TaskViewModel extends _$TaskViewModel
         _nextCursor = result.nextCursor;
         return result.tasks;
       } catch (e, stackTrace) {
+        // バックグラウンドでの接続エラーは無視（iOSが接続を閉じた場合）
+        if (BackgroundConnectionException.isBadFileDescriptor(e)) {
+          return [];
+        }
+
         final snackbar = ref.read(snackbarProvider.notifier);
         final taskDatabaseViewModel =
             ref.read(taskDatabaseViewModelProvider.notifier);
