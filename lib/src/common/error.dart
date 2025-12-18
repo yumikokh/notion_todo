@@ -116,11 +116,22 @@ class BackgroundConnectionException implements Exception {
     this.message = 'バックグラウンドで接続が切断されました',
   });
 
-  /// ClientExceptionが「Bad file descriptor」エラーかどうかを判定
-  static bool isBadFileDescriptor(Object error) {
+  /// バックグラウンドでの一時的な接続エラーかどうかを判定
+  /// - Bad file descriptor: iOSが接続を閉じた場合
+  /// - Connection closed: データ受信中に接続が切れた場合
+  /// - Failed host lookup: DNS解決失敗（ネットワーク接続なし）
+  /// - Network is unreachable: ネットワーク到達不可
+  /// - No route to host: ホストへのルートなし
+  /// - Broken pipe: 接続が切断された状態でSVG書き込みを試みた場合
+  static bool isBackgroundConnectionError(Object error) {
     final errorString = error.toString().toLowerCase();
     return errorString.contains('bad file descriptor') ||
-        errorString.contains('clientexception');
+        errorString.contains('connection closed') ||
+        errorString.contains('failed host lookup') ||
+        errorString.contains('network is unreachable') ||
+        errorString.contains('no route to host') ||
+        errorString.contains('broken pipe') ||
+        errorString.contains('socketexception');
   }
 
   @override

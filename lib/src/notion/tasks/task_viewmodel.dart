@@ -150,7 +150,7 @@ class TaskViewModel extends _$TaskViewModel
         return result.tasks;
       } catch (e, stackTrace) {
         // バックグラウンドでの接続エラーは無視（iOSが接続を閉じた場合）
-        if (BackgroundConnectionException.isBadFileDescriptor(e)) {
+        if (BackgroundConnectionException.isBackgroundConnectionError(e)) {
           return [];
         }
 

@@ -104,7 +104,7 @@ class SentryProviderObserver extends ProviderObserver {
     }
 
     // バックグラウンドでのHTTP接続エラーを無視（iOSが接続を閉じた場合）
-    if (BackgroundConnectionException.isBadFileDescriptor(error)) {
+    if (BackgroundConnectionException.isBackgroundConnectionError(error)) {
       return true;
     }
 

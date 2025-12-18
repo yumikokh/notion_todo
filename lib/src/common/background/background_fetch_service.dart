@@ -56,7 +56,7 @@ class BackgroundFetchService {
       if (e is PlatformException && e.code == '1') {
         print(
             "[BackgroundFetch] Ignored expected PlatformException in callback: $e");
-      } else if (BackgroundConnectionException.isBadFileDescriptor(e)) {
+      } else if (BackgroundConnectionException.isBackgroundConnectionError(e)) {
         // iOSがHTTP接続を閉じた場合のエラーは無視（リトライしても同じ状態の可能性が高い）
         print("[BackgroundFetch] Ignored Bad file descriptor error: $e");
       } else {
