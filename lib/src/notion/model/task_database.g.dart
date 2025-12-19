@@ -6,13 +6,14 @@ part of 'task_database.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$TaskDatabaseImpl _$$TaskDatabaseImplFromJson(Map<String, dynamic> json) =>
-    _$TaskDatabaseImpl(
+_TaskDatabase _$TaskDatabaseFromJson(Map<String, dynamic> json) =>
+    _TaskDatabase(
       id: json['id'] as String,
       name: json['name'] as String,
       title: TitleProperty.fromJson(json['title'] as Map<String, dynamic>),
       status: CompleteStatusProperty.fromJson(
-          json['status'] as Map<String, dynamic>),
+        json['status'] as Map<String, dynamic>,
+      ),
       date: DateProperty.fromJson(json['date'] as Map<String, dynamic>),
       priority: json['priority'] == null
           ? null
@@ -22,13 +23,12 @@ _$TaskDatabaseImpl _$$TaskDatabaseImplFromJson(Map<String, dynamic> json) =>
           : RelationProperty.fromJson(json['project'] as Map<String, dynamic>),
       additionalProperties:
           (json['additionalProperties'] as Map<String, dynamic>?)?.map(
-                (k, e) =>
-                    MapEntry(k, Property.fromJson(e as Map<String, dynamic>)),
-              ) ??
-              {},
+            (k, e) => MapEntry(k, Property.fromJson(e as Map<String, dynamic>)),
+          ) ??
+          {},
     );
 
-Map<String, dynamic> _$$TaskDatabaseImplToJson(_$TaskDatabaseImpl instance) =>
+Map<String, dynamic> _$TaskDatabaseToJson(_TaskDatabase instance) =>
     <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
@@ -37,6 +37,7 @@ Map<String, dynamic> _$$TaskDatabaseImplToJson(_$TaskDatabaseImpl instance) =>
       'date': instance.date.toJson(),
       'priority': instance.priority?.toJson(),
       'project': instance.project?.toJson(),
-      'additionalProperties':
-          instance.additionalProperties?.map((k, e) => MapEntry(k, e.toJson())),
+      'additionalProperties': instance.additionalProperties?.map(
+        (k, e) => MapEntry(k, e.toJson()),
+      ),
     };

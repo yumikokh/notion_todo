@@ -45,7 +45,7 @@ class TaskBaseScaffold extends HookConsumerWidget {
     final isToday = currentIndex == 0;
     final filterType = isToday ? FilterType.today : FilterType.all;
     final subscriptionStatus =
-        ref.watch(subscriptionViewModelProvider).valueOrNull;
+        ref.watch(subscriptionViewModelProvider).value;
     final analytics = ref.read(analyticsServiceProvider);
 
     // カスタムメニューの設定

@@ -103,7 +103,7 @@ class TaskMainPage extends HookConsumerWidget {
       key: Key('taskMainPage/${isToday ? 'Today' : 'All'}'),
       currentIndex: currentIndex,
       showCompleted: isToday ? todayViewModel.showCompleted : null,
-      showSettingBadge: taskDatabase.valueOrNull != null,
+      showSettingBadge: taskDatabase.value != null,
       hideNavigationLabel: hideNavigationLabel,
       onIndexChanged: (index) {
         final nextTab = index == 0 ? tabToday : tabAll;

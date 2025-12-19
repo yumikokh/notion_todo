@@ -1,5 +1,5 @@
-// coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// coverage:ignore-file
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
@@ -9,281 +9,293 @@ part of 'selected_database_viewmodel.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
-
 /// @nodoc
-mixin _$SelectedDatabaseState {
-  String get id => throw _privateConstructorUsedError;
-  String get name => throw _privateConstructorUsedError;
-  TitleProperty get title => throw _privateConstructorUsedError;
-  CompleteStatusProperty? get status => throw _privateConstructorUsedError;
-  DateProperty? get date => throw _privateConstructorUsedError;
-  SelectProperty? get priority => throw _privateConstructorUsedError;
-  RelationProperty? get project => throw _privateConstructorUsedError;
+mixin _$SelectedDatabaseState implements DiagnosticableTreeMixin {
 
-  /// Create a copy of SelectedDatabaseState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $SelectedDatabaseStateCopyWith<SelectedDatabaseState> get copyWith =>
-      throw _privateConstructorUsedError;
+ String get id; String get name; TitleProperty get title; CompleteStatusProperty? get status; DateProperty? get date; SelectProperty? get priority; RelationProperty? get project;
+/// Create a copy of SelectedDatabaseState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$SelectedDatabaseStateCopyWith<SelectedDatabaseState> get copyWith => _$SelectedDatabaseStateCopyWithImpl<SelectedDatabaseState>(this as SelectedDatabaseState, _$identity);
+
+
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'SelectedDatabaseState'))
+    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('name', name))..add(DiagnosticsProperty('title', title))..add(DiagnosticsProperty('status', status))..add(DiagnosticsProperty('date', date))..add(DiagnosticsProperty('priority', priority))..add(DiagnosticsProperty('project', project));
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SelectedDatabaseState&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.title, title) || other.title == title)&&(identical(other.status, status) || other.status == status)&&(identical(other.date, date) || other.date == date)&&(identical(other.priority, priority) || other.priority == priority)&&(identical(other.project, project) || other.project == project));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,id,name,title,status,date,priority,project);
+
+@override
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
+  return 'SelectedDatabaseState(id: $id, name: $name, title: $title, status: $status, date: $date, priority: $priority, project: $project)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $SelectedDatabaseStateCopyWith<$Res> {
-  factory $SelectedDatabaseStateCopyWith(SelectedDatabaseState value,
-          $Res Function(SelectedDatabaseState) then) =
-      _$SelectedDatabaseStateCopyWithImpl<$Res, SelectedDatabaseState>;
-  @useResult
-  $Res call(
-      {String id,
-      String name,
-      TitleProperty title,
-      CompleteStatusProperty? status,
-      DateProperty? date,
-      SelectProperty? priority,
-      RelationProperty? project});
-}
+abstract mixin class $SelectedDatabaseStateCopyWith<$Res>  {
+  factory $SelectedDatabaseStateCopyWith(SelectedDatabaseState value, $Res Function(SelectedDatabaseState) _then) = _$SelectedDatabaseStateCopyWithImpl;
+@useResult
+$Res call({
+ String id, String name, TitleProperty title, CompleteStatusProperty? status, DateProperty? date, SelectProperty? priority, RelationProperty? project
+});
 
+
+
+
+}
 /// @nodoc
-class _$SelectedDatabaseStateCopyWithImpl<$Res,
-        $Val extends SelectedDatabaseState>
+class _$SelectedDatabaseStateCopyWithImpl<$Res>
     implements $SelectedDatabaseStateCopyWith<$Res> {
-  _$SelectedDatabaseStateCopyWithImpl(this._value, this._then);
+  _$SelectedDatabaseStateCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final SelectedDatabaseState _self;
+  final $Res Function(SelectedDatabaseState) _then;
 
-  /// Create a copy of SelectedDatabaseState
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? id = null,
-    Object? name = null,
-    Object? title = null,
-    Object? status = freezed,
-    Object? date = freezed,
-    Object? priority = freezed,
-    Object? project = freezed,
-  }) {
-    return _then(_value.copyWith(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      title: null == title
-          ? _value.title
-          : title // ignore: cast_nullable_to_non_nullable
-              as TitleProperty,
-      status: freezed == status
-          ? _value.status
-          : status // ignore: cast_nullable_to_non_nullable
-              as CompleteStatusProperty?,
-      date: freezed == date
-          ? _value.date
-          : date // ignore: cast_nullable_to_non_nullable
-              as DateProperty?,
-      priority: freezed == priority
-          ? _value.priority
-          : priority // ignore: cast_nullable_to_non_nullable
-              as SelectProperty?,
-      project: freezed == project
-          ? _value.project
-          : project // ignore: cast_nullable_to_non_nullable
-              as RelationProperty?,
-    ) as $Val);
-  }
+/// Create a copy of SelectedDatabaseState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? title = null,Object? status = freezed,Object? date = freezed,Object? priority = freezed,Object? project = freezed,}) {
+  return _then(_self.copyWith(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as TitleProperty,status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as CompleteStatusProperty?,date: freezed == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
+as DateProperty?,priority: freezed == priority ? _self.priority : priority // ignore: cast_nullable_to_non_nullable
+as SelectProperty?,project: freezed == project ? _self.project : project // ignore: cast_nullable_to_non_nullable
+as RelationProperty?,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [SelectedDatabaseState].
+extension SelectedDatabaseStatePatterns on SelectedDatabaseState {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _SelectedDatabaseState value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _SelectedDatabaseState() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _SelectedDatabaseState value)  $default,){
+final _that = this;
+switch (_that) {
+case _SelectedDatabaseState():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _SelectedDatabaseState value)?  $default,){
+final _that = this;
+switch (_that) {
+case _SelectedDatabaseState() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  TitleProperty title,  CompleteStatusProperty? status,  DateProperty? date,  SelectProperty? priority,  RelationProperty? project)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _SelectedDatabaseState() when $default != null:
+return $default(_that.id,_that.name,_that.title,_that.status,_that.date,_that.priority,_that.project);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  TitleProperty title,  CompleteStatusProperty? status,  DateProperty? date,  SelectProperty? priority,  RelationProperty? project)  $default,) {final _that = this;
+switch (_that) {
+case _SelectedDatabaseState():
+return $default(_that.id,_that.name,_that.title,_that.status,_that.date,_that.priority,_that.project);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  TitleProperty title,  CompleteStatusProperty? status,  DateProperty? date,  SelectProperty? priority,  RelationProperty? project)?  $default,) {final _that = this;
+switch (_that) {
+case _SelectedDatabaseState() when $default != null:
+return $default(_that.id,_that.name,_that.title,_that.status,_that.date,_that.priority,_that.project);case _:
+  return null;
+
+}
+}
+
 }
 
 /// @nodoc
-abstract class _$$SelectedDatabaseStateImplCopyWith<$Res>
-    implements $SelectedDatabaseStateCopyWith<$Res> {
-  factory _$$SelectedDatabaseStateImplCopyWith(
-          _$SelectedDatabaseStateImpl value,
-          $Res Function(_$SelectedDatabaseStateImpl) then) =
-      __$$SelectedDatabaseStateImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call(
-      {String id,
-      String name,
-      TitleProperty title,
-      CompleteStatusProperty? status,
-      DateProperty? date,
-      SelectProperty? priority,
-      RelationProperty? project});
+
+
+class _SelectedDatabaseState with DiagnosticableTreeMixin implements SelectedDatabaseState {
+  const _SelectedDatabaseState({required this.id, required this.name, required this.title, required this.status, required this.date, this.priority, this.project});
+  
+
+@override final  String id;
+@override final  String name;
+@override final  TitleProperty title;
+@override final  CompleteStatusProperty? status;
+@override final  DateProperty? date;
+@override final  SelectProperty? priority;
+@override final  RelationProperty? project;
+
+/// Create a copy of SelectedDatabaseState
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$SelectedDatabaseStateCopyWith<_SelectedDatabaseState> get copyWith => __$SelectedDatabaseStateCopyWithImpl<_SelectedDatabaseState>(this, _$identity);
+
+
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'SelectedDatabaseState'))
+    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('name', name))..add(DiagnosticsProperty('title', title))..add(DiagnosticsProperty('status', status))..add(DiagnosticsProperty('date', date))..add(DiagnosticsProperty('priority', priority))..add(DiagnosticsProperty('project', project));
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SelectedDatabaseState&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.title, title) || other.title == title)&&(identical(other.status, status) || other.status == status)&&(identical(other.date, date) || other.date == date)&&(identical(other.priority, priority) || other.priority == priority)&&(identical(other.project, project) || other.project == project));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,id,name,title,status,date,priority,project);
+
+@override
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
+  return 'SelectedDatabaseState(id: $id, name: $name, title: $title, status: $status, date: $date, priority: $priority, project: $project)';
+}
+
+
 }
 
 /// @nodoc
-class __$$SelectedDatabaseStateImplCopyWithImpl<$Res>
-    extends _$SelectedDatabaseStateCopyWithImpl<$Res,
-        _$SelectedDatabaseStateImpl>
-    implements _$$SelectedDatabaseStateImplCopyWith<$Res> {
-  __$$SelectedDatabaseStateImplCopyWithImpl(_$SelectedDatabaseStateImpl _value,
-      $Res Function(_$SelectedDatabaseStateImpl) _then)
-      : super(_value, _then);
+abstract mixin class _$SelectedDatabaseStateCopyWith<$Res> implements $SelectedDatabaseStateCopyWith<$Res> {
+  factory _$SelectedDatabaseStateCopyWith(_SelectedDatabaseState value, $Res Function(_SelectedDatabaseState) _then) = __$SelectedDatabaseStateCopyWithImpl;
+@override @useResult
+$Res call({
+ String id, String name, TitleProperty title, CompleteStatusProperty? status, DateProperty? date, SelectProperty? priority, RelationProperty? project
+});
 
-  /// Create a copy of SelectedDatabaseState
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? id = null,
-    Object? name = null,
-    Object? title = null,
-    Object? status = freezed,
-    Object? date = freezed,
-    Object? priority = freezed,
-    Object? project = freezed,
-  }) {
-    return _then(_$SelectedDatabaseStateImpl(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as String,
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      title: null == title
-          ? _value.title
-          : title // ignore: cast_nullable_to_non_nullable
-              as TitleProperty,
-      status: freezed == status
-          ? _value.status
-          : status // ignore: cast_nullable_to_non_nullable
-              as CompleteStatusProperty?,
-      date: freezed == date
-          ? _value.date
-          : date // ignore: cast_nullable_to_non_nullable
-              as DateProperty?,
-      priority: freezed == priority
-          ? _value.priority
-          : priority // ignore: cast_nullable_to_non_nullable
-              as SelectProperty?,
-      project: freezed == project
-          ? _value.project
-          : project // ignore: cast_nullable_to_non_nullable
-              as RelationProperty?,
-    ));
-  }
+
+
+
 }
-
 /// @nodoc
+class __$SelectedDatabaseStateCopyWithImpl<$Res>
+    implements _$SelectedDatabaseStateCopyWith<$Res> {
+  __$SelectedDatabaseStateCopyWithImpl(this._self, this._then);
 
-class _$SelectedDatabaseStateImpl
-    with DiagnosticableTreeMixin
-    implements _SelectedDatabaseState {
-  const _$SelectedDatabaseStateImpl(
-      {required this.id,
-      required this.name,
-      required this.title,
-      required this.status,
-      required this.date,
-      this.priority,
-      this.project});
+  final _SelectedDatabaseState _self;
+  final $Res Function(_SelectedDatabaseState) _then;
 
-  @override
-  final String id;
-  @override
-  final String name;
-  @override
-  final TitleProperty title;
-  @override
-  final CompleteStatusProperty? status;
-  @override
-  final DateProperty? date;
-  @override
-  final SelectProperty? priority;
-  @override
-  final RelationProperty? project;
-
-  @override
-  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'SelectedDatabaseState(id: $id, name: $name, title: $title, status: $status, date: $date, priority: $priority, project: $project)';
-  }
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties
-      ..add(DiagnosticsProperty('type', 'SelectedDatabaseState'))
-      ..add(DiagnosticsProperty('id', id))
-      ..add(DiagnosticsProperty('name', name))
-      ..add(DiagnosticsProperty('title', title))
-      ..add(DiagnosticsProperty('status', status))
-      ..add(DiagnosticsProperty('date', date))
-      ..add(DiagnosticsProperty('priority', priority))
-      ..add(DiagnosticsProperty('project', project));
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$SelectedDatabaseStateImpl &&
-            (identical(other.id, id) || other.id == id) &&
-            (identical(other.name, name) || other.name == name) &&
-            (identical(other.title, title) || other.title == title) &&
-            (identical(other.status, status) || other.status == status) &&
-            (identical(other.date, date) || other.date == date) &&
-            (identical(other.priority, priority) ||
-                other.priority == priority) &&
-            (identical(other.project, project) || other.project == project));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-      runtimeType, id, name, title, status, date, priority, project);
-
-  /// Create a copy of SelectedDatabaseState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$SelectedDatabaseStateImplCopyWith<_$SelectedDatabaseStateImpl>
-      get copyWith => __$$SelectedDatabaseStateImplCopyWithImpl<
-          _$SelectedDatabaseStateImpl>(this, _$identity);
+/// Create a copy of SelectedDatabaseState
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? title = null,Object? status = freezed,Object? date = freezed,Object? priority = freezed,Object? project = freezed,}) {
+  return _then(_SelectedDatabaseState(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as TitleProperty,status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as CompleteStatusProperty?,date: freezed == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
+as DateProperty?,priority: freezed == priority ? _self.priority : priority // ignore: cast_nullable_to_non_nullable
+as SelectProperty?,project: freezed == project ? _self.project : project // ignore: cast_nullable_to_non_nullable
+as RelationProperty?,
+  ));
 }
 
-abstract class _SelectedDatabaseState implements SelectedDatabaseState {
-  const factory _SelectedDatabaseState(
-      {required final String id,
-      required final String name,
-      required final TitleProperty title,
-      required final CompleteStatusProperty? status,
-      required final DateProperty? date,
-      final SelectProperty? priority,
-      final RelationProperty? project}) = _$SelectedDatabaseStateImpl;
 
-  @override
-  String get id;
-  @override
-  String get name;
-  @override
-  TitleProperty get title;
-  @override
-  CompleteStatusProperty? get status;
-  @override
-  DateProperty? get date;
-  @override
-  SelectProperty? get priority;
-  @override
-  RelationProperty? get project;
-
-  /// Create a copy of SelectedDatabaseState
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$SelectedDatabaseStateImplCopyWith<_$SelectedDatabaseStateImpl>
-      get copyWith => throw _privateConstructorUsedError;
 }
+
+// dart format on

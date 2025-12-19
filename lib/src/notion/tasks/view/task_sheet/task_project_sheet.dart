@@ -82,7 +82,7 @@ class _TaskProjectSheetState extends ConsumerState<TaskProjectSheet> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    final taskDatabase = ref.watch(taskDatabaseViewModelProvider).valueOrNull;
+    final taskDatabase = ref.watch(taskDatabaseViewModelProvider).value;
     final projectProperty = taskDatabase?.project;
 
     if (projectProperty == null) {

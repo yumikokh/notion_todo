@@ -6,22 +6,51 @@ part of 'task_database_viewmodel.dart';
 // RiverpodGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+
+@ProviderFor(TaskDatabaseViewModel)
+const taskDatabaseViewModelProvider = TaskDatabaseViewModelProvider._();
+
+final class TaskDatabaseViewModelProvider
+    extends $AsyncNotifierProvider<TaskDatabaseViewModel, TaskDatabase?> {
+  const TaskDatabaseViewModelProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'taskDatabaseViewModelProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$taskDatabaseViewModelHash();
+
+  @$internal
+  @override
+  TaskDatabaseViewModel create() => TaskDatabaseViewModel();
+}
+
 String _$taskDatabaseViewModelHash() =>
     r'56266986861f75003adb862b1e52a9f18043e88f';
 
-/// See also [TaskDatabaseViewModel].
-@ProviderFor(TaskDatabaseViewModel)
-final taskDatabaseViewModelProvider = AutoDisposeAsyncNotifierProvider<
-    TaskDatabaseViewModel, TaskDatabase?>.internal(
-  TaskDatabaseViewModel.new,
-  name: r'taskDatabaseViewModelProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$taskDatabaseViewModelHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-typedef _$TaskDatabaseViewModel = AutoDisposeAsyncNotifier<TaskDatabase?>;
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+abstract class _$TaskDatabaseViewModel extends $AsyncNotifier<TaskDatabase?> {
+  FutureOr<TaskDatabase?> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final created = build();
+    final ref = this.ref as $Ref<AsyncValue<TaskDatabase?>, TaskDatabase?>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<TaskDatabase?>, TaskDatabase?>,
+              AsyncValue<TaskDatabase?>,
+              Object?,
+              Object?
+            >;
+    element.handleValue(ref, created);
+  }
+}
