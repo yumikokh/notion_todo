@@ -76,7 +76,10 @@ class SubscriptionRepository {
 
       return plans;
     } catch (e, stackTrace) {
-      Sentry.captureException(e, stackTrace: stackTrace);
+      // オフラインエラーは無視（ユーザー側の一時的な問題）
+      if (!_isOfflineError(e)) {
+        Sentry.captureException(e, stackTrace: stackTrace);
+      }
       print('getAvailablePlans error: $e');
       return [];
     }
@@ -198,6 +201,17 @@ class SubscriptionRepository {
       isInTrial: entitlement.periodType == PeriodType.trial,
       hasActiveSubscription: customerInfo.activeSubscriptions.isNotEmpty,
     );
+  }
+
+  /// RevenueCatのオフラインエラーかどうかを判定します
+  bool _isOfflineError(Object error) {
+    if (error is PlatformException) {
+      final details = error.details as Map<dynamic, dynamic>?;
+      final readableErrorCode = details?['readableErrorCode'] as String?;
+      return readableErrorCode == 'OFFLINE_CONNECTION_ERROR' ||
+          error.code == '35';
+    }
+    return false;
   }
 
   /// パッケージIDからサブスクリプションタイプを取得します
