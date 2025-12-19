@@ -116,11 +116,46 @@ Task completion sounds no longer interrupt your background music.
 7. **Notion連携（詳細）**:
    - Notion APIが利用可能な場合:
      - MCP経由で[Notionのリリースノート](https://www.notion.so/yumikokh/Release-Notes-18154c37a54c807b8ac6ef6612524378?source=copy_link)ページを取得
-     - 新しいバージョンのセクションを追加（折りたたみ形式）
+     - **重要**: 既存の最新バージョン（`▶## X.X.X`形式）の**前**に新しいセクションを挿入
      - 日付は実行日を自動設定
    - Notion APIが利用できない場合:
      - 手動コピー用の完全なマークダウンを提供
      - Notionページへの貼り付け手順を案内
+
+8. **Notion更新後の確認**:
+   - 更新完了後、ページを再取得して構造が正しいか確認
+   - 問題があれば手動修正用のマークダウンを提供
+
+## Notion Markdown形式（重要）
+
+### ページ構造
+
+```
+---
+<empty-block/>
+▶## 2.3.1 (2025-12-19)    ← 新しいバージョン（最上部に追加）
+	### 🐛 バグ修正 / Bug Fixes
+	- 日本語説明。<br>English description.
+▶## 2.3.0 (2025-12-12)    ← 既存のバージョン
+	### ✨ 新機能 / New Features
+	...
+```
+
+### 挿入時の注意点
+
+1. **挿入位置**: `---\n<empty-block/>\n▶## X.X.X` の `▶## X.X.X` の**直前**に挿入
+2. **選択範囲**: `replace_content_range` を使う場合、既存セクションの見出し行のみを選択し、子要素を含めない
+3. **形式**:
+   - 見出しは `▶## バージョン (日付)` 形式
+   - 子要素はタブでインデント
+   - 日英は `<br>` で区切り（改行ではない）
+
+### 正しい挿入例
+
+```
+selection_with_ellipsis: "---\n<empty-block/>\n▶## 2.3.0"
+new_str: "---\n<empty-block/>\n▶## 2.3.1 (2025-12-19)\n\t### 🐛 バグ修正 / Bug Fixes\n\t- 説明。<br>Description.\n▶## 2.3.0"
+```
 
 ## 注意事項
 
