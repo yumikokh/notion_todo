@@ -60,6 +60,27 @@ void main() async {
         // リプレイのサンプリング率を設定（Sentry 9.0でexperimentalから昇格）
         options.replay.sessionSampleRate = kReleaseMode ? 0.01 : 0.0;
         options.replay.onErrorSampleRate = kReleaseMode ? 1.0 : 0.0;
+
+        // 一時的なネットワークエラーをフィルタリング
+        options.beforeSend = (event, hint) {
+          final exceptions = event.exceptions;
+          if (exceptions != null && exceptions.isNotEmpty) {
+            final exceptionValue = exceptions.first.value ?? '';
+            // バックグラウンドでの接続エラーを無視
+            if (BackgroundConnectionException.isBackgroundConnectionError(
+                exceptionValue)) {
+              return null;
+            }
+            // SSL/TLSハンドシェイクエラーを無視
+            if (exceptionValue.toLowerCase().contains('handshakeexception') ||
+                exceptionValue
+                    .toLowerCase()
+                    .contains('connection terminated during handshake')) {
+              return null;
+            }
+          }
+          return event;
+        };
       },
       appRunner: () => runApp(app),
     );
@@ -106,6 +127,18 @@ final class SentryProviderObserver extends ProviderObserver {
       return true;
     }
 
+    // SSL/TLSハンドシェイクエラーを無視（ネットワーク不安定時に発生）
+    if (_isHandshakeError(error)) {
+      return true;
+    }
+
     return false;
+  }
+
+  /// SSL/TLSハンドシェイクエラーかどうかを判定
+  bool _isHandshakeError(Object error) {
+    final errorString = error.toString().toLowerCase();
+    return errorString.contains('handshakeexception') ||
+        errorString.contains('connection terminated during handshake');
   }
 }
