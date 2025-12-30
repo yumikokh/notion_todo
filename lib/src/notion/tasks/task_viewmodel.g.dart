@@ -6,169 +6,95 @@ part of 'task_viewmodel.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$taskViewModelHash() => r'ca53b26af825b8207068d696dd718d9dd92d0e83';
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
 
-/// Copied from Dart SDK
-class _SystemHash {
-  _SystemHash._();
-
-  static int combine(int hash, int value) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + value);
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
-    return hash ^ (hash >> 6);
-  }
-
-  static int finish(int hash) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
-    // ignore: parameter_assignments
-    hash = hash ^ (hash >> 11);
-    return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
-  }
-}
-
-abstract class _$TaskViewModel extends BuildlessAsyncNotifier<List<Task>> {
-  late final FilterType filterType;
-
-  FutureOr<List<Task>> build({
-    FilterType filterType = FilterType.all,
-  });
-}
-
-/// See also [TaskViewModel].
 @ProviderFor(TaskViewModel)
-const taskViewModelProvider = TaskViewModelFamily();
+const taskViewModelProvider = TaskViewModelFamily._();
 
-/// See also [TaskViewModel].
-class TaskViewModelFamily extends Family<AsyncValue<List<Task>>> {
-  /// See also [TaskViewModel].
-  const TaskViewModelFamily();
+final class TaskViewModelProvider
+    extends $AsyncNotifierProvider<TaskViewModel, List<Task>> {
+  const TaskViewModelProvider._({
+    required TaskViewModelFamily super.from,
+    required FilterType super.argument,
+  }) : super(
+         retry: null,
+         name: r'taskViewModelProvider',
+         isAutoDispose: false,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
 
-  /// See also [TaskViewModel].
-  TaskViewModelProvider call({
-    FilterType filterType = FilterType.all,
-  }) {
-    return TaskViewModelProvider(
-      filterType: filterType,
-    );
+  @override
+  String debugGetCreateSourceHash() => _$taskViewModelHash();
+
+  @override
+  String toString() {
+    return r'taskViewModelProvider'
+        ''
+        '($argument)';
   }
 
+  @$internal
   @override
-  TaskViewModelProvider getProviderOverride(
-    covariant TaskViewModelProvider provider,
-  ) {
-    return call(
-      filterType: provider.filterType,
-    );
-  }
-
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
-
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
-
-  @override
-  String? get name => r'taskViewModelProvider';
-}
-
-/// See also [TaskViewModel].
-class TaskViewModelProvider
-    extends AsyncNotifierProviderImpl<TaskViewModel, List<Task>> {
-  /// See also [TaskViewModel].
-  TaskViewModelProvider({
-    FilterType filterType = FilterType.all,
-  }) : this._internal(
-          () => TaskViewModel()..filterType = filterType,
-          from: taskViewModelProvider,
-          name: r'taskViewModelProvider',
-          debugGetCreateSourceHash:
-              const bool.fromEnvironment('dart.vm.product')
-                  ? null
-                  : _$taskViewModelHash,
-          dependencies: TaskViewModelFamily._dependencies,
-          allTransitiveDependencies:
-              TaskViewModelFamily._allTransitiveDependencies,
-          filterType: filterType,
-        );
-
-  TaskViewModelProvider._internal(
-    super._createNotifier, {
-    required super.name,
-    required super.dependencies,
-    required super.allTransitiveDependencies,
-    required super.debugGetCreateSourceHash,
-    required super.from,
-    required this.filterType,
-  }) : super.internal();
-
-  final FilterType filterType;
-
-  @override
-  FutureOr<List<Task>> runNotifierBuild(
-    covariant TaskViewModel notifier,
-  ) {
-    return notifier.build(
-      filterType: filterType,
-    );
-  }
-
-  @override
-  Override overrideWith(TaskViewModel Function() create) {
-    return ProviderOverride(
-      origin: this,
-      override: TaskViewModelProvider._internal(
-        () => create()..filterType = filterType,
-        from: from,
-        name: null,
-        dependencies: null,
-        allTransitiveDependencies: null,
-        debugGetCreateSourceHash: null,
-        filterType: filterType,
-      ),
-    );
-  }
-
-  @override
-  AsyncNotifierProviderElement<TaskViewModel, List<Task>> createElement() {
-    return _TaskViewModelProviderElement(this);
-  }
+  TaskViewModel create() => TaskViewModel();
 
   @override
   bool operator ==(Object other) {
-    return other is TaskViewModelProvider && other.filterType == filterType;
+    return other is TaskViewModelProvider && other.argument == argument;
   }
 
   @override
   int get hashCode {
-    var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, filterType.hashCode);
-
-    return _SystemHash.finish(hash);
+    return argument.hashCode;
   }
 }
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-mixin TaskViewModelRef on AsyncNotifierProviderRef<List<Task>> {
-  /// The parameter `filterType` of this provider.
-  FilterType get filterType;
-}
+String _$taskViewModelHash() => r'f6b4a579aaf6f008fe42c29e341c2577d910dd2c';
 
-class _TaskViewModelProviderElement
-    extends AsyncNotifierProviderElement<TaskViewModel, List<Task>>
-    with TaskViewModelRef {
-  _TaskViewModelProviderElement(super.provider);
+final class TaskViewModelFamily extends $Family
+    with
+        $ClassFamilyOverride<
+          TaskViewModel,
+          AsyncValue<List<Task>>,
+          List<Task>,
+          FutureOr<List<Task>>,
+          FilterType
+        > {
+  const TaskViewModelFamily._()
+    : super(
+        retry: null,
+        name: r'taskViewModelProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: false,
+      );
+
+  TaskViewModelProvider call({FilterType filterType = FilterType.all}) =>
+      TaskViewModelProvider._(argument: filterType, from: this);
 
   @override
-  FilterType get filterType => (origin as TaskViewModelProvider).filterType;
+  String toString() => r'taskViewModelProvider';
 }
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+
+abstract class _$TaskViewModel extends $AsyncNotifier<List<Task>> {
+  late final _$args = ref.$arg as FilterType;
+  FilterType get filterType => _$args;
+
+  FutureOr<List<Task>> build({FilterType filterType = FilterType.all});
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final created = build(filterType: _$args);
+    final ref = this.ref as $Ref<AsyncValue<List<Task>>, List<Task>>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<List<Task>>, List<Task>>,
+              AsyncValue<List<Task>>,
+              Object?,
+              Object?
+            >;
+    element.handleValue(ref, created);
+  }
+}

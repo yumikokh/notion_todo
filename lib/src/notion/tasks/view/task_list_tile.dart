@@ -30,7 +30,7 @@ class TaskListTile extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final checked = useState(task.isCompleted);
     final groupType =
-        ref.watch(taskGroupProvider).valueOrNull?[taskViewModel.filterType] ??
+        ref.watch(taskGroupProvider).value?[taskViewModel.filterType] ??
             GroupType.none;
 
     final fillColor = switch (checked.value) {
@@ -109,7 +109,7 @@ class TaskListTile extends HookConsumerWidget {
               task: task,
               onInProgressChanged: (task) async {
                 final statusProperty =
-                    ref.read(taskDatabaseViewModelProvider).valueOrNull?.status;
+                    ref.read(taskDatabaseViewModelProvider).value?.status;
                 if (statusProperty is! StatusCompleteStatusProperty) {
                   return;
                 }

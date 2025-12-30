@@ -6,188 +6,177 @@ part of 'task_sort_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+
+@ProviderFor(taskSortService)
+const taskSortServiceProvider = TaskSortServiceProvider._();
+
+final class TaskSortServiceProvider
+    extends
+        $FunctionalProvider<TaskSortService, TaskSortService, TaskSortService>
+    with $Provider<TaskSortService> {
+  const TaskSortServiceProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'taskSortServiceProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$taskSortServiceHash();
+
+  @$internal
+  @override
+  $ProviderElement<TaskSortService> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  TaskSortService create(Ref ref) {
+    return taskSortService(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(TaskSortService value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<TaskSortService>(value),
+    );
+  }
+}
+
 String _$taskSortServiceHash() => r'171f4f0d04b9f0f266d8a62a6c008a756e31e03c';
 
-/// See also [taskSortService].
-@ProviderFor(taskSortService)
-final taskSortServiceProvider = Provider<TaskSortService>.internal(
-  taskSortService,
-  name: r'taskSortServiceProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$taskSortServiceHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+@ProviderFor(TaskSort)
+const taskSortProvider = TaskSortProvider._();
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef TaskSortServiceRef = ProviderRef<TaskSortService>;
-String _$currentSortTypeHash() => r'595c6c972cdcfc00cb72e7b02793ec5ea3e31963';
-
-/// Copied from Dart SDK
-class _SystemHash {
-  _SystemHash._();
-
-  static int combine(int hash, int value) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + value);
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
-    return hash ^ (hash >> 6);
-  }
-
-  static int finish(int hash) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
-    // ignore: parameter_assignments
-    hash = hash ^ (hash >> 11);
-    return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
-  }
-}
-
-/// See also [currentSortType].
-@ProviderFor(currentSortType)
-const currentSortTypeProvider = CurrentSortTypeFamily();
-
-/// See also [currentSortType].
-class CurrentSortTypeFamily extends Family<SortType> {
-  /// See also [currentSortType].
-  const CurrentSortTypeFamily();
-
-  /// See also [currentSortType].
-  CurrentSortTypeProvider call(
-    FilterType filterType,
-  ) {
-    return CurrentSortTypeProvider(
-      filterType,
-    );
-  }
-
-  @override
-  CurrentSortTypeProvider getProviderOverride(
-    covariant CurrentSortTypeProvider provider,
-  ) {
-    return call(
-      provider.filterType,
-    );
-  }
-
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
-
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
-
-  @override
-  String? get name => r'currentSortTypeProvider';
-}
-
-/// See also [currentSortType].
-class CurrentSortTypeProvider extends AutoDisposeProvider<SortType> {
-  /// See also [currentSortType].
-  CurrentSortTypeProvider(
-    FilterType filterType,
-  ) : this._internal(
-          (ref) => currentSortType(
-            ref as CurrentSortTypeRef,
-            filterType,
-          ),
-          from: currentSortTypeProvider,
-          name: r'currentSortTypeProvider',
-          debugGetCreateSourceHash:
-              const bool.fromEnvironment('dart.vm.product')
-                  ? null
-                  : _$currentSortTypeHash,
-          dependencies: CurrentSortTypeFamily._dependencies,
-          allTransitiveDependencies:
-              CurrentSortTypeFamily._allTransitiveDependencies,
-          filterType: filterType,
-        );
-
-  CurrentSortTypeProvider._internal(
-    super._createNotifier, {
-    required super.name,
-    required super.dependencies,
-    required super.allTransitiveDependencies,
-    required super.debugGetCreateSourceHash,
-    required super.from,
-    required this.filterType,
-  }) : super.internal();
-
-  final FilterType filterType;
-
-  @override
-  Override overrideWith(
-    SortType Function(CurrentSortTypeRef provider) create,
-  ) {
-    return ProviderOverride(
-      origin: this,
-      override: CurrentSortTypeProvider._internal(
-        (ref) => create(ref as CurrentSortTypeRef),
-        from: from,
-        name: null,
+final class TaskSortProvider
+    extends $AsyncNotifierProvider<TaskSort, Map<FilterType, SortType>> {
+  const TaskSortProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'taskSortProvider',
+        isAutoDispose: true,
         dependencies: null,
-        allTransitiveDependencies: null,
-        debugGetCreateSourceHash: null,
-        filterType: filterType,
-      ),
-    );
-  }
+        $allTransitiveDependencies: null,
+      );
 
   @override
-  AutoDisposeProviderElement<SortType> createElement() {
-    return _CurrentSortTypeProviderElement(this);
+  String debugGetCreateSourceHash() => _$taskSortHash();
+
+  @$internal
+  @override
+  TaskSort create() => TaskSort();
+}
+
+String _$taskSortHash() => r'cbc9476e569ac79978fc4b189a3fd63871326c34';
+
+abstract class _$TaskSort extends $AsyncNotifier<Map<FilterType, SortType>> {
+  FutureOr<Map<FilterType, SortType>> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final created = build();
+    final ref =
+        this.ref
+            as $Ref<
+              AsyncValue<Map<FilterType, SortType>>,
+              Map<FilterType, SortType>
+            >;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<
+                AsyncValue<Map<FilterType, SortType>>,
+                Map<FilterType, SortType>
+              >,
+              AsyncValue<Map<FilterType, SortType>>,
+              Object?,
+              Object?
+            >;
+    element.handleValue(ref, created);
+  }
+}
+
+@ProviderFor(currentSortType)
+const currentSortTypeProvider = CurrentSortTypeFamily._();
+
+final class CurrentSortTypeProvider
+    extends $FunctionalProvider<SortType, SortType, SortType>
+    with $Provider<SortType> {
+  const CurrentSortTypeProvider._({
+    required CurrentSortTypeFamily super.from,
+    required FilterType super.argument,
+  }) : super(
+         retry: null,
+         name: r'currentSortTypeProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$currentSortTypeHash();
+
+  @override
+  String toString() {
+    return r'currentSortTypeProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $ProviderElement<SortType> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  SortType create(Ref ref) {
+    final argument = this.argument as FilterType;
+    return currentSortType(ref, argument);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(SortType value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<SortType>(value),
+    );
   }
 
   @override
   bool operator ==(Object other) {
-    return other is CurrentSortTypeProvider && other.filterType == filterType;
+    return other is CurrentSortTypeProvider && other.argument == argument;
   }
 
   @override
   int get hashCode {
-    var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, filterType.hashCode);
-
-    return _SystemHash.finish(hash);
+    return argument.hashCode;
   }
 }
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-mixin CurrentSortTypeRef on AutoDisposeProviderRef<SortType> {
-  /// The parameter `filterType` of this provider.
-  FilterType get filterType;
-}
+String _$currentSortTypeHash() => r'260f8a1f2bb85d8b97cbee325b5d8b1fe826afb9';
 
-class _CurrentSortTypeProviderElement
-    extends AutoDisposeProviderElement<SortType> with CurrentSortTypeRef {
-  _CurrentSortTypeProviderElement(super.provider);
+final class CurrentSortTypeFamily extends $Family
+    with $FunctionalFamilyOverride<SortType, FilterType> {
+  const CurrentSortTypeFamily._()
+    : super(
+        retry: null,
+        name: r'currentSortTypeProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  CurrentSortTypeProvider call(FilterType filterType) =>
+      CurrentSortTypeProvider._(argument: filterType, from: this);
 
   @override
-  FilterType get filterType => (origin as CurrentSortTypeProvider).filterType;
+  String toString() => r'currentSortTypeProvider';
 }
-
-String _$taskSortHash() => r'93586cc150fc3e26617dbd6efbc05e81c6ba0e4d';
-
-/// See also [TaskSort].
-@ProviderFor(TaskSort)
-final taskSortProvider = AutoDisposeAsyncNotifierProvider<TaskSort,
-    Map<FilterType, SortType>>.internal(
-  TaskSort.new,
-  name: r'taskSortProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$taskSortHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-typedef _$TaskSort = AutoDisposeAsyncNotifier<Map<FilterType, SortType>>;
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

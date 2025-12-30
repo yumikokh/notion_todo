@@ -31,7 +31,7 @@ class TaskResult {
 Future<TaskRepository?> taskRepository(Ref ref) async {
   final taskDatabase = await ref.watch(taskDatabaseViewModelProvider.future);
   final accessToken =
-      ref.watch(notionOAuthViewModelProvider).valueOrNull?.accessToken;
+      ref.watch(notionOAuthViewModelProvider).value?.accessToken;
   WidgetService.sendDatabaseSettings(accessToken, taskDatabase);
 
   if (accessToken == null || taskDatabase == null) {

@@ -103,7 +103,7 @@ class TaskMainPage extends HookConsumerWidget {
       key: Key('taskMainPage/${isToday ? 'Today' : 'All'}'),
       currentIndex: currentIndex,
       showCompleted: isToday ? todayViewModel.showCompleted : null,
-      showSettingBadge: taskDatabase.valueOrNull != null,
+      showSettingBadge: taskDatabase.value != null,
       hideNavigationLabel: hideNavigationLabel,
       onIndexChanged: (index) {
         final nextTab = index == 0 ? tabToday : tabAll;
@@ -148,21 +148,28 @@ class TaskMainPage extends HookConsumerWidget {
                       // 今日のタスクを更新
                       ref.invalidate(todayProvider);
                     },
-                    child: todayTasks.when(
-                      data: (tasks) => TaskListView(
-                        title: d.formatDateForTitle(DateTime.now(),
-                            locale: fontSettings.value?.languageCode),
-                        list: taskSort.sortTasks(tasks, FilterType.today),
-                        taskViewModel: todayViewModel,
-                        showCompleted: todayViewModel.showCompleted,
-                        isLoading: todayTasks.isLoading,
-                      ),
-                      loading: () => const Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                      error: (error, stack) =>
-                          Center(child: Text(l.loading_failed)),
-                    ),
+                    child: Builder(builder: (context) {
+                      // データがある場合は常にリストを表示（ローディング中でも）
+                      final tasks = todayTasks.value;
+                      if (tasks != null) {
+                        return TaskListView(
+                          title: d.formatDateForTitle(DateTime.now(),
+                              locale: fontSettings.value?.languageCode),
+                          list: taskSort.sortTasks(tasks, FilterType.today),
+                          taskViewModel: todayViewModel,
+                          showCompleted: todayViewModel.showCompleted,
+                          isLoading: todayTasks.isLoading,
+                        );
+                      }
+                      // 初回ロード中
+                      if (todayTasks.isLoading) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+                      // エラー
+                      return Center(child: Text(l.loading_failed));
+                    }),
                   ),
                   // All Tasks
                   TaskRefreshIndicator(
@@ -171,19 +178,26 @@ class TaskMainPage extends HookConsumerWidget {
                       ref.invalidate(projectSelectionViewModelProvider);
                       ref.invalidate(allProvider);
                     },
-                    child: allTasks.when(
-                      data: (tasks) => TaskListView(
-                        list: taskSort.sortTasks(tasks, FilterType.all),
-                        taskViewModel: allViewModel,
-                        showCompleted: false, // NOTE: Indexページでは常に未完了のみ表示対応
-                        isLoading: allTasks.isLoading,
-                      ),
-                      loading: () => const Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                      error: (error, stack) =>
-                          Center(child: Text(l.loading_failed)),
-                    ),
+                    child: Builder(builder: (context) {
+                      // データがある場合は常にリストを表示（ローディング中でも）
+                      final tasks = allTasks.value;
+                      if (tasks != null) {
+                        return TaskListView(
+                          list: taskSort.sortTasks(tasks, FilterType.all),
+                          taskViewModel: allViewModel,
+                          showCompleted: false, // NOTE: Indexページでは常に未完了のみ表示対応
+                          isLoading: allTasks.isLoading,
+                        );
+                      }
+                      // 初回ロード中
+                      if (allTasks.isLoading) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+                      // エラー
+                      return Center(child: Text(l.loading_failed));
+                    }),
                   ),
                 ],
               )

@@ -27,7 +27,7 @@ class TaskStarButton extends HookConsumerWidget {
     }
 
     final statusProperty =
-        ref.read(taskDatabaseViewModelProvider).valueOrNull?.status;
+        ref.read(taskDatabaseViewModelProvider).value?.status;
     if (statusProperty is! StatusCompleteStatusProperty) {
       return const SizedBox.shrink();
     }

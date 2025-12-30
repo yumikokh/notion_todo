@@ -670,7 +670,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String trial_ends_then_price_per_year(
-      Object trialDays, Object priceString, Object yearlyPriceShort) {
+    Object trialDays,
+    Object priceString,
+    Object yearlyPriceShort,
+  ) {
     return 'Après $trialDays jours d\'essai gratuit, puis $priceString / $yearlyPriceShort';
   }
 

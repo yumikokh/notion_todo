@@ -57,11 +57,9 @@ void main() async {
         // The sampling rate for profiling is relative to tracesSampleRate
         // Setting to 1.0 will profile 100% of sampled transactions:
         options.profilesSampleRate = 1.0;
-        // リプレイのサンプリング率を設定
-        options.experimental.replay.sessionSampleRate =
-            kReleaseMode ? 0.01 : 0.0;
-        options.experimental.replay.onErrorSampleRate =
-            kReleaseMode ? 1.0 : 0.0;
+        // リプレイのサンプリング率を設定（Sentry 9.0でexperimentalから昇格）
+        options.replay.sessionSampleRate = kReleaseMode ? 0.01 : 0.0;
+        options.replay.onErrorSampleRate = kReleaseMode ? 1.0 : 0.0;
       },
       appRunner: () => runApp(app),
     );
@@ -72,27 +70,27 @@ void main() async {
   FlutterNativeSplash.remove();
 }
 
-class SentryProviderObserver extends ProviderObserver {
-  void handleError(
-    ProviderBase provider,
+final class SentryProviderObserver extends ProviderObserver {
+  @override
+  void providerDidFail(
+    ProviderObserverContext context,
     Object error,
-    StackTrace? stackTrace,
-    ProviderContainer container,
+    StackTrace stackTrace,
   ) {
     // 特定のエラーを除外
-    if (_shouldIgnoreError(error, provider)) return;
+    if (_shouldIgnoreError(error, context)) return;
 
     Sentry.captureException(
       error,
       stackTrace: stackTrace,
       withScope: (scope) {
-        scope.setTag(
-            'provider', provider.name ?? provider.runtimeType.toString());
+        scope.setTag('provider',
+            context.provider.name ?? context.provider.runtimeType.toString());
       },
     );
   }
 
-  bool _shouldIgnoreError(Object error, ProviderBase provider) {
+  bool _shouldIgnoreError(Object error, ProviderObserverContext context) {
     // Provider破棄時のStateErrorを無視
     if (error is StateError) {
       return true;
