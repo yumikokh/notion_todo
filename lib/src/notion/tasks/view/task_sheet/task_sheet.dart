@@ -113,26 +113,37 @@ class TaskSheet extends HookConsumerWidget {
           child: Column(
             children: [
               Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (initialTask.icon != null) ...[
-                    TaskIcon(icon: initialTask.icon!, size: 24),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: TaskIcon(icon: initialTask.icon!, size: 24),
+                    ),
                     const SizedBox(width: 8),
                   ],
                   Expanded(
-                    child: TextField(
-                      controller: titleController,
-                      focusNode: focusNode,
-                      autofocus: isNewTask,
-                      textInputAction: TextInputAction.done,
-                      decoration: InputDecoration(
-                        hintText: l.task_sheet_title_hint,
-                        border: InputBorder.none,
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxHeight: 120),
+                      child: SingleChildScrollView(
+                        child: TextField(
+                          controller: titleController,
+                          focusNode: focusNode,
+                          autofocus: isNewTask,
+                          textInputAction: TextInputAction.done,
+                          maxLines: null,
+                          decoration: InputDecoration(
+                            hintText: l.task_sheet_title_hint,
+                            border: InputBorder.none,
+                            isDense: true,
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                          style: const TextStyle(
+                            fontSize: 20,
+                          ),
+                          onEditingComplete: submitHandler,
+                        ),
                       ),
-                      style: const TextStyle(
-                        fontSize: 20,
-                      ),
-                      onEditingComplete: submitHandler,
                     ),
                   ),
                 ],
