@@ -1,5 +1,5 @@
-// coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// coverage:ignore-file
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
@@ -9,203 +9,272 @@ part of 'snackbar_state.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
-
 /// @nodoc
 mixin _$SnackbarState {
-  String get message => throw _privateConstructorUsedError;
-  SnackbarType get type => throw _privateConstructorUsedError;
-  VoidCallback? get onUndo => throw _privateConstructorUsedError;
-  bool get isFloating => throw _privateConstructorUsedError;
 
-  /// Create a copy of SnackbarState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $SnackbarStateCopyWith<SnackbarState> get copyWith =>
-      throw _privateConstructorUsedError;
+ String get message; SnackbarType get type; VoidCallback? get onUndo; bool get isFloating;
+/// Create a copy of SnackbarState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$SnackbarStateCopyWith<SnackbarState> get copyWith => _$SnackbarStateCopyWithImpl<SnackbarState>(this as SnackbarState, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SnackbarState&&(identical(other.message, message) || other.message == message)&&(identical(other.type, type) || other.type == type)&&(identical(other.onUndo, onUndo) || other.onUndo == onUndo)&&(identical(other.isFloating, isFloating) || other.isFloating == isFloating));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,message,type,onUndo,isFloating);
+
+@override
+String toString() {
+  return 'SnackbarState(message: $message, type: $type, onUndo: $onUndo, isFloating: $isFloating)';
+}
+
+
 }
 
 /// @nodoc
-abstract class $SnackbarStateCopyWith<$Res> {
-  factory $SnackbarStateCopyWith(
-          SnackbarState value, $Res Function(SnackbarState) then) =
-      _$SnackbarStateCopyWithImpl<$Res, SnackbarState>;
-  @useResult
-  $Res call(
-      {String message,
-      SnackbarType type,
-      VoidCallback? onUndo,
-      bool isFloating});
-}
+abstract mixin class $SnackbarStateCopyWith<$Res>  {
+  factory $SnackbarStateCopyWith(SnackbarState value, $Res Function(SnackbarState) _then) = _$SnackbarStateCopyWithImpl;
+@useResult
+$Res call({
+ String message, SnackbarType type, VoidCallback? onUndo, bool isFloating
+});
 
+
+
+
+}
 /// @nodoc
-class _$SnackbarStateCopyWithImpl<$Res, $Val extends SnackbarState>
+class _$SnackbarStateCopyWithImpl<$Res>
     implements $SnackbarStateCopyWith<$Res> {
-  _$SnackbarStateCopyWithImpl(this._value, this._then);
+  _$SnackbarStateCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final SnackbarState _self;
+  final $Res Function(SnackbarState) _then;
 
-  /// Create a copy of SnackbarState
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? message = null,
-    Object? type = null,
-    Object? onUndo = freezed,
-    Object? isFloating = null,
-  }) {
-    return _then(_value.copyWith(
-      message: null == message
-          ? _value.message
-          : message // ignore: cast_nullable_to_non_nullable
-              as String,
-      type: null == type
-          ? _value.type
-          : type // ignore: cast_nullable_to_non_nullable
-              as SnackbarType,
-      onUndo: freezed == onUndo
-          ? _value.onUndo
-          : onUndo // ignore: cast_nullable_to_non_nullable
-              as VoidCallback?,
-      isFloating: null == isFloating
-          ? _value.isFloating
-          : isFloating // ignore: cast_nullable_to_non_nullable
-              as bool,
-    ) as $Val);
-  }
+/// Create a copy of SnackbarState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? message = null,Object? type = null,Object? onUndo = freezed,Object? isFloating = null,}) {
+  return _then(_self.copyWith(
+message: null == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
+as String,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
+as SnackbarType,onUndo: freezed == onUndo ? _self.onUndo : onUndo // ignore: cast_nullable_to_non_nullable
+as VoidCallback?,isFloating: null == isFloating ? _self.isFloating : isFloating // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [SnackbarState].
+extension SnackbarStatePatterns on SnackbarState {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _SnackbarState value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _SnackbarState() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _SnackbarState value)  $default,){
+final _that = this;
+switch (_that) {
+case _SnackbarState():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _SnackbarState value)?  $default,){
+final _that = this;
+switch (_that) {
+case _SnackbarState() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String message,  SnackbarType type,  VoidCallback? onUndo,  bool isFloating)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _SnackbarState() when $default != null:
+return $default(_that.message,_that.type,_that.onUndo,_that.isFloating);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String message,  SnackbarType type,  VoidCallback? onUndo,  bool isFloating)  $default,) {final _that = this;
+switch (_that) {
+case _SnackbarState():
+return $default(_that.message,_that.type,_that.onUndo,_that.isFloating);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String message,  SnackbarType type,  VoidCallback? onUndo,  bool isFloating)?  $default,) {final _that = this;
+switch (_that) {
+case _SnackbarState() when $default != null:
+return $default(_that.message,_that.type,_that.onUndo,_that.isFloating);case _:
+  return null;
+
+}
+}
+
 }
 
 /// @nodoc
-abstract class _$$SnackbarStateImplCopyWith<$Res>
-    implements $SnackbarStateCopyWith<$Res> {
-  factory _$$SnackbarStateImplCopyWith(
-          _$SnackbarStateImpl value, $Res Function(_$SnackbarStateImpl) then) =
-      __$$SnackbarStateImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call(
-      {String message,
-      SnackbarType type,
-      VoidCallback? onUndo,
-      bool isFloating});
+
+
+class _SnackbarState implements SnackbarState {
+  const _SnackbarState({required this.message, this.type = SnackbarType.info, this.onUndo, this.isFloating = false});
+  
+
+@override final  String message;
+@override@JsonKey() final  SnackbarType type;
+@override final  VoidCallback? onUndo;
+@override@JsonKey() final  bool isFloating;
+
+/// Create a copy of SnackbarState
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$SnackbarStateCopyWith<_SnackbarState> get copyWith => __$SnackbarStateCopyWithImpl<_SnackbarState>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SnackbarState&&(identical(other.message, message) || other.message == message)&&(identical(other.type, type) || other.type == type)&&(identical(other.onUndo, onUndo) || other.onUndo == onUndo)&&(identical(other.isFloating, isFloating) || other.isFloating == isFloating));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,message,type,onUndo,isFloating);
+
+@override
+String toString() {
+  return 'SnackbarState(message: $message, type: $type, onUndo: $onUndo, isFloating: $isFloating)';
+}
+
+
 }
 
 /// @nodoc
-class __$$SnackbarStateImplCopyWithImpl<$Res>
-    extends _$SnackbarStateCopyWithImpl<$Res, _$SnackbarStateImpl>
-    implements _$$SnackbarStateImplCopyWith<$Res> {
-  __$$SnackbarStateImplCopyWithImpl(
-      _$SnackbarStateImpl _value, $Res Function(_$SnackbarStateImpl) _then)
-      : super(_value, _then);
+abstract mixin class _$SnackbarStateCopyWith<$Res> implements $SnackbarStateCopyWith<$Res> {
+  factory _$SnackbarStateCopyWith(_SnackbarState value, $Res Function(_SnackbarState) _then) = __$SnackbarStateCopyWithImpl;
+@override @useResult
+$Res call({
+ String message, SnackbarType type, VoidCallback? onUndo, bool isFloating
+});
 
-  /// Create a copy of SnackbarState
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? message = null,
-    Object? type = null,
-    Object? onUndo = freezed,
-    Object? isFloating = null,
-  }) {
-    return _then(_$SnackbarStateImpl(
-      message: null == message
-          ? _value.message
-          : message // ignore: cast_nullable_to_non_nullable
-              as String,
-      type: null == type
-          ? _value.type
-          : type // ignore: cast_nullable_to_non_nullable
-              as SnackbarType,
-      onUndo: freezed == onUndo
-          ? _value.onUndo
-          : onUndo // ignore: cast_nullable_to_non_nullable
-              as VoidCallback?,
-      isFloating: null == isFloating
-          ? _value.isFloating
-          : isFloating // ignore: cast_nullable_to_non_nullable
-              as bool,
-    ));
-  }
+
+
+
 }
-
 /// @nodoc
+class __$SnackbarStateCopyWithImpl<$Res>
+    implements _$SnackbarStateCopyWith<$Res> {
+  __$SnackbarStateCopyWithImpl(this._self, this._then);
 
-class _$SnackbarStateImpl implements _SnackbarState {
-  const _$SnackbarStateImpl(
-      {required this.message,
-      this.type = SnackbarType.info,
-      this.onUndo,
-      this.isFloating = false});
+  final _SnackbarState _self;
+  final $Res Function(_SnackbarState) _then;
 
-  @override
-  final String message;
-  @override
-  @JsonKey()
-  final SnackbarType type;
-  @override
-  final VoidCallback? onUndo;
-  @override
-  @JsonKey()
-  final bool isFloating;
-
-  @override
-  String toString() {
-    return 'SnackbarState(message: $message, type: $type, onUndo: $onUndo, isFloating: $isFloating)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$SnackbarStateImpl &&
-            (identical(other.message, message) || other.message == message) &&
-            (identical(other.type, type) || other.type == type) &&
-            (identical(other.onUndo, onUndo) || other.onUndo == onUndo) &&
-            (identical(other.isFloating, isFloating) ||
-                other.isFloating == isFloating));
-  }
-
-  @override
-  int get hashCode =>
-      Object.hash(runtimeType, message, type, onUndo, isFloating);
-
-  /// Create a copy of SnackbarState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$SnackbarStateImplCopyWith<_$SnackbarStateImpl> get copyWith =>
-      __$$SnackbarStateImplCopyWithImpl<_$SnackbarStateImpl>(this, _$identity);
+/// Create a copy of SnackbarState
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? message = null,Object? type = null,Object? onUndo = freezed,Object? isFloating = null,}) {
+  return _then(_SnackbarState(
+message: null == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
+as String,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
+as SnackbarType,onUndo: freezed == onUndo ? _self.onUndo : onUndo // ignore: cast_nullable_to_non_nullable
+as VoidCallback?,isFloating: null == isFloating ? _self.isFloating : isFloating // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
 }
 
-abstract class _SnackbarState implements SnackbarState {
-  const factory _SnackbarState(
-      {required final String message,
-      final SnackbarType type,
-      final VoidCallback? onUndo,
-      final bool isFloating}) = _$SnackbarStateImpl;
 
-  @override
-  String get message;
-  @override
-  SnackbarType get type;
-  @override
-  VoidCallback? get onUndo;
-  @override
-  bool get isFloating;
-
-  /// Create a copy of SnackbarState
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$SnackbarStateImplCopyWith<_$SnackbarStateImpl> get copyWith =>
-      throw _privateConstructorUsedError;
 }
+
+// dart format on

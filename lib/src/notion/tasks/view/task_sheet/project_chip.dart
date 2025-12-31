@@ -29,7 +29,7 @@ class ProjectChip extends ConsumerWidget {
 
     // ProjectSelectionViewModelからプロジェクト情報を取得
     final projectsAsync = ref.watch(projectSelectionViewModelProvider);
-    final availableProjects = projectsAsync.valueOrNull ?? [];
+    final availableProjects = projectsAsync.value ?? [];
 
     // 選択されたプロジェクトの情報を取得
     final selectedProjectInfos = isSelected

@@ -6,8 +6,8 @@ part of 'font_settings.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$FontSettingsImpl _$$FontSettingsImplFromJson(Map<String, dynamic> json) =>
-    _$FontSettingsImpl(
+_FontSettings _$FontSettingsFromJson(Map<String, dynamic> json) =>
+    _FontSettings(
       languageCode: json['languageCode'] as String? ?? 'en',
       fontFamily: json['fontFamily'] as String? ?? 'Bodoni Moda',
       isItalic: json['isItalic'] as bool? ?? true,
@@ -16,7 +16,7 @@ _$FontSettingsImpl _$$FontSettingsImplFromJson(Map<String, dynamic> json) =>
       letterSpacing: (json['letterSpacing'] as num?)?.toDouble() ?? -0.8,
     );
 
-Map<String, dynamic> _$$FontSettingsImplToJson(_$FontSettingsImpl instance) =>
+Map<String, dynamic> _$FontSettingsToJson(_FontSettings instance) =>
     <String, dynamic>{
       'languageCode': instance.languageCode,
       'fontFamily': instance.fontFamily,

@@ -7,7 +7,7 @@ part 'task_database.g.dart';
 
 // 決定されたタスクDB情報
 @freezed
-class TaskDatabase with _$TaskDatabase {
+abstract class TaskDatabase with _$TaskDatabase {
   @JsonSerializable(explicitToJson: true)
   const factory TaskDatabase({
     required String id,

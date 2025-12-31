@@ -8,7 +8,7 @@ part 'task.freezed.dart';
 part 'task.g.dart';
 
 @freezed
-class NotionDateTime with _$NotionDateTime {
+abstract class NotionDateTime with _$NotionDateTime {
   const NotionDateTime._();
 
   const factory NotionDateTime({
@@ -39,7 +39,7 @@ class NotionDateTime with _$NotionDateTime {
 }
 
 @freezed
-class TaskDate with _$TaskDate {
+abstract class TaskDate with _$TaskDate {
   static final DateHelper d = DateHelper();
 
   const factory TaskDate({
@@ -94,7 +94,7 @@ sealed class TaskStatus with _$TaskStatus {
 }
 
 @freezed
-class Task with _$Task {
+abstract class Task with _$Task {
   const Task._();
 
   const factory Task({

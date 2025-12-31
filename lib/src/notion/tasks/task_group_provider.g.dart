@@ -6,188 +6,400 @@ part of 'task_group_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+
+@ProviderFor(taskGroupService)
+const taskGroupServiceProvider = TaskGroupServiceProvider._();
+
+final class TaskGroupServiceProvider
+    extends
+        $FunctionalProvider<
+          TaskGroupService,
+          TaskGroupService,
+          TaskGroupService
+        >
+    with $Provider<TaskGroupService> {
+  const TaskGroupServiceProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'taskGroupServiceProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$taskGroupServiceHash();
+
+  @$internal
+  @override
+  $ProviderElement<TaskGroupService> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  TaskGroupService create(Ref ref) {
+    return taskGroupService(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(TaskGroupService value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<TaskGroupService>(value),
+    );
+  }
+}
+
 String _$taskGroupServiceHash() => r'58ed86a0edbb8be593bab176853d489db14f9a36';
 
-/// See also [taskGroupService].
-@ProviderFor(taskGroupService)
-final taskGroupServiceProvider = Provider<TaskGroupService>.internal(
-  taskGroupService,
-  name: r'taskGroupServiceProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$taskGroupServiceHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+@ProviderFor(TaskGroup)
+const taskGroupProvider = TaskGroupProvider._();
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef TaskGroupServiceRef = ProviderRef<TaskGroupService>;
-String _$currentGroupTypeHash() => r'bb0dc2172ecc55c395cccd52f8c2e83c68d16473';
-
-/// Copied from Dart SDK
-class _SystemHash {
-  _SystemHash._();
-
-  static int combine(int hash, int value) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + value);
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
-    return hash ^ (hash >> 6);
-  }
-
-  static int finish(int hash) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
-    // ignore: parameter_assignments
-    hash = hash ^ (hash >> 11);
-    return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
-  }
-}
-
-/// See also [currentGroupType].
-@ProviderFor(currentGroupType)
-const currentGroupTypeProvider = CurrentGroupTypeFamily();
-
-/// See also [currentGroupType].
-class CurrentGroupTypeFamily extends Family<GroupType> {
-  /// See also [currentGroupType].
-  const CurrentGroupTypeFamily();
-
-  /// See also [currentGroupType].
-  CurrentGroupTypeProvider call(
-    FilterType filterType,
-  ) {
-    return CurrentGroupTypeProvider(
-      filterType,
-    );
-  }
-
-  @override
-  CurrentGroupTypeProvider getProviderOverride(
-    covariant CurrentGroupTypeProvider provider,
-  ) {
-    return call(
-      provider.filterType,
-    );
-  }
-
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
-
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
-
-  @override
-  String? get name => r'currentGroupTypeProvider';
-}
-
-/// See also [currentGroupType].
-class CurrentGroupTypeProvider extends AutoDisposeProvider<GroupType> {
-  /// See also [currentGroupType].
-  CurrentGroupTypeProvider(
-    FilterType filterType,
-  ) : this._internal(
-          (ref) => currentGroupType(
-            ref as CurrentGroupTypeRef,
-            filterType,
-          ),
-          from: currentGroupTypeProvider,
-          name: r'currentGroupTypeProvider',
-          debugGetCreateSourceHash:
-              const bool.fromEnvironment('dart.vm.product')
-                  ? null
-                  : _$currentGroupTypeHash,
-          dependencies: CurrentGroupTypeFamily._dependencies,
-          allTransitiveDependencies:
-              CurrentGroupTypeFamily._allTransitiveDependencies,
-          filterType: filterType,
-        );
-
-  CurrentGroupTypeProvider._internal(
-    super._createNotifier, {
-    required super.name,
-    required super.dependencies,
-    required super.allTransitiveDependencies,
-    required super.debugGetCreateSourceHash,
-    required super.from,
-    required this.filterType,
-  }) : super.internal();
-
-  final FilterType filterType;
-
-  @override
-  Override overrideWith(
-    GroupType Function(CurrentGroupTypeRef provider) create,
-  ) {
-    return ProviderOverride(
-      origin: this,
-      override: CurrentGroupTypeProvider._internal(
-        (ref) => create(ref as CurrentGroupTypeRef),
-        from: from,
-        name: null,
+final class TaskGroupProvider
+    extends $AsyncNotifierProvider<TaskGroup, Map<FilterType, GroupType>> {
+  const TaskGroupProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'taskGroupProvider',
+        isAutoDispose: true,
         dependencies: null,
-        allTransitiveDependencies: null,
-        debugGetCreateSourceHash: null,
-        filterType: filterType,
-      ),
-    );
-  }
+        $allTransitiveDependencies: null,
+      );
 
   @override
-  AutoDisposeProviderElement<GroupType> createElement() {
-    return _CurrentGroupTypeProviderElement(this);
+  String debugGetCreateSourceHash() => _$taskGroupHash();
+
+  @$internal
+  @override
+  TaskGroup create() => TaskGroup();
+}
+
+String _$taskGroupHash() => r'662d5a60d2f2e92472d9d24a7e18526bd021eb62';
+
+abstract class _$TaskGroup extends $AsyncNotifier<Map<FilterType, GroupType>> {
+  FutureOr<Map<FilterType, GroupType>> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final created = build();
+    final ref =
+        this.ref
+            as $Ref<
+              AsyncValue<Map<FilterType, GroupType>>,
+              Map<FilterType, GroupType>
+            >;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<
+                AsyncValue<Map<FilterType, GroupType>>,
+                Map<FilterType, GroupType>
+              >,
+              AsyncValue<Map<FilterType, GroupType>>,
+              Object?,
+              Object?
+            >;
+    element.handleValue(ref, created);
+  }
+}
+
+@ProviderFor(currentGroupType)
+const currentGroupTypeProvider = CurrentGroupTypeFamily._();
+
+final class CurrentGroupTypeProvider
+    extends $FunctionalProvider<GroupType, GroupType, GroupType>
+    with $Provider<GroupType> {
+  const CurrentGroupTypeProvider._({
+    required CurrentGroupTypeFamily super.from,
+    required FilterType super.argument,
+  }) : super(
+         retry: null,
+         name: r'currentGroupTypeProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$currentGroupTypeHash();
+
+  @override
+  String toString() {
+    return r'currentGroupTypeProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $ProviderElement<GroupType> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  GroupType create(Ref ref) {
+    final argument = this.argument as FilterType;
+    return currentGroupType(ref, argument);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(GroupType value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<GroupType>(value),
+    );
   }
 
   @override
   bool operator ==(Object other) {
-    return other is CurrentGroupTypeProvider && other.filterType == filterType;
+    return other is CurrentGroupTypeProvider && other.argument == argument;
   }
 
   @override
   int get hashCode {
-    var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, filterType.hashCode);
-
-    return _SystemHash.finish(hash);
+    return argument.hashCode;
   }
 }
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-mixin CurrentGroupTypeRef on AutoDisposeProviderRef<GroupType> {
-  /// The parameter `filterType` of this provider.
-  FilterType get filterType;
-}
+String _$currentGroupTypeHash() => r'e5570a31719d7d451e8c9748170feb07d9b95ba7';
 
-class _CurrentGroupTypeProviderElement
-    extends AutoDisposeProviderElement<GroupType> with CurrentGroupTypeRef {
-  _CurrentGroupTypeProviderElement(super.provider);
+final class CurrentGroupTypeFamily extends $Family
+    with $FunctionalFamilyOverride<GroupType, FilterType> {
+  const CurrentGroupTypeFamily._()
+    : super(
+        retry: null,
+        name: r'currentGroupTypeProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  CurrentGroupTypeProvider call(FilterType filterType) =>
+      CurrentGroupTypeProvider._(argument: filterType, from: this);
 
   @override
-  FilterType get filterType => (origin as CurrentGroupTypeProvider).filterType;
+  String toString() => r'currentGroupTypeProvider';
 }
 
-String _$taskGroupHash() => r'1a713070c94705f979db310e77d6cc6f7a241093';
+/// グループの展開状態を管理するプロバイダー
 
-/// See also [TaskGroup].
-@ProviderFor(TaskGroup)
-final taskGroupProvider = AutoDisposeAsyncNotifierProvider<TaskGroup,
-    Map<FilterType, GroupType>>.internal(
-  TaskGroup.new,
-  name: r'taskGroupProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$taskGroupHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+@ProviderFor(ExpandedGroups)
+const expandedGroupsProvider = ExpandedGroupsFamily._();
 
-typedef _$TaskGroup = AutoDisposeAsyncNotifier<Map<FilterType, GroupType>>;
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+/// グループの展開状態を管理するプロバイダー
+final class ExpandedGroupsProvider
+    extends $NotifierProvider<ExpandedGroups, Map<String, bool>> {
+  /// グループの展開状態を管理するプロバイダー
+  const ExpandedGroupsProvider._({
+    required ExpandedGroupsFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'expandedGroupsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$expandedGroupsHash();
+
+  @override
+  String toString() {
+    return r'expandedGroupsProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  ExpandedGroups create() => ExpandedGroups();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(Map<String, bool> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<Map<String, bool>>(value),
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ExpandedGroupsProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$expandedGroupsHash() => r'024ba88bda3d445abe1fcd2b503abe2d672454c9';
+
+/// グループの展開状態を管理するプロバイダー
+
+final class ExpandedGroupsFamily extends $Family
+    with
+        $ClassFamilyOverride<
+          ExpandedGroups,
+          Map<String, bool>,
+          Map<String, bool>,
+          Map<String, bool>,
+          String
+        > {
+  const ExpandedGroupsFamily._()
+    : super(
+        retry: null,
+        name: r'expandedGroupsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// グループの展開状態を管理するプロバイダー
+
+  ExpandedGroupsProvider call(String key) =>
+      ExpandedGroupsProvider._(argument: key, from: this);
+
+  @override
+  String toString() => r'expandedGroupsProvider';
+}
+
+/// グループの展開状態を管理するプロバイダー
+
+abstract class _$ExpandedGroups extends $Notifier<Map<String, bool>> {
+  late final _$args = ref.$arg as String;
+  String get key => _$args;
+
+  Map<String, bool> build(String key);
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final created = build(_$args);
+    final ref = this.ref as $Ref<Map<String, bool>, Map<String, bool>>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<Map<String, bool>, Map<String, bool>>,
+              Map<String, bool>,
+              Object?,
+              Object?
+            >;
+    element.handleValue(ref, created);
+  }
+}
+
+/// 「完了タスク」セクションの展開状態を管理するプロバイダー
+
+@ProviderFor(CompletedTasksSectionExpanded)
+const completedTasksSectionExpandedProvider =
+    CompletedTasksSectionExpandedFamily._();
+
+/// 「完了タスク」セクションの展開状態を管理するプロバイダー
+final class CompletedTasksSectionExpandedProvider
+    extends $NotifierProvider<CompletedTasksSectionExpanded, bool> {
+  /// 「完了タスク」セクションの展開状態を管理するプロバイダー
+  const CompletedTasksSectionExpandedProvider._({
+    required CompletedTasksSectionExpandedFamily super.from,
+    required FilterType super.argument,
+  }) : super(
+         retry: null,
+         name: r'completedTasksSectionExpandedProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$completedTasksSectionExpandedHash();
+
+  @override
+  String toString() {
+    return r'completedTasksSectionExpandedProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  CompletedTasksSectionExpanded create() => CompletedTasksSectionExpanded();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(bool value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<bool>(value),
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is CompletedTasksSectionExpandedProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$completedTasksSectionExpandedHash() =>
+    r'42e0d41d66034086cf5d3134c37ab79dcddb5cf5';
+
+/// 「完了タスク」セクションの展開状態を管理するプロバイダー
+
+final class CompletedTasksSectionExpandedFamily extends $Family
+    with
+        $ClassFamilyOverride<
+          CompletedTasksSectionExpanded,
+          bool,
+          bool,
+          bool,
+          FilterType
+        > {
+  const CompletedTasksSectionExpandedFamily._()
+    : super(
+        retry: null,
+        name: r'completedTasksSectionExpandedProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// 「完了タスク」セクションの展開状態を管理するプロバイダー
+
+  CompletedTasksSectionExpandedProvider call(FilterType filterType) =>
+      CompletedTasksSectionExpandedProvider._(argument: filterType, from: this);
+
+  @override
+  String toString() => r'completedTasksSectionExpandedProvider';
+}
+
+/// 「完了タスク」セクションの展開状態を管理するプロバイダー
+
+abstract class _$CompletedTasksSectionExpanded extends $Notifier<bool> {
+  late final _$args = ref.$arg as FilterType;
+  FilterType get filterType => _$args;
+
+  bool build(FilterType filterType);
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final created = build(_$args);
+    final ref = this.ref as $Ref<bool, bool>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<bool, bool>,
+              bool,
+              Object?,
+              Object?
+            >;
+    element.handleValue(ref, created);
+  }
+}

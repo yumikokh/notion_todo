@@ -631,7 +631,10 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String trial_ends_then_price_per_year(
-      Object trialDays, Object priceString, Object yearlyPriceShort) {
+    Object trialDays,
+    Object priceString,
+    Object yearlyPriceShort,
+  ) {
     return '$trialDays일 무료 체험 종료 후 $priceString / $yearlyPriceShort';
   }
 

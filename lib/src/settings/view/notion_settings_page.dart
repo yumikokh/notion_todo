@@ -17,11 +17,11 @@ class NotionSettingsPage extends ConsumerWidget {
   Widget build(BuildContext context, ref) {
     final notionOAuth = ref.watch(notionOAuthViewModelProvider.notifier);
     final isAuthenticated =
-        ref.watch(notionOAuthViewModelProvider).valueOrNull?.isAuthenticated ??
+        ref.watch(notionOAuthViewModelProvider).value?.isAuthenticated ??
             false;
     final taskDatabaseViewModel =
         ref.watch(taskDatabaseViewModelProvider.notifier);
-    final taskDatabase = ref.watch(taskDatabaseViewModelProvider).valueOrNull;
+    final taskDatabase = ref.watch(taskDatabaseViewModelProvider).value;
     final statusProperty = taskDatabase?.status;
     final l = AppLocalizations.of(context)!;
 

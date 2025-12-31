@@ -5,7 +5,7 @@ import 'property.dart';
 part 'database.freezed.dart';
 
 @freezed
-class Database with _$Database {
+abstract class Database with _$Database {
   const factory Database({
     required String id,
     required String name,

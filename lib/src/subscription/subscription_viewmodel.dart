@@ -48,7 +48,7 @@ class SubscriptionViewModel extends _$SubscriptionViewModel
 
   // プレミアム機能が利用可能かどうかをチェック
   bool canAccessPremiumFeature() {
-    final status = state.valueOrNull;
+    final status = state.value;
     if (status == null) return false;
 
     return status.isSubscribed;
@@ -56,7 +56,7 @@ class SubscriptionViewModel extends _$SubscriptionViewModel
 
   // トライアル期間かどうかをチェック
   bool isInTrialPeriod() {
-    final status = state.valueOrNull;
+    final status = state.value;
     if (status == null) return false;
 
     return status.isActive && status.isInTrial;
@@ -64,7 +64,7 @@ class SubscriptionViewModel extends _$SubscriptionViewModel
 
   // サブスクリプションバナーを表示するかどうかをチェック
   bool get shouldShowSubscriptionBanner {
-    final status = state.valueOrNull;
+    final status = state.value;
     if (status == null) return true; // Show for free users
 
     // Show for free users
@@ -83,7 +83,7 @@ class SubscriptionViewModel extends _$SubscriptionViewModel
 
   // 期限切れまでの日数を取得
   int? getDaysUntilExpiration() {
-    final status = state.valueOrNull;
+    final status = state.value;
     if (status == null || status.expirationDate == null) return null;
 
     final now = DateTime.now();

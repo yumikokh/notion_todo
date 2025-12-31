@@ -96,7 +96,7 @@ class TaskSort extends _$TaskSort {
 
   // 指定したFilterTypeのSortTypeを取得
   SortType getSortType(FilterType filterType) {
-    return state.valueOrNull?[filterType] ?? SortType.system;
+    return state.value?[filterType] ?? SortType.system;
   }
 
   // 指定したFilterTypeのSortTypeを設定
@@ -118,7 +118,7 @@ class TaskSort extends _$TaskSort {
     final sortedTasks = List<Task>.from(tasks);
 
     final taskDatabaseViewModel =
-        ref.read(taskDatabaseViewModelProvider).valueOrNull;
+        ref.read(taskDatabaseViewModelProvider).value;
     final statusProperty = taskDatabaseViewModel?.status;
     StatusOption? inProgressOption;
     if (statusProperty is StatusCompleteStatusProperty) {
@@ -227,5 +227,5 @@ class TaskSort extends _$TaskSort {
 @riverpod
 SortType currentSortType(Ref ref, FilterType filterType) {
   final sortState = ref.watch(taskSortProvider);
-  return sortState.valueOrNull?[filterType] ?? SortType.system;
+  return sortState.value?[filterType] ?? SortType.system;
 }

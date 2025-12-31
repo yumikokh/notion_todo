@@ -296,7 +296,7 @@ class TaskListView extends HookConsumerWidget {
     required BuildContext context,
     required ThemeMode themeMode,
     required Map<String, bool> expandedGroups,
-    required ExpandedGroupsNotifier expandedGroupsNotifier,
+    required ExpandedGroups expandedGroupsNotifier,
     required WidgetRef ref,
     required GroupType groupType,
   }) {
@@ -421,7 +421,7 @@ class TaskListView extends HookConsumerWidget {
 
     // ProjectSelectionViewModelからプロジェクト情報を取得
     final projectsAsync = ref.read(projectSelectionViewModelProvider);
-    final projects = projectsAsync.valueOrNull ?? [];
+    final projects = projectsAsync.value ?? [];
 
     if (id == 'no_date') return l.no_property(l.date_property);
     if (id == 'no_status') return l.no_property(l.status_property);
@@ -435,7 +435,7 @@ class TaskListView extends HookConsumerWidget {
 
     // データベースのステータス情報からオプション名を取得
     final taskDatabaseViewModel =
-        ref.read(taskDatabaseViewModelProvider).valueOrNull;
+        ref.read(taskDatabaseViewModelProvider).value;
 
     try {
       switch (groupType) {
@@ -498,7 +498,7 @@ class TaskListView extends HookConsumerWidget {
     // プロジェクトグループの場合はアイコンまたは#記号を追加
     if (groupType == GroupType.project) {
       final projectsAsync = ref.watch(projectSelectionViewModelProvider);
-      final availableProjects = projectsAsync.valueOrNull ?? [];
+      final availableProjects = projectsAsync.value ?? [];
       final project =
           availableProjects.where((proj) => proj.id == groupId).firstOrNull;
 

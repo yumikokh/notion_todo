@@ -30,11 +30,11 @@ class SettingsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ref) {
-    final database = ref.watch(taskDatabaseViewModelProvider).valueOrNull;
+    final database = ref.watch(taskDatabaseViewModelProvider).value;
     final analytics = ref.read(analyticsServiceProvider);
     final appVersionViewModel = ref.read(appVersionViewModelProvider);
     final subscriptionStatus =
-        ref.watch(subscriptionViewModelProvider).valueOrNull;
+        ref.watch(subscriptionViewModelProvider).value;
     final subscriptionViewModel =
         ref.read(subscriptionViewModelProvider.notifier);
 

@@ -26,15 +26,11 @@ import 'package:tanzaku_todo/src/notion/model/task_database.dart' as _i2;
 // ignore_for_file: unnecessary_parenthesis
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
+// ignore_for_file: invalid_use_of_internal_member
 
 class _FakeTaskDatabase_0 extends _i1.SmartFake implements _i2.TaskDatabase {
-  _FakeTaskDatabase_0(
-    Object parent,
-    Invocation parentInvocation,
-  ) : super(
-          parent,
-          parentInvocation,
-        );
+  _FakeTaskDatabase_0(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
 }
 
 /// A class which mocks [NotionTaskApi].
@@ -42,66 +38,67 @@ class _FakeTaskDatabase_0 extends _i1.SmartFake implements _i2.TaskDatabase {
 /// See the documentation for Mockito's code generation for more information.
 class MockNotionTaskApi extends _i1.Mock implements _i3.NotionTaskApi {
   @override
-  String get accessToken => (super.noSuchMethod(
-        Invocation.getter(#accessToken),
-        returnValue: _i4.dummyValue<String>(
-          this,
-          Invocation.getter(#accessToken),
-        ),
-        returnValueForMissingStub: _i4.dummyValue<String>(
-          this,
-          Invocation.getter(#accessToken),
-        ),
-      ) as String);
+  String get accessToken =>
+      (super.noSuchMethod(
+            Invocation.getter(#accessToken),
+            returnValue: _i4.dummyValue<String>(
+              this,
+              Invocation.getter(#accessToken),
+            ),
+            returnValueForMissingStub: _i4.dummyValue<String>(
+              this,
+              Invocation.getter(#accessToken),
+            ),
+          )
+          as String);
 
   @override
-  _i2.TaskDatabase get database => (super.noSuchMethod(
-        Invocation.getter(#database),
-        returnValue: _FakeTaskDatabase_0(
-          this,
-          Invocation.getter(#database),
-        ),
-        returnValueForMissingStub: _FakeTaskDatabase_0(
-          this,
-          Invocation.getter(#database),
-        ),
-      ) as _i2.TaskDatabase);
+  _i2.TaskDatabase get database =>
+      (super.noSuchMethod(
+            Invocation.getter(#database),
+            returnValue: _FakeTaskDatabase_0(
+              this,
+              Invocation.getter(#database),
+            ),
+            returnValueForMissingStub: _FakeTaskDatabase_0(
+              this,
+              Invocation.getter(#database),
+            ),
+          )
+          as _i2.TaskDatabase);
 
   @override
-  Map<String, String> get headers => (super.noSuchMethod(
-        Invocation.getter(#headers),
-        returnValue: <String, String>{},
-        returnValueForMissingStub: <String, String>{},
-      ) as Map<String, String>);
+  Map<String, String> get headers =>
+      (super.noSuchMethod(
+            Invocation.getter(#headers),
+            returnValue: <String, String>{},
+            returnValueForMissingStub: <String, String>{},
+          )
+          as Map<String, String>);
 
   @override
-  set headers(Map<String, String>? _headers) => super.noSuchMethod(
-        Invocation.setter(
-          #headers,
-          _headers,
-        ),
-        returnValueForMissingStub: null,
-      );
+  set headers(Map<String, String>? value) => super.noSuchMethod(
+    Invocation.setter(#headers, value),
+    returnValueForMissingStub: null,
+  );
 
   @override
-  _i5.Future<bool> loadShowCompleted() => (super.noSuchMethod(
-        Invocation.method(
-          #loadShowCompleted,
-          [],
-        ),
-        returnValue: _i5.Future<bool>.value(false),
-        returnValueForMissingStub: _i5.Future<bool>.value(false),
-      ) as _i5.Future<bool>);
+  _i5.Future<bool> loadShowCompleted() =>
+      (super.noSuchMethod(
+            Invocation.method(#loadShowCompleted, []),
+            returnValue: _i5.Future<bool>.value(false),
+            returnValueForMissingStub: _i5.Future<bool>.value(false),
+          )
+          as _i5.Future<bool>);
 
   @override
-  _i5.Future<void> saveShowCompleted(bool? value) => (super.noSuchMethod(
-        Invocation.method(
-          #saveShowCompleted,
-          [value],
-        ),
-        returnValue: _i5.Future<void>.value(),
-        returnValueForMissingStub: _i5.Future<void>.value(),
-      ) as _i5.Future<void>);
+  _i5.Future<void> saveShowCompleted(bool? value) =>
+      (super.noSuchMethod(
+            Invocation.method(#saveShowCompleted, [value]),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
+          )
+          as _i5.Future<void>);
 
   @override
   _i5.Future<dynamic> fetchPages(
@@ -110,54 +107,42 @@ class MockNotionTaskApi extends _i1.Mock implements _i3.NotionTaskApi {
     String? startCursor,
   }) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #fetchPages,
-          [
-            filterType,
-            hasCompleted,
-          ],
-          {#startCursor: startCursor},
-        ),
-        returnValue: _i5.Future<dynamic>.value(),
-        returnValueForMissingStub: _i5.Future<dynamic>.value(),
-      ) as _i5.Future<dynamic>);
+            Invocation.method(
+              #fetchPages,
+              [filterType, hasCompleted],
+              {#startCursor: startCursor},
+            ),
+            returnValue: _i5.Future<dynamic>.value(),
+            returnValueForMissingStub: _i5.Future<dynamic>.value(),
+          )
+          as _i5.Future<dynamic>);
 
   @override
-  _i5.Future<dynamic> addTask(_i7.Task? task) => (super.noSuchMethod(
-        Invocation.method(
-          #addTask,
-          [task],
-        ),
-        returnValue: _i5.Future<dynamic>.value(),
-        returnValueForMissingStub: _i5.Future<dynamic>.value(),
-      ) as _i5.Future<dynamic>);
-
-  @override
-  _i5.Future<dynamic> updateTask(_i7.Task? task) => (super.noSuchMethod(
-        Invocation.method(
-          #updateTask,
-          [task],
-        ),
-        returnValue: _i5.Future<dynamic>.value(),
-        returnValueForMissingStub: _i5.Future<dynamic>.value(),
-      ) as _i5.Future<dynamic>);
-
-  @override
-  _i5.Future<dynamic> updateCompleteStatus(
-    String? taskId,
-    bool? isCompleted,
-  ) =>
+  _i5.Future<dynamic> addTask(_i7.Task? task) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #updateCompleteStatus,
-          [
-            taskId,
-            isCompleted,
-          ],
-        ),
-        returnValue: _i5.Future<dynamic>.value(),
-        returnValueForMissingStub: _i5.Future<dynamic>.value(),
-      ) as _i5.Future<dynamic>);
+            Invocation.method(#addTask, [task]),
+            returnValue: _i5.Future<dynamic>.value(),
+            returnValueForMissingStub: _i5.Future<dynamic>.value(),
+          )
+          as _i5.Future<dynamic>);
+
+  @override
+  _i5.Future<dynamic> updateTask(_i7.Task? task) =>
+      (super.noSuchMethod(
+            Invocation.method(#updateTask, [task]),
+            returnValue: _i5.Future<dynamic>.value(),
+            returnValueForMissingStub: _i5.Future<dynamic>.value(),
+          )
+          as _i5.Future<dynamic>);
+
+  @override
+  _i5.Future<dynamic> updateCompleteStatus(String? taskId, bool? isCompleted) =>
+      (super.noSuchMethod(
+            Invocation.method(#updateCompleteStatus, [taskId, isCompleted]),
+            returnValue: _i5.Future<dynamic>.value(),
+            returnValueForMissingStub: _i5.Future<dynamic>.value(),
+          )
+          as _i5.Future<dynamic>);
 
   @override
   _i5.Future<dynamic> updateInProgressStatus(
@@ -165,36 +150,29 @@ class MockNotionTaskApi extends _i1.Mock implements _i3.NotionTaskApi {
     bool? isInProgress,
   ) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #updateInProgressStatus,
-          [
-            taskId,
-            isInProgress,
-          ],
-        ),
-        returnValue: _i5.Future<dynamic>.value(),
-        returnValueForMissingStub: _i5.Future<dynamic>.value(),
-      ) as _i5.Future<dynamic>);
+            Invocation.method(#updateInProgressStatus, [taskId, isInProgress]),
+            returnValue: _i5.Future<dynamic>.value(),
+            returnValueForMissingStub: _i5.Future<dynamic>.value(),
+          )
+          as _i5.Future<dynamic>);
 
   @override
-  _i5.Future<dynamic> deleteTask(String? taskId) => (super.noSuchMethod(
-        Invocation.method(
-          #deleteTask,
-          [taskId],
-        ),
-        returnValue: _i5.Future<dynamic>.value(),
-        returnValueForMissingStub: _i5.Future<dynamic>.value(),
-      ) as _i5.Future<dynamic>);
+  _i5.Future<dynamic> deleteTask(String? taskId) =>
+      (super.noSuchMethod(
+            Invocation.method(#deleteTask, [taskId]),
+            returnValue: _i5.Future<dynamic>.value(),
+            returnValueForMissingStub: _i5.Future<dynamic>.value(),
+          )
+          as _i5.Future<dynamic>);
 
   @override
-  _i5.Future<dynamic> revertTask(String? taskId) => (super.noSuchMethod(
-        Invocation.method(
-          #revertTask,
-          [taskId],
-        ),
-        returnValue: _i5.Future<dynamic>.value(),
-        returnValueForMissingStub: _i5.Future<dynamic>.value(),
-      ) as _i5.Future<dynamic>);
+  _i5.Future<dynamic> revertTask(String? taskId) =>
+      (super.noSuchMethod(
+            Invocation.method(#revertTask, [taskId]),
+            returnValue: _i5.Future<dynamic>.value(),
+            returnValueForMissingStub: _i5.Future<dynamic>.value(),
+          )
+          as _i5.Future<dynamic>);
 }
 
 /// A class which mocks [NotionDatabaseApi].
@@ -202,68 +180,68 @@ class MockNotionTaskApi extends _i1.Mock implements _i3.NotionTaskApi {
 /// See the documentation for Mockito's code generation for more information.
 class MockNotionDatabaseApi extends _i1.Mock implements _i8.NotionDatabaseApi {
   @override
-  String get accessToken => (super.noSuchMethod(
-        Invocation.getter(#accessToken),
-        returnValue: _i4.dummyValue<String>(
-          this,
-          Invocation.getter(#accessToken),
-        ),
-        returnValueForMissingStub: _i4.dummyValue<String>(
-          this,
-          Invocation.getter(#accessToken),
-        ),
-      ) as String);
+  String get accessToken =>
+      (super.noSuchMethod(
+            Invocation.getter(#accessToken),
+            returnValue: _i4.dummyValue<String>(
+              this,
+              Invocation.getter(#accessToken),
+            ),
+            returnValueForMissingStub: _i4.dummyValue<String>(
+              this,
+              Invocation.getter(#accessToken),
+            ),
+          )
+          as String);
 
   @override
-  Map<String, String> get headers => (super.noSuchMethod(
-        Invocation.getter(#headers),
-        returnValue: <String, String>{},
-        returnValueForMissingStub: <String, String>{},
-      ) as Map<String, String>);
+  Map<String, String> get headers =>
+      (super.noSuchMethod(
+            Invocation.getter(#headers),
+            returnValue: <String, String>{},
+            returnValueForMissingStub: <String, String>{},
+          )
+          as Map<String, String>);
 
   @override
-  set headers(Map<String, String>? _headers) => super.noSuchMethod(
-        Invocation.setter(
-          #headers,
-          _headers,
-        ),
-        returnValueForMissingStub: null,
-      );
+  set headers(Map<String, String>? value) => super.noSuchMethod(
+    Invocation.setter(#headers, value),
+    returnValueForMissingStub: null,
+  );
 
   @override
-  _i5.Future<dynamic> fetchAccessibleDatabases() => (super.noSuchMethod(
-        Invocation.method(
-          #fetchAccessibleDatabases,
-          [],
-        ),
-        returnValue: _i5.Future<dynamic>.value(),
-        returnValueForMissingStub: _i5.Future<dynamic>.value(),
-      ) as _i5.Future<dynamic>);
+  _i5.Future<dynamic> fetchAccessibleDatabases() =>
+      (super.noSuchMethod(
+            Invocation.method(#fetchAccessibleDatabases, []),
+            returnValue: _i5.Future<dynamic>.value(),
+            returnValueForMissingStub: _i5.Future<dynamic>.value(),
+          )
+          as _i5.Future<dynamic>);
 
   @override
   _i5.Future<dynamic> fetchDatabaseById(String? databaseId) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #fetchDatabaseById,
-          [databaseId],
-        ),
-        returnValue: _i5.Future<dynamic>.value(),
-        returnValueForMissingStub: _i5.Future<dynamic>.value(),
-      ) as _i5.Future<dynamic>);
+            Invocation.method(#fetchDatabaseById, [databaseId]),
+            returnValue: _i5.Future<dynamic>.value(),
+            returnValueForMissingStub: _i5.Future<dynamic>.value(),
+          )
+          as _i5.Future<dynamic>);
 
   @override
   _i5.Future<List<Map<String, dynamic>>> fetchDatabasePagesById(
-          String? databaseId) =>
+    String? databaseId,
+  ) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #fetchDatabasePagesById,
-          [databaseId],
-        ),
-        returnValue: _i5.Future<List<Map<String, dynamic>>>.value(
-            <Map<String, dynamic>>[]),
-        returnValueForMissingStub: _i5.Future<List<Map<String, dynamic>>>.value(
-            <Map<String, dynamic>>[]),
-      ) as _i5.Future<List<Map<String, dynamic>>>);
+            Invocation.method(#fetchDatabasePagesById, [databaseId]),
+            returnValue: _i5.Future<List<Map<String, dynamic>>>.value(
+              <Map<String, dynamic>>[],
+            ),
+            returnValueForMissingStub:
+                _i5.Future<List<Map<String, dynamic>>>.value(
+                  <Map<String, dynamic>>[],
+                ),
+          )
+          as _i5.Future<List<Map<String, dynamic>>>);
 
   @override
   _i5.Future<dynamic> createProperty(
@@ -272,25 +250,18 @@ class MockNotionDatabaseApi extends _i1.Mock implements _i8.NotionDatabaseApi {
     String? name,
   ) =>
       (super.noSuchMethod(
-        Invocation.method(
-          #createProperty,
-          [
-            databaseId,
-            type,
-            name,
-          ],
-        ),
-        returnValue: _i5.Future<dynamic>.value(),
-        returnValueForMissingStub: _i5.Future<dynamic>.value(),
-      ) as _i5.Future<dynamic>);
+            Invocation.method(#createProperty, [databaseId, type, name]),
+            returnValue: _i5.Future<dynamic>.value(),
+            returnValueForMissingStub: _i5.Future<dynamic>.value(),
+          )
+          as _i5.Future<dynamic>);
 
   @override
-  _i5.Future<dynamic> fetchPageById(String? pageId) => (super.noSuchMethod(
-        Invocation.method(
-          #fetchPageById,
-          [pageId],
-        ),
-        returnValue: _i5.Future<dynamic>.value(),
-        returnValueForMissingStub: _i5.Future<dynamic>.value(),
-      ) as _i5.Future<dynamic>);
+  _i5.Future<dynamic> fetchPageById(String? pageId) =>
+      (super.noSuchMethod(
+            Invocation.method(#fetchPageById, [pageId]),
+            returnValue: _i5.Future<dynamic>.value(),
+            returnValueForMissingStub: _i5.Future<dynamic>.value(),
+          )
+          as _i5.Future<dynamic>);
 }

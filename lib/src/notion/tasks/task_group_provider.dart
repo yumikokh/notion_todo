@@ -1,4 +1,3 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tanzaku_todo/generated/app_localizations.dart';
@@ -96,7 +95,7 @@ class TaskGroup extends _$TaskGroup {
 
   // 指定したFilterTypeのGroupTypeを取得
   GroupType getGroupType(FilterType filterType) {
-    return state.valueOrNull?[filterType] ?? GroupType.none;
+    return state.value?[filterType] ?? GroupType.none;
   }
 
   // 指定したFilterTypeのGroupTypeを設定
@@ -117,7 +116,7 @@ class TaskGroup extends _$TaskGroup {
       List<Task> tasks, FilterType filterType, bool showCompleted) {
     final groupType = getGroupType(filterType);
     final taskDatabaseViewModel =
-        ref.read(taskDatabaseViewModelProvider).valueOrNull;
+        ref.read(taskDatabaseViewModelProvider).value;
 
     // 結果を格納するマップ（順序を保持するためLinkedHashMapを使用）
     Map<String, List<Task>> groupedTasks = {};
@@ -360,7 +359,7 @@ class TaskGroup extends _$TaskGroup {
           try {
             // プロジェクト情報を取得
             final projectsAsync = ref.read(projectSelectionViewModelProvider);
-            final projects = projectsAsync.valueOrNull ?? [];
+            final projects = projectsAsync.value ?? [];
 
             // プロジェクトIDから名前へのマップを作成
             final projectNameMap = <String, String>{};
@@ -461,34 +460,27 @@ class TaskGroup extends _$TaskGroup {
 @riverpod
 GroupType currentGroupType(Ref ref, FilterType filterType) {
   final groupState = ref.watch(taskGroupProvider);
-  return groupState.valueOrNull?[filterType] ?? GroupType.none;
+  return groupState.value?[filterType] ?? GroupType.none;
 }
 
 /// グループの展開状態を管理するプロバイダー
-final expandedGroupsProvider = StateNotifierProvider.family<
-    ExpandedGroupsNotifier, Map<String, bool>, String>(
-  (ref, key) => ExpandedGroupsNotifier(key),
-);
-
-/// 「完了タスク」セクションの展開状態を管理するプロバイダー
-final completedTasksSectionExpandedProvider = StateNotifierProvider.family<
-    CompletedTasksExpandedNotifier, bool, FilterType>(
-  (ref, filterType) => CompletedTasksExpandedNotifier(filterType.name),
-);
-
-/// グループの展開状態を管理するStateNotifier
-class ExpandedGroupsNotifier extends StateNotifier<Map<String, bool>> {
-  final String _storageKey;
+@riverpod
+class ExpandedGroups extends _$ExpandedGroups {
   bool _isInitialized = false;
+  late String _storageKey;
 
-  ExpandedGroupsNotifier(this._storageKey) : super({}) {
+  @override
+  Map<String, bool> build(String key) {
+    _storageKey = key;
     _loadState();
+    return {};
   }
 
   Future<void> _loadState() async {
+    final storageKey = _storageKey;
     try {
       final prefs = await SharedPreferences.getInstance();
-      final savedState = prefs.getString('expanded_groups_$_storageKey');
+      final savedState = prefs.getString('expanded_groups_$storageKey');
 
       if (savedState != null) {
         try {
@@ -587,19 +579,24 @@ class ExpandedGroupsNotifier extends StateNotifier<Map<String, bool>> {
   }
 }
 
-/// 完了タスクセクションの展開状態を管理するStateNotifier
-class CompletedTasksExpandedNotifier extends StateNotifier<bool> {
-  final String _filterType;
+/// 「完了タスク」セクションの展開状態を管理するプロバイダー
+@riverpod
+class CompletedTasksSectionExpanded extends _$CompletedTasksSectionExpanded {
   bool _isInitialized = false;
+  late String _filterTypeName;
 
-  CompletedTasksExpandedNotifier(this._filterType) : super(true) {
+  @override
+  bool build(FilterType filterType) {
+    _filterTypeName = filterType.name;
     _loadState();
+    return true;
   }
 
   Future<void> _loadState() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final savedState = prefs.getBool('completed_tasks_expanded_$_filterType');
+      final savedState =
+          prefs.getBool('completed_tasks_expanded_$_filterTypeName');
 
       if (savedState != null) {
         state = savedState;
@@ -618,7 +615,7 @@ class CompletedTasksExpandedNotifier extends StateNotifier<bool> {
 
     try {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('completed_tasks_expanded_$_filterType', state);
+      await prefs.setBool('completed_tasks_expanded_$_filterTypeName', state);
     } catch (e) {
       debugPrint('Failed to save completed tasks expanded state: $e');
     }

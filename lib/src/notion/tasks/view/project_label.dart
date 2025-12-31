@@ -26,7 +26,7 @@ class ProjectLabel extends ConsumerWidget {
 
     // ProjectSelectionViewModelからプロジェクト情報を取得
     final projectsAsync = ref.watch(projectSelectionViewModelProvider);
-    final availableProjects = projectsAsync.valueOrNull ?? [];
+    final availableProjects = projectsAsync.value ?? [];
 
     return Wrap(
       crossAxisAlignment: WrapCrossAlignment.center,
