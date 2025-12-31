@@ -29,9 +29,13 @@ class TaskResult {
 
 @riverpod
 Future<TaskRepository?> taskRepository(Ref ref) async {
-  final taskDatabase = await ref.watch(taskDatabaseViewModelProvider.future);
-  final accessToken =
-      ref.watch(notionOAuthViewModelProvider).value?.accessToken;
+  // 非同期処理の前にすべてのwatchを完了させる
+  final oauthState = ref.watch(notionOAuthViewModelProvider);
+  final taskDatabaseFuture = ref.watch(taskDatabaseViewModelProvider.future);
+
+  final accessToken = oauthState.value?.accessToken;
+  final taskDatabase = await taskDatabaseFuture;
+
   WidgetService.sendDatabaseSettings(accessToken, taskDatabase);
 
   if (accessToken == null || taskDatabase == null) {
