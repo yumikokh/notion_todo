@@ -216,7 +216,7 @@ struct SimpleEntry: TimelineEntry {
     if isEmpty {
       return 0
     }
-    return tasks.filter { $0.isCompleted && !$0.isOverdue }.count
+    return tasks.filter { $0.isCompleted }.count
   }
 
   // 全タスクの数を計算
@@ -224,7 +224,7 @@ struct SimpleEntry: TimelineEntry {
     if isEmpty {
       return 0
     }
-    return tasks.filter { !($0.isCompleted && $0.isOverdue) }.count
+    return tasks.count
   }
 
   // 残りのタスク
