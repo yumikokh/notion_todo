@@ -510,7 +510,7 @@ class TaskListView extends HookConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (project?.icon != null)
-            TaskIcon(icon: project!.icon!, size: 16)
+            TaskIcon(icon: project!.icon!, size: 16, isProjectIcon: true)
           else
             SizedBox(
               width: 16,

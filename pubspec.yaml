@@ -47,6 +47,8 @@ dependencies:
   uni_links: ^0.5.1
   page_transition: ^2.2.1
   purchases_flutter: ^9.10.1
+  cached_network_svg_image: ^2.0.0
+  cached_network_image: ^3.4.1
 
 dev_dependencies:
   flutter_test:

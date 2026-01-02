@@ -53,7 +53,7 @@ class ProjectChip extends ConsumerWidget {
               return [
                 if (index > 0) const Text(', ', style: TextStyle(fontSize: 14)),
                 if (project.icon != null)
-                  TaskIcon(icon: project.icon!, size: 14)
+                  TaskIcon(icon: project.icon!, size: 14, isProjectIcon: true)
                 else
                   const SizedBox(
                     width: 14,
