@@ -37,10 +37,10 @@ target 'Runner' do
   # end
 end
 
-# Widget ExtensionはSwift Package Manager経由でHomeWidgetを使用するため、
-# CocoaPodsの依存関係からは除外
 target 'TodayTasksWidgetExtension' do
   use_frameworks! :linkage => :static
+  use_modular_headers!
+  pod 'home_widget', :path => '.symlinks/plugins/home_widget/ios'
 end
 
 post_install do |installer|
