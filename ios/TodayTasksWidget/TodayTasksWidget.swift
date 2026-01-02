@@ -2,10 +2,7 @@ import AppIntents
 import Foundation
 import SwiftUI
 import WidgetKit
-
-#if canImport(HomeWidget)
-import HomeWidget
-#endif
+import home_widget
 
 // MARK: - WidgetTask
 // ウィジェットで表示するタスクデータ構造
@@ -357,6 +354,7 @@ struct Provider: TimelineProvider {
       sharedDefaults?.object(forKey: "task_database") != nil
       && sharedDefaults?.string(forKey: "access_token") != nil
     let isSubscribed = sharedDefaults?.bool(forKey: "subscription_status") ?? false
+    // let isSubscribed = true  // [debug]
 
     // データベースが未設定の場合
     if !hasTaskDatabase {
@@ -419,7 +417,7 @@ struct Provider: TimelineProvider {
 }
 
 ////////
-/// @available(iOS 17, *)
+@available(iOS 17, *)
 public struct BackgroundIntent: AppIntent {
 
   static public var title: LocalizedStringResource = "HomeWidget Background Intent"
@@ -434,11 +432,9 @@ public struct BackgroundIntent: AppIntent {
   }
 
   public func perform() async throws -> some IntentResult {
-    #if canImport(HomeWidget)
     await HomeWidgetBackgroundWorker.run(
       url: url,
       appGroup: "group.com.ymkokh.notionTodo")
-    #endif
 
     return .result()
   }
