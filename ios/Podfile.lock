@@ -141,7 +141,7 @@ PODS:
   - sqflite_darwin (0.0.4):
     - Flutter
     - FlutterMacOS
-  - TSBackgroundFetch (4.0.5)
+  - TSBackgroundFetch (4.0.6)
   - uni_links (0.0.1):
     - Flutter
   - url_launcher_ios (0.0.1):
@@ -252,7 +252,7 @@ SPEC CHECKSUMS:
   GoogleAppMeasurement: 3bf40aff49a601af5da1c3345702fcb4991d35ee
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
   haptic_feedback: a366a27ec760f0e865651605b95de8a9bb04ef01
-  home_widget: adb331cfd5b5e1bcecbcd3861d011aac67cdd1e0
+  home_widget: fdbbfaa90f06f3022cb57f79678d4d58b9c5e140
   in_app_review: 436034b18594851a7328d7f1c2ed5ec235b79cfc
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
   package_info_plus: c0502532a26c7662a62a356cebe2692ec5fe4ec4
@@ -265,11 +265,11 @@ SPEC CHECKSUMS:
   sentry_flutter: d44ce25f0ed7b944b885c5d34883092a3e6b2aa9
   shared_preferences_foundation: 5086985c1d43c5ba4d5e69a4e8083a389e2909e6
   sqflite_darwin: 5a7236e3b501866c1c9befc6771dfd73ffb8702d
-  TSBackgroundFetch: e91020924db32f27d0a43df7dec6f73f10743571
+  TSBackgroundFetch: 0afbeaae4e1132866e1d4b6e55265af26b5958ae
   uni_links: d97da20c7701486ba192624d99bffaaffcfc298a
   url_launcher_ios: bb13df5870e8c4234ca12609d04010a21be43dfa
   wakelock_plus: 76957ab028e12bfa4e66813c99e46637f367fc7e
 
-PODFILE CHECKSUM: 5bd0c0037db57ac5fa3ab549182a441c5577916c
+PODFILE CHECKSUM: e57b6b60c0f03dc344eb650a7b8d729cb5483da6
 
 COCOAPODS: 1.16.2

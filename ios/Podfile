@@ -44,6 +44,11 @@ target 'TodayTasksWidgetExtension' do
 end
 
 post_install do |installer|
+  # Flutter.xcframeworkのパスを取得
+  flutter_engine_dir = File.join(flutter_root, 'bin', 'cache', 'artifacts', 'engine')
+  debug_xcframework = File.join(flutter_engine_dir, 'ios', 'Flutter.xcframework')
+  release_xcframework = File.join(flutter_engine_dir, 'ios-release', 'Flutter.xcframework')
+
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
     target.build_configurations.each do |config|
@@ -55,5 +60,25 @@ post_install do |installer|
         'COCOAPODS=1',
       ]
     end
+  end
+
+  # ウィジェットExtension用: Flutter.xcframeworkのリンク設定をxcconfigに直接追加
+  widget_xcconfig_dir = File.join(installer.sandbox.root, 'Target Support Files', 'Pods-TodayTasksWidgetExtension')
+  Dir.glob("#{widget_xcconfig_dir}/*.xcconfig").each do |xcconfig_path|
+    content = File.read(xcconfig_path)
+    is_debug = xcconfig_path.include?('debug')
+    framework_dir = is_debug ? debug_xcframework : release_xcframework
+    sim_dir = Dir.glob("#{framework_dir}/ios-*-simulator").first
+    device_dir = Dir.glob("#{framework_dir}/ios-arm64").first
+
+    # FRAMEWORK_SEARCH_PATHSにFlutter.xcframeworkのパスを追加
+    if sim_dir && !content.include?(sim_dir)
+      content.gsub!(/^(FRAMEWORK_SEARCH_PATHS = .*)$/, "\\1 \"#{sim_dir}\"")
+    end
+    # OTHER_LDFLAGSに-framework Flutterを追加
+    unless content.include?('-framework "Flutter"') || content.include?('-framework Flutter')
+      content.gsub!(/^(OTHER_LDFLAGS = .*)$/, '\\1 -framework "Flutter"')
+    end
+    File.write(xcconfig_path, content)
   end
 end

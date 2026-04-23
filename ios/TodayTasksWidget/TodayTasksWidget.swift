@@ -440,7 +440,8 @@ public struct BackgroundIntent: AppIntent {
   }
 }
 
-// アプリをバックグラウンドから起動するための拡張
+// アプリがサスペンド状態のときに BackgroundIntent がアプリをフォアグラウンドに復帰させるために必要
+// home_widget 0.9.0 の公式サンプル準拠
 @available(iOS 17, *)
 @available(iOSApplicationExtension, unavailable)
 extension BackgroundIntent: ForegroundContinuableIntent {}
