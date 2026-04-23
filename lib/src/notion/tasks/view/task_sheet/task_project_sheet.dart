@@ -199,7 +199,7 @@ class _TaskProjectSheetState extends ConsumerState<TaskProjectSheet> {
                                   temporarySelectedIds.contains(project.id);
                               return ListTile(
                                 leading: project.icon != null
-                                    ? TaskIcon(icon: project.icon!, size: 24)
+                                    ? TaskIcon(icon: project.icon!, size: 24, isProjectIcon: true)
                                     : SizedBox(
                                         width: 24,
                                         height: 24,
