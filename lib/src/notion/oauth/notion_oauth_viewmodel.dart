@@ -9,7 +9,7 @@ part 'notion_oauth_viewmodel.g.dart';
 part 'notion_oauth_viewmodel.freezed.dart';
 
 @freezed
-class NotionOAuth with _$NotionOAuth {
+abstract class NotionOAuth with _$NotionOAuth {
   const factory NotionOAuth({
     required String? accessToken,
   }) = _NotionOAuth;
@@ -28,7 +28,7 @@ class NotionOAuthViewModel extends _$NotionOAuthViewModel {
 
   @override
   Future<NotionOAuth> build() async {
-    final currentState = state.valueOrNull;
+    final currentState = state.value;
     if (currentState != null && currentState.accessToken != null) {
       return currentState;
     }

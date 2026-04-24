@@ -57,11 +57,30 @@ void main() async {
         // The sampling rate for profiling is relative to tracesSampleRate
         // Setting to 1.0 will profile 100% of sampled transactions:
         options.profilesSampleRate = 1.0;
-        // リプレイのサンプリング率を設定
-        options.experimental.replay.sessionSampleRate =
-            kReleaseMode ? 0.01 : 0.0;
-        options.experimental.replay.onErrorSampleRate =
-            kReleaseMode ? 1.0 : 0.0;
+        // リプレイのサンプリング率を設定（Sentry 9.0でexperimentalから昇格）
+        options.replay.sessionSampleRate = kReleaseMode ? 0.01 : 0.0;
+        options.replay.onErrorSampleRate = kReleaseMode ? 1.0 : 0.0;
+
+        // 一時的なネットワークエラーをフィルタリング
+        options.beforeSend = (event, hint) {
+          final exceptions = event.exceptions;
+          if (exceptions != null && exceptions.isNotEmpty) {
+            final exceptionValue = exceptions.first.value ?? '';
+            // バックグラウンドでの接続エラーを無視
+            if (BackgroundConnectionException.isBackgroundConnectionError(
+                exceptionValue)) {
+              return null;
+            }
+            // SSL/TLSハンドシェイクエラーを無視
+            if (exceptionValue.toLowerCase().contains('handshakeexception') ||
+                exceptionValue
+                    .toLowerCase()
+                    .contains('connection terminated during handshake')) {
+              return null;
+            }
+          }
+          return event;
+        };
       },
       appRunner: () => runApp(app),
     );
@@ -72,27 +91,27 @@ void main() async {
   FlutterNativeSplash.remove();
 }
 
-class SentryProviderObserver extends ProviderObserver {
-  void handleError(
-    ProviderBase provider,
+final class SentryProviderObserver extends ProviderObserver {
+  @override
+  void providerDidFail(
+    ProviderObserverContext context,
     Object error,
-    StackTrace? stackTrace,
-    ProviderContainer container,
+    StackTrace stackTrace,
   ) {
     // 特定のエラーを除外
-    if (_shouldIgnoreError(error, provider)) return;
+    if (_shouldIgnoreError(error, context)) return;
 
     Sentry.captureException(
       error,
       stackTrace: stackTrace,
       withScope: (scope) {
-        scope.setTag(
-            'provider', provider.name ?? provider.runtimeType.toString());
+        scope.setTag('provider',
+            context.provider.name ?? context.provider.runtimeType.toString());
       },
     );
   }
 
-  bool _shouldIgnoreError(Object error, ProviderBase provider) {
+  bool _shouldIgnoreError(Object error, ProviderObserverContext context) {
     // Provider破棄時のStateErrorを無視
     if (error is StateError) {
       return true;
@@ -108,6 +127,18 @@ class SentryProviderObserver extends ProviderObserver {
       return true;
     }
 
+    // SSL/TLSハンドシェイクエラーを無視（ネットワーク不安定時に発生）
+    if (_isHandshakeError(error)) {
+      return true;
+    }
+
     return false;
+  }
+
+  /// SSL/TLSハンドシェイクエラーかどうかを判定
+  bool _isHandshakeError(Object error) {
+    final errorString = error.toString().toLowerCase();
+    return errorString.contains('handshakeexception') ||
+        errorString.contains('connection terminated during handshake');
   }
 }

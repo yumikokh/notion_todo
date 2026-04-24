@@ -34,10 +34,9 @@ const _$PropertyTypeEnumMap = {
   PropertyType.multiSelect: 'multiSelect',
 };
 
-DateProperty _$DatePropertyFromJson(Map<String, dynamic> json) => DateProperty(
-      id: json['id'] as String,
-      name: json['name'] as String,
-    )..type = $enumDecode(_$PropertyTypeEnumMap, json['type']);
+DateProperty _$DatePropertyFromJson(Map<String, dynamic> json) =>
+    DateProperty(id: json['id'] as String, name: json['name'] as String)
+      ..type = $enumDecode(_$PropertyTypeEnumMap, json['type']);
 
 Map<String, dynamic> _$DatePropertyToJson(DateProperty instance) =>
     <String, dynamic>{
@@ -70,10 +69,7 @@ Map<String, dynamic> _$SelectPropertyToJson(SelectProperty instance) =>
       },
     };
 
-$Rec _$recordConvert<$Rec>(
-  Object? value,
-  $Rec Function(Map) convert,
-) =>
+$Rec _$recordConvert<$Rec>(Object? value, $Rec Function(Map) convert) =>
     convert(value as Map<String, dynamic>);
 
 CheckboxProperty _$CheckboxPropertyFromJson(Map<String, dynamic> json) =>
@@ -121,71 +117,69 @@ Map<String, dynamic> _$StatusPropertyToJson(StatusProperty instance) =>
     };
 
 CheckboxCompleteStatusProperty _$CheckboxCompleteStatusPropertyFromJson(
-        Map<String, dynamic> json) =>
-    CheckboxCompleteStatusProperty(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      checkbox: json['checkbox'] as bool,
-    )..type = $enumDecode(_$PropertyTypeEnumMap, json['type']);
+  Map<String, dynamic> json,
+) => CheckboxCompleteStatusProperty(
+  id: json['id'] as String,
+  name: json['name'] as String,
+  checkbox: json['checkbox'] as bool,
+)..type = $enumDecode(_$PropertyTypeEnumMap, json['type']);
 
 Map<String, dynamic> _$CheckboxCompleteStatusPropertyToJson(
-        CheckboxCompleteStatusProperty instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'name': instance.name,
-      'type': _$PropertyTypeEnumMap[instance.type]!,
-      'checkbox': instance.checkbox,
-    };
+  CheckboxCompleteStatusProperty instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'name': instance.name,
+  'type': _$PropertyTypeEnumMap[instance.type]!,
+  'checkbox': instance.checkbox,
+};
 
 StatusCompleteStatusProperty _$StatusCompleteStatusPropertyFromJson(
-        Map<String, dynamic> json) =>
-    StatusCompleteStatusProperty(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      status: _$recordConvert(
-        json['status'],
-        ($jsonValue) => (
-          groups: ($jsonValue['groups'] as List<dynamic>)
-              .map((e) => StatusGroup.fromJson(e as Map<String, dynamic>))
-              .toList(),
-          options: ($jsonValue['options'] as List<dynamic>)
-              .map((e) => StatusOption.fromJson(e as Map<String, dynamic>))
-              .toList(),
-        ),
-      ),
-      todoOption: json['todoOption'] == null
-          ? null
-          : StatusOption.fromJson(json['todoOption'] as Map<String, dynamic>),
-      inProgressOption: json['inProgressOption'] == null
-          ? null
-          : StatusOption.fromJson(
-              json['inProgressOption'] as Map<String, dynamic>),
-      completeOption: json['completeOption'] == null
-          ? null
-          : StatusOption.fromJson(
-              json['completeOption'] as Map<String, dynamic>),
-    )..type = $enumDecode(_$PropertyTypeEnumMap, json['type']);
+  Map<String, dynamic> json,
+) => StatusCompleteStatusProperty(
+  id: json['id'] as String,
+  name: json['name'] as String,
+  status: _$recordConvert(
+    json['status'],
+    ($jsonValue) => (
+      groups: ($jsonValue['groups'] as List<dynamic>)
+          .map((e) => StatusGroup.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      options: ($jsonValue['options'] as List<dynamic>)
+          .map((e) => StatusOption.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    ),
+  ),
+  todoOption: json['todoOption'] == null
+      ? null
+      : StatusOption.fromJson(json['todoOption'] as Map<String, dynamic>),
+  inProgressOption: json['inProgressOption'] == null
+      ? null
+      : StatusOption.fromJson(json['inProgressOption'] as Map<String, dynamic>),
+  completeOption: json['completeOption'] == null
+      ? null
+      : StatusOption.fromJson(json['completeOption'] as Map<String, dynamic>),
+)..type = $enumDecode(_$PropertyTypeEnumMap, json['type']);
 
 Map<String, dynamic> _$StatusCompleteStatusPropertyToJson(
-        StatusCompleteStatusProperty instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'name': instance.name,
-      'type': _$PropertyTypeEnumMap[instance.type]!,
-      'status': <String, dynamic>{
-        'groups': instance.status.groups.map((e) => e.toJson()).toList(),
-        'options': instance.status.options.map((e) => e.toJson()).toList(),
-      },
-      'todoOption': instance.todoOption?.toJson(),
-      'inProgressOption': instance.inProgressOption?.toJson(),
-      'completeOption': instance.completeOption?.toJson(),
-    };
+  StatusCompleteStatusProperty instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'name': instance.name,
+  'type': _$PropertyTypeEnumMap[instance.type]!,
+  'status': <String, dynamic>{
+    'groups': instance.status.groups.map((e) => e.toJson()).toList(),
+    'options': instance.status.options.map((e) => e.toJson()).toList(),
+  },
+  'todoOption': instance.todoOption?.toJson(),
+  'inProgressOption': instance.inProgressOption?.toJson(),
+  'completeOption': instance.completeOption?.toJson(),
+};
 
 SelectOption _$SelectOptionFromJson(Map<String, dynamic> json) => SelectOption(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      color: $enumDecodeNullable(_$NotionColorEnumMap, json['color']),
-    );
+  id: json['id'] as String,
+  name: json['name'] as String,
+  color: $enumDecodeNullable(_$NotionColorEnumMap, json['color']),
+);
 
 Map<String, dynamic> _$SelectOptionToJson(SelectOption instance) =>
     <String, dynamic>{
@@ -208,10 +202,10 @@ const _$NotionColorEnumMap = {
 };
 
 StatusOption _$StatusOptionFromJson(Map<String, dynamic> json) => StatusOption(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      color: $enumDecodeNullable(_$NotionColorEnumMap, json['color']),
-    );
+  id: json['id'] as String,
+  name: json['name'] as String,
+  color: $enumDecodeNullable(_$NotionColorEnumMap, json['color']),
+);
 
 Map<String, dynamic> _$StatusOptionToJson(StatusOption instance) =>
     <String, dynamic>{
@@ -221,13 +215,13 @@ Map<String, dynamic> _$StatusOptionToJson(StatusOption instance) =>
     };
 
 StatusGroup _$StatusGroupFromJson(Map<String, dynamic> json) => StatusGroup(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      color: $enumDecodeNullable(_$NotionColorEnumMap, json['color']),
-      optionIds: (json['option_ids'] as List<dynamic>)
-          .map((e) => e as String)
-          .toList(),
-    );
+  id: json['id'] as String,
+  name: json['name'] as String,
+  color: $enumDecodeNullable(_$NotionColorEnumMap, json['color']),
+  optionIds: (json['option_ids'] as List<dynamic>)
+      .map((e) => e as String)
+      .toList(),
+);
 
 Map<String, dynamic> _$StatusGroupToJson(StatusGroup instance) =>
     <String, dynamic>{
@@ -267,10 +261,8 @@ Map<String, dynamic> _$RelationPropertyToJson(RelationProperty instance) =>
     };
 
 NumberProperty _$NumberPropertyFromJson(Map<String, dynamic> json) =>
-    NumberProperty(
-      id: json['id'] as String,
-      name: json['name'] as String,
-    )..type = $enumDecode(_$PropertyTypeEnumMap, json['type']);
+    NumberProperty(id: json['id'] as String, name: json['name'] as String)
+      ..type = $enumDecode(_$PropertyTypeEnumMap, json['type']);
 
 Map<String, dynamic> _$NumberPropertyToJson(NumberProperty instance) =>
     <String, dynamic>{
@@ -279,10 +271,9 @@ Map<String, dynamic> _$NumberPropertyToJson(NumberProperty instance) =>
       'type': _$PropertyTypeEnumMap[instance.type]!,
     };
 
-UrlProperty _$UrlPropertyFromJson(Map<String, dynamic> json) => UrlProperty(
-      id: json['id'] as String,
-      name: json['name'] as String,
-    )..type = $enumDecode(_$PropertyTypeEnumMap, json['type']);
+UrlProperty _$UrlPropertyFromJson(Map<String, dynamic> json) =>
+    UrlProperty(id: json['id'] as String, name: json['name'] as String)
+      ..type = $enumDecode(_$PropertyTypeEnumMap, json['type']);
 
 Map<String, dynamic> _$UrlPropertyToJson(UrlProperty instance) =>
     <String, dynamic>{
@@ -292,10 +283,8 @@ Map<String, dynamic> _$UrlPropertyToJson(UrlProperty instance) =>
     };
 
 FormulaProperty _$FormulaPropertyFromJson(Map<String, dynamic> json) =>
-    FormulaProperty(
-      id: json['id'] as String,
-      name: json['name'] as String,
-    )..type = $enumDecode(_$PropertyTypeEnumMap, json['type']);
+    FormulaProperty(id: json['id'] as String, name: json['name'] as String)
+      ..type = $enumDecode(_$PropertyTypeEnumMap, json['type']);
 
 Map<String, dynamic> _$FormulaPropertyToJson(FormulaProperty instance) =>
     <String, dynamic>{
@@ -319,12 +308,12 @@ MultiSelectProperty _$MultiSelectPropertyFromJson(Map<String, dynamic> json) =>
     )..type = $enumDecode(_$PropertyTypeEnumMap, json['type']);
 
 Map<String, dynamic> _$MultiSelectPropertyToJson(
-        MultiSelectProperty instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'name': instance.name,
-      'type': _$PropertyTypeEnumMap[instance.type]!,
-      'multi_select': <String, dynamic>{
-        'options': instance.multiSelect.options.map((e) => e.toJson()).toList(),
-      },
-    };
+  MultiSelectProperty instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'name': instance.name,
+  'type': _$PropertyTypeEnumMap[instance.type]!,
+  'multi_select': <String, dynamic>{
+    'options': instance.multiSelect.options.map((e) => e.toJson()).toList(),
+  },
+};

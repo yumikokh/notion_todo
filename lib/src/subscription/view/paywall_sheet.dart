@@ -31,7 +31,7 @@ class PaywallSheet extends HookConsumerWidget {
         ref.watch(subscriptionViewModelProvider.notifier);
     final isLoading = subscriptionViewModel.isLoading;
     final plans = subscriptionViewModel.availablePlans;
-    final currentStatus = subscriptionStatus.valueOrNull;
+    final currentStatus = subscriptionStatus.value;
 
     // 年額プランをデフォルトで選択
     final selectedPlan = useState<SubscriptionPlan?>(plans

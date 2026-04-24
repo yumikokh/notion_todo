@@ -76,8 +76,8 @@ class SubscriptionRepository {
 
       return plans;
     } catch (e, stackTrace) {
-      // オフラインエラーは無視（ユーザー側の一時的な問題）
-      if (!_isOfflineError(e)) {
+      // オフラインエラーと設定エラーは無視（ユーザー側の一時的な問題 or RevenueCat側の設定問題）
+      if (!_isIgnorableError(e)) {
         Sentry.captureException(e, stackTrace: stackTrace);
       }
       print('getAvailablePlans error: $e');
@@ -203,13 +203,22 @@ class SubscriptionRepository {
     );
   }
 
-  /// RevenueCatのオフラインエラーかどうかを判定します
-  bool _isOfflineError(Object error) {
+  /// Sentryへの報告を無視すべきエラーかどうかを判定します
+  /// - オフラインエラー: ユーザー側の一時的な問題
+  /// - 設定エラー: RevenueCat側の設定問題（App Store Connectとの同期問題など）
+  bool _isIgnorableError(Object error) {
     if (error is PlatformException) {
       final details = error.details as Map<dynamic, dynamic>?;
       final readableErrorCode = details?['readableErrorCode'] as String?;
-      return readableErrorCode == 'OFFLINE_CONNECTION_ERROR' ||
-          error.code == '35';
+      // オフラインエラー
+      if (readableErrorCode == 'OFFLINE_CONNECTION_ERROR' ||
+          error.code == '35') {
+        return true;
+      }
+      // 設定エラー（App Store Connectから商品が取得できない場合など）
+      if (readableErrorCode == 'CONFIGURATION_ERROR' || error.code == '23') {
+        return true;
+      }
     }
     return false;
   }

@@ -1,11 +1,18 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cached_network_svg_image/cached_network_svg_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class TaskIcon extends StatelessWidget {
-  const TaskIcon({super.key, required this.icon, this.size = 18});
+  const TaskIcon({
+    super.key,
+    required this.icon,
+    this.size = 18,
+    this.isProjectIcon = false,
+  });
 
   final String icon;
   final double size;
+  final bool isProjectIcon;
 
   bool _looksLikeUrl(String value) {
     return value.startsWith('http://') || value.startsWith('https://');
@@ -17,21 +24,37 @@ class TaskIcon extends StatelessWidget {
     return uri.path.toLowerCase().endsWith('.svg');
   }
 
+  Widget _buildFallback() {
+    if (!isProjectIcon) {
+      return SizedBox(width: size, height: size);
+    }
+    return SizedBox(
+      width: size,
+      height: size,
+      child: Center(
+        child: Text('#', style: TextStyle(fontSize: size - 2, height: 1)),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_looksLikeUrl(icon)) {
-      // SVG URL の場合は flutter_svg を使用
+      final fallback = _buildFallback();
+
+      // SVG URL の場合はキャッシュ付きで読み込み
       if (_isSvgUrl(icon)) {
         return SizedBox(
           width: size,
           height: size,
-          child: SvgPicture.network(
+          child: CachedNetworkSVGImage(
             icon,
             width: size,
             height: size,
             fit: BoxFit.contain,
-            placeholderBuilder: (context) =>
-                SizedBox(width: size, height: size),
+            placeholder: fallback,
+            errorWidget: fallback,
+            fadeDuration: Duration.zero,
           ),
         );
       }
@@ -40,12 +63,15 @@ class TaskIcon extends StatelessWidget {
       return SizedBox(
         width: size,
         height: size,
-        child: Image.network(
-          icon,
+        child: CachedNetworkImage(
+          imageUrl: icon,
           width: size,
           height: size,
           fit: BoxFit.contain,
-          errorBuilder: (context, _, __) => SizedBox(width: size, height: size),
+          placeholder: (context, url) => fallback,
+          errorWidget: (context, url, error) => fallback,
+          fadeInDuration: Duration.zero,
+          fadeOutDuration: Duration.zero,
         ),
       );
     }

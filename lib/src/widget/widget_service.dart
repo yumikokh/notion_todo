@@ -301,7 +301,8 @@ class WidgetService {
 
     await _updateWidget(); // 全てのウィジェットを更新するため
 
-    _updateTaskInNotion(id, isCompleted);
+    // Notion更新はIntent完了を待たせず非同期で継続（フォアグラウンド復帰したアプリのisolateで継続実行）
+    unawaited(_updateTaskInNotion(id, isCompleted));
 
     _setLastCompletedIdFromWidget(id);
   }

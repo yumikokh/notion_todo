@@ -60,7 +60,7 @@ Future<List<Property>> properties(
 }
 
 @freezed
-class SelectedDatabaseState with _$SelectedDatabaseState {
+abstract class SelectedDatabaseState with _$SelectedDatabaseState {
   const factory SelectedDatabaseState({
     required String id,
     required String name,

@@ -6,22 +6,53 @@ part of 'subscription_viewmodel.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$subscriptionViewModelHash() =>
-    r'55652603438ea27726efc80985a104555ef9618c';
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
 
-/// See also [SubscriptionViewModel].
 @ProviderFor(SubscriptionViewModel)
-final subscriptionViewModelProvider = AutoDisposeAsyncNotifierProvider<
-    SubscriptionViewModel, SubscriptionStatus>.internal(
-  SubscriptionViewModel.new,
-  name: r'subscriptionViewModelProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$subscriptionViewModelHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+const subscriptionViewModelProvider = SubscriptionViewModelProvider._();
 
-typedef _$SubscriptionViewModel = AutoDisposeAsyncNotifier<SubscriptionStatus>;
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+final class SubscriptionViewModelProvider
+    extends $AsyncNotifierProvider<SubscriptionViewModel, SubscriptionStatus> {
+  const SubscriptionViewModelProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'subscriptionViewModelProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$subscriptionViewModelHash();
+
+  @$internal
+  @override
+  SubscriptionViewModel create() => SubscriptionViewModel();
+}
+
+String _$subscriptionViewModelHash() =>
+    r'286c54335bf4af13a145e3ae7e5b4b456daa0ed3';
+
+abstract class _$SubscriptionViewModel
+    extends $AsyncNotifier<SubscriptionStatus> {
+  FutureOr<SubscriptionStatus> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final created = build();
+    final ref =
+        this.ref as $Ref<AsyncValue<SubscriptionStatus>, SubscriptionStatus>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<SubscriptionStatus>, SubscriptionStatus>,
+              AsyncValue<SubscriptionStatus>,
+              Object?,
+              Object?
+            >;
+    element.handleValue(ref, created);
+  }
+}

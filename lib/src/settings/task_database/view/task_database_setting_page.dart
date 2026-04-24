@@ -21,7 +21,7 @@ class TaskDatabaseSettingPage extends HookConsumerWidget {
         ref.watch(taskDatabaseViewModelProvider.notifier);
     final accessibleDatabases = ref.watch(accessibleDatabasesProvider);
     final selectedDatabase =
-        ref.watch(selectedDatabaseViewModelProvider).valueOrNull;
+        ref.watch(selectedDatabaseViewModelProvider).value;
     final selectedDatabaseViewModel =
         ref.watch(selectedDatabaseViewModelProvider.notifier);
     final notionOAuthViewModel =

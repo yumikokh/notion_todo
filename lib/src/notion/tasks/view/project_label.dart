@@ -26,7 +26,7 @@ class ProjectLabel extends ConsumerWidget {
 
     // ProjectSelectionViewModelからプロジェクト情報を取得
     final projectsAsync = ref.watch(projectSelectionViewModelProvider);
-    final availableProjects = projectsAsync.valueOrNull ?? [];
+    final availableProjects = projectsAsync.value ?? [];
 
     return Wrap(
       crossAxisAlignment: WrapCrossAlignment.center,
@@ -48,7 +48,7 @@ class ProjectLabel extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (project.icon != null)
-              TaskIcon(icon: project.icon!, size: 14)
+              TaskIcon(icon: project.icon!, size: 14, isProjectIcon: true)
             else
               SizedBox(
                 width: 14,

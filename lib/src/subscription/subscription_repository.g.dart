@@ -6,25 +6,47 @@ part of 'subscription_repository.dart';
 // RiverpodGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+
+@ProviderFor(subscriptionRepository)
+const subscriptionRepositoryProvider = SubscriptionRepositoryProvider._();
+
+final class SubscriptionRepositoryProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<SubscriptionRepository>,
+          SubscriptionRepository,
+          FutureOr<SubscriptionRepository>
+        >
+    with
+        $FutureModifier<SubscriptionRepository>,
+        $FutureProvider<SubscriptionRepository> {
+  const SubscriptionRepositoryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'subscriptionRepositoryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$subscriptionRepositoryHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<SubscriptionRepository> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<SubscriptionRepository> create(Ref ref) {
+    return subscriptionRepository(ref);
+  }
+}
+
 String _$subscriptionRepositoryHash() =>
     r'6245b5b5952363308fe3182bd53028dabe2bdb17';
-
-/// See also [subscriptionRepository].
-@ProviderFor(subscriptionRepository)
-final subscriptionRepositoryProvider =
-    AutoDisposeFutureProvider<SubscriptionRepository>.internal(
-  subscriptionRepository,
-  name: r'subscriptionRepositoryProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$subscriptionRepositoryHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef SubscriptionRepositoryRef
-    = AutoDisposeFutureProviderRef<SubscriptionRepository>;
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

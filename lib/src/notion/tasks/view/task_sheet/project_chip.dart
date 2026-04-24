@@ -29,7 +29,7 @@ class ProjectChip extends ConsumerWidget {
 
     // ProjectSelectionViewModelからプロジェクト情報を取得
     final projectsAsync = ref.watch(projectSelectionViewModelProvider);
-    final availableProjects = projectsAsync.valueOrNull ?? [];
+    final availableProjects = projectsAsync.value ?? [];
 
     // 選択されたプロジェクトの情報を取得
     final selectedProjectInfos = isSelected
@@ -53,7 +53,7 @@ class ProjectChip extends ConsumerWidget {
               return [
                 if (index > 0) const Text(', ', style: TextStyle(fontSize: 14)),
                 if (project.icon != null)
-                  TaskIcon(icon: project.icon!, size: 14)
+                  TaskIcon(icon: project.icon!, size: 14, isProjectIcon: true)
                 else
                   const SizedBox(
                     width: 14,

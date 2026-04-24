@@ -73,7 +73,7 @@ class SnackbarListener extends HookConsumerWidget {
   MaterialBanner createTopSnackBar(
       BuildContext context, WidgetRef ref, SnackbarState current) {
     // MaterialBannerの色をSnackBarと同じにする
-    final themeMode = ref.watch(settingsViewModelProvider).themeMode;
+    final ThemeMode themeMode = ref.watch(settingsViewModelProvider).themeMode;
     final backgroundColor = switch (themeMode) {
       ThemeMode.light => Theme.of(context).colorScheme.onSurface,
       ThemeMode.dark => Theme.of(context).colorScheme.surface,

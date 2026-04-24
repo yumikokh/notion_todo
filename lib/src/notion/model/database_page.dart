@@ -4,7 +4,7 @@ import 'property.dart';
 part 'database_page.freezed.dart';
 
 @freezed
-class DatabasePage with _$DatabasePage {
+abstract class DatabasePage with _$DatabasePage {
   const factory DatabasePage({
     required String id,
     required String title,

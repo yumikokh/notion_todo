@@ -109,7 +109,7 @@ class TaskViewModel extends _$TaskViewModel
   Future<void> loadMore() async {
     if (!_hasMore || _nextCursor == null || _isLoading) return;
 
-    final currentTasks = state.valueOrNull ?? [];
+    final currentTasks = state.value ?? [];
 
     try {
       final tasks = await _fetchTasks();
@@ -209,11 +209,11 @@ class TaskViewModel extends _$TaskViewModel
 
       final prevState = state;
 
-      state = AsyncValue.data([...state.valueOrNull ?? [], tempTask]);
+      state = AsyncValue.data([...state.value ?? [], tempTask]);
 
       // ウィジェット更新
       if (isToday) {
-        await _updateTodayWidget(state.valueOrNull ?? []);
+        await _updateTodayWidget(state.value ?? []);
       }
 
       try {
@@ -260,7 +260,7 @@ class TaskViewModel extends _$TaskViewModel
       final taskService = _taskRepository;
       final prevState = state;
       final prevTask =
-          prevState.valueOrNull?.where((t) => t.id == task.id).firstOrNull;
+          prevState.value?.where((t) => t.id == task.id).firstOrNull;
       if (prevTask == null || task.title.trim().isEmpty) {
         return;
       }
@@ -273,12 +273,12 @@ class TaskViewModel extends _$TaskViewModel
       final l = await AppLocalizations.delegate.load(locale);
 
       state = AsyncValue.data([
-        for (final Task t in state.valueOrNull ?? [])
+        for (final Task t in state.value ?? [])
           if (t.id == task.id) task else t
       ]);
       // ウィジェット更新
       if (isToday) {
-        await _updateTodayWidget(state.valueOrNull ?? []);
+        await _updateTodayWidget(state.value ?? []);
       }
 
       snackbar.show(l.task_update_success(task.title),
@@ -290,7 +290,7 @@ class TaskViewModel extends _$TaskViewModel
         final updatedTask = await taskService.updateTask(task);
 
         state = AsyncValue.data([
-          for (final Task t in state.valueOrNull ?? [])
+          for (final Task t in state.value ?? [])
             if (t.id == task.id) updatedTask else t
         ]);
         ref.invalidateSelf();
@@ -329,13 +329,13 @@ class TaskViewModel extends _$TaskViewModel
       final prevState = state;
 
       state = AsyncValue.data([
-        for (final Task t in state.valueOrNull ?? [])
+        for (final Task t in state.value ?? [])
           if (t.id == task.id) task else t
       ]);
 
       // ウィジェット更新
       if (isToday) {
-        await _updateTodayWidget(state.valueOrNull ?? []);
+        await _updateTodayWidget(state.value ?? []);
       }
 
       try {
@@ -351,14 +351,14 @@ class TaskViewModel extends _$TaskViewModel
         });
 
         state = AsyncValue.data([
-          for (final Task t in state.valueOrNull ?? [])
+          for (final Task t in state.value ?? [])
             if (t.id == updatedTask.id) updatedTask else t
         ]);
         ref.invalidateSelf();
 
         // 今日のタスクが全て完了したかチェック
         if (!fromUndo && isCompleted && isToday) {
-          final tasks = state.valueOrNull ?? [];
+          final tasks = state.value ?? [];
           final allTasksCompleted = tasks.every((t) => t.isCompleted);
 
           if (allTasksCompleted && tasks.isNotEmpty) {
@@ -427,7 +427,7 @@ class TaskViewModel extends _$TaskViewModel
         final updatedTask =
             await taskService.updateInProgressStatus(task.id, willBeInProgress);
         state = AsyncValue.data([
-          for (final Task t in state.valueOrNull ?? [])
+          for (final Task t in state.value ?? [])
             if (t.id == updatedTask.id) updatedTask else t
         ]);
         ref.invalidateSelf();
@@ -465,12 +465,12 @@ class TaskViewModel extends _$TaskViewModel
     final locale = ref.read(settingsViewModelProvider).locale;
     final l = await AppLocalizations.delegate.load(locale);
     state = AsyncValue.data([
-      for (final Task t in state.valueOrNull ?? [])
+      for (final Task t in state.value ?? [])
         if (t.id != task.id) t
     ]);
     // ウィジェット更新
     if (isToday) {
-      await _updateTodayWidget(state.valueOrNull ?? []);
+      await _updateTodayWidget(state.value ?? []);
     }
     snackbar.show(l.task_delete_success(task.title), type: SnackbarType.success,
         onUndo: () async {

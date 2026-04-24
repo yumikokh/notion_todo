@@ -82,7 +82,7 @@ class _TaskProjectSheetState extends ConsumerState<TaskProjectSheet> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    final taskDatabase = ref.watch(taskDatabaseViewModelProvider).valueOrNull;
+    final taskDatabase = ref.watch(taskDatabaseViewModelProvider).value;
     final projectProperty = taskDatabase?.project;
 
     if (projectProperty == null) {
@@ -199,7 +199,7 @@ class _TaskProjectSheetState extends ConsumerState<TaskProjectSheet> {
                                   temporarySelectedIds.contains(project.id);
                               return ListTile(
                                 leading: project.icon != null
-                                    ? TaskIcon(icon: project.icon!, size: 24)
+                                    ? TaskIcon(icon: project.icon!, size: 24, isProjectIcon: true)
                                     : SizedBox(
                                         width: 24,
                                         height: 24,

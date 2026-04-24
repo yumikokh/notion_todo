@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+// Riverpod 3.0でChangeNotifierProviderを使うためにlegacyからインポート
+// ignore: implementation_imports
+import 'package:flutter_riverpod/src/providers/legacy/change_notifier_provider.dart';
 import 'package:tanzaku_todo/generated/app_localizations.dart';
 
 import 'settings_service.dart';

@@ -625,7 +625,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String trial_ends_then_price_per_year(
-      Object trialDays, Object priceString, Object yearlyPriceShort) {
+    Object trialDays,
+    Object priceString,
+    Object yearlyPriceShort,
+  ) {
     return '$trialDays天免費試用結束後 $priceString / $yearlyPriceShort';
   }
 
@@ -1336,7 +1339,10 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String trial_ends_then_price_per_year(
-      Object trialDays, Object priceString, Object yearlyPriceShort) {
+    Object trialDays,
+    Object priceString,
+    Object yearlyPriceShort,
+  ) {
     return '$trialDays天免費試用結束後 $priceString / $yearlyPriceShort';
   }
 

@@ -6,24 +6,53 @@ part of 'app_version_viewmodel.dart';
 // RiverpodGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+
+@ProviderFor(appVersionViewModel)
+const appVersionViewModelProvider = AppVersionViewModelProvider._();
+
+final class AppVersionViewModelProvider
+    extends
+        $FunctionalProvider<
+          AppVersionViewModel,
+          AppVersionViewModel,
+          AppVersionViewModel
+        >
+    with $Provider<AppVersionViewModel> {
+  const AppVersionViewModelProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'appVersionViewModelProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$appVersionViewModelHash();
+
+  @$internal
+  @override
+  $ProviderElement<AppVersionViewModel> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  AppVersionViewModel create(Ref ref) {
+    return appVersionViewModel(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(AppVersionViewModel value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<AppVersionViewModel>(value),
+    );
+  }
+}
+
 String _$appVersionViewModelHash() =>
     r'1d3e90b2f73bb46e843d5659fa650b3ba337be5f';
-
-/// See also [appVersionViewModel].
-@ProviderFor(appVersionViewModel)
-final appVersionViewModelProvider =
-    AutoDisposeProvider<AppVersionViewModel>.internal(
-  appVersionViewModel,
-  name: r'appVersionViewModelProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$appVersionViewModelHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef AppVersionViewModelRef = AutoDisposeProviderRef<AppVersionViewModel>;
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
