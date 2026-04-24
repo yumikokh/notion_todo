@@ -52,3 +52,4 @@ env.g.dart
 **/google-services.json
 **/GoogleService-Info.plist
 .claude/settings.local.json
+.claude/worktrees/
